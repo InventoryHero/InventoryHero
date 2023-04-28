@@ -1,5 +1,5 @@
 <template>
-  <h1>Fuck you</h1>
+  <h1>This is a test view</h1>
 </template>
 
 <script>
