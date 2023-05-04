@@ -1,21 +1,29 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import Route1 from './views/Route1.vue'
-import Default from './views/Default.vue'
 import * as VueRouter from 'vue-router'
 import './registerServiceWorker'
 
+import "@/global.css"
+
+import LoginView from '@/views/LoginView';
+import HomeView from '@/views/HomeView';
+
 const routes = [
-    {path: "/route1", component: Route1}, 
-    {path: "/", component: Default}
+    {
+        path: "/", 
+        name: "login",
+        component: LoginView
+    }, 
+    {
+        path: "/home",
+        name: "home", 
+        component: HomeView
+    }
 ]
 
 const router = VueRouter.createRouter({
     history: VueRouter.createWebHistory(),
     routes,
 });
-
-
-
 
 createApp(App).use(router).mount('#app')
