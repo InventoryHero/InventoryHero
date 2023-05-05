@@ -1,10 +1,14 @@
 import CryptoJS from 'crypto-js';
 import { createClient } from '@supabase/supabase-js'
-import { VUE_APP_URL, VUE_APP_KEY } from "@/.env.js"
 
 //TODO: Export to .env file 
-const URL = VUE_APP_URL
-const KEY = VUE_APP_KEY
+const URL = process.env.VUE_APP_URL
+const KEY = process.env.VUE_APP_KEY
+
+
+console.log(URL);
+console.log(KEY);
+
 export const supabase = createClient(URL, KEY)
 
 
