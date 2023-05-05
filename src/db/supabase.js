@@ -5,10 +5,6 @@ import { createClient } from '@supabase/supabase-js'
 const URL = process.env.VUE_APP_URL
 const KEY = process.env.VUE_APP_KEY
 
-
-console.log(URL);
-console.log(KEY);
-
 export const supabase = createClient(URL, KEY)
 
 
@@ -22,3 +18,4 @@ export async function DB_SB_login(username, password) {
     const success = data.length < 1 ? false : true;
     return success;
 }
+

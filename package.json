@@ -15,8 +15,12 @@
     "pwa": "^1.9.7",
     "pwa-installer": "^0.1.0",
     "register-service-worker": "^1.7.2",
+    "uninstall": "^0.0.0",
     "vue": "^3.2.13",
-    "vue-router": "^4.1.6"
+    "vue-burger-menu": "^2.0.5",
+    "vue-material-design-icons": "^5.2.0",
+    "vue-router": "^4.1.6",
+    "vue3-burger-menu": "^1.1.1"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
@@ -26,6 +30,7 @@
     "@vue/cli-plugin-pwa": "~5.0.0",
     "@vue/cli-service": "~5.0.0",
     "eslint": "^7.32.0",
+    "eslint-plugin-disable": "^2.0.3",
     "eslint-plugin-vue": "^8.0.3"
   },
   "eslintConfig": {
