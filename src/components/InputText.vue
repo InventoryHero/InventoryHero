@@ -20,13 +20,23 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 input {
-  background-color: var(--color-cyan);
-  color: black;
+  background-color: var(--color-darker);
+  color: white;
   width: 60%;
   font-size: 1.5em;
   padding: 20px;
   border: none;
   border-radius: 15px;
+}
+
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+  color: var(--color-faded);
+}
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: var(--color-faded);
+}
+::-ms-input-placeholder { /* Microsoft Edge */
+  color: var(--color-faded);
 }
 
 input:focus {

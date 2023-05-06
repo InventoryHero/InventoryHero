@@ -5,6 +5,9 @@
     <input-text class="inputText" place_holder="Password" :is_pssw="true" @valueUpdated=updatePassword />
     <login-button class="loginButton" @click=login() />
   </div>
+
+  <a id="posRegister" @click="this.$router.push('/register')">Register</a>
+
 </template>
 
 <script>
@@ -57,5 +60,12 @@ export default {
 
 #loginPos {
   margin-top: 30%;
+}
+
+#posRegister {
+  position: absolute;
+  bottom: 50px;
+  transform: translateX(-50%);
+  text-decoration: underline;
 }
 </style>

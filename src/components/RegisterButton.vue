@@ -1,6 +1,6 @@
 <template>
 <div class="containerLoginButton">
-    <button>➡</button>
+    <button>Register</button>
 </div>
 </template>
 
@@ -14,7 +14,7 @@ name: 'LoginButton',
 button {
     width: 20vw;
     height: 10vw;
-    font-size: 2em;
+    font-size: 1em;
     border-radius: 10px;
     border: none;
     background-color: var(--color-darker);
