@@ -1,23 +1,25 @@
 <template>
-    <h1> Login </h1>
+    <h1> Register </h1>
     <div id="loginPos">
       <input-text class="inputText" place_holder="Username" :is_pssw="false" @valueUpdated=updateUsername />
       <input-text class="inputText" place_holder="Password" :is_pssw="true" @valueUpdated=updatePassword />
-      <login-button class="loginButton" @click=login() />
+      <register-button @click="register()"/>
     </div>
+  <a id="posLogin" @click="this.$router.push('/')">Login</a>
+    
   </template>
   
   <script>
   import InputText from '@/components/InputText.vue';
-  import LoginButton from '@/components/LoginButton.vue';
+  import RegisterButton from '@/components/RegisterButton.vue';
   
-  import { DB_SB_login } from '@/db/supabase';
+  import { DB_SB_register } from '@/db/supabase';
   
   export default {
     name: 'App',
     components: {
       InputText,
-      LoginButton
+      RegisterButton
     },
     data() {
       return {
@@ -32,12 +34,12 @@
       updatePassword(password) {
         this.password = password;
       },
-      login() {
-        DB_SB_login(this.username, this.password).then((login_succeeded) => {
-          if (login_succeeded) {
-            this.$router.push("/home")
+      register() {
+        DB_SB_register(this.username, this.password).then((register_succeeded) => {
+          if (register_succeeded) {
+            this.$router.push("/");
           } else {
-            console.log("wrong username or password")
+            console.log("something went wrong ops");
           }
         });
       
@@ -58,5 +60,13 @@
   #loginPos {
     margin-top: 30%;
   }
+
+  
+#posLogin {
+  position: absolute;
+  bottom: 50px;
+  transform: translateX(-50%);
+  text-decoration: underline;
+}
   </style>
   

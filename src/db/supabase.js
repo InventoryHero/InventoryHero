@@ -19,3 +19,19 @@ export async function DB_SB_login(username, password) {
     return success;
 }
 
+
+export async function DB_SB_register(username, password) {
+    const user = {
+        username: username,
+        password: HASH(password),
+    }
+    const { data } = await supabase.from('users').select().eq("username", username)
+    console.log(data.length, password);
+    if(data.length != 0) {
+        console.log("[ERR] username already taken");
+        return false;
+    }
+    await supabase.from('users').insert(user);
+    return true;
+}
+
