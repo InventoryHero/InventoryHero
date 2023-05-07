@@ -8,7 +8,7 @@ import "@/global.css"
 
 import LoginView from '@/views/LoginView';
 import HomeView from '@/views/HomeView';
-// import ProductsOverviewView from '@/views/ProductsOverviewView';
+import RegisterView from '@/views/RegisterView';
 
 const routes = [
     {
@@ -21,11 +21,11 @@ const routes = [
         name: "home", 
         component: HomeView
     },
-    // {
-    //     path: "/productsOverview",
-    //     name: "productsOverview",
-    //     component: ProductsOverviewView
-    // }
+    {
+        path: "/register",
+        name: "register", 
+        component: RegisterView
+    },
 ]
 
 const router = VueRouter.createRouter({
