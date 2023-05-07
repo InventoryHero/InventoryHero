@@ -16,6 +16,8 @@ import LoginButton from '@/components/LoginButton.vue';
 
 import { DB_SB_login } from '@/db/supabase';
 
+import { setUser } from '@/db/dexie';
+
 export default {
   name: 'App',
   components: {
@@ -38,9 +40,16 @@ export default {
     login() {
       DB_SB_login(this.username, this.password).then((login_succeeded) => {
         if (login_succeeded) {
-          this.$router.push("/home")
+          setUser(this.username, this.password).then((res) => {
+            if(res) {
+              this.$router.push("/home")
+            }
+            else {
+              console.log("[ERR] dexie cant set user")
+            }
+          })
         } else {
-          console.log("wrong username or password")
+          console.log("[ERR] wrong username or password")
         }
       });
     
