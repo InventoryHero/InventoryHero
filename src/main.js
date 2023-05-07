@@ -5,6 +5,7 @@ import './registerServiceWorker'
 
 import 'vue-material-design-icons/styles.css'
 import "@/global.css"
+import vuetify from "./plugins/vuetify";
 
 import LoginView from '@/views/LoginView';
 import HomeView from '@/views/HomeView';
@@ -12,13 +13,13 @@ import RegisterView from '@/views/RegisterView';
 
 const routes = [
     {
-        path: "/", 
+        path: "/",
         name: "login",
         component: LoginView
-    }, 
+    },
     {
         path: "/home",
-        name: "home", 
+        name: "home",
         component: HomeView
     },
     {
@@ -33,4 +34,4 @@ const router = VueRouter.createRouter({
     routes,
 });
 
-createApp(App).use(router).mount('#app')
+createApp(App).use(router).use(vuetify).mount('#app')

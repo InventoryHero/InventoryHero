@@ -23,7 +23,6 @@ components: {
     height: 50px;
     border-radius: 10px;
     background-color: var(--color-darker);
-    padding: 5px;
 }
 </style>
   

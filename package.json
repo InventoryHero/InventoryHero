@@ -8,6 +8,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@mdi/font": "5.9.55",
     "@supabase/supabase-js": "^2.21.0",
     "core-js": "^3.8.3",
     "crypto-js": "^4.1.1",
@@ -15,12 +16,15 @@
     "pwa": "^1.9.7",
     "pwa-installer": "^0.1.0",
     "register-service-worker": "^1.7.2",
+    "roboto-fontface": "*",
     "uninstall": "^0.0.0",
     "vue": "^3.2.13",
     "vue-burger-menu": "^2.0.5",
     "vue-material-design-icons": "^5.2.0",
     "vue-router": "^4.1.6",
-    "vue3-burger-menu": "^1.1.1"
+    "vue3-burger-menu": "^1.1.1",
+    "vuetify": "^3.0.0-beta.0",
+    "webfontloader": "^1.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.12.16",
@@ -31,7 +35,9 @@
     "@vue/cli-service": "~5.0.0",
     "eslint": "^7.32.0",
     "eslint-plugin-disable": "^2.0.3",
-    "eslint-plugin-vue": "^8.0.3"
+    "eslint-plugin-vue": "^8.0.3",
+    "vue-cli-plugin-vuetify": "~2.5.8",
+    "webpack-plugin-vuetify": "^2.0.0-alpha.0"
   },
   "eslintConfig": {
     "root": true,
