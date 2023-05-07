@@ -10,7 +10,7 @@
         Boxes
       </span>
     </a>
-    <a href="">
+    <a @click='this.$router.push("/LocationsOverview")'>
       <span>
         Locations
       </span>
@@ -30,9 +30,15 @@
 import AddButton from '@/components/AddButton.vue'
 import QrButton from '@/components/QrButton.vue'
 import { Slide } from 'vue3-burger-menu';
+import RoomOverviewView from "@/views/RoomOverviewView.vue";
 
 export default {
   name: 'App',
+    computed: {
+        RoomOverviewView() {
+            return RoomOverviewView
+        }
+    },
   components: {
     Slide,
     AddButton,

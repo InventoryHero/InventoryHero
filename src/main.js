@@ -10,6 +10,7 @@ import vuetify from "./plugins/vuetify";
 import LoginView from '@/views/LoginView';
 import HomeView from '@/views/HomeView';
 import RegisterView from '@/views/RegisterView';
+import LocationsOverview from '@/views/LocationsOverviewView';
 
 const routes = [
     {
@@ -27,6 +28,11 @@ const routes = [
         name: "register", 
         component: RegisterView
     },
+    {
+        path: "/LocationsOverview",
+        name: "locations",
+        component: LocationsOverview
+    }
 ]
 
 const router = VueRouter.createRouter({
