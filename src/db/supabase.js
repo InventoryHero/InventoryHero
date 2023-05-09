@@ -35,3 +35,29 @@ export async function DB_SB_register(username, password) {
     return true;
 }
 
+export async function DB_SB_get_boxes_per_room(room_id)
+{
+    return await supabase.from("boxes").select("*").eq("room_id", room_id)
+}
+export async function DB_SB_get_products_per_room(room_id)
+{
+    return await supabase.from("products").select("*").eq("room_id", room_id)
+}
+
+export async function DB_SB_get_rooms(){
+    const data = await supabase.from("rooms").select("*");
+
+
+    for(let i = 0; i < data.data.length; i++)
+    {
+        let curr_room = data.data.at(i);
+        const box_data = await DB_SB_get_boxes_per_room(curr_room.id)
+        const product_data = await DB_SB_get_products_per_room(curr_room.id);
+        curr_room.box_cnt = box_data.data.length
+        curr_room.product_cnt = product_data.data.length
+    }
+
+
+    return data.data;
+}
+

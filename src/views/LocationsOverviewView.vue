@@ -1,48 +1,59 @@
 <template>
-    <v-container>
-       <v-layout row align-center justify-center column fill-height>
-           <v-col>
-               <v-card text="hi guys">
-               </v-card>
-           </v-col>
-       </v-layout>
-    </v-container>
     <v-virtual-scroll
-        :height="300"
-        :items="['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30']"
+        class="virtual-scroll-bg"
+        :height="80+'vh'"
+        :items="rooms"
     >
         <template v-slot:default="{ item }">
-            Item {{ item }}
+            <RoomCard class="card" :id="item.id" :roomName="item.name" :numBoxes="item.box_cnt" :numProducts="item.product_cnt"/>
         </template>
     </v-virtual-scroll>
-    <add-button />
-    <qr-button />
+    <add-button/>
+    <qr-button/>
 </template>
 
 <script>
-  import AddButton from '@/components/AddButton.vue'
+import AddButton from '@/components/AddButton.vue'
   import QrButton from '@/components/QrButton.vue'
+  import RoomCard from "@/components/RoomCard.vue";
+
+  import { DB_SB_get_rooms } from '@/db/supabase';
 
   
   export default {
     name: 'App',
     components: {
+        RoomCard,
         AddButton,
         QrButton
     },
     data() {
         return {
-            showTitle: true,
+            rooms: [],
         }
     },
     methods: {
+        get_rooms() {
+            DB_SB_get_rooms().then((rooms) => {
+                this.rooms = rooms;
+            });
+        }
+    },
+    beforeMount() {
+        this.get_rooms();
     }
+
   }
 </script>
   
-<style>
-    .room-card {
-        padding-left: 15%;
+<style scoped>
+    .card {
+        padding-left: 2.5%;
+        padding-right: 2.5%;
     }
+    .v-virtual-scroll{
+        background: var(--color-blue);
+    }
+    ::-webkit-scrollbar { width: 0px;  }
 </style>
   
