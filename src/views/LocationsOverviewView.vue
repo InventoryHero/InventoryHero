@@ -1,4 +1,5 @@
 <template>
+    <SandwichMenu/>
     <v-virtual-scroll
         class="virtual-scroll-bg"
         :height="80+'vh'"
@@ -16,6 +17,7 @@
 import AddButton from '@/components/AddButton.vue'
   import QrButton from '@/components/QrButton.vue'
   import RoomCard from "@/components/RoomCard.vue";
+import SandwichMenu from "@/components/SandwichMenu.vue";
 
   import { DB_SB_get_rooms } from '@/db/supabase';
 
@@ -25,7 +27,8 @@ import AddButton from '@/components/AddButton.vue'
     components: {
         RoomCard,
         AddButton,
-        QrButton
+        QrButton,
+        SandwichMenu
     },
     data() {
         return {

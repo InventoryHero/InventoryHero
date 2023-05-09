@@ -11,11 +11,6 @@ import SandwichMenu from "@/components/SandwichMenu.vue";
 
 export default {
   name: 'App',
-    computed: {
-        RoomOverviewView() {
-            return RoomOverviewView
-        }
-    },
   components: {
     SandwichMenu,
     AddButton,

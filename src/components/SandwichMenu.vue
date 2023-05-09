@@ -12,7 +12,7 @@
         Boxes
       </span>
         </a>
-        <a href="">
+        <a @click="this.$router.push('/LocationsOverview')">
       <span>
         Locations
       </span>
