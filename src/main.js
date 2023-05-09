@@ -10,6 +10,9 @@ import vuetify from "./plugins/vuetify";
 import LoginView from '@/views/LoginView';
 import HomeView from '@/views/HomeView';
 import RegisterView from '@/views/RegisterView';
+import NotFoundComponent from "@/components/NotFoundComponent.vue";
+
+
 
 const routes = [
     {
@@ -27,6 +30,11 @@ const routes = [
         name: "register", 
         component: RegisterView
     },
+    {
+        path: '/:catchAll(.*)',
+        component: NotFoundComponent,
+        name: 'NotFound'
+    }
 ]
 
 const router = VueRouter.createRouter({
@@ -35,3 +43,4 @@ const router = VueRouter.createRouter({
 });
 
 createApp(App).use(router).use(vuetify).mount('#app')
+
