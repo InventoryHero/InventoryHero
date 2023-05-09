@@ -23,6 +23,7 @@ components: {
     height: 50px;
     border-radius: 10px;
     background-color: var(--color-darker);
+    cursor: pointer;
 }
 </style>
   

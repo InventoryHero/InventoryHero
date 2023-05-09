@@ -1,45 +1,53 @@
 <template>
-  <h1 id="title" v-if="this.showTitle">Inventory Hero</h1>
-  <h1 id="homeTitle" >Home</h1>
-  <Slide @openMenu="this.showTitle=false" @closeMenu="this.showTitle=true" :crossIcon="false" :closeOnNavigation="true" enableOutsideClick>
-    <a id="home" href="#">
-      <span>Home</span>
-    </a>
-    <a href="">
-      <span>
-        Boxes
-      </span>
-    </a>
-    <a href="">
-      <span>
-        Locations
-      </span>
-    </a>
-    <a href="">
-      <span>
-        Products
-      </span>
-    </a>
-  </Slide>
-
-  <div id="posStarredMessages">
-    <h3>⭐ Starred Products</h3>
-    <list-container :list=this.starred_products />
+  <div>
+    <h1 id="title" v-if="this.showTitle">Inventory Hero</h1>
+    <h1 id="homeTitle" >Home</h1>
+    <Slide @openMenu="this.showTitle=false" @closeMenu="this.showTitle=true" :crossIcon="false" :closeOnNavigation="true" enableOutsideClick>
+      <a id="home" href="#">
+        <span>Home</span>
+      </a>
+      <a href="">
+        <span>
+          Boxes
+        </span>
+      </a>
+      <a href="">
+        <span>
+          Locations
+        </span>
+      </a>
+      <a href="">
+        <span>
+          Products
+        </span>
+      </a>
+    </Slide>
+  
+  
+    <div id="posStarredMessages">
+      <h3>⭐ Starred Products</h3>
+      <list-container :list=this.starred_products />
+    </div>
+  
+    <div id="posLastUsed">
+      <h3>⏰ Last Used Products</h3>
+      <list-container :list="[{name: 'Müssen wir noch'}, {name:'abklären, wie wir'}, {name: 'das machen wollen'}, {name: '😁'}]" />
+    </div>
+  
+    <add-button @click="this.addModalVisibility = true"/>
+    <qr-button />
   </div>
 
-  <div id="posLastUsed">
-    <h3>⏰ Last Used Products</h3>
-    <list-container :list="[{name: 'Müssen wir noch'}, {name:'abklären, wie wir'}, {name: 'das machen wollen'}, {name: '😁'}]" />
-  </div>
+  <add-modal v-if="this.addModalVisibility" @closeModal="this.addModalVisibility = false;"/>
 
-  <add-button />
-  <qr-button />
 </template>
 
 <script>
 import AddButton from '@/components/AddButton.vue'
 import QrButton from '@/components/QrButton.vue'
 import ListContainer from '@/components/ListContainer.vue';
+import AddModal from '@/modals/AddModal.vue'; 
+
 import { Slide } from 'vue3-burger-menu';
 
 import { DB_SB_getStarredProducts } from '@/db/supabase';
@@ -50,12 +58,14 @@ export default {
     Slide,
     AddButton,
     QrButton,
-    ListContainer
+    ListContainer,
+    AddModal
   },
   data() {
     return {
       showTitle: true,
       starred_products: [],
+      addModalVisibility: false
     }
   },
   methods: {
