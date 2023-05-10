@@ -14,3 +14,6 @@
   top: 2vh !important;
   left: 4% !important;
 }
+.bm-overlay {
+  background-color: transparent !important;
+}
