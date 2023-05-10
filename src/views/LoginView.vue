@@ -16,7 +16,7 @@ import LoginButton from '@/components/LoginButton.vue';
 
 import { DB_SB_login } from '@/db/supabase';
 
-import { setUser } from '@/db/dexie';
+import {getUser, setUser} from '@/db/dexie';
 
 export default {
   name: 'App',
@@ -54,6 +54,14 @@ export default {
       });
     
     }
+  },
+  beforeMount() {
+      getUser().then((user) => {
+          if(user !== undefined)
+          {
+              this.$router.push("/home");
+          }
+      })
   }
 }
 </script>
