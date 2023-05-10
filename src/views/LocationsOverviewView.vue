@@ -20,6 +20,7 @@ import AddButton from '@/components/AddButton.vue'
 import SandwichMenu from "@/components/SandwichMenu.vue";
 
   import { DB_SB_get_rooms } from '@/db/supabase';
+import {getUser} from "@/db/dexie";
 
   
   export default {
@@ -33,17 +34,26 @@ import SandwichMenu from "@/components/SandwichMenu.vue";
     data() {
         return {
             rooms: [],
+            currentUser: "",
         }
     },
     methods: {
         get_rooms() {
-            DB_SB_get_rooms().then((rooms) => {
-                this.rooms = rooms;
+            DB_SB_get_rooms(this.currentUser.username).then((rooms) => {
+                this.rooms = rooms.concat(rooms).concat(rooms).concat(rooms).concat(rooms).concat(rooms).concat(rooms).concat(rooms).concat(rooms);
             });
         }
     },
     beforeMount() {
-        this.get_rooms();
+
+        getUser().then((user) => {
+            if(user === undefined)
+            {
+                this.$router.push("/login");
+            }
+            this.currentUser = user;
+            this.get_rooms();
+        });
     }
 
   }
