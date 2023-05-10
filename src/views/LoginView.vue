@@ -1,13 +1,14 @@
 <template>
-  <h1> Login </h1>
-  <div id="loginPos">
-    <input-text class="inputText" place_holder="Username" :is_pssw="false" @valueUpdated=updateUsername />
-    <input-text class="inputText" place_holder="Password" :is_pssw="true" @valueUpdated=updatePassword />
-    <login-button class="loginButton" @click=login() />
-  </div>
+    <div>
+      <h1> Login </h1>
+      <div id="loginPos">
+        <input-text class="inputText" place_holder="Username" :is_pssw="false" @valueUpdated=updateUsername />
+        <input-text class="inputText" place_holder="Password" :is_pssw="true" @valueUpdated=updatePassword />
+        <login-button class="loginButton" @click=login() />
+      </div>
 
-  <a id="posRegister" @click="this.$router.push('/register')">Register</a>
-
+      <a id="posRegister" @click="this.$router.push('/register')">Register</a>
+    </div>
 </template>
 
 <script>
@@ -66,7 +67,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .inputText {
   margin-bottom: 10px;
 }
