@@ -11,6 +11,7 @@ import LoginView from '@/views/LoginView';
 import HomeView from '@/views/HomeView';
 import RegisterView from '@/views/RegisterView';
 import NotFoundComponent from "@/components/NotFoundComponent.vue";
+import LocationsOverview from '@/views/LocationsOverviewView';
 
 
 
@@ -34,6 +35,11 @@ const routes = [
         path: '/:catchAll(.*)',
         component: NotFoundComponent,
         name: 'NotFound'
+    },
+    {
+        path: "/LocationsOverview",
+        name: "locations",
+        component: LocationsOverview
     }
 ]
 
