@@ -13,7 +13,7 @@
 
   <SandwichMenu/>
   <add-button />
-  <qr-button />
+  <qr-button @click="this.openMenu()"/>
 </template>
 
 <script>
