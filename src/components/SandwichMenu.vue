@@ -1,7 +1,7 @@
 
 
 <template>
-    <v-toolbar id="navbar" absolute fixed  title="InventoryHero">
+    <v-toolbar id="navbar" absolute fixed :title='this.title'>
     </v-toolbar>
     <Slide @openMenu="this.showTitle=false" @closeMenu="this.showTitle=true" :crossIcon="false" :closeOnNavigation="true" enableOutsideClick>
         <a id="home" href="#">
@@ -39,6 +39,7 @@ export default {
             showTitle: true,
         }
     },
+    props: ["title"],
     methods: {
         openMenu() {
             console.log("open me")

@@ -24,7 +24,7 @@
         password: "",
         username: "",
       }
-    },
+    }
     methods: {
       updateUsername(username) {
         this.username = username;

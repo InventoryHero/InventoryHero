@@ -12,9 +12,9 @@
 
   <add-modal v-if="this.addModalVisibility" @closeModal="this.addModalVisibility = false;"/>
 
-  <SandwichMenu/>
   <add-button @click="this.addModalVisibility = true"/>
   <qr-button />
+  <SandwichMenu title="Home"/>
 </template>
 
 <script>
@@ -62,26 +62,6 @@ a:visited {
   color: white;
 }
 
-#title {
-  position: absolute;
-  top: 3.8vh;
-  left: 30vw;
-  font-size: 1.5em;
-}
-#homeTitle {
-  position: absolute;
-  top: 10vh;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.bm-menu {
-  background-color: rgb(0, 0, 0); /* Black*/
-}
-
-.bm-burger-bars {
-  background-color: white;
-}
 
 #posStarredMessages {
   margin-top: 20vh;
