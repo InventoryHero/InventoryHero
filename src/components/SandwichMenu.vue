@@ -1,33 +1,46 @@
 
 
 <template>
-    <v-toolbar id="navbar" absolute fixed :title='this.title'>
+    <v-toolbar id="navbar" absolute fixed>
     </v-toolbar>
-    <Slide @openMenu="this.showTitle=false" @closeMenu="this.showTitle=true" :crossIcon="false" :closeOnNavigation="true" enableOutsideClick>
-        <a id="home" href="#">
-            <span>Home</span>
-        </a>
-        <a href="">
-      <span>
-        Boxes
-      </span>
-        </a>
-        <a href="">
-      <span>
-        Locations
-      </span>
-        </a>
-        <a href="">
-      <span>
-        Products
-      </span>
-        </a>
+    <Slide :crossIcon="false">
+      <a id="home" href="#">
+          <span>Home</span>
+      </a>
+      <a href="">
+        <span>
+      Boxes
+        </span>
+      </a>
+      <a @click="this.$router.push('/LocationsOverview')">
+        <span>
+          Locations
+        </span>
+      </a>
+      <a href="">
+        <span>
+          Products
+        </span>
+      </a>
+      <div id="actionIcons" class="d-flex justify-space-evenly">
+          <v-list-item density="compact" >
+              <v-list-item-subtitle>
+                  <v-icon @click="this.logoutUser()" icon="fa:fas fa-sign-out-alt"/>
+              </v-list-item-subtitle>
+          </v-list-item>
+          <v-list-item density="compact" >
+              <v-list-item-subtitle>
+                  <v-icon icon="fa:fas fa-cog"/>
+              </v-list-item-subtitle>
+          </v-list-item>
+      </div>
     </Slide>
 
 
 </template>
 <script>
 import { Slide } from 'vue3-burger-menu';
+import {logout} from "@/db/dexie";
 
 export default {
     name: 'App',
@@ -36,13 +49,14 @@ export default {
     },
     data() {
         return {
-            showTitle: true,
         }
     },
     props: ["title"],
     methods: {
-        openMenu() {
-            console.log("open me")
+        logoutUser(){
+          logout().then(() => {
+              this.$router.push("/");
+          });
         },
     }
 }
@@ -50,7 +64,7 @@ export default {
 a:visited {
 color: white;
 }
-<style>
+<style scoped>
 #navbar {
     position: absolute;
     top: 0vh;
@@ -58,12 +72,9 @@ color: white;
     color: white;
 
 }
-.bm-burger-bars {
-    background-color: white !important;
-}
-.bm-burger-button {
+#actionIcons {
     position: absolute;
-    top: 2vh !important;
-    left: 4% !important;
+    bottom: 0vh;
+    width: 85%;
 }
 </style>

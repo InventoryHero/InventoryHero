@@ -28,3 +28,8 @@ export async function getUser() {
     }
     return curr_user[0];
 }
+
+export async function logout()
+{
+    await db.curr_user.clear();
+}
