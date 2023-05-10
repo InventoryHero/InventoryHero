@@ -21,6 +21,10 @@ export async function setUser(username, password) {
 
 
 export async function getUser() {
-    const curr_user = await db.curr_user.toArray(); 
+    const curr_user = await db.curr_user.toArray();
+    if(curr_user.length === 0)
+    {
+        return undefined;
+    }
     return curr_user[0];
 }

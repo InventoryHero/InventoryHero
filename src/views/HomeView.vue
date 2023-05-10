@@ -1,6 +1,4 @@
 <template>
-  <h1 id="homeTitle" >Home</h1>
-
   <div id="posStarredMessages">
     <h3>⭐ Starred Products</h3>
     <list-container :list=this.starred_products />
@@ -11,7 +9,7 @@
     <list-container :list="[{name: 'Müssen wir noch'}, {name:'abklären, wie wir'}, {name: 'das machen wollen'}, {name: '😁'}]" />
   </div>
 
-  <SandwichMenu/>
+  <SandwichMenu title="Home"/>
   <add-button />
   <qr-button @click="this.openMenu()"/>
 </template>
@@ -56,26 +54,6 @@ a:visited {
   color: white;
 }
 
-#title {
-  position: absolute;
-  top: 3.8vh;
-  left: 30vw;
-  font-size: 1.5em;
-}
-#homeTitle {
-  position: absolute;
-  top: 10vh;
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-.bm-menu {
-  background-color: rgb(0, 0, 0); /* Black*/
-}
-
-.bm-burger-bars {
-  background-color: white;
-}
 
 #posStarredMessages {
   margin-top: 20vh;
