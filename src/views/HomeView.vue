@@ -10,7 +10,7 @@
     </div>
     
 
-  <add-modal v-if="this.addModalVisibility" @closeModal="this.addModalVisibility = false;"/>
+  <add-modal v-if="this.addModalVisibility" @closeModal="closeModal()"/>
 
   <add-button @click="this.addModalVisibility = true"/>
   <qr-button />
@@ -24,7 +24,6 @@ import SandwichMenu from "@/components/SandwichMenu.vue";
 import ListContainer from '@/components/ListContainer.vue';
 import AddModal from '@/modals/AddModal.vue'; 
 
-import { Slide } from 'vue3-burger-menu';
 
 import { DB_SB_getStarredProducts } from '@/db/supabase';
 
@@ -48,7 +47,14 @@ export default {
     openMenu() {
       console.log("open me")
     },
+    closeModal() {
+      this.addModalVisibility = false;
+      DB_SB_getStarredProducts().then((res) => {
+        this.starred_products = res;
+      })
+    },
   },
+  
   beforeMount() {
     DB_SB_getStarredProducts().then((res) => {
       this.starred_products = res;

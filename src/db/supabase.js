@@ -35,14 +35,18 @@ export async function DB_SB_register(username, password) {
     return true;
 }
 
+
 export async function DB_SB_get_boxes_per_room(room_id, user)
 {
     return await supabase.from("boxes").select("*").eq("room_id", room_id).eq("username", user)
 }
+
+
 export async function DB_SB_get_products_per_room(room_id, user)
 {
     return await supabase.from("products").select("*").eq("room_id", room_id).eq("username", user)
 }
+
 
 export async function DB_SB_getStarredProducts() {
     const user = await getUser()
@@ -71,3 +75,76 @@ export async function DB_SB_get_rooms(user){
     return data.data;
 }
 
+
+export async function DB_SB_get_boxes_of_user(user) {
+    const data = await supabase.from("boxes").select("*").eq("username", user.username);
+    return data.data
+}
+
+
+export async function DB_SB_get_rooms_of_user(user) {
+    const data = await supabase.from("rooms").select("*").eq("username", user.username);
+    return data.data
+}
+
+export async function DB_SB_add_product(product) {
+    const user = await getUser();
+  
+    let box_id = -1;
+    if (product.box != "") {
+        box_id = await DB_SB_get_id_of_box(product.box);
+    }
+    let room_id = -1;
+    if(product.room != "") {
+        room_id = await DB_SB_get_id_of_room(product.room);
+    }
+    
+    let data = {
+        name: product.name,
+        box_id: box_id,
+        room_id: room_id,
+        amount: product.amount,
+        username: user.username,
+        starred: product.starred
+    }
+
+    await supabase.from('products').insert(data);
+}
+
+export async function DB_SB_add_box(box) {
+    const user = await getUser();
+    let room_id = -1;
+    if(box.room != "") {
+        room_id = await DB_SB_get_id_of_room(box.room);
+    }
+
+    let data = {
+        name: box.name,
+        room_id: room_id,
+        username: user.username
+    }
+
+    await supabase.from('boxes').insert(data);
+}
+
+export async function DB_SB_add_room(room) {
+    const user = await getUser();
+
+    let data = {
+        name: room.name,
+        username: user.username
+    }
+    await supabase.from('rooms').insert(data);
+}
+
+async function DB_SB_get_id_of_box(box_name) {
+    const user = await getUser();
+    const data = await supabase.from("boxes").select("id").eq("username", user.username).eq("name", box_name);
+    return data.data[0].id;
+}
+
+async function DB_SB_get_id_of_room(room_name) {
+    const user = await getUser();
+    const data = await supabase.from("rooms").select("id").eq("username", user.username).eq("name", room_name);
+    return data.data[0].id;
+}
