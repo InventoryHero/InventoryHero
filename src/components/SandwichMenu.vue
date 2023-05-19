@@ -4,7 +4,7 @@
     <v-toolbar id="navbar" absolute fixed>
     </v-toolbar>
     <Slide :crossIcon="false">
-      <a id="home" href="#">
+      <a id="home" href="#" @click="this.$router.push('/Home')"> 
           <span>Home</span>
       </a>
       <a href="">
@@ -17,7 +17,7 @@
           Locations
         </span>
       </a>
-      <a href="">
+      <a @click="this.$router.push('/ProductsOverview')"> 
         <span>
           Products
         </span>

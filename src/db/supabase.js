@@ -71,3 +71,11 @@ export async function DB_SB_get_rooms(user){
     return data.data;
 }
 
+export async function DB_SB_get_all_products(user){
+
+
+    const {data} = await supabase.from("products").select("*").eq("username", user);
+
+    return data
+
+}
