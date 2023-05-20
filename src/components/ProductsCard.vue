@@ -12,6 +12,16 @@
                             <v-icon @click="totalAmount(id)" class="me-3" icon="fa:fas fa-boxes"/>{{this.amount}}
                             </v-list-item-subtitle>
                     </v-list-item>
+                    <v-list-item density="compact" >
+                        <v-list-item-subtitle>
+                            <v-icon @click="increaseAmount(id)" class="me-3" icon="mdi-plus"/>
+                        </v-list-item-subtitle>
+                    </v-list-item>
+                    <v-list-item density="compact">
+                        <v-list-item-subtitle>
+                            <v-icon @click="decreaseAmount(id)" size="x-large" icon="mdi-minus"/>
+                        </v-list-item-subtitle>
+                    </v-list-item>
                     <v-list-item density="compact">
                         <v-list-item-subtitle>
                             <v-icon @click="informationButton(id)" size="large" icon="mdi-information"/>
@@ -39,6 +49,14 @@
           totalAmount: function(cardID)
           {
               console.log("Showing all products " + cardID);
+          },
+          increaseAmount: function(cardId)
+          {
+              console.log("Increased amount by one " + cardId);
+          },
+          decreaseAmount: function(cardId)
+          {
+              console.log("Decreased amount by one " + cardId);
           }
       }
   }
