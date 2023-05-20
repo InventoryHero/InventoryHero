@@ -2,9 +2,9 @@
     <div id="mainContainerAddModal">
         <svg @click="closeModal()" id="exitButton" xmlns="http://www.w3.org/2000/svg" height="48" viewBox="0 96 960 960" width="48"><path d="m249 849-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z"/></svg>
         <div id="addWhat">
-            <tag @click="categoryChange('product')" text="Product" :active="this.product_active"> </tag>
-            <tag @click="categoryChange('box')" :active="this.box_active" text="Box"> </tag>
-            <tag @click="categoryChange('location')" :active="this.location_active" text="Location"> </tag>
+            <tag @click="categoryChange(Constants.ProductsView)" text="Product" :active="this.product_active"> </tag>
+            <tag @click="categoryChange(Constants.BoxesView)" :active="this.box_active" text="Box"> </tag>
+            <tag @click="categoryChange(Constants.LocationsView)" :active="this.location_active" text="Location"> </tag>
         </div>
 
         <div id="containerWhat" v-if="this.product_active == 'true'">
@@ -40,9 +40,13 @@ import InputStarred from '@/components/InputStarred.vue';
 
 import { DB_SB_get_boxes_of_user, DB_SB_get_rooms_of_user, DB_SB_add_product, DB_SB_add_box, DB_SB_add_room } from '@/db/supabase';
 import { getUser } from '@/db/dexie';
+import {Constants} from  "@/global/constants";
 
 export default {
 name: 'App',
+props: {
+    defaultAddView: String,
+},
 components: {
     Tag,
     InputTextEnhanced,
@@ -62,16 +66,23 @@ data() {
       curr_box: "",
       curr_amount: 0,
       curr_starred: false,
+      Constants,
     }
 },
   methods: {
     categoryChange(change_to) {
-        if (change_to == "product") {
+        if (change_to === Constants.ProductsView) {
             this.product_active = "true"; this.box_active = "false"; this.location_active = "false";
-        } else if (change_to == "box")  {
+        } else if (change_to === Constants.BoxesView)  {
             this.product_active = "false"; this.box_active = "true"; this.location_active = "false";
+        } else if(change_to === Constants.LocationsView) {
+            this.product_active = "false";
+            this.box_active = "false";
+            this.location_active = "true";
         } else {
-            this.product_active = "false"; this.box_active = "false"; this.location_active = "true";
+            this.product_active = "true";
+            this.box_active = "false";
+            this.location_active = "false";
         }
     },
     updateSelectedBox(box) {
@@ -132,7 +143,8 @@ beforeMount() {
             this.rooms = rooms;
         });
 
-    })
+    });
+    this.categoryChange(this.defaultAddView)
 
 }
 }

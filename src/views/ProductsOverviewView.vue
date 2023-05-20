@@ -9,7 +9,8 @@
           <ProductsCard class="card" :id="item.id" :productName="item.name" :amount="item.amount"/>
       </template>
   </v-virtual-scroll>
-  <add-button/>
+    <add-modal :defaultAddView="Constants.ProductsView" v-if="this.addModalVisibility" @closeModal="closeModal()"/>
+    <add-button @click="this.addModalVisibility = true"/>
   <qr-button/>
 </template>
 
@@ -19,13 +20,16 @@ import QrButton from '@/components/QrButton.vue'
 import ProductsCard from "@/components/ProductsCard.vue";
 import SandwichMenu from "@/components/SandwichMenu.vue";
 
-import { DB_SB_get_all_products } from '@/db/supabase';
+import {DB_SB_get_all_products, DB_SB_getStarredProducts} from '@/db/supabase';
 import {getUser} from "@/db/dexie";
+import AddModal from "@/modals/AddModal.vue";
+import { Constants } from "@/global/constants";
 
 
 export default {
   name: 'App',
   components: {
+      AddModal,
     ProductsCard,
       AddButton,
       QrButton,
@@ -35,6 +39,8 @@ export default {
       return {
           products: [],
           currentUser: "",
+          addModalVisibility: false,
+          Constants
       }
   },
   methods: {
@@ -44,7 +50,13 @@ export default {
               console.log(this.products);
               
           });
-      }
+      },
+      closeModal() {
+          this.addModalVisibility = false;
+          DB_SB_getStarredProducts().then((res) => {
+              this.starred_products = res;
+          })
+      },
   },
   beforeMount() {
 

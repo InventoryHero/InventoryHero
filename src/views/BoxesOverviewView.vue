@@ -9,7 +9,8 @@
           <BoxCard class="card" :id="item.id" :boxName="item.name" :numProducts="item.product_cnt" :numStarredProducts="item.starred_product_cnt"/>
       </template>
   </v-virtual-scroll>
-  <add-button/>
+  <add-modal :defaultAddView="Constants.BoxesView" v-if="this.addModalVisibility" @closeModal="closeModal()"/>
+  <add-button @click="this.addModalVisibility = true"/>
   <qr-button/>
 </template>
 
@@ -19,13 +20,16 @@ import QrButton from '@/components/QrButton.vue'
 import BoxCard from "@/components/BoxCard.vue";
 import SandwichMenu from "@/components/SandwichMenu.vue";
 
-import { DB_SB_get_boxes } from '@/db/supabase';
+import {DB_SB_get_boxes, DB_SB_getStarredProducts} from '@/db/supabase';
 import {getUser} from "@/db/dexie";
+import AddModal from "@/modals/AddModal.vue";
+import { Constants } from "@/global/constants";
 
 
 export default {
   name: 'App',
   components: {
+      AddModal,
       BoxCard,
       AddButton,
       QrButton,
@@ -35,6 +39,8 @@ export default {
       return {
           boxes: [],
           currentUser: "",
+          addModalVisibility: false,
+          Constants
       }
   },
   methods: {
@@ -42,7 +48,13 @@ export default {
           DB_SB_get_boxes(this.currentUser.username).then((boxes) => {
               this.boxes = boxes;
           });
-      }
+      },
+      closeModal() {
+          this.addModalVisibility = false;
+          DB_SB_getStarredProducts().then((res) => {
+              this.starred_products = res;
+          })
+      },
   },
   beforeMount() {
 

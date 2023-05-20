@@ -1,7 +1,7 @@
 
 
 <template>
-    <v-toolbar id="navbar" absolute fixed>
+    <v-toolbar id="navbar"  absolute fixed>
     </v-toolbar>
     <Slide :crossIcon="false">
       <a id="home" href="#" @click="this.$router.push('/Home')">

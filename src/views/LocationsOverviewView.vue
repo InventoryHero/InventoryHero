@@ -9,7 +9,8 @@
             <RoomCard class="card" :id="item.id" :roomName="item.name" :numBoxes="item.box_cnt" :numProducts="item.product_cnt"/>
         </template>
     </v-virtual-scroll>
-    <add-button/>
+    <add-modal :defaultAddView="Constants.LocationsView" v-if="this.addModalVisibility" @closeModal="closeModal()"/>
+    <add-button @click="this.addModalVisibility = true"/>
     <qr-button/>
 </template>
 
@@ -19,13 +20,16 @@ import AddButton from '@/components/AddButton.vue'
   import RoomCard from "@/components/RoomCard.vue";
 import SandwichMenu from "@/components/SandwichMenu.vue";
 
-  import { DB_SB_get_rooms } from '@/db/supabase';
+import {DB_SB_get_rooms, DB_SB_getStarredProducts} from '@/db/supabase';
 import {getUser} from "@/db/dexie";
+import AddModal from "@/modals/AddModal.vue";
+import { Constants } from "@/global/constants";
 
   
   export default {
     name: 'App',
     components: {
+        AddModal,
         RoomCard,
         AddButton,
         QrButton,
@@ -35,14 +39,22 @@ import {getUser} from "@/db/dexie";
         return {
             rooms: [],
             currentUser: "",
+            addModalVisibility: false,
+            Constants
         }
     },
     methods: {
         get_rooms() {
             DB_SB_get_rooms(this.currentUser.username).then((rooms) => {
-                this.rooms = rooms.concat(rooms).concat(rooms).concat(rooms).concat(rooms).concat(rooms).concat(rooms).concat(rooms).concat(rooms);
+                this.rooms = rooms;
             });
-        }
+        },
+        closeModal() {
+            this.addModalVisibility = false;
+            DB_SB_getStarredProducts().then((res) => {
+                this.starred_products = res;
+            })
+        },
     },
     beforeMount() {
 

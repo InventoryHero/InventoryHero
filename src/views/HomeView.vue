@@ -11,7 +11,6 @@
     
 
   <add-modal v-if="this.addModalVisibility" @closeModal="closeModal()"/>
-
   <add-button @click="this.addModalVisibility = true"/>
   <qr-button />
   <SandwichMenu title="Home"/>

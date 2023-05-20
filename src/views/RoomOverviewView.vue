@@ -10,8 +10,8 @@
   <script>
   import InputText from '@/components/InputText.vue';
   import LoginButton from '@/components/LoginButton.vue';
-  
-  import { DB_SB_login } from '@/db/supabase';
+
+  import {DB_SB_getStarredProducts, DB_SB_login} from '@/db/supabase';
   
   export default {
     name: 'App',
@@ -22,7 +22,7 @@
     data() {
       return {
         password: "",
-        username: "",
+        username: ""
       }
     },
     methods: {
