@@ -41,6 +41,10 @@ export async function DB_SB_get_boxes_per_room(room_id, user)
     return await supabase.from("boxes").select("*").eq("room_id", room_id).eq("username", user)
 }
 
+export async function DB_SB_get_products_per_box(box_id, user)
+{
+    return await supabase.from("products").select("*").eq("box_id", box_id).eq("username", user)
+}
 
 export async function DB_SB_get_products_per_room(room_id, user)
 {
@@ -54,6 +58,9 @@ export async function DB_SB_getStarredProducts() {
     return data;
 }
 
+export async function DB_SB_getStarredProducts_per_box(box_id, user) {
+    return await supabase.from('products').select("*").eq("box_id", box_id).eq("username", user).eq("starred", true)
+}
 
 export async function DB_SB_get_rooms(user){
 
@@ -71,6 +78,21 @@ export async function DB_SB_get_rooms(user){
         curr_room.product_cnt = product_data.data.length
     }
 
+
+    return data.data;
+}
+
+export async function DB_SB_get_boxes(user){
+    const data = await supabase.from("boxes").select("*").eq("username", user);
+
+    for(let i = 0; i < data.data.length; i++)
+    {
+        let curr_box = data.data.at(i);
+        const product_data = await DB_SB_get_products_per_box(curr_box.id, user);
+        const starred_product = await DB_SB_getStarredProducts_per_box(curr_box.id, user)
+        curr_box.product_cnt = product_data.data.length
+        curr_box.starred_product_cnt = starred_product.data.length
+    }
 
     return data.data;
 }

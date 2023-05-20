@@ -1,62 +1,71 @@
 <template>
-    <h1> Login </h1>
-    <div id="loginPos">
-      <input-text class="inputText" place_holder="Username" :is_pssw="false" @valueUpdated=updateUsername />
-      <input-text class="inputText" place_holder="Password" :is_pssw="true" @valueUpdated=updatePassword />
-      <login-button class="loginButton" @click=login() />
-    </div>
-  </template>
-  
-  <script>
-  import InputText from '@/components/InputText.vue';
-  import LoginButton from '@/components/LoginButton.vue';
-  
-  import { DB_SB_login } from '@/db/supabase';
-  
-  export default {
-    name: 'App',
-    components: {
-      InputText,
-      LoginButton
-    },
-    data() {
+  <SandwichMenu/>
+  <v-virtual-scroll
+      class="virtual-scroll-bg"
+      :height="80+'vh'"
+      :items="boxes"
+  >
+      <template v-slot:default="{ item }">
+          <BoxCard class="card" :id="item.id" :boxName="item.name" :numProducts="item.product_cnt" :numStarredProducts="item.starred_product_cnt"/>
+      </template>
+  </v-virtual-scroll>
+  <add-button/>
+  <qr-button/>
+</template>
+
+<script>
+import AddButton from '@/components/AddButton.vue'
+import QrButton from '@/components/QrButton.vue'
+import BoxCard from "@/components/BoxCard.vue";
+import SandwichMenu from "@/components/SandwichMenu.vue";
+
+import { DB_SB_get_boxes } from '@/db/supabase';
+import {getUser} from "@/db/dexie";
+
+
+export default {
+  name: 'App',
+  components: {
+      BoxCard,
+      AddButton,
+      QrButton,
+      SandwichMenu
+  },
+  data() {
       return {
-        password: "",
-        username: "",
+          boxes: [],
+          currentUser: "",
       }
-    },
-    methods: {
-      updateUsername(username) {
-        this.username = username;
-      },
-      updatePassword(password) {
-        this.password = password;
-      },
-      login() {
-        DB_SB_login(this.username, this.password).then((login_succeeded) => {
-          if (login_succeeded) {
-            this.$router.push("/home")
-          } else {
-            console.log("wrong username or password")
+  },
+  methods: {
+      get_boxes() {
+          DB_SB_get_boxes(this.currentUser.username).then((boxes) => {
+              this.boxes = boxes;
+          });
+      }
+  },
+  beforeMount() {
+
+      getUser().then((user) => {
+          if(user === undefined)
+          {
+              this.$router.push("/login");
           }
-        });
-      
-      }
-    }
+          this.currentUser = user;
+          this.get_boxes();
+      });
   }
-  </script>
-  
-  <style>
-  .inputText {
-    margin-bottom: 10px;
+
+}
+</script>
+
+<style scoped>
+  .card {
+      padding-left: 2.5%;
+      padding-right: 2.5%;
   }
-  
-  .loginButton {
-    margin-left: 48vw;
+  .v-virtual-scroll{
+      background: var(--color-blue);
   }
-  
-  #loginPos {
-    margin-top: 30%;
-  }
-  </style>
-  
+  ::-webkit-scrollbar { width: 0px;  }
+</style>
