@@ -40,7 +40,7 @@ import { Constants } from "@/global/constants";
             rooms: [],
             currentUser: "",
             addModalVisibility: false,
-            Constants
+            Constants,
         }
     },
     methods: {

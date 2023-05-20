@@ -105,9 +105,19 @@ export async function DB_SB_get_boxes(user){
 }
 
 
-export async function DB_SB_get_boxes_of_user(user) {
-    const data = await supabase.from("boxes").select("*").eq("username", user.username);
-    return data.data
+export async function DB_SB_get_boxes_of_user(user, room =undefined) {
+    let data;
+    if(room !== undefined)
+    {
+        let room_id = await DB_SB_get_id_of_room(room);
+        data = await supabase.from("boxes").select("*").eq("username", user.username).eq("room_id", room_id);
+        //console.error(data);
+    }
+    else
+    {
+        data = await supabase.from("boxes").select("*").eq("username", user.username);
+    }
+    return data.data;
 }
 
 
@@ -175,5 +185,28 @@ async function DB_SB_get_id_of_box(box_name) {
 async function DB_SB_get_id_of_room(room_name) {
     const user = await getUser();
     const data = await supabase.from("rooms").select("id").eq("username", user.username).eq("name", room_name);
+    if(data.data === undefined || data.data.length === 0)
+        return -1;
     return data.data[0].id;
 }
+
+export async function DB_SB_get_room_name(id)
+{
+    const user = await getUser();
+    const data = await supabase.from("rooms").select("name").eq("username", user.username).eq("id", id);
+    if(data.data === undefined || data.data.length === 0)
+        return "";
+    return data.data[0].name;
+}
+
+export async function DB_SB_get_room_of_box(box)
+{
+    const user = await getUser();
+    const data = await supabase.from("boxes").select("*").eq("username", user.username).eq("name", box);
+    if(data.data === undefined || data.data.length === 0) {
+        return "";
+    }
+
+    return await DB_SB_get_room_name(data.data[0].room_id);
+}
+
