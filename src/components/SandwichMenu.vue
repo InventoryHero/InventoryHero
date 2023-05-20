@@ -17,7 +17,7 @@
           Locations
         </span>
       </a>
-      <a href="">
+      <a @click="this.$router.push('/ProductsOverview')"> 
         <span>
           Products
         </span>

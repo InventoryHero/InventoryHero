@@ -82,8 +82,15 @@ export async function DB_SB_get_rooms(user){
     return data.data;
 }
 
+export async function DB_SB_get_all_products(user){
+    const {data} = await supabase.from("products").select("*").eq("username", user);
+    return data
+}
+
+
 export async function DB_SB_get_boxes(user){
     const data = await supabase.from("boxes").select("*").eq("username", user);
+
 
     for(let i = 0; i < data.data.length; i++)
     {

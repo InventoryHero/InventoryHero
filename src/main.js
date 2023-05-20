@@ -12,6 +12,7 @@ import HomeView from '@/views/HomeView';
 import RegisterView from '@/views/RegisterView';
 import NotFoundComponent from "@/components/NotFoundComponent.vue";
 import LocationsOverview from '@/views/LocationsOverviewView';
+import ProductsOverview from '@/views/ProductsOverviewView';
 import BoxesOverview from '@/views/BoxesOverviewView';
 
 
@@ -41,6 +42,11 @@ const routes = [
         path: "/LocationsOverview",
         name: "locations",
         component: LocationsOverview
+    },
+    {
+        path:"/ProductsOverview",
+        name:"products",
+        component: ProductsOverview
     },
     {
         path: "/BoxesOverview",
