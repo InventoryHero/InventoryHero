@@ -1,5 +1,5 @@
 <template>
-  <SandwichMenu/>
+  <SandwichMenu :title="this.title"/>
   <v-virtual-scroll
       class="virtual-scroll-bg"
       :height="80+'vh'"
@@ -20,7 +20,7 @@ import QrButton from '@/components/QrButton.vue'
 import BoxCard from "@/components/BoxCard.vue";
 import SandwichMenu from "@/components/SandwichMenu.vue";
 
-import {DB_SB_get_boxes, DB_SB_getStarredProducts} from '@/db/supabase';
+import {DB_SB_get_boxes, DB_SB_getStarredProducts, DB_SB_get_room} from '@/db/supabase';
 import {getUser} from "@/db/dexie";
 import AddModal from "@/modals/AddModal.vue";
 import { Constants } from "@/global/constants";
@@ -28,6 +28,12 @@ import { Constants } from "@/global/constants";
 
 export default {
   name: 'App',
+  props: {
+    room_id: {
+      type: Number,
+      default: -1,
+    }
+  },
   components: {
       AddModal,
       BoxCard,
@@ -40,12 +46,13 @@ export default {
           boxes: [],
           currentUser: "",
           addModalVisibility: false,
-          Constants
+          Constants,
+          title: "Boxes"
       }
   },
   methods: {
       get_boxes() {
-          DB_SB_get_boxes(this.currentUser.username).then((boxes) => {
+          DB_SB_get_boxes(this.currentUser.username, this.room_id).then((boxes) => {
               this.boxes = boxes;
           });
       },
@@ -57,7 +64,6 @@ export default {
       },
   },
   beforeMount() {
-
       getUser().then((user) => {
           if(user === undefined)
           {
@@ -65,7 +71,16 @@ export default {
           }
           this.currentUser = user;
           this.get_boxes();
+          if(this.room_id !== -1)
+          {
+            DB_SB_get_room(this.room_id, user).then((room) => {
+              if(room.length !== 0)
+                this.title = "Boxes in: " + room[0].name;
+            });
+          }
+
       });
+
   }
 
 }

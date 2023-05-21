@@ -88,8 +88,17 @@ export async function DB_SB_get_all_products(user){
 }
 
 
-export async function DB_SB_get_boxes(user){
-    const data = await supabase.from("boxes").select("*").eq("username", user);
+export async function DB_SB_get_boxes(user, room = -1){
+
+    let data;
+    if(room === -1)
+    {
+        data = await supabase.from("boxes").select("*").eq("username", user);
+    }
+    else {
+        data = await supabase.from("boxes").select("*").eq("username", user).eq("room_id", room);
+    }
+
 
 
     for(let i = 0; i < data.data.length; i++)
@@ -176,4 +185,15 @@ async function DB_SB_get_id_of_room(room_name) {
     const user = await getUser();
     const data = await supabase.from("rooms").select("id").eq("username", user.username).eq("name", room_name);
     return data.data[0].id;
+}
+
+export async function DB_SB_get_room(room_id, user = undefined)
+{
+    if(user === undefined)
+        user = await getUser();
+    const data = await supabase.from("rooms").select("*").eq("username", user.username).eq("id", room_id);
+    console.log(data);
+    if(data === undefined || data.data === undefined)
+        return [];
+    return data.data;
 }

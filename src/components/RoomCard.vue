@@ -34,6 +34,9 @@
 </template>
 
 <script>
+
+
+
   export default {
       props: {
           id: Number,
@@ -44,6 +47,7 @@
       methods: {
           informationButton: function(cardId)
           {
+
               console.log("you've clicked the information button " + cardId);
           },
           addBoxOrProduct: function(cardId)
@@ -56,6 +60,8 @@
           },
           boxesOverview: function(roomId)
           {
+              console.log("hallo");
+              this.$router.push( "/boxesFilteredView?room_id="+roomId);
               console.log("Showing all boxes in room: " + roomId);
           }
       }

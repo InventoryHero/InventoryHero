@@ -51,13 +51,15 @@ const routes = [
     {
         path: "/BoxesOverview",
         name: "boxes",
-        component: BoxesOverview
+        component: BoxesOverview,
+        props: route => ({room_id: route.query.room_id}),
+        alias: '/boxesFilteredView'
     }
 ]
 
 const router = VueRouter.createRouter({
     history: VueRouter.createWebHistory(),
-    routes,
+    routes
 });
 
 createApp(App).use(router).use(vuetify).mount('#app')
