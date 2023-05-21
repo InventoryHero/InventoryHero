@@ -1,21 +1,35 @@
 <template>
   <div id="mainSelector">
-        <select v-model="this.my_value" @change="$emit('valueUpdated', this.my_value)">
-            <option>{{ this.place_holder }}</option>
-            <option v-for="l in this.list" :key="l.key">{{ l.name }} </option>
-        </select>
+      <select :disabled="this.isSelectDisabled()" v-model="this.my_value" @change="$emit('valueUpdated', this.my_value)">
+          <option hidden disabled selected>{{ this.place_holder }}</option>
+          <option v-for="l in this.list" :key="l.key">{{ l.name }} </option>
+      </select>
     </div>
 </template>
 
 <script>
 export default {
   name: 'InputText',
-  props: ["place_holder", "list"],
+  props: {
+    place_holder: String,
+    list: Array,
+    isDisabled: {
+      type: Boolean,
+      default: false,
+    },
+    id: String
+  },
   data() {
     return {
       my_value: this.place_holder,
     }
   },
+  methods: {
+    isSelectDisabled()
+    {
+      return this.isDisabled;
+    }
+  }
 }
 </script>
 
