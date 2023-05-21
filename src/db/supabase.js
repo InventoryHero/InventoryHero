@@ -298,3 +298,10 @@ export async function DB_SB_get_room_of_box(box)
     return await DB_SB_get_room_name(data.data[0].room_id);
 }
 
+export async function DB_SB_get_box_name(id) {
+    const user = await getUser();
+    const data = await supabase.from("boxes").select("name").eq("username", user.username).eq("id", id);
+    if (data.data === undefined || data.data.length === 0)
+        return "";
+    return data.data[0].name;
+}

@@ -6,10 +6,10 @@
       :items="boxes"
   >
       <template v-slot:default="{ item }">
-          <BoxCard class="card" :id="item.id" :boxName="item.name" :numProducts="item.product_cnt" :numStarredProducts="item.starred_product_cnt"/>
+          <BoxCard @addItemToBox="displayModal"  class="card" :id="item.id" :boxName="item.name" :numProducts="item.product_cnt" :numStarredProducts="item.starred_product_cnt"/>
       </template>
   </v-virtual-scroll>
-  <add-modal :defaultAddView="Constants.BoxesView" v-if="this.addModalVisibility" @closeModal="closeModal()"/>
+  <add-modal :preselected_box="this.preselectedBox" :navbarItems="this.displayedNavbarItems" :defaultAddView="Constants.BoxesView" v-if="this.addModalVisibility" @closeModal="closeModal()"/>
   <add-button @click="this.addModalVisibility = true"/>
   <qr-button/>
 </template>
@@ -20,7 +20,12 @@ import QrButton from '@/components/QrButton.vue'
 import BoxCard from "@/components/BoxCard.vue";
 import SandwichMenu from "@/components/SandwichMenu.vue";
 
-import {DB_SB_get_boxes, DB_SB_getStarredProducts, DB_SB_get_room} from '@/db/supabase';
+import {
+  DB_SB_get_boxes,
+  DB_SB_getStarredProducts,
+  DB_SB_get_room,
+  DB_SB_get_box_name
+} from '@/db/supabase';
 import {getUser} from "@/db/dexie";
 import AddModal from "@/modals/AddModal.vue";
 import { Constants } from "@/global/constants";
@@ -47,17 +52,32 @@ export default {
           currentUser: "",
           addModalVisibility: false,
           Constants,
-          title: "Boxes"
+          title: "Boxes",
+          preselectedBox: "",
+          displayedNavbarItems: Constants.All
       }
   },
   methods: {
+      displayModal(id){
+        DB_SB_get_box_name(id).then((box) => {
+          console.log(box);
+          this.preselectedBox = box;
+          this.defaultModalView = Constants.ProductsView;
+          this.displayedNavbarItems = [Constants.ProductsView];
+          this.addModalVisibility = true;
+        })
+      },
       get_boxes() {
           DB_SB_get_boxes(this.currentUser.username, this.room_id).then((boxes) => {
               this.boxes = boxes;
           });
       },
       closeModal() {
-          this.addModalVisibility = false;
+        this.addModalVisibility = false;
+        this.defaultModalView = Constants.BoxesView;
+        this.displayedNavbarItems = Constants.All;
+        this.preselectedBox = "";
+        this.get_boxes();
           DB_SB_getStarredProducts().then((res) => {
               this.starred_products = res;
           })

@@ -3,5 +3,5 @@ export const Constants = {
     LocationsView: "locations",
     BoxesView: "boxes",
     ProductsView: "products",
-    All: "all"
+    All:  "all"
 }

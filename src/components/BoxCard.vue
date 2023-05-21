@@ -19,7 +19,7 @@
                     </v-list-item>
                     <v-list-item density="compact">
                         <v-list-item-subtitle>
-                            <v-icon @click="addProduct(id)" size="x-large" icon="mdi-plus"/>
+                            <v-icon @click="$emit('addItemToBox', id)" size="x-large" icon="mdi-plus"/>
                         </v-list-item-subtitle>
                     </v-list-item>
                     <v-list-item density="compact">

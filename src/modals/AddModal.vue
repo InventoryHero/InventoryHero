@@ -213,6 +213,7 @@ beforeMount() {
         {
             this.place_holder_box = this.preselected_box;
             this.updateSelectedBox(this.preselected_box, true);
+            this.lockRoom = true;
         }
         else {
             DB_SB_get_boxes_of_user(user).then((boxes) => {
@@ -220,7 +221,7 @@ beforeMount() {
             })
         }
 
-        if(this.preselected_room !== "" && this.curr_room === "")
+        if(this.preselected_room !== "" && this.preselected_box === "")
         {
             this.lockRoom = true;
             this.place_holder_room = this.preselected_room;
