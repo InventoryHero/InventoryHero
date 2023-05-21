@@ -57,7 +57,7 @@
           },
           productsOverview: function(cardId)
           {
-              console.log("Showing all products in box: " + cardId);
+              this.$router.push( "/productsFilteredView?box_id="+cardId);
           },
           starredProductsOverview: function(cardId)
           {

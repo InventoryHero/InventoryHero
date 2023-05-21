@@ -75,7 +75,7 @@ export default {
           {
             DB_SB_get_room(this.room_id, user).then((room) => {
               if(room.length !== 0)
-                this.title = "Boxes in: " + room[0].name;
+                this.title = "Boxes in " + room[0].name;
             });
           }
 

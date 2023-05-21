@@ -46,7 +46,9 @@ const routes = [
     {
         path:"/ProductsOverview",
         name:"products",
-        component: ProductsOverview
+        component: ProductsOverview,
+        props: route => ({room_id: route.query.room_id, box_id: route.query.box_id}),
+        alias: "/productsFilteredView"
     },
     {
         path: "/BoxesOverview",

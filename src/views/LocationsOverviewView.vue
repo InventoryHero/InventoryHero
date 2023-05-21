@@ -1,5 +1,5 @@
 <template>
-    <SandwichMenu/>
+    <SandwichMenu :title="this.title"/>
     <v-virtual-scroll
         class="virtual-scroll-bg"
         :height="80+'vh'"
@@ -9,7 +9,7 @@
             <RoomCard class="card" :id="item.id" :roomName="item.name" :numBoxes="item.box_cnt" :numProducts="item.product_cnt"/>
         </template>
     </v-virtual-scroll>
-    <add-modal :defaultAddView="Constants.LocationsView" v-if="this.addModalVisibility" @closeModal="closeModal()"/>
+    <add-modal ::defaultAddView="this.defaultModalView" v-if="this.addModalVisibility" @closeModal="closeModal()"/>
     <add-button @click="this.addModalVisibility = true"/>
     <qr-button/>
 </template>
@@ -40,7 +40,9 @@ import { Constants } from "@/global/constants";
             rooms: [],
             currentUser: "",
             addModalVisibility: false,
-            Constants
+            Constants,
+            title: "Locations",
+            defaultModalView: Constants.LocationsView,
         }
     },
     methods: {

@@ -56,13 +56,11 @@
           },
           productsOverview: function(roomId)
           {
-              console.log("Showing all products in room: " + roomId);
+              this.$router.push( "/productsFilteredView?room_id="+roomId);
           },
           boxesOverview: function(roomId)
           {
-              console.log("hallo");
               this.$router.push( "/boxesFilteredView?room_id="+roomId);
-              console.log("Showing all boxes in room: " + roomId);
           }
       }
   }

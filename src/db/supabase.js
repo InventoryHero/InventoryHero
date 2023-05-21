@@ -87,6 +87,31 @@ export async function DB_SB_get_all_products(user){
     return data
 }
 
+export async function DB_SB_get_all_products_per_storage_location(room_id, box_id, user = undefined){
+    if(user === undefined)
+        user = await getUser();
+    let query = supabase.from("products").select("*").eq("username", user);
+    let data;
+    if(box_id !== -1)
+    {
+        data = await query.eq("box_id", box_id);
+    }
+    else if(room_id !== -1)
+    {
+        data = await query.eq("room_id", room_id);
+    }
+    else
+    {
+        return await DB_SB_get_all_products(user);
+    }
+
+    if(data === undefined || data.data === undefined)
+        return [];
+
+    return data.data;
+}
+
+
 export async function DB_SB_increase_product_amount(productId) {
 
     const { data, error } = await supabase.rpc("increase_product_amount", { productid:productId });
@@ -228,7 +253,15 @@ export async function DB_SB_get_room(room_id, user = undefined)
     if(user === undefined)
         user = await getUser();
     const data = await supabase.from("rooms").select("*").eq("username", user.username).eq("id", room_id);
-    console.log(data);
+    if(data === undefined || data.data === undefined)
+        return [];
+    return data.data;
+}
+export async function DB_SB_get_box(box_id, user = undefined)
+{
+    if(user === undefined)
+        user = await getUser();
+    const data = await supabase.from("boxes").select("*").eq("username", user.username).eq("id", box_id);
     if(data === undefined || data.data === undefined)
         return [];
     return data.data;
