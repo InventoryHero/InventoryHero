@@ -87,6 +87,42 @@ export async function DB_SB_get_all_products(user){
     return data
 }
 
+export async function DB_SB_increase_product_amount(productId) {
+
+    const { data, error } = await supabase.rpc("increase_product_amount", { productid:productId });
+  
+    if (error) {
+      console.log("Error occurred:", error.message);
+    } else {
+      console.log(data)
+      console.log("Product amount increased successfully");
+    }
+  }
+
+
+  export async function DB_SB_decrease_product_amount(productId) {
+    const { data, error } = await supabase.rpc("decrease_product_amount", {productid: productId });
+  
+    if (error) {
+      console.log("Error occurred:", error.message);
+    } else {
+    console.log(data)
+      console.log("Product amount decreased successfully");
+    }
+  }
+  
+
+  export async function DB_SB_get_product(productId) {
+    const { data, error } = await supabase.from("products").select("*").eq("id", productId).single();
+  
+    if (error) {
+      console.log("Error :", error.message);
+      return null;
+    }
+  
+    return data;
+  }
+
 
 export async function DB_SB_get_boxes(user){
     const data = await supabase.from("boxes").select("*").eq("username", user);
