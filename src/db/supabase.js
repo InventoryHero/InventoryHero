@@ -65,6 +65,11 @@ export async function DB_SB_getStarredProducts_per_box(box_id, user) {
 export async function DB_SB_get_rooms(user){
 
     console.log(user);
+    if(user === undefined)
+    {
+        user = await getUser();
+    }
+
 
     const data = await supabase.from("rooms").select("*").eq("username", user);
 
@@ -192,6 +197,9 @@ export async function DB_SB_get_boxes_of_user(user, room =undefined) {
 
 
 export async function DB_SB_get_rooms_of_user(user) {
+    if(user === undefined)
+        user = await getUser();
+
     const data = await supabase.from("rooms").select("*").eq("username", user.username);
     return data.data
 }
@@ -304,4 +312,64 @@ export async function DB_SB_get_box_name(id) {
     if (data.data === undefined || data.data.length === 0)
         return "";
     return data.data[0].name;
+}
+
+export async function DB_SB_update_room_name(id, name)
+{
+    const user = await getUser();
+    const {error} = await supabase.from("rooms").update({name: name}).eq("username", user.username).eq('id', id);
+    if (error) {
+        console.log("Error :", error.message);
+        return false;
+    }
+    return true;
+}
+
+export async function DB_SB_get_room_createdat(id)
+{
+    const user = await getUser();
+    const data = await supabase.from("rooms").select("creation_date").eq("username", user.username).eq("id", id);
+    if(data === undefined || data.data === undefined || data.data.length === 0)
+        return "";
+
+    let date = new Date(data.data[0].creation_date);
+    return date.toLocaleDateString() + " " + date.toLocaleTimeString();
+}
+
+export async function DB_SB_get_box_createdat(id)
+{
+    const user = await getUser();
+    const data = await supabase.from("boxes").select("creation_date").eq("username", user.username).eq("id", id);
+    if(data === undefined || data.data === undefined || data.data.length === 0)
+        return "";
+
+    let date = new Date(data.data[0].creation_date);
+    return date.toLocaleDateString() + " " + date.toLocaleTimeString();
+}
+
+export async function DB_SB_update_box_name(id, name)
+{
+    const user = await getUser();
+    const {error} = await supabase.from("boxes").update({name: name}).eq("username", user.username).eq('id', id);
+    if (error) {
+        console.log("Error :", error.message);
+        return false;
+    }
+    return true;
+}
+
+export async function DB_SB_update_box_room(id, name)
+{
+    const user = await getUser();
+
+    let room_id = await DB_SB_get_id_of_room(name);
+    if(room_id === -1)
+        return false;
+
+    const {error} = await supabase.from("boxes").update({room_id: room_id}).eq("username", user.username).eq('id', id);
+    if (error) {
+        console.log("Error :", error.message);
+        return false;
+    }
+    return true;
 }

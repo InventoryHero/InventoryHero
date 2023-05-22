@@ -4,7 +4,7 @@
         <v-col>
             <v-card class="box-card">
                 <v-card-title align="start" :id='id' >
-                    {{ boxName }}
+                    {{ this.box_name }}
                 </v-card-title>
                 <div class="d-flex align-center justify-space-evenly box-info mt-1 mb-2 ms-2 me-2 rounded-pill" >
                     <v-list-item density="compact" >
@@ -24,36 +24,43 @@
                     </v-list-item>
                     <v-list-item density="compact">
                         <v-list-item-subtitle>
-                            <v-icon @click="informationButton(id)" size="large" icon="mdi-information"/>
+                            <v-icon @click="openDetailModal()" size="large" icon="mdi-information"/>
                         </v-list-item-subtitle>
                     </v-list-item>
-                    <!-- <v-list-item density="compact">
-                        <v-list-item-subtitle>
-                            <v-icon size="large" class="me-3" icon="fa:fas fa-eye"/>{{this.numUsage}}
-                        </v-list-item-subtitle>
-                    </v-list-item> -->
                 </div>
             </v-card>
         </v-col>
+        <box-detail-modal :id="id" :name="this.boxName"  v-model="this.dialog" @closeDetailModal="closeModal"/>
     </v-layout>
 </template>
 
 <script>
+  import BoxDetailModal from "@/modals/BoxDetailModal.vue";
+
   export default {
+      components: {BoxDetailModal},
       props: {
           id: Number,
           boxName: String,
           numProducts: Number,
           numStarredProducts: Number ,
       },
+      data() {
+          return {
+              dialog: false,
+              box_name: this.boxName,
+          }
+      },
       methods: {
-          informationButton: function(cardId)
+          closeModal(new_boxname)
           {
-              console.log("you've clicked the information button " + cardId);
+              if(new_boxname !== undefined && new_boxname !== "")
+                this.box_name = new_boxname;
+              this.dialog = false
           },
-          addProduct: function(cardId)
+          openDetailModal()
           {
-              console.log("Adding product for box: " + cardId);
+              this.dialog = true;
           },
           productsOverview: function(cardId)
           {

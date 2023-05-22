@@ -12,6 +12,7 @@
       <add-modal :defaultAddView="Constants.ProductsView" v-if="this.addModalVisibility" @closeModal="closeModal()"/>
       <add-button @click="this.addModalVisibility = true"/>
     <qr-button/>
+    <load-animation v-if="this.loading"></load-animation>
   </template>
   
   <script>
@@ -29,6 +30,7 @@
   import {getUser} from "@/db/dexie";
   import AddModal from "@/modals/AddModal.vue";
   import { Constants } from "@/global/constants";
+  import LoadAnimation from "@/components/LoadAnimation.vue";
   
   
   export default {
@@ -44,6 +46,7 @@
       }
     },
     components: {
+      LoadAnimation,
         AddModal,
       ProductsCard,
         AddButton,
@@ -56,7 +59,8 @@
             currentUser: "",
             addModalVisibility: false,
             Constants,
-            title: "Products"
+            title: "Products",
+            loading: true
         }
     },
     methods: {
@@ -65,7 +69,7 @@
           {
             DB_SB_get_all_products(this.currentUser.username).then((products) => {
               this.products = products;
-              console.log(this.products);
+              this.loading = false;
             });
           }
           else if(this.box_id !== -1)
@@ -104,10 +108,9 @@
                 this.$router.push("/login");
             }
             this.currentUser = user;
-            this.get_boxes();
+
             if(this.box_id !== -1)
             {
-              console.error("hallo");
               DB_SB_get_box(this.box_id, user).then((box) => {
                 if(box.length !== 0)
                   this.title = "Products in " + box[0].name ;
@@ -119,6 +122,7 @@
                 if(room.length !== 0)
                   this.title = "Products in " + room[0].name;
               });
+              this.get_boxes();
             }
 
 

@@ -1,11 +1,20 @@
 <template>
-    <input :placeholder=this.place_holder type="text" v-model="this.my_value" @input="$emit('valueUpdated', this.my_value)">
+    <input :disabled="this.disabled" :placeholder=this.place_holder type="text" v-model="this.my_value" @input="$emit('valueUpdated', this.my_value)">
 </template>
 
 <script>
 export default {
   name: 'InputText',
-  props: ["place_holder"],
+  props: {
+      place_holder: {
+          type: String,
+          default: ""
+      },
+      disabled: {
+          type: Boolean,
+          default: false
+      }
+  },
   data() {
     return {
       my_value: ""

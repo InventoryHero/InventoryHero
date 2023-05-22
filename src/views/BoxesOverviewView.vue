@@ -1,17 +1,21 @@
 <template>
+
   <SandwichMenu :title="this.title"/>
+
   <v-virtual-scroll
       class="virtual-scroll-bg"
       :height="80+'vh'"
       :items="boxes"
   >
+
       <template v-slot:default="{ item }">
-          <BoxCard @addItemToBox="displayModal"  class="card" :id="item.id" :boxName="item.name" :numProducts="item.product_cnt" :numStarredProducts="item.starred_product_cnt"/>
+          <BoxCard @addItemToBox="displayModal" class="card" :id="item.id" :boxName="item.name" :numProducts="item.product_cnt" :numStarredProducts="item.starred_product_cnt"/>
       </template>
   </v-virtual-scroll>
   <add-modal :preselected_box="this.preselectedBox" :navbarItems="this.displayedNavbarItems" :defaultAddView="Constants.BoxesView" v-if="this.addModalVisibility" @closeModal="closeModal()"/>
   <add-button @click="this.addModalVisibility = true"/>
   <qr-button/>
+  <load-animation v-if="this.loading"></load-animation>
 </template>
 
 <script>
@@ -29,6 +33,7 @@ import {
 import {getUser} from "@/db/dexie";
 import AddModal from "@/modals/AddModal.vue";
 import { Constants } from "@/global/constants";
+import LoadAnimation from "@/components/LoadAnimation.vue";
 
 
 export default {
@@ -40,6 +45,7 @@ export default {
     }
   },
   components: {
+    LoadAnimation,
       AddModal,
       BoxCard,
       AddButton,
@@ -54,7 +60,8 @@ export default {
           Constants,
           title: "Boxes",
           preselectedBox: "",
-          displayedNavbarItems: Constants.All
+          displayedNavbarItems: Constants.All,
+          loading: true,
       }
   },
   methods: {
@@ -70,6 +77,7 @@ export default {
       get_boxes() {
           DB_SB_get_boxes(this.currentUser.username, this.room_id).then((boxes) => {
               this.boxes = boxes;
+            this.loading = false;
           });
       },
       closeModal() {
@@ -91,6 +99,7 @@ export default {
           }
           this.currentUser = user;
           this.get_boxes();
+
           if(this.room_id !== -1)
           {
             DB_SB_get_room(this.room_id, user).then((room) => {
@@ -114,5 +123,6 @@ export default {
   .v-virtual-scroll{
       background: var(--color-blue);
   }
+
   ::-webkit-scrollbar { width: 0px;  }
 </style>
