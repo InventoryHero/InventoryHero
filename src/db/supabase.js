@@ -446,3 +446,37 @@ export async function DB_SB_delete_product(id)
     return true;
 }
 
+export async function DB_SB_delete_room(id)
+{
+    const user = await getUser();
+
+
+    let {error} = await supabase.from("products").update({room_id: -1}).eq("username", user.username).eq('room_id', id);
+    if (error) {
+        console.log("Error :", error.message);
+        return false;
+    }
+
+    let {error2} = await supabase.from("boxes").update({room_id: -1}).eq("username", user.username).eq('room_id', id);
+    if (error2) {
+        console.log("Error :", error.message);
+        return false;
+    }
+    await supabase.from("rooms").delete().eq("username", user.username).eq('id', id);
+    return true;
+}
+export async function DB_SB_delete_box(id)
+{
+    const user = await getUser();
+
+
+    let {error} = await supabase.from("products").update({box_id: -1}).eq("username", user.username).eq('box_id', id);
+    if (error) {
+        console.log("Error :", error.message);
+        return false;
+    }
+
+    await supabase.from("boxes").delete().eq("username", user.username).eq('id', id);
+    return true;
+}
+

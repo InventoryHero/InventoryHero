@@ -30,7 +30,7 @@
                 </div>
             </v-card>
         </v-col>
-        <box-detail-modal :id="id" :name="this.boxName"  v-model="this.dialog" @closeDetailModal="closeModal"/>
+        <box-detail-modal :id="id" :name="this.boxName"  v-model="this.dialog" @closeDetailModal="closeModal" @boxDeleted="boxDeleted"/>
     </v-layout>
 </template>
 
@@ -52,6 +52,11 @@
           }
       },
       methods: {
+          boxDeleted()
+          {
+            this.dialog=false;
+            this.$emit("boxDeleted");
+          },
           closeModal(new_boxname)
           {
               if(new_boxname !== undefined && new_boxname !== "")
@@ -70,6 +75,9 @@
           {
               console.log("Showing all products in box: " + cardId);
           }
+      },
+      beforeMount() {
+          console.log("this is box name: " + this.boxName);
       }
   }
 </script>

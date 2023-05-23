@@ -32,7 +32,7 @@
                 </div>
             </v-card>
         </v-col>
-        <room-detail-modal :id="id" :name="this.name" v-model="this.dialog" @closeDetailModal="informationButton"/>
+        <room-detail-modal :id="id" :name="this.roomName" v-model="this.dialog" @closeDetailModal="informationButton" @roomDeleted="roomDeleted"/>
     </v-layout>
 </template>
 
@@ -60,6 +60,11 @@
           }
       },
       methods: {
+          roomDeleted(id)
+          {
+            this.dialog = false;
+            this.$emit("roomDeleted", id);
+          },
           informationButton(new_name)
           {
               if(new_name !== undefined && new_name !== "")

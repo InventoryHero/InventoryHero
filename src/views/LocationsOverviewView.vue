@@ -6,7 +6,7 @@
         :items="rooms"
     >
         <template v-slot:default="{ item }">
-            <RoomCard @addItemToRoom="displayModal" class="card" :id="item.id" :roomName="item.name" :numBoxes="item.box_cnt" :numProducts="item.product_cnt"/>
+            <RoomCard @addItemToRoom="displayModal" @roomDeleted="updateRooms" class="card" :id="item.id" :roomName="item.name" :numBoxes="item.box_cnt" :numProducts="item.product_cnt"/>
         </template>
     </v-virtual-scroll>
     <add-modal :preselected_room="this.preselectedRoom" :navbarItems="this.displayedNavbarItems" :defaultAddView="this.defaultModalView" v-if="this.addModalVisibility" @closeModal="closeModal()"/>
@@ -22,7 +22,7 @@ import AddButton from '@/components/AddButton.vue'
 import SandwichMenu from "@/components/SandwichMenu.vue";
 //import RoomDetailModal from "@/modals/RoomDetailModal.vue";
 
-import {DB_SB_get_room_name, DB_SB_get_rooms, DB_SB_getStarredProducts} from '@/db/supabase';
+import {DB_SB_delete_room, DB_SB_get_room_name, DB_SB_get_rooms, DB_SB_getStarredProducts} from '@/db/supabase';
 import {getUser} from "@/db/dexie";
 import AddModal from "@/modals/AddModal.vue";
 import { Constants } from "@/global/constants";
@@ -54,6 +54,12 @@ import LoadAnimation from "@/components/LoadAnimation.vue";
         }
     },
     methods: {
+        async updateRooms(id)
+        {
+            document.getElementById(id).setAttribute("hidden", true);
+            await DB_SB_delete_room(id);
+            this.get_rooms()
+        },
         displayRoomDetailView(id){
           console.warn("I should display the detail view modal " + id);
         },
@@ -67,6 +73,7 @@ import LoadAnimation from "@/components/LoadAnimation.vue";
         },
         get_rooms() {
             DB_SB_get_rooms(this.currentUser.username).then((rooms) => {
+                console.log(rooms);
                 this.rooms = rooms;
                 this.loading = false;
             });

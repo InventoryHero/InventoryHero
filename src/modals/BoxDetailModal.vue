@@ -22,6 +22,10 @@
          </v-card-text>
          <v-card-actions class="justify-end">
            <v-btn
+                   icon="fa:fas fa-trash"
+                   @click="deleteBox()"
+           ></v-btn>
+           <v-btn
                    variant="text"
                    @click="closeModalAndUpdateBox()"
            >Save</v-btn>
@@ -37,6 +41,7 @@
 import InputTextEnhanced from '@/components/InputTextEnhanced.vue';
 import InputDropdown from '@/components/InputDropdown.vue';
 import {
+  DB_SB_delete_box,
   DB_SB_get_box_createdat,
   DB_SB_get_name_of_room_of_box,
   DB_SB_get_rooms_of_user,
@@ -68,6 +73,12 @@ export default {
     InputDropdown
   },
   methods: {
+    deleteBox()
+    {
+      DB_SB_delete_box(this.id).then(() => {
+        this.$emit("boxDeleted");
+      });
+    },
     async closeModalAndUpdateBox()
     {
       let successful = true;

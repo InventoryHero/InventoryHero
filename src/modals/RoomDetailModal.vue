@@ -21,6 +21,10 @@
          </v-card-text>
          <v-card-actions class="justify-end">
            <v-btn
+                   icon="fa:fas fa-trash"
+                   @click="deleteRoom()"
+           ></v-btn>
+           <v-btn
                    variant="text"
                    @click="closeModalAndUpdateRoom()"
            >Save</v-btn>
@@ -57,6 +61,10 @@ export default {
     InputTextEnhanced,
   },
   methods: {
+    async deleteRoom(){
+
+      this.$emit("roomDeleted", this.id);
+    },
     closeModalAndUpdateRoom()
     {
       if(this.new_name !== this.name && this.new_name !== "")

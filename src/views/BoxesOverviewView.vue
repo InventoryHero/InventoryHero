@@ -9,7 +9,7 @@
   >
 
       <template v-slot:default="{ item }">
-          <BoxCard @addItemToBox="displayModal" class="card" :id="item.id" :boxName="item.name" :numProducts="item.product_cnt" :numStarredProducts="item.starred_product_cnt"/>
+          <BoxCard   class="card" :id="item.id" :boxName="item.name" :numProducts="item.product_cnt" :numStarredProducts="item.starred_product_cnt" @boxDeleted="refreshData"/>
       </template>
   </v-virtual-scroll>
   <add-modal :preselected_box="this.preselectedBox" :navbarItems="this.displayedNavbarItems" :defaultAddView="Constants.BoxesView" v-if="this.addModalVisibility" @closeModal="closeModal()"/>
@@ -65,6 +65,10 @@ export default {
       }
   },
   methods: {
+      refreshData()
+      {
+        this.get_boxes();
+      },
       displayModal(id){
         DB_SB_get_box_name(id).then((box) => {
           console.log(box);
