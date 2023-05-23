@@ -6,7 +6,7 @@
         :items="products"
     >
         <template v-slot:default="{ item }">
-            <ProductsCard  :id="item.id" :productName="item.name" :amount="item.amount" :room_id="item.room_id" :box_id="item.box_id"/>
+            <ProductsCard  :id="item.id" :productName="item.name" :amount="item.amount" :room_id="item.room_id" :box_id="item.box_id" @productDeleted="refreshData"/>
         </template>
     </v-virtual-scroll>
       <add-modal :defaultAddView="Constants.ProductsView" v-if="this.addModalVisibility" @closeModal="closeModal()"/>
@@ -64,6 +64,9 @@
         }
     },
     methods: {
+        refreshData(){
+          this.get_boxes();
+        },
         get_boxes() {
           if(this.room_id === -1 && this.box_id === -1)
           {

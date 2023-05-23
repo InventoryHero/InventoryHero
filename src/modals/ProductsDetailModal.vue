@@ -24,9 +24,15 @@
          </v-card-text>
          <v-card-actions class="justify-end">
            <v-btn
+                   icon="fa:fas fa-trash"
+                   @click="deleteProduct()"
+           ></v-btn>
+           <v-btn
                    variant="text"
                    @click="closeModalAndUpdateBox()"
            >Save</v-btn>
+
+
 
          </v-card-actions>
        </v-card>
@@ -39,6 +45,7 @@
 import InputTextEnhanced from '@/components/InputTextEnhanced.vue';
 import InputDropdown from '@/components/InputDropdown.vue';
 import {
+  DB_SB_delete_product,
   DB_SB_get_box_name,
   DB_SB_get_boxes_of_user,
   DB_SB_get_product_createdat,
@@ -121,6 +128,11 @@ export default {
           }
         }
         this.$emit("closeDetailModal", this.new_room, this.new_box, this.current_amount);
+    },
+    async deleteProduct()
+    {
+      await DB_SB_delete_product(this.id);
+      this.$emit("productDeleted");
     },
     updateSelectedBox(box) {
       this.new_box = box;

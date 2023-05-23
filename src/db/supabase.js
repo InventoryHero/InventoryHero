@@ -435,4 +435,14 @@ export async function DB_SB_update_product_amount(id, amount)
     return true;
 }
 
+export async function DB_SB_delete_product(id)
+{
+    const user = await getUser();
+    const {error} = await supabase.from("products").delete().eq("username", user.username).eq('id', id);
+    if (error) {
+        console.log("Error :", error.message);
+        return false;
+    }
+    return true;
+}
 

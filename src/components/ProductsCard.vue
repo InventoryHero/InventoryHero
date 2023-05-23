@@ -33,6 +33,7 @@
     </v-layout>
     <products-detail-modal
         @closeDetailModal="closeModal"
+        @productDeleted="deletedProduct"
         :id="this.id"
          v-model="this.dialog"
         :name="this.productName"
@@ -73,6 +74,11 @@ import ProductsDetailModal from "@/modals/ProductsDetailModal.vue";
         };
       },
       methods: {
+          deletedProduct()
+          {
+            this.dialog=false;
+            this.$emit("productDeleted");
+          },
           closeModal(new_room = undefined, new_box = undefined, new_amount = -1)
           {
 
