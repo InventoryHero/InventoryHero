@@ -4,6 +4,7 @@ import * as VueRouter from 'vue-router'
 import './registerServiceWorker'
 
 import 'vue-material-design-icons/styles.css'
+import "/node_modules/flag-icons/css/flag-icons.min.css";
 import "@/global.css"
 import vuetify from "./plugins/vuetify";
 
@@ -14,6 +15,7 @@ import NotFoundComponent from "@/components/NotFoundComponent.vue";
 import LocationsOverview from '@/views/LocationsOverviewView';
 import ProductsOverview from '@/views/ProductsOverviewView';
 import BoxesOverview from '@/views/BoxesOverviewView';
+import Settings from '@/views/Settings';
 
 
 
@@ -52,6 +54,11 @@ const routes = [
         path: "/BoxesOverview",
         name: "boxes",
         component: BoxesOverview
+    },
+    {
+        path: "/Settings",
+        name: "settings",
+        component: Settings
     }
 ]
 

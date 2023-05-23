@@ -3,7 +3,6 @@ import { createClient } from '@supabase/supabase-js'
 import { getUser } from './dexie';
 
 
-//TODO: Export to .env file 
 const URL = process.env.VUE_APP_URL
 const KEY = process.env.VUE_APP_KEY
 

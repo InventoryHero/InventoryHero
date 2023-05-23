@@ -30,7 +30,7 @@
           </v-list-item>
           <v-list-item density="compact" >
               <v-list-item-subtitle>
-                  <v-icon icon="fa:fas fa-cog"/>
+                  <v-icon icon="fa:fas fa-cog" @click="this.$router.push('/Settings')" />
               </v-list-item-subtitle>
           </v-list-item>
       </div>
