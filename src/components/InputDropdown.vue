@@ -1,8 +1,8 @@
 <template>
   <div id="mainSelector">
-      <select :disabled="this.isSelectDisabled()" v-model="this.my_value" @change="$emit('valueUpdated', this.my_value)">
+      <select :disabled="this.isSelectDisabled()" v-model="this.my_value" @change="this.emitValueChanged()">
           <option hidden disabled selected>{{ this.place_holder }}</option>
-          <option v-for="l in this.list" :key="l.key">{{ l.name }} </option>
+          <option  v-bind:value="{id: l.id, name: l.name}" v-for="l in this.list" :key="l.key">{{ l.name }} </option>
       </select>
     </div>
 </template>
@@ -17,7 +17,11 @@ export default {
       type: Boolean,
       default: false,
     },
-    id: String
+    id: String,
+    emitFullObject: {
+      type: Boolean,
+      default: false,
+    }
   },
   data() {
     return {
@@ -25,6 +29,14 @@ export default {
     }
   },
   methods: {
+    emitValueChanged(){
+      console.log("Changing input dropdown value");
+      console.log(this.my_value);
+      if(this.emitFullObject)
+        this.$emit("valueUpdated", this.my_value);
+      else
+        this.$emit("valueUpdated", this.my_value.name);
+    },
     isSelectDisabled()
     {
       return this.isDisabled;

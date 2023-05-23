@@ -6,7 +6,7 @@
         :items="products"
     >
         <template v-slot:default="{ item }">
-            <ProductsCard class="card" :id="item.id" :productName="item.name" :amount="item.amount"/>
+            <ProductsCard  :id="item.id" :productName="item.name" :amount="item.amount" :room_id="item.room_id" :box_id="item.box_id"/>
         </template>
     </v-virtual-scroll>
       <add-modal :defaultAddView="Constants.ProductsView" v-if="this.addModalVisibility" @closeModal="closeModal()"/>
@@ -65,6 +65,7 @@
     },
     methods: {
         get_boxes() {
+          console.error("hallo des is die box id du wappler: " + this.box_id);
           if(this.room_id === -1 && this.box_id === -1)
           {
             DB_SB_get_all_products(this.currentUser.username).then((products) => {
@@ -74,9 +75,11 @@
           }
           else if(this.box_id !== -1)
           {
+            console.log("hallo des is die box_id: " + this.box_id);
             DB_SB_get_products_per_box(this.box_id, this.currentUser.username).then((products) => {
               if(products !== undefined && products.data !== undefined)
                 this.products = products.data;
+                this.loading = false;
             })
           }
           else if(this.room_id !== -1)
@@ -84,6 +87,7 @@
             DB_SB_get_products_per_room(this.room_id, this.currentUser.username).then((products) => {
               if(products !== undefined && products.data !== undefined)
                 this.products = products.data;
+                this.loading = false;
             })
           }
 
@@ -122,8 +126,9 @@
                 if(room.length !== 0)
                   this.title = "Products in " + room[0].name;
               });
-              this.get_boxes();
+
             }
+          this.get_boxes();
 
 
 

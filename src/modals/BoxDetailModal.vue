@@ -38,7 +38,7 @@ import InputTextEnhanced from '@/components/InputTextEnhanced.vue';
 import InputDropdown from '@/components/InputDropdown.vue';
 import {
   DB_SB_get_box_createdat,
-  DB_SB_get_room_of_box,
+  DB_SB_get_name_of_room_of_box,
   DB_SB_get_rooms_of_user,
   DB_SB_update_box_name, DB_SB_update_box_room
 } from "@/db/supabase";
@@ -108,7 +108,7 @@ export default {
   },
   beforeMount() {
     this.updateCreatedDate();
-    DB_SB_get_room_of_box(this.name).then((room) => {
+    DB_SB_get_name_of_room_of_box(this.name).then((room) => {
       this.placeholder = room;
     })
     DB_SB_get_rooms_of_user(undefined).then((rooms) => {

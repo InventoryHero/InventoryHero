@@ -142,8 +142,11 @@ export async function DB_SB_increase_product_amount(productId) {
   }
   
 
-  export async function DB_SB_get_product(productId) {
-    const { data, error } = await supabase.from("products").select("*").eq("id", productId).single();
+  export async function DB_SB_get_product(productId, user=undefined) {
+    if(user === undefined)
+        user = await getUser();
+
+    const { data, error } = await supabase.from("products").select("*").eq("username", user.username).eq("id", productId).single();
   
     if (error) {
       console.log("Error :", error.message);
@@ -263,7 +266,7 @@ async function DB_SB_get_id_of_box(box_name) {
 async function DB_SB_get_id_of_room(room_name) {
     const user = await getUser();
     const data = await supabase.from("rooms").select("id").eq("username", user.username).eq("name", room_name);
-    if(data.data === undefined || data.data.length === 0)
+    if(data === undefined || data == null || data.data === undefined || data.data == null || data.data.length === 0)
         return -1;
     return data.data[0].id;
 }
@@ -273,7 +276,7 @@ export async function DB_SB_get_room(room_id, user = undefined)
     if(user === undefined)
         user = await getUser();
     const data = await supabase.from("rooms").select("*").eq("username", user.username).eq("id", room_id);
-    if(data === undefined || data.data === undefined)
+    if(data === undefined || data == null || data.data === undefined || data.data == null || data.data.length === 0)
         return [];
     return data.data;
 }
@@ -282,34 +285,48 @@ export async function DB_SB_get_box(box_id, user = undefined)
     if(user === undefined)
         user = await getUser();
     const data = await supabase.from("boxes").select("*").eq("username", user.username).eq("id", box_id);
-    if(data === undefined || data.data === undefined)
+    if(data === undefined || data == null || data.data === undefined || data.data == null || data.data.length === 0)
         return [];
     return data.data;
 }
-export async function DB_SB_get_room_name(id)
+export async function DB_SB_get_room_name(id, user=undefined)
 {
-    const user = await getUser();
+    if(user === undefined)
+        user = await getUser();
     const data = await supabase.from("rooms").select("name").eq("username", user.username).eq("id", id);
-    if(data.data === undefined || data.data.length === 0)
+    if(data === undefined || data == null || data.data === undefined || data.data == null || data.data.length === 0)
         return "";
     return data.data[0].name;
 }
 
-export async function DB_SB_get_room_of_box(box)
+export async function DB_SB_get_name_of_room_of_box(box)
 {
     const user = await getUser();
     const data = await supabase.from("boxes").select("*").eq("username", user.username).eq("name", box);
-    if(data.data === undefined || data.data.length === 0) {
+    if(data === undefined || data == null || data.data === undefined || data.data == null || data.data.length === 0) {
         return "";
     }
 
     return await DB_SB_get_room_name(data.data[0].room_id);
 }
 
-export async function DB_SB_get_box_name(id) {
-    const user = await getUser();
+export async function DB_SB_get_room_of_box(box, user = undefined)
+{
+    if(user === undefined)
+        user = await getUser();
+    const data = await supabase.from("boxes").select("*").eq("username", user.username).eq("id", box);
+    if(data === undefined || data == null || data.data === undefined || data.data == null || data.data.length === 0) {
+        return "";
+    }
+
+    return await DB_SB_get_room(data.data[0].room_id);
+}
+
+export async function DB_SB_get_box_name(id, user=undefined) {
+    if(user === undefined)
+        user = await getUser();
     const data = await supabase.from("boxes").select("name").eq("username", user.username).eq("id", id);
-    if (data.data === undefined || data.data.length === 0)
+    if (data === undefined || data == null || data.data === undefined || data.data == null || data.data.length === 0)
         return "";
     return data.data[0].name;
 }
@@ -329,18 +346,19 @@ export async function DB_SB_get_room_createdat(id)
 {
     const user = await getUser();
     const data = await supabase.from("rooms").select("creation_date").eq("username", user.username).eq("id", id);
-    if(data === undefined || data.data === undefined || data.data.length === 0)
+    if(data === undefined || data == null || data.data === undefined || data.data == null || data.data.length === 0)
         return "";
 
     let date = new Date(data.data[0].creation_date);
     return date.toLocaleDateString() + " " + date.toLocaleTimeString();
 }
 
-export async function DB_SB_get_box_createdat(id)
+export async function DB_SB_get_box_createdat(id, user)
 {
-    const user = await getUser();
+    if(user === undefined)
+        user = await getUser();
     const data = await supabase.from("boxes").select("creation_date").eq("username", user.username).eq("id", id);
-    if(data === undefined || data.data === undefined || data.data.length === 0)
+    if(data === undefined || data == null || data.data === undefined || data.data == null || data.data.length === 0)
         return "";
 
     let date = new Date(data.data[0].creation_date);
@@ -361,7 +379,6 @@ export async function DB_SB_update_box_name(id, name)
 export async function DB_SB_update_box_room(id, name)
 {
     const user = await getUser();
-
     let room_id = await DB_SB_get_id_of_room(name);
     if(room_id === -1)
         return false;
@@ -373,3 +390,49 @@ export async function DB_SB_update_box_room(id, name)
     }
     return true;
 }
+
+export async function DB_SB_update_product_box(id, box_id)
+{
+    const user = await getUser();
+    const {error} = await supabase.from("products").update({box_id: box_id, room_id: -1}).eq("username", user.username).eq('id', id);
+    if (error) {
+        console.log("Error :", error.message);
+        return false;
+    }
+    return true;
+}
+
+export async function DB_SB_update_product_room(id, room_id)
+{
+    const user = await getUser();
+    const {error} = await supabase.from("products").update({box_id: -1, room_id: room_id}).eq("username", user.username).eq('id', id);
+    if (error) {
+        console.log("Error :", error.message);
+        return false;
+    }
+    return true;
+}
+export async function DB_SB_get_product_createdat(id, user)
+{
+    if(user === undefined)
+        user = await getUser();
+    const data = await supabase.from("products").select("creation_date").eq("username", user.username).eq("id", id);
+    if(data === undefined || data == null || data.data === undefined || data.data == null || data.data.length === 0)
+        return "";
+
+    let date = new Date(data.data[0].creation_date);
+    return date.toLocaleDateString() + " " + date.toLocaleTimeString();
+}
+
+export async function DB_SB_update_product_amount(id, amount)
+{
+    const user = await getUser();
+    const {error} = await supabase.from("products").update({amount: amount}).eq("username", user.username).eq('id', id);
+    if (error) {
+        console.log("Error :", error.message);
+        return false;
+    }
+    return true;
+}
+
+

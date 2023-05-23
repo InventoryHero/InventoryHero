@@ -6,6 +6,7 @@ import './registerServiceWorker'
 import 'vue-material-design-icons/styles.css'
 import "@/global.css"
 import vuetify from "./plugins/vuetify";
+import withUUID from "vue-uuid";
 
 import LoginView from '@/views/LoginView';
 import HomeView from '@/views/HomeView';
@@ -64,5 +65,5 @@ const router = VueRouter.createRouter({
     routes
 });
 
-createApp(App).use(router).use(vuetify).mount('#app')
+createApp(App).use(router).use(vuetify).use(withUUID).mount('#app')
 

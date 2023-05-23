@@ -44,7 +44,7 @@ import {
     DB_SB_add_product,
     DB_SB_add_box,
     DB_SB_add_room,
-    DB_SB_get_room_of_box
+    DB_SB_get_name_of_room_of_box
 } from '@/db/supabase';
 import { getUser } from '@/db/dexie';
 import {Constants} from  "@/global/constants";
@@ -127,7 +127,7 @@ data() {
 
         if(this.curr_room === "")
         {
-            DB_SB_get_room_of_box(box).then((room_name) => {
+            DB_SB_get_name_of_room_of_box(box).then((room_name) => {
                 this.curr_room = room_name;
                 this.place_holder_room = room_name;
                 this.reloadSelectComponents(false, true);
@@ -151,6 +151,11 @@ data() {
         this.curr_name = name;
     },
     addProduct() {
+        // setting box and room at once is not supported
+        if(this.curr_box !== "")
+            this.curr_room = "";
+
+
         let product = {
             name: this.curr_name,
             box: this.curr_box,
