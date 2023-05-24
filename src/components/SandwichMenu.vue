@@ -4,7 +4,7 @@
     <v-toolbar id="navbar"  :title="this.title" absolute fixed>
     </v-toolbar>
     <Slide :crossIcon="false">
-      <a id="home" href="#" @click="this.$router.push('/Home')">
+      <a id="home" @click="this.$router.push('/Home')">
           <span>Home</span>
       </a>
       <a @click="redirectOrReload('/BoxesOverview')">
