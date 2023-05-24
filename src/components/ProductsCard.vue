@@ -24,23 +24,42 @@
                     </v-list-item>
                     <v-list-item density="compact">
                         <v-list-item-subtitle>
-                            <v-icon @click="informationButton(id)" size="large" icon="mdi-information"/>
+                            <v-icon @click="openDetailModal()" size="large" icon="mdi-information"/>
                         </v-list-item-subtitle>
                     </v-list-item>
                 </div>
             </v-card>
         </v-col>
     </v-layout>
+    <products-detail-modal
+        @closeDetailModal="closeModal"
+        @productDeleted="deletedProduct"
+        :id="this.id"
+         v-model="this.dialog"
+        :name="this.productName"
+        :box_id="this.curr_box_id"
+        :room_id="this.curr_room_id"
+        :amount="this.displayAmount"
+        :key="this.update_modal"
+    />
 </template>
 
 <script>
-import { DB_SB_increase_product_amount } from '@/db/supabase';
+import {
+    DB_SB_increase_product_amount
+} from '@/db/supabase';
 import { DB_SB_decrease_product_amount } from '@/db/supabase';
 import { DB_SB_get_product } from '@/db/supabase';
+import ProductsDetailModal from "@/modals/ProductsDetailModal.vue";
 
   export default {
+      components: {
+        ProductsDetailModal
+      },
       props: {
           id: Number,
+          room_id: Number,
+          box_id: Number,
           productName: String,
           amount: Number,
 
@@ -48,12 +67,43 @@ import { DB_SB_get_product } from '@/db/supabase';
       data(){
         return{
             updatedAmount:null,
+            dialog: false,
+            curr_room_id: this.room_id,
+            curr_box_id: this.box_id,
+            update_modal: 0,
         };
       },
       methods: {
-          informationButton: function(cardId)
+          deletedProduct()
           {
-              console.log("you've clicked the information button " + cardId);
+            this.dialog=false;
+            this.$emit("productDeleted");
+          },
+          closeModal(new_room = undefined, new_box = undefined, new_amount = -1)
+          {
+
+              if(new_room !== undefined)
+              {
+                  this.curr_room_id = new_room.id;
+                  this.curr_box_id = -1;
+                  this.update_modal += 1;
+              }
+              if(new_box !== undefined)
+              {
+                  this.curr_box_id = new_box.id;
+                  this.curr_room_id = -1;
+                  this.update_modal += 1;
+              }
+              if(new_amount !== -1 && new_amount !== this.updatedAmount)
+              {
+                  this.updatedAmount = new_amount;
+              }
+
+              this.dialog = false;
+          },
+          openDetailModal()
+          {
+              this.dialog = true;
           },
           totalAmount: function(cardID)
           {
@@ -76,6 +126,10 @@ import { DB_SB_get_product } from '@/db/supabase';
           },
           decreaseAmount: function(cardId)
           {
+              if(this.displayAmount === 0)
+              {
+                  return;
+              }
               DB_SB_decrease_product_amount(cardId).then(() => 
               {
                 return DB_SB_get_product(cardId);
@@ -90,10 +144,16 @@ import { DB_SB_get_product } from '@/db/supabase';
           }
       },
       computed: {
-    displayAmount: function(){
-        return this.updatedAmount != null ? this.updatedAmount : this.amount;
-    }
-  }
+        displayAmount: function(){
+            return this.updatedAmount !== null ? this.updatedAmount : this.amount;
+        }
+      },
+      beforeMount(){
+
+
+
+
+      }
   }
   
 </script>

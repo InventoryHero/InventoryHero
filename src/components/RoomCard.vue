@@ -4,7 +4,7 @@
         <v-col>
             <v-card  class="room-card">
                 <v-card-title align="start" :id='id' >
-                    {{ roomName }}
+                    {{ this.name }}
                 </v-card-title>
                 <div class="d-flex align-center justify-space-evenly room-info mt-1 mb-2 ms-2 me-2 rounded-pill" >
                     <v-list-item density="compact" >
@@ -19,44 +19,69 @@
                     </v-list-item>
                     <v-list-item density="compact">
                         <v-list-item-subtitle>
-                            <v-icon @click="addBoxOrProduct(id)" size="x-large" icon="mdi-plus"/>
+                            <v-icon @click="$emit('addItemToRoom', id)" size="x-large" icon="mdi-plus"> </v-icon>
+
                         </v-list-item-subtitle>
                     </v-list-item>
                     <v-list-item density="compact">
                         <v-list-item-subtitle>
-                            <v-icon @click="informationButton(id)" size="large" icon="mdi-information"/>
+                            <v-icon @click="openDetailModal()" size="large" icon="mdi-information">
+                            </v-icon>
                         </v-list-item-subtitle>
                     </v-list-item>
                 </div>
             </v-card>
         </v-col>
+        <room-detail-modal :id="id" :name="this.roomName" v-model="this.dialog" @closeDetailModal="informationButton" @roomDeleted="roomDeleted"/>
     </v-layout>
 </template>
 
 <script>
+
+
+
+  import RoomDetailModal from "@/modals/RoomDetailModal.vue";
+
   export default {
+      components: {
+          RoomDetailModal
+      },
       props: {
           id: Number,
           roomName: String,
           numBoxes: Number,
           numProducts: Number,
+
+      },
+      data() {
+          return {
+              dialog: false,
+              name: this.roomName
+          }
       },
       methods: {
-          informationButton: function(cardId)
+          roomDeleted(id)
           {
-              console.log("you've clicked the information button " + cardId);
+            this.dialog = false;
+            this.$emit("roomDeleted", id);
           },
-          addBoxOrProduct: function(cardId)
+          informationButton(new_name)
           {
-              console.log("Adding box or product for room: " + cardId);
+              if(new_name !== undefined && new_name !== "")
+                  this.name = new_name
+              this.dialog=false;
+          },
+          openDetailModal()
+          {
+              this.dialog = true;
           },
           productsOverview: function(roomId)
           {
-              console.log("Showing all products in room: " + roomId);
+              this.$router.push( "/productsFilteredView?room_id="+roomId);
           },
           boxesOverview: function(roomId)
           {
-              console.log("Showing all boxes in room: " + roomId);
+              this.$router.push( "/boxesFilteredView?room_id="+roomId);
           }
       }
   }

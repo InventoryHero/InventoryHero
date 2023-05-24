@@ -2,5 +2,6 @@ export const Constants = {
     HomeView: "home",
     LocationsView: "locations",
     BoxesView: "boxes",
-    ProductsView: "products"
+    ProductsView: "products",
+    All:  "all"
 }

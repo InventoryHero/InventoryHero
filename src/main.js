@@ -7,6 +7,7 @@ import 'vue-material-design-icons/styles.css'
 import "/node_modules/flag-icons/css/flag-icons.min.css";
 import "@/global.css"
 import vuetify from "./plugins/vuetify";
+import withUUID from "vue-uuid";
 
 import LoginView from '@/views/LoginView';
 import HomeView from '@/views/HomeView';
@@ -48,12 +49,16 @@ const routes = [
     {
         path:"/ProductsOverview",
         name:"products",
-        component: ProductsOverview
+        component: ProductsOverview,
+        props: route => ({room_id: route.query.room_id, box_id: route.query.box_id}),
+        alias: "/productsFilteredView"
     },
     {
         path: "/BoxesOverview",
         name: "boxes",
-        component: BoxesOverview
+        component: BoxesOverview,
+        props: route => ({room_id: route.query.room_id}),
+        alias: '/boxesFilteredView'
     },
     {
         path: "/Settings",
@@ -64,8 +69,8 @@ const routes = [
 
 const router = VueRouter.createRouter({
     history: VueRouter.createWebHistory(),
-    routes,
+    routes
 });
 
-createApp(App).use(router).use(vuetify).mount('#app')
+createApp(App).use(router).use(vuetify).use(withUUID).mount('#app')
 

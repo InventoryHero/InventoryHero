@@ -1,23 +1,23 @@
 
 
 <template>
-    <v-toolbar id="navbar"  absolute fixed>
+    <v-toolbar id="navbar"  :title="this.title" absolute fixed>
     </v-toolbar>
     <Slide :crossIcon="false">
       <a id="home" href="#" @click="this.$router.push('/Home')">
           <span>Home</span>
       </a>
-      <a @click="this.$router.push('/BoxesOverview')">
+      <a @click="redirectOrReload('/BoxesOverview')">
         <span>
       Boxes
         </span>
       </a>
-      <a @click="this.$router.push('/LocationsOverview')">
+      <a @click="redirectOrReload('/LocationsOverview')">
         <span>
           Locations
         </span>
       </a>
-      <a @click="this.$router.push('/ProductsOverview')"> 
+      <a @click="redirectOrReload('/ProductsOverview')">
         <span>
           Products
         </span>
@@ -51,13 +51,22 @@ export default {
         return {
         }
     },
-    props: ["title"],
+    props: {
+      title: {
+        type: String,
+        default: "InventoryHero"
+      }
+    },
     methods: {
         logoutUser(){
           logout().then(() => {
               this.$router.push("/");
           });
         },
+      redirectOrReload(path)
+      {
+        this.$router.push({path: path}).then(()=> {this.$router.go()})
+      }
     }
 }
 </script>

@@ -1,17 +1,21 @@
 <template>
-  <SandwichMenu/>
+
+  <SandwichMenu :title="this.title"/>
+
   <v-virtual-scroll
       class="virtual-scroll-bg"
       :height="80+'vh'"
       :items="boxes"
   >
+
       <template v-slot:default="{ item }">
-          <BoxCard class="card" :id="item.id" :boxName="item.name" :numProducts="item.product_cnt" :numStarredProducts="item.starred_product_cnt"/>
+          <BoxCard   class="card" :id="item.id" :boxName="item.name" :numProducts="item.product_cnt" :numStarredProducts="item.starred_product_cnt" @boxDeleted="refreshData"/>
       </template>
   </v-virtual-scroll>
-  <add-modal :defaultAddView="Constants.BoxesView" v-if="this.addModalVisibility" @closeModal="closeModal()"/>
+  <add-modal :preselected_box="this.preselectedBox" :navbarItems="this.displayedNavbarItems" :defaultAddView="Constants.BoxesView" v-if="this.addModalVisibility" @closeModal="closeModal()"/>
   <add-button @click="this.addModalVisibility = true"/>
   <qr-button/>
+  <load-animation v-if="this.loading"></load-animation>
 </template>
 
 <script>
@@ -20,15 +24,28 @@ import QrButton from '@/components/QrButton.vue'
 import BoxCard from "@/components/BoxCard.vue";
 import SandwichMenu from "@/components/SandwichMenu.vue";
 
-import {DB_SB_get_boxes, DB_SB_getStarredProducts} from '@/db/supabase';
+import {
+  DB_SB_get_boxes,
+  DB_SB_getStarredProducts,
+  DB_SB_get_room,
+  DB_SB_get_box_name
+} from '@/db/supabase';
 import {getUser} from "@/db/dexie";
 import AddModal from "@/modals/AddModal.vue";
 import { Constants } from "@/global/constants";
+import LoadAnimation from "@/components/LoadAnimation.vue";
 
 
 export default {
   name: 'App',
+  props: {
+    room_id: {
+      type: Number,
+      default: -1,
+    }
+  },
   components: {
+    LoadAnimation,
       AddModal,
       BoxCard,
       AddButton,
@@ -40,24 +57,45 @@ export default {
           boxes: [],
           currentUser: "",
           addModalVisibility: false,
-          Constants
+          Constants,
+          title: "Boxes",
+          preselectedBox: "",
+          displayedNavbarItems: Constants.All,
+          loading: true,
       }
   },
   methods: {
+      refreshData()
+      {
+        this.get_boxes();
+      },
+      displayModal(id){
+        DB_SB_get_box_name(id).then((box) => {
+          console.log(box);
+          this.preselectedBox = box;
+          this.defaultModalView = Constants.ProductsView;
+          this.displayedNavbarItems = [Constants.ProductsView];
+          this.addModalVisibility = true;
+        })
+      },
       get_boxes() {
-          DB_SB_get_boxes(this.currentUser.username).then((boxes) => {
+          DB_SB_get_boxes(this.currentUser.username, this.room_id).then((boxes) => {
               this.boxes = boxes;
+            this.loading = false;
           });
       },
       closeModal() {
-          this.addModalVisibility = false;
+        this.addModalVisibility = false;
+        this.defaultModalView = Constants.BoxesView;
+        this.displayedNavbarItems = Constants.All;
+        this.preselectedBox = "";
+        this.get_boxes();
           DB_SB_getStarredProducts().then((res) => {
               this.starred_products = res;
           })
       },
   },
   beforeMount() {
-
       getUser().then((user) => {
           if(user === undefined)
           {
@@ -65,7 +103,17 @@ export default {
           }
           this.currentUser = user;
           this.get_boxes();
+
+          if(this.room_id !== -1)
+          {
+            DB_SB_get_room(this.room_id, user).then((room) => {
+              if(room.length !== 0)
+                this.title = "Boxes in " + room[0].name;
+            });
+          }
+
       });
+
   }
 
 }
@@ -79,5 +127,6 @@ export default {
   .v-virtual-scroll{
       background: var(--color-blue);
   }
+
   ::-webkit-scrollbar { width: 0px;  }
 </style>
