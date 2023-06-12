@@ -1,33 +1,30 @@
 <template>
     <SandwichMenu :title="this.title"/>
-    <v-virtual-scroll
-        class="virtual-scroll-bg"
-        :height="80+'vh'"
-        :items="rooms"
-    >
-        <template v-slot:default="{ item }">
-            <RoomCard @addItemToRoom="displayModal" @roomDeleted="updateRooms" class="card" :id="item.id" :roomName="item.name" :numBoxes="item.box_cnt" :numProducts="item.product_cnt"/>
-        </template>
-    </v-virtual-scroll>
+    <RoomCard v-for="r in this.rooms" @addItemToRoom="displayModal" @roomDeleted="updateRooms" class="card" 
+    :key="r.id"
+    :id="r.id" 
+    :roomName="r.name" 
+    :numBoxes="r.box_cnt" 
+    :numProducts="r.product_cnt" />
+    <load-animation v-if="this.loading"></load-animation>
+    
     <add-modal :preselected_room="this.preselectedRoom" :navbarItems="this.displayedNavbarItems" :defaultAddView="this.defaultModalView" v-if="this.addModalVisibility" @closeModal="closeModal()"/>
     <add-button @click="this.addModalVisibility = true"/>
     <qr-button/>
-    <load-animation v-if="this.loading"></load-animation>
 </template>
 
 <script>
 import AddButton from '@/components/AddButton.vue'
-  import QrButton from '@/components/QrButton.vue'
-  import RoomCard from "@/components/RoomCard.vue";
+import QrButton from '@/components/QrButton.vue'
+import RoomCard from "@/components/RoomCard.vue";
 import SandwichMenu from "@/components/SandwichMenu.vue";
-//import RoomDetailModal from "@/modals/RoomDetailModal.vue";
-
-import {DB_SB_delete_room, DB_SB_get_room_name, DB_SB_get_rooms, DB_SB_getStarredProducts} from '@/db/supabase';
-import {getUser} from "@/db/dexie";
-import AddModal from "@/modals/AddModal.vue";
-import { Constants } from "@/global/constants";
 import LoadAnimation from "@/components/LoadAnimation.vue";
 
+import { DB_SB_delete_room, DB_SB_get_room_name, DB_SB_get_rooms, DB_SB_getStarredProducts} from '@/db/supabase';
+import { getUser } from "@/db/dexie";
+import { Constants } from "@/global/constants";
+
+import AddModal from "@/modals/AddModal.vue";
   
   export default {
     name: 'App',
@@ -38,7 +35,6 @@ import LoadAnimation from "@/components/LoadAnimation.vue";
         AddButton,
         QrButton,
         SandwichMenu,
-        //RoomDetailModal
     },
     data() {
         return {
@@ -75,7 +71,9 @@ import LoadAnimation from "@/components/LoadAnimation.vue";
             DB_SB_get_rooms(this.currentUser.username).then((rooms) => {
                 console.log(rooms);
                 this.rooms = rooms;
+                console.log(this.loading)
                 this.loading = false;
+                console.log(this.loading)
             });
         },
         closeModal() {
@@ -90,7 +88,6 @@ import LoadAnimation from "@/components/LoadAnimation.vue";
         },
     },
     beforeMount() {
-
         getUser().then((user) => {
             if(user === undefined)
             {

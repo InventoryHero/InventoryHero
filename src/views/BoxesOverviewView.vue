@@ -1,21 +1,22 @@
 <template>
+  <SandwichMenu :title="this.title" />
+  <BoxCard v-for="b in boxes" class="card" 
+                      :key="b.id"
+                      :id="b.id" 
+                      :boxName="b.name" 
+                      :numProducts="b.product_cnt" 
+                      :numStarredProducts="b.starred_product_cnt" 
+                      @boxDeleted="refreshData" />
 
-  <SandwichMenu :title="this.title"/>
+  <add-modal  v-if="this.addModalVisibility"
+              @closeModal="closeModal()"
+              :preselected_box="this.preselectedBox" 
+              :navbarItems="this.displayedNavbarItems" 
+              :defaultAddView="Constants.BoxesView" />
 
-  <v-virtual-scroll
-      class="virtual-scroll-bg"
-      :height="80+'vh'"
-      :items="boxes"
-  >
-
-      <template v-slot:default="{ item }">
-          <BoxCard   class="card" :id="item.id" :boxName="item.name" :numProducts="item.product_cnt" :numStarredProducts="item.starred_product_cnt" @boxDeleted="refreshData"/>
-      </template>
-  </v-virtual-scroll>
-  <add-modal :preselected_box="this.preselectedBox" :navbarItems="this.displayedNavbarItems" :defaultAddView="Constants.BoxesView" v-if="this.addModalVisibility" @closeModal="closeModal()"/>
+  <load-animation v-if="this.loading"></load-animation>
   <add-button @click="this.addModalVisibility = true"/>
   <qr-button/>
-  <load-animation v-if="this.loading"></load-animation>
 </template>
 
 <script>
@@ -23,6 +24,7 @@ import AddButton from '@/components/AddButton.vue'
 import QrButton from '@/components/QrButton.vue'
 import BoxCard from "@/components/BoxCard.vue";
 import SandwichMenu from "@/components/SandwichMenu.vue";
+import LoadAnimation from "@/components/LoadAnimation.vue";
 
 import {
   DB_SB_get_boxes,
@@ -30,10 +32,11 @@ import {
   DB_SB_get_room,
   DB_SB_get_box_name
 } from '@/db/supabase';
-import {getUser} from "@/db/dexie";
-import AddModal from "@/modals/AddModal.vue";
+import { getUser } from "@/db/dexie";
 import { Constants } from "@/global/constants";
-import LoadAnimation from "@/components/LoadAnimation.vue";
+
+import AddModal from "@/modals/AddModal.vue";
+
 
 
 export default {
@@ -46,11 +49,11 @@ export default {
   },
   components: {
     LoadAnimation,
-      AddModal,
-      BoxCard,
-      AddButton,
-      QrButton,
-      SandwichMenu
+    AddModal,
+    BoxCard,
+    AddButton,
+    QrButton,
+    SandwichMenu
   },
   data() {
       return {
@@ -71,7 +74,6 @@ export default {
       },
       displayModal(id){
         DB_SB_get_box_name(id).then((box) => {
-          console.log(box);
           this.preselectedBox = box;
           this.defaultModalView = Constants.ProductsView;
           this.displayedNavbarItems = [Constants.ProductsView];
@@ -81,7 +83,7 @@ export default {
       get_boxes() {
           DB_SB_get_boxes(this.currentUser.username, this.room_id).then((boxes) => {
               this.boxes = boxes;
-            this.loading = false;
+              this.loading = false;
           });
       },
       closeModal() {
@@ -103,7 +105,6 @@ export default {
           }
           this.currentUser = user;
           this.get_boxes();
-
           if(this.room_id !== -1)
           {
             DB_SB_get_room(this.room_id, user).then((room) => {
