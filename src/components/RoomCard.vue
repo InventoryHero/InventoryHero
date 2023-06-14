@@ -32,7 +32,7 @@
                 </div>
             </v-card>
         </v-col>
-        <room-detail-modal :id="id" :name="this.roomName" v-model="this.dialog" @closeDetailModal="informationButton" @roomDeleted="roomDeleted"/>
+        <room-detail-modal :id="id" :name="this.roomName" v-model="this.dialog" :username="this.username" @closeDetailModal="informationButton" @roomDeleted="roomDeleted"/>
     </v-layout>
 </template>
 
@@ -51,6 +51,7 @@
           roomName: String,
           numBoxes: Number,
           numProducts: Number,
+          username: String,
 
       },
       data() {

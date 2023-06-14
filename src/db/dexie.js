@@ -6,14 +6,13 @@ db.version(1).stores({
 });
 
 
-export async function setUser(username, password) {
+export async function setUser(username) {
     const user_exists = await db.curr_user.toArray(); 
     if (user_exists) {
         await db.curr_user.clear();
     }
     const data = {
-        username: username, 
-        password: password, 
+        username: username,
     }
     await db.curr_user.add(data);
     return true;

@@ -6,7 +6,16 @@
         :items="rooms"
     >
         <template v-slot:default="{ item }">
-            <RoomCard @addItemToRoom="displayModal" @roomDeleted="updateRooms" class="card" :id="item.id" :roomName="item.name" :numBoxes="item.box_cnt" :numProducts="item.product_cnt"/>
+            <RoomCard
+                @addItemToRoom="displayModal"
+                @roomDeleted="updateRooms"
+                class="card"
+                :id="item.id"
+                :roomName="item.name"
+                :numBoxes="item.box_cnt"
+                :numProducts="item.product_cnt"
+                :username="this.currentUser.username"
+            />
         </template>
     </v-virtual-scroll>
     <add-modal :preselected_room="this.preselectedRoom" :navbarItems="this.displayedNavbarItems" :defaultAddView="this.defaultModalView" v-if="this.addModalVisibility" @closeModal="closeModal()"/>

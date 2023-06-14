@@ -9,7 +9,7 @@
   >
 
       <template v-slot:default="{ item }">
-          <BoxCard   class="card" :id="item.id" :boxName="item.name" :numProducts="item.product_cnt" :numStarredProducts="item.starred_product_cnt" @boxDeleted="refreshData"/>
+          <BoxCard   class="card" :id="item.id" :boxName="item.name" :numProducts="item.product_cnt" :username="this.currentUser.username" :numStarredProducts="item.starred_product_cnt" @boxDeleted="refreshData"/>
       </template>
   </v-virtual-scroll>
   <add-modal :preselected_box="this.preselectedBox" :navbarItems="this.displayedNavbarItems" :defaultAddView="Constants.BoxesView" v-if="this.addModalVisibility" @closeModal="closeModal()"/>
@@ -71,7 +71,6 @@ export default {
       },
       displayModal(id){
         DB_SB_get_box_name(id).then((box) => {
-          console.log(box);
           this.preselectedBox = box;
           this.defaultModalView = Constants.ProductsView;
           this.displayedNavbarItems = [Constants.ProductsView];
@@ -101,6 +100,7 @@ export default {
           {
               this.$router.push("/login");
           }
+          console.log(user);
           this.currentUser = user;
           this.get_boxes();
 

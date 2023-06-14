@@ -20,7 +20,13 @@
            <input-text-enhanced :disabled="true" :place_holder="this.created_at"></input-text-enhanced>
            <input-dropdown @valueUpdated="updateBoxRoom" :place_holder="this.placeholder" :list="this.rooms"/>
          </v-card-text>
+
          <v-card-actions class="justify-end">
+           <v-btn
+             icon="fa:fas fa-qrcode"
+             @click="generateQRCode()"
+           >
+           </v-btn>
            <v-btn
                    icon="fa:fas fa-trash"
                    @click="deleteBox()"
@@ -32,7 +38,6 @@
 
          </v-card-actions>
        </v-card>
-
    </v-dialog>
 
 </template>
@@ -47,6 +52,8 @@ import {
   DB_SB_get_rooms_of_user,
   DB_SB_update_box_name, DB_SB_update_box_room
 } from "@/db/supabase";
+import {generatePDF} from "@/global/qr_code";
+
 
 export default {
   props:{
@@ -58,14 +65,10 @@ export default {
       type: String,
       default: "",
     },
+    username: String
   },
   data() {
     return {
-      new_name: "",
-      new_room: "",
-      created_at: "",
-      rooms: [],
-      placeholder: "",
     }
   },
   components: {
@@ -115,6 +118,18 @@ export default {
     updateBoxName(new_name)
     {
       this.new_name = new_name;
+    },
+    generateQRCode(){
+      generatePDF(
+          JSON.stringify({
+            id: this.id,
+            is_room: true,
+            is_box: false,
+            username: this.username,
+          }),
+          this.name,
+          "QR-Code for box " + this.name
+      );
     }
   },
   beforeMount() {

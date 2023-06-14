@@ -36,7 +36,6 @@
       </div>
     </Slide>
 
-
 </template>
 <script>
 import { Slide } from 'vue3-burger-menu';

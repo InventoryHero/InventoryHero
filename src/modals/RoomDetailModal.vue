@@ -21,6 +21,11 @@
          </v-card-text>
          <v-card-actions class="justify-end">
            <v-btn
+                   icon="fa:fas fa-qrcode"
+                   @click="generateQRCode()"
+           >
+           </v-btn>
+           <v-btn
                    icon="fa:fas fa-trash"
                    @click="deleteRoom()"
            ></v-btn>
@@ -39,6 +44,7 @@
 <script>
 import InputTextEnhanced from '@/components/InputTextEnhanced.vue';
 import {DB_SB_get_room_createdat, DB_SB_update_room_name} from "@/db/supabase";
+import {generatePDF} from "@/global/qr_code";
 
 export default {
   props:{
@@ -50,6 +56,7 @@ export default {
       type: String,
       default: "",
     },
+    username: String,
   },
   data() {
     return {
@@ -93,6 +100,18 @@ export default {
     updateRoomName(new_name)
     {
       this.new_name = new_name;
+    },
+    generateQRCode(){
+      generatePDF(
+          JSON.stringify({
+            id: this.id,
+            is_room: false,
+            is_box: true,
+            username: this.username,
+          }),
+          this.name,
+          "QR-Code for room " + this.name
+      );
     }
   },
   beforeMount() {

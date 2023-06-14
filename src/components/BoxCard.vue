@@ -30,7 +30,7 @@
                 </div>
             </v-card>
         </v-col>
-        <box-detail-modal :id="id" :name="this.boxName"  v-model="this.dialog" @closeDetailModal="closeModal" @boxDeleted="boxDeleted"/>
+        <box-detail-modal :id="id" :name="this.boxName"  :username="this.username" v-model="this.dialog" @closeDetailModal="closeModal" @boxDeleted="boxDeleted"/>
     </v-layout>
 </template>
 
@@ -44,6 +44,7 @@
           boxName: String,
           numProducts: Number,
           numStarredProducts: Number ,
+          username: String,
       },
       data() {
           return {
