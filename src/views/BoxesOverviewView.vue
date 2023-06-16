@@ -1,6 +1,6 @@
 <template>
 
-  <SandwichMenu :title="this.title"/>
+  <SandwichMenu v-if="!this.from_qrcode" :title="this.title"/>
 
   <v-virtual-scroll
       class="virtual-scroll-bg"
@@ -9,12 +9,21 @@
   >
 
       <template v-slot:default="{ item }">
-          <BoxCard   class="card" :id="item.id" :boxName="item.name" :numProducts="item.product_cnt" :username="this.currentUser.username" :numStarredProducts="item.starred_product_cnt" @boxDeleted="refreshData"/>
+          <BoxCard
+                  class="card"
+                  :id="item.id"
+                  :boxName="item.name"
+                  :numProducts="item.product_cnt"
+                  :username="this.currentUser.username"
+                  :numStarredProducts="item.starred_product_cnt"
+                  @boxDeleted="refreshData"
+                  @addItemToBox="displayModal"
+          />
       </template>
   </v-virtual-scroll>
   <add-modal :preselected_box="this.preselectedBox" :navbarItems="this.displayedNavbarItems" :defaultAddView="Constants.BoxesView" v-if="this.addModalVisibility" @closeModal="closeModal()"/>
-  <add-button @click="this.addModalVisibility = true"/>
-  <qr-button/>
+  <add-button v-if="!this.from_qrcode" @click="this.addModalVisibility = true"/>
+  <qr-button v-if="!this.from_qrcode"/>
   <load-animation v-if="this.loading"></load-animation>
 </template>
 
@@ -42,7 +51,11 @@ export default {
     room_id: {
       type: Number,
       default: -1,
-    }
+    },
+    from_qrcode: {
+      type: Boolean,
+      default: false
+    },
   },
   components: {
     LoadAnimation,
@@ -100,7 +113,6 @@ export default {
           {
               this.$router.push("/login");
           }
-          console.log(user);
           this.currentUser = user;
           this.get_boxes();
 

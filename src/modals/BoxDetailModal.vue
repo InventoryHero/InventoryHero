@@ -123,8 +123,8 @@ export default {
       generatePDF(
           JSON.stringify({
             id: this.id,
-            is_room: true,
-            is_box: false,
+            is_room: false,
+            is_box: true,
             username: this.username,
           }),
           this.name,

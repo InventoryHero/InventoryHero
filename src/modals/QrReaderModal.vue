@@ -8,7 +8,7 @@
             class="d-flex-column modal-container"
         >
             <v-toolbar
-                title="test"
+                title="Scan IH QR-Code"
                 class="toolbar"
             >
                 <v-icon class="me-5" icon="fa:fas fa-times" @click="closeModal()"></v-icon>
@@ -55,47 +55,18 @@ export default {
 </script>
 
 <style scoped>
-#mainContainerAddModal {
-    position: absolute;
-    top: 20vh;
-    left: 5vw;
-    right: 5vw;
+.modal-container{
     background-color: rgba(0,0,0,0.5);
     backdrop-filter: blur(15px);
     border-radius: 10px;
     border: white solid 1px;
     height: 60vh;
+    color: white;
 }
-
-#exitButton {
-    position: absolute;
-    right: 10px;
-    top: 10px;
-    fill: white;
-    border: 1px solid white;
-    border-radius: 10px;
-    cursor: pointer;
-}
-
-#addWhat {
-    position: absolute;
-    display: flex;
-    top: 10vh;
-    left: 50%;
-    transform: translateX(-50%);
-}
-
-#containerWhat {
-    position: absolute;
-    top: 17vh;
-    left: 5%;
-    bottom: 10px;
-    width: 90%;
-}
-
-.addButton {
-    position: absolute;
-    bottom: 10px;
+.toolbar{
+    background-color: transparent;
+    border-bottom: white solid 1px;
+    color: white;
 }
 </style>
   
