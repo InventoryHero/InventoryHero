@@ -12,12 +12,12 @@
                 <div class="d-flex align-center justify-space-evenly room-info mt-1 mb-2 ms-2 me-2 rounded-pill" >
                     <v-list-item density="compact" >
                         <v-list-item-subtitle>
-                            <v-icon @click="totalAmount()" class="me-3" icon="fa:fas fa-boxes"/>{{this.updatedAmount}}
+                            <v-icon @click="totalAmount()" class="me-2" icon="fa:fas fa-boxes"/>{{this.updatedAmount}}
                             </v-list-item-subtitle>
                     </v-list-item>
                     <v-list-item density="compact" >
                         <v-list-item-subtitle>
-                            <v-icon @click="increaseAmount()" class="me-3" icon="mdi-plus"/>
+                            <v-icon @click="increaseAmount()" icon="mdi-plus"/>
                         </v-list-item-subtitle>
                     </v-list-item>
                     <v-list-item density="compact">
