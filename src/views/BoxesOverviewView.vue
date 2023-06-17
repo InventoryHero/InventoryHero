@@ -13,14 +13,14 @@
                         @addItemToBox="displayModal"
     />
   </div>
-  <add-modal  v-if="this.addModalVisibility"
+  <add-modal  v-model="this.addModalVisibility"
               @closeModal="closeModal()"
               :preselected_box="this.preselectedBox" 
               :navbarItems="this.displayedNavbarItems" 
               :defaultAddView="Constants.BoxesView" />
 
   <load-animation v-if="this.loading"></load-animation>
-  <div id="spacing"></div>
+  <div v-if="!this.from_qrcode" id="spacing"></div>
   <dock
           @qrButton="this.qrReaderModalVisibility=true"
           @addButton="this.addModalVisibility = true"
@@ -35,6 +35,10 @@ import LoadAnimation from "@/components/LoadAnimation.vue";
 import SearchBar from '@/components/SearchBar.vue';
 import Dock from "@/components/Dock.vue";
 
+
+import AddModal from "@/modals/AddModal.vue";
+
+
 import {
   DB_SB_get_boxes,
   DB_SB_getStarredProducts,
@@ -45,7 +49,7 @@ import { getUser } from "@/db/dexie";
 import { Constants } from "@/global/constants";
 import { rankBoxesBySearch } from "@/scripts/sort";
 
-import AddModal from "@/modals/AddModal.vue";
+
 
 
 

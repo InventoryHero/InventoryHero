@@ -9,7 +9,11 @@
             <ProductsCard  :id="item.id" :productName="item.name" :amount="item.amount" :room_id="item.room_id" :box_id="item.box_id" @productDeleted="refreshData"/>
         </template>
     </v-virtual-scroll>
-      <add-modal :defaultAddView="Constants.ProductsView" v-if="this.addModalVisibility" @closeModal="closeModal()"/>
+    <add-modal
+            v-model="this.addModalVisibility"
+            :defaultAddView="Constants.ProductsView"
+            @closeModal="closeModal()"
+    />
     <load-animation v-if="this.loading"></load-animation>
     <div id="spacing"></div>
     <dock
@@ -20,10 +24,11 @@
   </template>
   
   <script>
-  import AddButton from '@/components/AddButton.vue'
-  import QrButton from '@/components/QrButton.vue'
+
   import ProductsCard from "@/components/ProductsCard.vue";
   import SandwichMenu from "@/components/SandwichMenu.vue";
+  import AddModal from "@/modals/AddModal.vue";
+
 
   import {
     DB_SB_get_all_products,
@@ -32,7 +37,7 @@
     DB_SB_getStarredProducts
   } from '@/db/supabase';
   import {getUser} from "@/db/dexie";
-  import AddModal from "@/modals/AddModal.vue";
+
   import { Constants } from "@/global/constants";
   import LoadAnimation from "@/components/LoadAnimation.vue";
   import Dock from "@/components/Dock.vue";
@@ -57,11 +62,9 @@
     components: {
       Dock,
       LoadAnimation,
-        AddModal,
+      AddModal,
       ProductsCard,
-        AddButton,
-        QrButton,
-        SandwichMenu
+      SandwichMenu
     },
     data() {
         return {

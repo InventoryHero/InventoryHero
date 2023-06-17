@@ -1,34 +1,69 @@
 <template>
-    <div id="mainContainerAddModal">
-        <svg @click="closeModal()" id="exitButton" xmlns="http://www.w3.org/2000/svg" height="48" viewBox="0 96 960 960" width="48"><path d="m249 849-42-42 231-231-231-231 42-42 231 231 231-231 42 42-231 231 231 231-42 42-231-231-231 231Z"/></svg>
-        <div id="addWhat">
-            <tag @click="categoryChange(Constants.ProductsView)" text="Product" :active="this.product_active" :hidden="!this.showSelectionTabs(Constants.ProductsView)"> </tag>
-            <tag @click="categoryChange(Constants.BoxesView)" :active="this.box_active" text="Box" :hidden="!this.showSelectionTabs(Constants.BoxesView)"> </tag>
-            <tag @click="categoryChange(Constants.LocationsView)" :active="this.location_active" text="Location" :hidden="!this.showSelectionTabs(Constants.LocationsView)"> </tag>
-        </div>
+    <v-dialog
+        transition="dialog-bottom-transition"
+        width="100%"
+        height="80%"
+    >
+        <v-card
+            height="100%"
+            class="d-flex-column modal-container"
+        >
+            <v-toolbar
+                class="toolbar justify-space-evenly"
+            >
+                <tag
+                    class="ms-5"
+                    @click="categoryChange(Constants.ProductsView)"
+                    text="Product"
+                    :active="this.isActive(Constants.ProductsView).toString()"
+                    :hidden="!this.showSelectionTabs(Constants.ProductsView)" />
+                <tag
+                    @click="categoryChange(Constants.BoxesView)"
+                    :active="this.isActive(Constants.BoxesView).toString()"
+                    text="Box"
+                    :hidden="!this.showSelectionTabs(Constants.BoxesView)"/>
+                <tag
+                    @click="categoryChange(Constants.LocationsView)"
+                    :active="this.isActive(Constants.LocationsView).toString()"
+                    text="Location"
+                    :hidden="!this.showSelectionTabs(Constants.LocationsView)"/>
+                <v-icon class="me-5" icon="fa:fas fa-times" @click="closeModal()"/>
 
-        <div id="containerWhat" v-if="this.product_active == 'true'">
-            <input-text-enhanced @valueUpdated="updateName" placeholder="name"/>
-            <input-dropdown :key="redrawBoxes" @valueUpdated="updateSelectedBox" :place_holder="this.place_holder_box" :list=this.boxes :isDisabled='this.preselected_box !== "" '/>
-            <input-dropdown :key="redrawRoom" @valueUpdated="updateSelectedRoom" :place_holder="this.place_holder_room" :list=this.rooms :isDisabled='this.lockRoom'/>
-            <input-text-enhanced @valueUpdated="updateAmount" placeholder="amount"/>
-            <input-starred @valueUpdated="updateStarredProduct" />
-            <bigger-button-center @click="addProduct" class="addButton" text="Add Product" />
-        </div>
+            </v-toolbar>
+            <v-card-text>
+                <div id="containerWhat" v-if="this.product_active">
+                    <input-text-enhanced @valueUpdated="updateName" placeholder="name"/>
+                    <input-dropdown :key="redrawBoxes" @valueUpdated="updateSelectedBox" :place_holder="this.place_holder_box" :list=this.boxes :isDisabled='this.preselected_box !== "" '/>
+                    <input-dropdown :key="redrawRoom" @valueUpdated="updateSelectedRoom" :place_holder="this.place_holder_room" :list=this.rooms :isDisabled='this.lockRoom'/>
+                    <input-text-enhanced @valueUpdated="updateAmount" placeholder="amount"/>
+                    <input-starred @valueUpdated="updateStarredProduct" />
+                </div>
 
-        <div id="containerWhat" v-if="this.box_active == 'true'">
-            <input-text-enhanced @valueUpdated="updateName" placeholder="name"/>
-            <input-dropdown :key="redrawRoom" @valueUpdated="updateSelectedRoom" :place_holder="this.place_holder_room" :list=this.rooms :isDisabled='this.lockRoom'/>
-            <bigger-button-center @click="addBox" class="addButton" text="Add Box" />
-        </div>
+                <div id="containerWhat" v-if="this.box_active">
+                    <input-text-enhanced @valueUpdated="updateName" placeholder="name"/>
+                    <input-dropdown :key="redrawRoom" @valueUpdated="updateSelectedRoom" :place_holder="this.place_holder_room" :list=this.rooms :isDisabled='this.lockRoom'/>
+                </div>
 
 
-        <div id="containerWhat" v-if="this.location_active == 'true'">
-            <input-text-enhanced @valueUpdated="updateName" placeholder="name"/>
-            <bigger-button-center @click="addRoom" class="addButton" text="Add Location" />
-        </div>
+                <div id="containerWhat" v-if="this.location_active">
+                    <input-text-enhanced @valueUpdated="updateName" placeholder="name"/>
+                </div>
+            </v-card-text>
 
-    </div>
+            <v-card-actions class="justify-end">
+                <div id="addButton">
+                    <v-btn
+                        class="addButton"
+                        variant="text"
+                        @click="addItem"
+                    >{{this.getBtnString()}}</v-btn>
+                </div>
+
+            </v-card-actions>
+
+        </v-card>
+
+    </v-dialog>
 </template>
 
 <script>
@@ -48,6 +83,8 @@ import {
 } from '@/db/supabase';
 import { getUser } from '@/db/dexie';
 import {Constants} from  "@/global/constants";
+import ProductsOverviewView from "@/views/ProductsOverviewView.vue";
+import BoxesOverviewView from "@/views/BoxesOverviewView.vue";
 
 export default {
 name: 'App',
@@ -70,6 +107,7 @@ props: {
     }
 },
 components: {
+    BoxesOverviewView, ProductsOverviewView,
     Tag,
     InputTextEnhanced,
     BiggerButtonCenter,
@@ -78,9 +116,10 @@ components: {
 }, 
 data() {
     return {
-      product_active: "true",
-      box_active: "false",
-      location_active: "false",
+      active_view: Constants.ProductsView,
+      product_active: true,
+      box_active: false,
+      location_active: false,
       rooms: [],
       boxes: [],
       curr_name: "",
@@ -103,21 +142,12 @@ data() {
         if(rooms)
             this.redrawRoom += 1;
     },
+    isActive(view)
+    {
+        return view === this.active_view;
+    },
     categoryChange(change_to) {
-
-        if (change_to === Constants.ProductsView) {
-            this.product_active = "true"; this.box_active = "false"; this.location_active = "false";
-        } else if (change_to === Constants.BoxesView)  {
-            this.product_active = "false"; this.box_active = "true"; this.location_active = "false";
-        } else if(change_to === Constants.LocationsView) {
-            this.product_active = "false";
-            this.box_active = "false";
-            this.location_active = "true";
-        } else {
-            this.product_active = "true";
-            this.box_active = "false";
-            this.location_active = "false";
-        }
+        this.active_view = change_to;
     },
     updateSelectedBox(box, init=false) {
         this.curr_box = box;
@@ -149,6 +179,23 @@ data() {
     },
     updateName(name) {
         this.curr_name = name;
+    },
+    addItem()
+    {
+        switch(this.active_view)
+        {
+            case Constants.ProductsView:
+                this.addProduct();
+                break;
+            case Constants.BoxesView:
+                this.addBox();
+                break;
+            case Constants.LocationsView:
+                this.addRoom();
+                break;
+            default:
+                break;
+        }
     },
     addProduct() {
         // setting box and room at once is not supported
@@ -194,6 +241,20 @@ data() {
           if(this.navbarItems === curr_tab || (Array.isArray(this.navbarItems) && this.navbarItems.includes(curr_tab)))
               return true;
           return false;
+      },
+      getBtnString()
+      {
+          switch(this.active_view)
+          {
+              case Constants.ProductsView:
+                  return "Add Product";
+              case Constants.BoxesView:
+                  return "Add Box";
+              case Constants.LocationsView:
+                  return "Add Location";
+              default:
+                  break;
+          }
       },
 
 },
@@ -286,8 +347,29 @@ beforeMount() {
 }
 
 .addButton {
-    position: absolute;
-    bottom: 10px;
+    border: rgba(255,255,255,0.5) solid 1px;
+    background-color: rgba(0,0,0,0.4);
+    backdrop-filter: blur(15px);
+    border-radius: 5px;
+
+}
+#addButton{
+    background: var(--color-darker);
+    border-radius: 5px;
+}
+
+.modal-container{
+    background-color: rgba(0,0,0,0.5);
+    backdrop-filter: blur(15px);
+    border-radius: 10px;
+    border: white solid 1px;
+    height: 60vh;
+    color: white;
+}
+.toolbar{
+    background-color: transparent;
+    border-bottom: white solid 1px;
+    color: white;
 }
 </style>
   

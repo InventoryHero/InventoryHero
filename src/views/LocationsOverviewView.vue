@@ -10,7 +10,14 @@
     :numProducts="r.product_cnt" />
     <load-animation v-if="this.loading"></load-animation>
     
-    <add-modal :preselected_room="this.preselectedRoom" :navbarItems="this.displayedNavbarItems" :defaultAddView="this.defaultModalView" v-if="this.addModalVisibility" @closeModal="closeModal()"/>
+    <add-modal
+        :preselected_room="this.preselectedRoom"
+        :navbarItems="this.displayedNavbarItems"
+        :defaultAddView="this.defaultModalView"
+        v-model="this.addModalVisibility"
+        @closeModal="closeModal()"
+    />
+
     <div id="spacing"></div>
     <dock
         @qrButton="this.qrReaderModalVisibility=true"
@@ -23,6 +30,10 @@ import RoomCard from "@/components/RoomCard.vue";
 import SandwichMenu from "@/components/SandwichMenu.vue";
 import LoadAnimation from "@/components/LoadAnimation.vue";
 import SearchBar from '@/components/SearchBar.vue';
+import Dock from "@/components/Dock.vue";
+
+
+import AddModal from "@/modals/AddModal.vue";
 
 
 import { DB_SB_delete_room, DB_SB_get_room_name, DB_SB_get_rooms, DB_SB_getStarredProducts} from '@/db/supabase';
@@ -30,8 +41,8 @@ import { getUser } from "@/db/dexie";
 import { Constants } from "@/global/constants";
 import { rankLocationsBySearch } from '@/scripts/sort';
 
-import AddModal from "@/modals/AddModal.vue";
-import Dock from "@/components/Dock.vue";
+
+
   
   export default {
     name: 'App',

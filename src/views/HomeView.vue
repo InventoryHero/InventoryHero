@@ -10,7 +10,7 @@
     </div>
     
 
-  <add-modal v-if="this.addModalVisibility" @closeModal="closeModal()"/>
+  <add-modal v-model="this.addModalVisibility" @closeModal="closeModal()"/>
   <qr-reader-modal v-model="this.qrReaderModalVisibility" @closeQrModal="closeQrModal()" @loadDetailView="loadDetailView"/>
   <qr-data-modal v-model="this.qrCodeDataModalVisibility" v-bind:qr-code-data="this.qrCodeData" @closeQrDataModal="this.qrCodeDataModalVisibility=false"></qr-data-modal>
   <dock
