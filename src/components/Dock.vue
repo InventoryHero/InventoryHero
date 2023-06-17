@@ -3,14 +3,22 @@
     <v-list-item class="button" @click="this.$emit('addButton')" density="compact" >
       <v-icon  size="x-large" icon="mdi-plus" />
     </v-list-item>
-    <v-list-item class="button" @click="this.$emit('qrButton')" density="compact" >
+    <v-list-item v-if="this.show_qr" class="button" @click="this.$emit('qrButton')" density="compact" >
       <v-icon  size="x-large" icon="fa:fas fa-qrcode" />
     </v-list-item>
   </div>
 </template>
 
-<script setup>
-
+<script>
+export default {
+  name: 'App',
+  props: {
+    show_qr: {
+      type: Boolean,
+      default: true,
+    },
+  }
+}
 </script>
 
 <style scoped>

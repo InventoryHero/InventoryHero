@@ -2,6 +2,7 @@
     <v-dialog
         transition="dialog-bottom-transition"
         width="auto"
+        v-model="this.model"
     >
         <v-card
             height="100%"
@@ -14,7 +15,7 @@
                 <v-icon class="me-5" icon="fa:fas fa-times" @click="closeModal()"></v-icon>
             </v-toolbar>
             <v-card-text>
-                <qrcode-stream @decode="onDecode"></qrcode-stream>
+                <qrcode-stream  @decode="onDecode"  @init="logErrors"></qrcode-stream>
             </v-card-text>
         </v-card>
 
@@ -27,6 +28,7 @@ import {QrcodeStream} from "vue-qrcode-reader/src";
 export default {
     name: 'App',
     props: {
+        model: Boolean
 
     },
     components: {
@@ -37,14 +39,24 @@ export default {
 
     },
     methods: {
-        onDecode(decodedString)
+        async onDecode(decodedString)
         {
-            this.$emit('loadDetailView', JSON.parse(decodedString));
+            console.log("HALLO");
+            try{
+                let data = JSON.parse(decodedString);
+                this.$emit('loadDetailView', data);
+            }catch(e)
+            {
+                console.log("error while reading qr code");
+            }
+
         },
         closeModal()
         {
-            console.log("HI");
             this.$emit('closeQrModal')
+        },
+        logErrors (promise) {
+            promise.catch(console.error)
         }
 
     },

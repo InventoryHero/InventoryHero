@@ -20,11 +20,11 @@
               :defaultAddView="this.defaultModalView"
               :dialog="this.addModalVisibility"
   />
-
   <load-animation v-if="this.loading"></load-animation>
   <div v-if="!this.from_qrcode" id="spacing"></div>
+
   <dock
-          @qrButton="this.qrReaderModalVisibility=true"
+          :show_qr="false"
           @addButton="this.addModalVisibility = true"
           v-if="!this.from_qrcode"
   />
@@ -45,6 +45,8 @@ import {DB_SB_get_box_name, DB_SB_get_boxes, DB_SB_get_room, DB_SB_getStarredPro
 import {getUser} from "@/db/dexie";
 import {Constants} from "@/global/constants";
 import {rankBoxesBySearch} from "@/scripts/sort";
+import QrDataModal from "@/modals/QrDataModal.vue";
+import QrReaderModal from "@/modals/QrReaderModal.vue";
 
 
 export default {
@@ -64,6 +66,7 @@ export default {
     }
   },
   components: {
+    QrReaderModal, QrDataModal,
     LoadAnimation,
     AddModal,
     BoxCard,
@@ -76,7 +79,6 @@ export default {
           boxes: [],
           currentUser: "",
           addModalVisibility: false,
-          qrReaderModalVisibility: false,
           Constants,
           title: "Boxes",
           preselectedBox: "",

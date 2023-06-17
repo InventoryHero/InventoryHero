@@ -11,9 +11,17 @@
     
 
   <add-modal v-model="this.addModalVisibility" @closeModal="closeModal()"/>
-  <qr-reader-modal v-model="this.qrReaderModalVisibility" @closeQrModal="closeQrModal()" @loadDetailView="loadDetailView"/>
-  <qr-data-modal v-model="this.qrCodeDataModalVisibility" v-bind:qr-code-data="this.qrCodeData" @closeQrDataModal="this.qrCodeDataModalVisibility=false"></qr-data-modal>
+  <qr-reader-modal
+          :model="this.qrReaderModalVisibility"
+          @closeQrModal="closeQrModal()"
+          @loadDetailView="loadDetailView"/>
+  <qr-data-modal
+          :model="this.qrCodeDataModalVisibility"
+          v-bind:qr-code-data="this.qrCodeData"
+          @closeQrDataModal="this.qrCodeDataModalVisibility=false"
+  />
   <dock
+    :show_qr="true"
     @qrButton="this.qrReaderModalVisibility=true"
     @addButton="this.addModalVisibility = true"
   />
@@ -58,11 +66,9 @@ export default {
     },
     loadDetailView(qr_data)
     {
-      console.log(qr_data);
       this.qrCodeData = qr_data;
       this.qrReaderModalVisibility = false;
       this.qrCodeDataModalVisibility = true;
-      
     },
     closeModal() {
       this.addModalVisibility = false;

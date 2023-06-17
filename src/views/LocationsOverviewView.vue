@@ -17,10 +17,12 @@
         v-model="this.addModalVisibility"
         @closeModal="closeModal()"
     />
+    <qr-reader-modal v-model="this.qrReaderModalVisibility" @closeQrModal="closeQrModal()" @loadDetailView="loadDetailView"/>
+    <qr-data-modal v-model="this.qrCodeDataModalVisibility" v-bind:qr-code-data="this.qrCodeData" @closeQrDataModal="this.qrCodeDataModalVisibility=false"></qr-data-modal>
 
 
     <dock
-        @qrButton="this.qrReaderModalVisibility=true"
+        :show_qr="false"
         @addButton="this.addModalVisibility = true"
     />
 </template>
@@ -40,6 +42,8 @@ import { DB_SB_delete_room, DB_SB_get_room_name, DB_SB_get_rooms, DB_SB_getStarr
 import { getUser } from "@/db/dexie";
 import { Constants } from "@/global/constants";
 import { rankLocationsBySearch } from '@/scripts/sort';
+import QrDataModal from "@/modals/QrDataModal.vue";
+import QrReaderModal from "@/modals/QrReaderModal.vue";
 
 
 
@@ -47,6 +51,7 @@ import { rankLocationsBySearch } from '@/scripts/sort';
   export default {
     name: 'App',
     components: {
+        QrReaderModal, QrDataModal,
         Dock,
         LoadAnimation,
         AddModal,
@@ -59,7 +64,6 @@ import { rankLocationsBySearch } from '@/scripts/sort';
             rooms: [],
             currentUser: "",
             addModalVisibility: false,
-            qrReaderModalVisibility: false,
             Constants,
             title: "Locations",
             defaultModalView: Constants.LocationsView,

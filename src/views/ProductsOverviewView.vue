@@ -27,10 +27,11 @@
     />
     <load-animation v-if="this.loading"></load-animation>
     <div v-if="!this.from_qrcode" id="spacing"></div>
+
     <dock
-            @qrButton="this.qrReaderModalVisibility=true"
-            @addButton="this.addModalVisibility = true"
-            v-if="!this.from_qrcode"
+          :show_qr="false"
+          @addButton="this.addModalVisibility = true"
+          v-if="!this.from_qrcode"
     />
   </template>
   
@@ -55,6 +56,8 @@
   import BoxCard from "@/components/BoxCard.vue";
   import SearchBar from "@/components/SearchBar.vue";
   import {rankBoxesBySearch} from "@/scripts/sort";
+  import QrDataModal from "@/modals/QrDataModal.vue";
+  import QrReaderModal from "@/modals/QrReaderModal.vue";
   
   
   export default {
@@ -82,6 +85,7 @@
       }
     },
     components: {
+      QrReaderModal, QrDataModal,
       SearchBar, BoxCard,
       Dock,
       LoadAnimation,
@@ -94,7 +98,6 @@
             products: [],
             currentUser: "",
             addModalVisibility: false,
-            qrReaderModalVisibility: false,
             Constants,
             title: "Products",
             loading: true

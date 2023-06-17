@@ -2,41 +2,42 @@
     <v-dialog
         transition="dialog-bottom-transition"
         width="auto"
+        v-model="this.model"
     >
-        <v-card
-            height="100%"
-            class="d-flex-column modal-container"
-        >
-            <v-toolbar
+
+      <v-card
+              height="100%"
+              class="d-flex-column modal-container"
+      >
+        <v-toolbar
                 class="toolbar justify-space-evenly"
-            >
-                    <v-list-item density="compact" >
-                        <tag text="Product" @click="this.categoryChange(Constants.ProductsView)" :active="this.product_active.toString()"/>
-                    </v-list-item>
-                    <v-list-item density="compact">
-                        <tag @click="this.categoryChange(Constants.BoxesView)" :active="this.box_active.toString()" text="Box" :hidden="!this.qrCodeData.is_room"/>
-                    </v-list-item>
-                    <v-spacer v-if="!this.qrCodeData.is_room"/>
-                    <v-list-item  density="compact">
-                    <v-icon  class="me-5" icon="fa:fas fa-times" @click="closeModal()"/>
-                </v-list-item>
-            </v-toolbar>
+        >
+          <v-list-item density="compact" >
+            <tag text="Product" @click="this.categoryChange(Constants.ProductsView)" :active="this.product_active.toString()"/>
+          </v-list-item>
+          <v-list-item density="compact">
+            <tag @click="this.categoryChange(Constants.BoxesView)" :active="this.box_active.toString()" text="Box" :hidden="!this.qrCodeData.is_room"/>
+          </v-list-item>
+          <v-spacer v-if="!this.qrCodeData.is_room"/>
+          <v-list-item  density="compact">
+            <v-icon  class="me-5" icon="fa:fas fa-times" @click="closeModal()"/>
+          </v-list-item>
+        </v-toolbar>
 
-            <boxes-overview-view
-                    v-if="this.box_active"
-                    :from_qrcode="true"
-                    :room_id="this.qrCodeData.id"
-                    styling="height:80vh;background:var(--color-blue)"
-            />
+        <boxes-overview-view
+                v-if="this.box_active"
+                :from_qrcode="true"
+                :room_id="this.qrCodeData.id"
+                styling="height:80vh;background:var(--color-blue)"
+        />
 
-            <products-overview-view
-                    v-if="this.product_active"
-                    :from_qrcode="true"
-                    v-bind="getRoomAndBoxIdProp()"
-                    styling="height:80vh;background:var(--color-blue)"
-            />
-        </v-card>
-
+        <products-overview-view
+                v-if="this.product_active"
+                :from_qrcode="true"
+                v-bind="getRoomAndBoxIdProp()"
+                styling="height:80vh;background:var(--color-blue)"
+        />
+      </v-card>
     </v-dialog>
 
 </template>
@@ -56,15 +57,8 @@ name: 'App',
         }
     },
 props: {
-    defaultAddView: {
-        type: String,
-        default: Constants.ProductsView
-    },
-    navbarItems: {
-        type: [Array, String],
-        default: Constants.All
-    },
-    qrCodeData: Object
+    qrCodeData: Object,
+  model: Boolean
 },
 components: {
     Tag,
@@ -103,7 +97,6 @@ data() {
               result.box_id = this.qrCodeData.id;
 
           }
-          console.log("hiii", result);
           return result;
       }
 
