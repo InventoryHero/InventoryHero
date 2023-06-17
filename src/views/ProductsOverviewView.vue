@@ -10,9 +10,13 @@
         </template>
     </v-virtual-scroll>
       <add-modal :defaultAddView="Constants.ProductsView" v-if="this.addModalVisibility" @closeModal="closeModal()"/>
-      <add-button v-if="!this.from_qrcode"  @click="this.addModalVisibility = true"/>
-    <qr-button v-if="!this.from_qrcode"  />
     <load-animation v-if="this.loading"></load-animation>
+    <div id="spacing"></div>
+    <dock
+            @qrButton="this.qrReaderModalVisibility=true"
+            @addButton="this.addModalVisibility = true"
+            v-if="!this.from_qrcode"
+    />
   </template>
   
   <script>
@@ -31,6 +35,7 @@
   import AddModal from "@/modals/AddModal.vue";
   import { Constants } from "@/global/constants";
   import LoadAnimation from "@/components/LoadAnimation.vue";
+  import Dock from "@/components/Dock.vue";
   
   
   export default {
@@ -50,6 +55,7 @@
       },
     },
     components: {
+      Dock,
       LoadAnimation,
         AddModal,
       ProductsCard,
@@ -62,6 +68,7 @@
             products: [],
             currentUser: "",
             addModalVisibility: false,
+            qrReaderModalVisibility: false,
             Constants,
             title: "Products",
             loading: true

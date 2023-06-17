@@ -11,21 +11,24 @@
     
 
   <add-modal v-if="this.addModalVisibility" @closeModal="closeModal()"/>
-  <add-button @click="this.addModalVisibility = true"/>
   <qr-reader-modal v-model="this.qrReaderModalVisibility" @closeQrModal="closeQrModal()" @loadDetailView="loadDetailView"/>
-  <qr-button @click="this.qrReaderModalVisibility=true"></qr-button>
   <qr-data-modal v-model="this.qrCodeDataModalVisibility" v-bind:qr-code-data="this.qrCodeData" @closeQrDataModal="this.qrCodeDataModalVisibility=false"></qr-data-modal>
+  <dock
+    @qrButton="this.qrReaderModalVisibility=true"
+    @addButton="this.addModalVisibility = true"
+  />
   <SandwichMenu title="Home"/>
 </template>
 
 <script>
-import AddButton from '@/components/AddButton.vue'
-import QrButton from '@/components/QrButton.vue'
+//import AddButton from '@/components/AddButton.vue'
+//import QrButton from '@/components/QrButton.vue'
 import SandwichMenu from "@/components/SandwichMenu.vue";
 import ListContainer from '@/components/ListContainer.vue';
 import AddModal from '@/modals/AddModal.vue';
 import QrReaderModal from "@/modals/QrReaderModal.vue";
 import QrDataModal from "@/modals/QrDataModal.vue";
+import Dock from "@/components/Dock.vue";
 
 
 import { DB_SB_getStarredProducts } from '@/db/supabase';
@@ -34,12 +37,13 @@ export default {
   name: 'App',
   components: {
     SandwichMenu,
-    AddButton,
-    QrButton,
+    //AddButton,
+    //QrButton,
     ListContainer,
     AddModal,
     QrReaderModal,
-    QrDataModal
+    QrDataModal,
+    Dock
   },
   data() {
     return {

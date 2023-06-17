@@ -32,10 +32,11 @@ export default {
     height: 50px;
     border: white solid 2px;
     margin-left: 50%;
-    margin-bottom: 80px;
+    margin-bottom: 10px;
     transform: translateX(-50%);
-    top: 50px;
+    top: 15px;
     border-radius: 25px;
+    background: var(--color-darker)
 }
 .transform{
     transform: translateX(-50%);
@@ -51,7 +52,8 @@ input {
     position: absolute;
     width: 100%;
     height: 100%;
-
+    background-color: rgba(0,0,0,0.6);
+    backdrop-filter: blur(15px);
     border-radius: 25px;
     padding-left: 50px;
     color: white;

@@ -11,13 +11,14 @@
     <load-animation v-if="this.loading"></load-animation>
     
     <add-modal :preselected_room="this.preselectedRoom" :navbarItems="this.displayedNavbarItems" :defaultAddView="this.defaultModalView" v-if="this.addModalVisibility" @closeModal="closeModal()"/>
-    <add-button @click="this.addModalVisibility = true"/>
-    <qr-button/>
+    <div id="spacing"></div>
+    <dock
+        @qrButton="this.qrReaderModalVisibility=true"
+        @addButton="this.addModalVisibility = true"
+    />
 </template>
 
 <script>
-import AddButton from '@/components/AddButton.vue'
-import QrButton from '@/components/QrButton.vue'
 import RoomCard from "@/components/RoomCard.vue";
 import SandwichMenu from "@/components/SandwichMenu.vue";
 import LoadAnimation from "@/components/LoadAnimation.vue";
@@ -30,15 +31,15 @@ import { Constants } from "@/global/constants";
 import { rankLocationsBySearch } from '@/scripts/sort';
 
 import AddModal from "@/modals/AddModal.vue";
+import Dock from "@/components/Dock.vue";
   
   export default {
     name: 'App',
     components: {
+        Dock,
         LoadAnimation,
         AddModal,
         RoomCard,
-        AddButton,
-        QrButton,
         SandwichMenu,
         SearchBar
     },
@@ -47,6 +48,7 @@ import AddModal from "@/modals/AddModal.vue";
             rooms: [],
             currentUser: "",
             addModalVisibility: false,
+            qrReaderModalVisibility: false,
             Constants,
             title: "Locations",
             defaultModalView: Constants.LocationsView,

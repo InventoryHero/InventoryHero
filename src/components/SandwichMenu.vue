@@ -76,7 +76,7 @@ color: white;
     top: 0;
     background-color: var(--color-darker);
     color: white;
-
+    height: 60px !important
 }
 #actionIcons {
     position: absolute;

@@ -20,17 +20,20 @@
               :defaultAddView="Constants.BoxesView" />
 
   <load-animation v-if="this.loading"></load-animation>
-  <qr-button v-if="!this.from_qrcode"/>
-  <add-button v-if="!this.from_qrcode" @click="this.addModalVisibility = true"/>
+  <div id="spacing"></div>
+  <dock
+          @qrButton="this.qrReaderModalVisibility=true"
+          @addButton="this.addModalVisibility = true"
+          v-if="!this.from_qrcode"
+  />
 </template>
 
 <script>
-import AddButton from '@/components/AddButton.vue'
-import QrButton from '@/components/QrButton.vue'
 import BoxCard from "@/components/BoxCard.vue";
 import SandwichMenu from "@/components/SandwichMenu.vue";
 import LoadAnimation from "@/components/LoadAnimation.vue";
 import SearchBar from '@/components/SearchBar.vue';
+import Dock from "@/components/Dock.vue";
 
 import {
   DB_SB_get_boxes,
@@ -66,16 +69,16 @@ export default {
     LoadAnimation,
     AddModal,
     BoxCard,
-    AddButton,
-    QrButton,
     SandwichMenu,
-    SearchBar
+    SearchBar,
+    Dock
   },
   data() {
       return {
           boxes: [],
           currentUser: "",
           addModalVisibility: false,
+          qrReaderModalVisibility: false,
           Constants,
           title: "Boxes",
           preselectedBox: "",
@@ -143,6 +146,9 @@ export default {
   }
   .v-virtual-scroll{
       background: var(--color-blue);
+  }
+  #spacing{
+      height: calc(5vh + 25px);
   }
 
   ::-webkit-scrollbar { width: 0px;  }
