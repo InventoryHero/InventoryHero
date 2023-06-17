@@ -1,16 +1,18 @@
 <template>
-  <SandwichMenu :title="this.title" />
 
-  <search-bar @valueUpdated="sortBoxes"/>
-
-  <box-card v-for="b in boxes" class="card" 
-                      :key="b.id"
-                      :id="b.id" 
-                      :boxName="b.name" 
-                      :numProducts="b.product_cnt" 
-                      :numStarredProducts="b.starred_product_cnt" 
-                      @boxDeleted="refreshData" />
-
+  <SandwichMenu v-if="!this.from_qrcode" :title="this.title"/>
+  <div :style="this.styling">
+    <search-bar :do_transform="this.from_qrcode ? '' : 'transform'" @valueUpdated="sortBoxes"/>
+    <box-card v-for="b in boxes" class="card"
+                        :key="b.id"
+                        :id="b.id"
+                        :boxName="b.name"
+                        :numProducts="b.product_cnt"
+                        :numStarredProducts="b.starred_product_cnt"
+                        @boxDeleted="get_boxes"
+                        @addItemToBox="displayModal"
+    />
+  </div>
   <add-modal  v-if="this.addModalVisibility"
               @closeModal="closeModal()"
               :preselected_box="this.preselectedBox" 
@@ -18,8 +20,8 @@
               :defaultAddView="Constants.BoxesView" />
 
   <load-animation v-if="this.loading"></load-animation>
-  <add-button @click="this.addModalVisibility = true"/>
-  <qr-button/>
+  <qr-button v-if="!this.from_qrcode"/>
+  <add-button v-if="!this.from_qrcode" @click="this.addModalVisibility = true"/>
 </template>
 
 <script>
@@ -50,6 +52,14 @@ export default {
     room_id: {
       type: Number,
       default: -1,
+    },
+    from_qrcode: {
+      type: Boolean,
+      default: false
+    },
+    styling: {
+      type: String,
+      default: "",
     }
   },
   components: {

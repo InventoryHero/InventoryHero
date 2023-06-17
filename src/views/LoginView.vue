@@ -41,7 +41,7 @@ export default {
     login() {
       DB_SB_login(this.username, this.password).then((login_succeeded) => {
         if (login_succeeded) {
-          setUser(this.username, this.password).then((res) => {
+          setUser(this.username).then((res) => {
             if(res) {
               this.$router.push("/home")
             }

@@ -32,33 +32,33 @@
                 </div>
             </v-card>
         </v-col>
-        <room-detail-modal :id="id" :name="this.roomName" v-model="this.dialog" @closeDetailModal="informationButton" @roomDeleted="roomDeleted"/>
+        <room-detail-modal :id="id" :name="this.roomName" v-model="this.dialog" :username="this.username" @closeDetailModal="informationButton" @roomDeleted="roomDeleted"/>
     </v-layout>
 </template>
 
 <script>
 import RoomDetailModal from "@/modals/RoomDetailModal.vue";
+  export default {
+      components: {
+          RoomDetailModal
+      },
+      props: {
+          id: Number,
+          roomName: String,
+          numBoxes: Number,
+          numProducts: Number,
+          username: String,
 
-export default {
-    components: {
-        RoomDetailModal
-    },
-    props: {
-        id: Number,
-        roomName: String,
-        numBoxes: Number,
-        numProducts: Number,
-
-    },
-    data() {
-        return {
-            dialog: false,
-            name: this.roomName
-        }
-    },
-    methods: {
-        roomDeleted(id)
-        {
+      },
+      data() {
+          return {
+              dialog: false,
+              name: this.roomName
+          }
+      },
+      methods: {
+          roomDeleted(id)
+          {
             this.dialog = false;
             this.$emit("roomDeleted", id);
         },

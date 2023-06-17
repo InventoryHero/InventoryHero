@@ -6,6 +6,8 @@ RUN apk add --update nginx && \
 
 COPY ./deploy/nginx.conf /etc/nginx/nginx.conf
 COPY ./deploy/default.conf /etc/nginx/conf.d/default.conf
+COPY ./deploy/nginx-selfsigned.crt /etc/ssl/private/nginx-selfsigned.crt
+COPY ./deploy/nginx-selfsigned.key /etc/ssl/private/nginx-selfsigned.key
 
 WORKDIR /tmp/nginx/vue-single-page-app
 COPY . .

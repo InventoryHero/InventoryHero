@@ -1,6 +1,6 @@
 <template>
     <div id="containerSearchBar">
-        <input type="text" v-model="this.value" @input="this.$emit('valueUpdated', this.value)">
+        <input :class="this.do_transform" type="text" v-model="this.value" @input="this.$emit('valueUpdated', this.value)">
         <i class="fa-solid fa-magnifying-glass fa-lg icon"></i>
     </div>
 </template>
@@ -15,6 +15,12 @@ export default {
               value: ""
           }
       },
+    props: {
+        do_transform: {
+            type: String,
+            default: "transform",
+        }
+    }
 }
 </script>
 
@@ -31,7 +37,9 @@ export default {
     top: 50px;
     border-radius: 25px;
 }
-
+.transform{
+    transform: translateX(-50%);
+}
 .icon {
     position: absolute;
     left: 20px;
@@ -43,7 +51,7 @@ input {
     position: absolute;
     width: 100%;
     height: 100%;
-    transform: translateX(-50%);
+
     border-radius: 25px;
     padding-left: 50px;
     color: white;

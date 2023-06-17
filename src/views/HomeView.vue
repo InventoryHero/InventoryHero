@@ -12,7 +12,9 @@
 
   <add-modal v-if="this.addModalVisibility" @closeModal="closeModal()"/>
   <add-button @click="this.addModalVisibility = true"/>
-  <qr-button />
+  <qr-reader-modal v-model="this.qrReaderModalVisibility" @closeQrModal="closeQrModal()" @loadDetailView="loadDetailView"/>
+  <qr-button @click="this.qrReaderModalVisibility=true"></qr-button>
+  <qr-data-modal v-model="this.qrCodeDataModalVisibility" v-bind:qr-code-data="this.qrCodeData" @closeQrDataModal="this.qrCodeDataModalVisibility=false"></qr-data-modal>
   <SandwichMenu title="Home"/>
 </template>
 
@@ -21,7 +23,9 @@ import AddButton from '@/components/AddButton.vue'
 import QrButton from '@/components/QrButton.vue'
 import SandwichMenu from "@/components/SandwichMenu.vue";
 import ListContainer from '@/components/ListContainer.vue';
-import AddModal from '@/modals/AddModal.vue'; 
+import AddModal from '@/modals/AddModal.vue';
+import QrReaderModal from "@/modals/QrReaderModal.vue";
+import QrDataModal from "@/modals/QrDataModal.vue";
 
 
 import { DB_SB_getStarredProducts } from '@/db/supabase';
@@ -33,18 +37,35 @@ export default {
     AddButton,
     QrButton,
     ListContainer,
-    AddModal
+    AddModal,
+    QrReaderModal,
+    QrDataModal
   },
   data() {
     return {
       showTitle: true,
       starred_products: [],
-      addModalVisibility: false
+      addModalVisibility: false,
+      qrReaderModalVisibility: false,
+      qrCodeDataModalVisibility: false,
+      qrCodeData: Object,
     }
   },
   methods: {
     openMenu() {
       console.log("open me")
+    },
+    closeQrModal()
+    {
+      this.qrReaderModalVisibility = false;
+    },
+    loadDetailView(qr_data)
+    {
+      console.log(qr_data);
+      this.qrCodeData = qr_data;
+      this.qrReaderModalVisibility = false;
+      this.qrCodeDataModalVisibility = true;
+      
     },
     closeModal() {
       this.addModalVisibility = false;

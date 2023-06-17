@@ -1,5 +1,5 @@
 <template>
-    <SandwichMenu :title="this.title"/>
+    <SandwichMenu v-if="!this.from_qrcode"  :title="this.title"/>
     <v-virtual-scroll
         class="virtual-scroll-bg"
         :height="80+'vh'"
@@ -10,8 +10,8 @@
         </template>
     </v-virtual-scroll>
       <add-modal :defaultAddView="Constants.ProductsView" v-if="this.addModalVisibility" @closeModal="closeModal()"/>
-      <add-button @click="this.addModalVisibility = true"/>
-    <qr-button/>
+      <add-button v-if="!this.from_qrcode"  @click="this.addModalVisibility = true"/>
+    <qr-button v-if="!this.from_qrcode"  />
     <load-animation v-if="this.loading"></load-animation>
   </template>
   
@@ -43,7 +43,11 @@
       box_id: {
         type: Number,
         default: -1
-      }
+      },
+      from_qrcode: {
+        type: Boolean,
+        default: false
+      },
     },
     components: {
       LoadAnimation,

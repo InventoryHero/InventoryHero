@@ -1,9 +1,8 @@
 
 
 <template>
-    <v-toolbar id="navbar"  :title="this.title" absolute fixed>
-    </v-toolbar>
-    <Slide :crossIcon="false">
+    <v-toolbar id="navbar" class="cnavbar" :title="this.title" />
+    <Slide class="cnavbar" :crossIcon="false">
       <a id="home" @click="this.$router.push('/Home')">
           <span>Home</span>
       </a>
@@ -35,7 +34,6 @@
           </v-list-item>
       </div>
     </Slide>
-
 
 </template>
 <script>
@@ -75,8 +73,7 @@ color: white;
 }
 <style scoped>
 #navbar {
-    position: absolute;
-    top: 0vh;
+    top: 0;
     background-color: var(--color-darker);
     color: white;
 
@@ -85,5 +82,9 @@ color: white;
     position: absolute;
     bottom: 0vh;
     width: 85%;
+}
+.cnavbar{
+    position: fixed;
+    z-index: 1000;
 }
 </style>

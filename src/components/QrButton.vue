@@ -16,14 +16,14 @@ components: {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 .containerQrButton{ 
-    position: absolute;
+    position: fixed;
     right: 20px;
-    bottom: 90px;
+    bottom: 80px;
     width: 50px;
     height: 50px;
     border-radius: 10px;
-    background-color: var(--color-darker);
-
+    background-color: rgba(0,0,0,0.5);
+    backdrop-filter: blur(15px);
 }
 </style>
   
