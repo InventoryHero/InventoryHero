@@ -1,6 +1,9 @@
 <template>
   <SandwichMenu :title="this.title" />
-  <BoxCard v-for="b in boxes" class="card" 
+
+  <search-bar @valueUpdated="sortBoxes"/>
+
+  <box-card v-for="b in boxes" class="card" 
                       :key="b.id"
                       :id="b.id" 
                       :boxName="b.name" 
@@ -25,6 +28,7 @@ import QrButton from '@/components/QrButton.vue'
 import BoxCard from "@/components/BoxCard.vue";
 import SandwichMenu from "@/components/SandwichMenu.vue";
 import LoadAnimation from "@/components/LoadAnimation.vue";
+import SearchBar from '@/components/SearchBar.vue';
 
 import {
   DB_SB_get_boxes,
@@ -34,6 +38,7 @@ import {
 } from '@/db/supabase';
 import { getUser } from "@/db/dexie";
 import { Constants } from "@/global/constants";
+import { rankBoxesBySearch } from "@/scripts/sort";
 
 import AddModal from "@/modals/AddModal.vue";
 
@@ -53,7 +58,8 @@ export default {
     BoxCard,
     AddButton,
     QrButton,
-    SandwichMenu
+    SandwichMenu,
+    SearchBar
   },
   data() {
       return {
@@ -68,10 +74,6 @@ export default {
       }
   },
   methods: {
-      refreshData()
-      {
-        this.get_boxes();
-      },
       displayModal(id){
         DB_SB_get_box_name(id).then((box) => {
           this.preselectedBox = box;
@@ -80,11 +82,11 @@ export default {
           this.addModalVisibility = true;
         })
       },
-      get_boxes() {
-          DB_SB_get_boxes(this.currentUser.username, this.room_id).then((boxes) => {
-              this.boxes = boxes;
-              this.loading = false;
-          });
+      async get_boxes() {
+          const boxes = await DB_SB_get_boxes(this.currentUser.username, this.room_id);
+          this.boxes = rankBoxesBySearch(boxes, "");
+          this.loading = false;
+          return boxes
       },
       closeModal() {
         this.addModalVisibility = false;
@@ -96,6 +98,10 @@ export default {
               this.starred_products = res;
           })
       },
+      async sortBoxes(search_word) {
+        const boxes = await this.get_boxes();
+        this.boxes = rankBoxesBySearch(boxes, search_word);
+      }
   },
   beforeMount() {
       getUser().then((user) => {

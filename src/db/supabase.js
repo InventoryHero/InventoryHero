@@ -168,20 +168,19 @@ export async function DB_SB_increase_product_amount(productId) {
 
 
 export async function DB_SB_get_boxes(user, room = -1){
-
     let data;
     if(room === -1)
     {
-        data = await supabase.from("boxes").select("*").eq("username", user);
+        data = (await supabase.from("boxes").select("*").eq("username", user)).data;
     }
     else {
-        data = await supabase.from("boxes").select("*").eq("username", user).eq("room_id", room);
+        data = (await supabase.from("boxes").select("*").eq("username", user).eq("room_id", room)).data;
     }
 
     const all_products_of_user = (await supabase.from("products").select("*").eq("username", user)).data;
     
-    for(let i = 0; i < data.data.length; i++) {
-        let curr_box = data.data.at(i);
+    for(let i = 0; i < data.length; i++) {
+        let curr_box = data.at(i);
         let curr_boxes_amount = 0
         let curr_starred_amount = 0
 
@@ -196,7 +195,8 @@ export async function DB_SB_get_boxes(user, room = -1){
         curr_box.product_cnt = curr_boxes_amount
         curr_box.starred_product_cnt = curr_starred_amount
     }
-    return data.data;
+
+    return data;
 }
 
 

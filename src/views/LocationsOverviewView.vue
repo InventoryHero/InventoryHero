@@ -1,5 +1,7 @@
 <template>
     <SandwichMenu :title="this.title"/>
+    <search-bar @valueUpdated="sortLocations"/>
+
     <RoomCard v-for="r in this.rooms" @addItemToRoom="displayModal" @roomDeleted="updateRooms" class="card" 
     :key="r.id"
     :id="r.id" 
@@ -19,10 +21,13 @@ import QrButton from '@/components/QrButton.vue'
 import RoomCard from "@/components/RoomCard.vue";
 import SandwichMenu from "@/components/SandwichMenu.vue";
 import LoadAnimation from "@/components/LoadAnimation.vue";
+import SearchBar from '@/components/SearchBar.vue';
+
 
 import { DB_SB_delete_room, DB_SB_get_room_name, DB_SB_get_rooms, DB_SB_getStarredProducts} from '@/db/supabase';
 import { getUser } from "@/db/dexie";
 import { Constants } from "@/global/constants";
+import { rankLocationsBySearch } from '@/scripts/sort';
 
 import AddModal from "@/modals/AddModal.vue";
   
@@ -35,6 +40,7 @@ import AddModal from "@/modals/AddModal.vue";
         AddButton,
         QrButton,
         SandwichMenu,
+        SearchBar
     },
     data() {
         return {
@@ -67,14 +73,11 @@ import AddModal from "@/modals/AddModal.vue";
                 this.addModalVisibility = true;
             })
         },
-        get_rooms() {
-            DB_SB_get_rooms(this.currentUser.username).then((rooms) => {
-                console.log(rooms);
-                this.rooms = rooms;
-                console.log(this.loading)
-                this.loading = false;
-                console.log(this.loading)
-            });
+        async get_rooms() {
+            const locations = await DB_SB_get_rooms(this.currentUser.username)
+            this.rooms = rankLocationsBySearch(locations, "");
+            this.loading = false;
+            return locations
         },
         closeModal() {
             this.addModalVisibility = false;
@@ -86,6 +89,10 @@ import AddModal from "@/modals/AddModal.vue";
                 this.starred_products = res;
             })
         },
+        async sortLocations(search_word) {
+            const locations = await this.get_rooms();
+            this.rooms = rankLocationsBySearch(locations, search_word);
+        }
     },
     beforeMount() {
         getUser().then((user) => {
