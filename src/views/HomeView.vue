@@ -21,7 +21,6 @@
           @closeQrDataModal="this.qrCodeDataModalVisibility=false"
   />
   <dock
-    :show_qr="true"
     @qrButton="this.qrReaderModalVisibility=true"
     @addButton="this.addModalVisibility = true"
   />
