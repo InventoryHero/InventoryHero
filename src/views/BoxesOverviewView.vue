@@ -13,11 +13,13 @@
                         @addItemToBox="displayModal"
     />
   </div>
-  <add-modal  v-if="this.addModalVisibility"
+  <add-modal
               @closeModal="closeModal()"
-              :preselected_box="this.preselectedBox" 
-              :navbarItems="this.displayedNavbarItems" 
-              :defaultAddView="this.defaultModalView" />
+              :preselected_box="this.preselectedBox"
+              :navbarItems="this.displayedNavbarItems"
+              :defaultAddView="this.defaultModalView"
+              :dialog="this.addModalVisibility"
+  />
 
   <load-animation v-if="this.loading"></load-animation>
   <div v-if="!this.from_qrcode" id="spacing"></div>
@@ -39,18 +41,10 @@ import Dock from "@/components/Dock.vue";
 import AddModal from "@/modals/AddModal.vue";
 
 
-import {
-  DB_SB_get_boxes,
-  DB_SB_getStarredProducts,
-  DB_SB_get_room,
-  DB_SB_get_box_name
-} from '@/db/supabase';
-import { getUser } from "@/db/dexie";
-import { Constants } from "@/global/constants";
-import { rankBoxesBySearch } from "@/scripts/sort";
-
-
-
+import {DB_SB_get_box_name, DB_SB_get_boxes, DB_SB_get_room, DB_SB_getStarredProducts} from '@/db/supabase';
+import {getUser} from "@/db/dexie";
+import {Constants} from "@/global/constants";
+import {rankBoxesBySearch} from "@/scripts/sort";
 
 
 export default {
@@ -92,13 +86,12 @@ export default {
       }
   },
   methods: {
-      displayModal(id){
-        DB_SB_get_box_name(id).then((box) => {
-          this.preselectedBox = box;
-          this.defaultModalView = Constants.ProductsView;
-          this.displayedNavbarItems = [Constants.ProductsView];
-          this.addModalVisibility = true;
-        })
+      async displayModal(id){
+        this.defaultModalView = "products";
+        this.displayedNavbarItems = [Constants.ProductsView];
+        this.preselectedBox = await DB_SB_get_box_name(id);
+
+        this.addModalVisibility = true;
       },
       async get_boxes() {
           const boxes = await DB_SB_get_boxes(this.currentUser.username, this.room_id);

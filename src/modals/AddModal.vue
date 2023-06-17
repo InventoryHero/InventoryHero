@@ -1,5 +1,6 @@
 <template>
     <v-dialog
+        v-model="this.dialog"
         transition="dialog-bottom-transition"
         width="100%"
         height="80%"
@@ -15,16 +16,16 @@
                     class="ms-5"
                     @click="categoryChange(Constants.ProductsView)"
                     text="Product"
-                    :active="this.isActiveString(Constants.ProductsView)"
+                    :active="this.isActive(Constants.ProductsView).toString()"
                     :hidden="!this.showSelectionTabs(Constants.ProductsView)" />
                 <tag
                     @click="categoryChange(Constants.BoxesView)"
-                    :active="this.isActiveString(Constants.BoxesView)"
+                    :active="this.isActive(Constants.BoxesView).toString()"
                     text="Box"
                     :hidden="!this.showSelectionTabs(Constants.BoxesView)"/>
                 <tag
                     @click="categoryChange(Constants.LocationsView)"
-                    :active="this.isActiveString(Constants.LocationsView)"
+                    :active="this.isActive(Constants.LocationsView).toString()"
                     text="Location"
                     :hidden="!this.showSelectionTabs(Constants.LocationsView)"/>
                 <v-spacer :hidden="this.showSelectionTabs(Constants.LocationsView)"/>
@@ -104,6 +105,10 @@ props: {
     preselected_room: {
         type: String,
         default: ""
+    },
+    dialog: {
+        type: Boolean,
+        default: false,
     }
 },
 components: {
@@ -112,10 +117,16 @@ components: {
     BiggerButtonCenter,
     InputDropdown,
     InputStarred
-}, 
+},
+watch: {
+    defaultAddView: function(newVal, oldVal)
+    {
+        this.active_view = newVal;
+    }
+},
 data() {
     return {
-      active_view: Constants.ProductsView,
+      active_view: this.defaultAddView,
       rooms: [],
       boxes: [],
       curr_name: "",
@@ -138,15 +149,6 @@ data() {
         if(rooms)
             this.redrawRoom += 1;
     },
-      isActiveString(view)
-      {
-         if(view === this.active_view)
-         {
-             console.log("TRUE");
-             return "true";
-         }
-          return true;
-      },
     isActive(view)
     {
         return view === this.active_view;
