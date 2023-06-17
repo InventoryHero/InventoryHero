@@ -13,11 +13,11 @@
                         @addItemToBox="displayModal"
     />
   </div>
-  <add-modal  v-model="this.addModalVisibility"
+  <add-modal  v-if="this.addModalVisibility"
               @closeModal="closeModal()"
               :preselected_box="this.preselectedBox" 
               :navbarItems="this.displayedNavbarItems" 
-              :defaultAddView="Constants.BoxesView" />
+              :defaultAddView="this.defaultModalView" />
 
   <load-animation v-if="this.loading"></load-animation>
   <div v-if="!this.from_qrcode" id="spacing"></div>
@@ -87,6 +87,7 @@ export default {
           title: "Boxes",
           preselectedBox: "",
           displayedNavbarItems: Constants.All,
+          defaultModalView: Constants.BoxesView,
           loading: true,
       }
   },

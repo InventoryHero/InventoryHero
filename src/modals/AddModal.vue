@@ -15,23 +15,25 @@
                     class="ms-5"
                     @click="categoryChange(Constants.ProductsView)"
                     text="Product"
-                    :active="this.isActive(Constants.ProductsView).toString()"
+                    :active="this.isActiveString(Constants.ProductsView)"
                     :hidden="!this.showSelectionTabs(Constants.ProductsView)" />
                 <tag
                     @click="categoryChange(Constants.BoxesView)"
-                    :active="this.isActive(Constants.BoxesView).toString()"
+                    :active="this.isActiveString(Constants.BoxesView)"
                     text="Box"
                     :hidden="!this.showSelectionTabs(Constants.BoxesView)"/>
                 <tag
                     @click="categoryChange(Constants.LocationsView)"
-                    :active="this.isActive(Constants.LocationsView).toString()"
+                    :active="this.isActiveString(Constants.LocationsView)"
                     text="Location"
                     :hidden="!this.showSelectionTabs(Constants.LocationsView)"/>
+                <v-spacer :hidden="this.showSelectionTabs(Constants.LocationsView)"/>
+                <v-spacer :hidden="this.showSelectionTabs(Constants.BoxesView)"/>
                 <v-icon class="me-5" icon="fa:fas fa-times" @click="closeModal()"/>
 
             </v-toolbar>
             <v-card-text>
-                <div id="containerWhat" v-if="this.product_active">
+                <div id="containerWhat" v-if="this.isActive(Constants.ProductsView)">
                     <input-text-enhanced @valueUpdated="updateName" placeholder="name"/>
                     <input-dropdown :key="redrawBoxes" @valueUpdated="updateSelectedBox" :place_holder="this.place_holder_box" :list=this.boxes :isDisabled='this.preselected_box !== "" '/>
                     <input-dropdown :key="redrawRoom" @valueUpdated="updateSelectedRoom" :place_holder="this.place_holder_room" :list=this.rooms :isDisabled='this.lockRoom'/>
@@ -39,13 +41,13 @@
                     <input-starred @valueUpdated="updateStarredProduct" />
                 </div>
 
-                <div id="containerWhat" v-if="this.box_active">
+                <div id="containerWhat" v-if="this.isActive(Constants.BoxesView)">
                     <input-text-enhanced @valueUpdated="updateName" placeholder="name"/>
                     <input-dropdown :key="redrawRoom" @valueUpdated="updateSelectedRoom" :place_holder="this.place_holder_room" :list=this.rooms :isDisabled='this.lockRoom'/>
                 </div>
 
 
-                <div id="containerWhat" v-if="this.location_active">
+                <div id="containerWhat" v-if="this.isActive(Constants.LocationsView)">
                     <input-text-enhanced @valueUpdated="updateName" placeholder="name"/>
                 </div>
             </v-card-text>
@@ -83,8 +85,6 @@ import {
 } from '@/db/supabase';
 import { getUser } from '@/db/dexie';
 import {Constants} from  "@/global/constants";
-import ProductsOverviewView from "@/views/ProductsOverviewView.vue";
-import BoxesOverviewView from "@/views/BoxesOverviewView.vue";
 
 export default {
 name: 'App',
@@ -107,7 +107,6 @@ props: {
     }
 },
 components: {
-    BoxesOverviewView, ProductsOverviewView,
     Tag,
     InputTextEnhanced,
     BiggerButtonCenter,
@@ -117,9 +116,6 @@ components: {
 data() {
     return {
       active_view: Constants.ProductsView,
-      product_active: true,
-      box_active: false,
-      location_active: false,
       rooms: [],
       boxes: [],
       curr_name: "",
@@ -142,6 +138,15 @@ data() {
         if(rooms)
             this.redrawRoom += 1;
     },
+      isActiveString(view)
+      {
+         if(view === this.active_view)
+         {
+             console.log("TRUE");
+             return "true";
+         }
+          return true;
+      },
     isActive(view)
     {
         return view === this.active_view;
