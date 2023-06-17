@@ -8,17 +8,17 @@
       <h3>⏰ Last Used Products</h3>
       <list-container :list="[{name: 'Müssen wir noch'}, {name:'abklären, wie wir'}, {name: 'das machen wollen'}, {name: '😁'}]" />
     </div>
-    
-
   <add-modal v-model="this.addModalVisibility" @closeModal="closeModal()"/>
   <qr-reader-modal
-          :model="this.qrReaderModalVisibility"
+          v-model="this.qrReaderModalVisibility"
           @closeQrModal="closeQrModal()"
-          @loadDetailView="loadDetailView"/>
+          @loadDetailView="loadDetailView"
+  />
   <qr-data-modal
-          :model="this.qrCodeDataModalVisibility"
+          v-model="this.qrCodeDataModalVisibility"
           v-bind:qr-code-data="this.qrCodeData"
           @closeQrDataModal="this.qrCodeDataModalVisibility=false"
+
   />
   <dock
     @qrButton="this.qrReaderModalVisibility=true"

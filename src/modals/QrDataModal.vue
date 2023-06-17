@@ -2,7 +2,8 @@
     <v-dialog
         transition="dialog-bottom-transition"
         width="auto"
-        v-model="this.model"
+        persistent
+        no-click-animation
     >
 
       <v-card
@@ -58,7 +59,6 @@ name: 'App',
     },
 props: {
     qrCodeData: Object,
-  model: Boolean
 },
 components: {
     Tag,

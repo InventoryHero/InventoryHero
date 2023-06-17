@@ -1,8 +1,11 @@
 <template>
+
+
     <v-dialog
         transition="dialog-bottom-transition"
         width="auto"
-        v-model="this.model"
+        persistent
+        no-click-animation
     >
         <v-card
             height="100%"
@@ -20,33 +23,51 @@
         </v-card>
 
     </v-dialog>
+
+
 </template>
 
 <script>
 import {QrcodeStream} from "vue-qrcode-reader/src";
+import { useToast } from "vue-toastification";
 
 export default {
+
     name: 'App',
+    setup(){
+      const toast = useToast();
+      return {toast};
+    },
     props: {
         model: Boolean
 
     },
     components: {
-        QrcodeStream
+        QrcodeStream,
+
 
     },
     data() {
-
+        return {
+            barcodeInvalid: false,
+        }
     },
     methods: {
         async onDecode(decodedString)
         {
-            console.log("HALLO");
             try{
                 let data = JSON.parse(decodedString);
+
+                if(!data.hasOwnProperty("id") || ! data.hasOwnProperty("is_room") || !data.hasOwnProperty("is_box") || !data.hasOwnProperty("username"))
+                {
+                    this.toast.error("Please scan a valid IH qr code!");
+                    return;
+                }
+
                 this.$emit('loadDetailView', data);
             }catch(e)
             {
+                console.log(e);
                 console.log("error while reading qr code");
             }
 
@@ -80,5 +101,7 @@ export default {
     border-bottom: white solid 1px;
     color: white;
 }
+
+
 </style>
   

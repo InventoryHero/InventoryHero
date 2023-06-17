@@ -17,7 +17,8 @@ import LocationsOverview from '@/views/LocationsOverviewView';
 import ProductsOverview from '@/views/ProductsOverviewView';
 import BoxesOverview from '@/views/BoxesOverviewView';
 import Settings from '@/views/Settings';
-
+import Toast from "vue-toastification";
+import "vue-toastification/dist/index.css";
 
 
 const routes = [
@@ -73,5 +74,11 @@ const router = VueRouter.createRouter({
     routes
 });
 
-createApp(App).use(router).use(vuetify).use(withUUID).mount('#app')
+const toastOptions = {
+    position: 'top-right',
+    maxToasts: 2,
+    pauseOnFocusLoss: false
+};
+
+createApp(App).use(router).use(Toast, toastOptions).use(vuetify).use(withUUID).mount('#app')
 
