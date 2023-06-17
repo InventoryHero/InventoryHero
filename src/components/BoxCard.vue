@@ -76,9 +76,6 @@
               console.log("Showing all products in box: " + cardId);
           }
       },
-      beforeMount() {
-          console.log("this is box name: " + this.boxName);
-      }
   }
 </script>
 

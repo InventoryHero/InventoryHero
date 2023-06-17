@@ -1,5 +1,5 @@
 
-<template >
+<template>
     <v-layout justify="center">
         <v-col>
             <v-card  class="room-card">
@@ -37,54 +37,51 @@
 </template>
 
 <script>
+import RoomDetailModal from "@/modals/RoomDetailModal.vue";
 
+export default {
+    components: {
+        RoomDetailModal
+    },
+    props: {
+        id: Number,
+        roomName: String,
+        numBoxes: Number,
+        numProducts: Number,
 
-
-  import RoomDetailModal from "@/modals/RoomDetailModal.vue";
-
-  export default {
-      components: {
-          RoomDetailModal
-      },
-      props: {
-          id: Number,
-          roomName: String,
-          numBoxes: Number,
-          numProducts: Number,
-
-      },
-      data() {
-          return {
-              dialog: false,
-              name: this.roomName
-          }
-      },
-      methods: {
-          roomDeleted(id)
-          {
+    },
+    data() {
+        return {
+            dialog: false,
+            name: this.roomName
+        }
+    },
+    methods: {
+        roomDeleted(id)
+        {
             this.dialog = false;
             this.$emit("roomDeleted", id);
-          },
-          informationButton(new_name)
-          {
-              if(new_name !== undefined && new_name !== "")
-                  this.name = new_name
-              this.dialog=false;
-          },
-          openDetailModal()
-          {
-              this.dialog = true;
-          },
-          productsOverview: function(roomId)
-          {
-              this.$router.push( "/productsFilteredView?room_id="+roomId);
-          },
-          boxesOverview: function(roomId)
-          {
-              this.$router.push( "/boxesFilteredView?room_id="+roomId);
-          }
-      }
-  }
+        },
+        informationButton(new_name)
+        {
+            if(new_name !== undefined && new_name !== "")
+                this.name = new_name
+            this.dialog=false;
+        },
+        openDetailModal()
+        {
+            this.dialog = true;
+        },
+        productsOverview: function(roomId)
+        {
+            this.$router.push( "/productsFilteredView?room_id="+roomId);
+        },
+        boxesOverview: function(roomId)
+        {
+            this.$router.push( "/boxesFilteredView?room_id="+roomId);
+        }
+    }
+}
 </script>
 
 
@@ -98,6 +95,4 @@
         background-color: var(--color-darker);
         color: white;
     }
-
-
 </style>
