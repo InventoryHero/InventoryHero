@@ -18,7 +18,7 @@
                 <v-icon class="me-5" icon="fa:fas fa-times" @click="closeModal()"></v-icon>
             </v-toolbar>
             <v-card-text>
-                <qrcode-stream  @decode="onDecode"  @init="logErrors"></qrcode-stream>
+                <qrcode-stream  @decode="onDecode"  @init="logErrors" :track="this.paintBoundingBox"></qrcode-stream>
             </v-card-text>
         </v-card>
 
@@ -78,7 +78,16 @@ export default {
         },
         logErrors (promise) {
             promise.catch(console.error)
-        }
+        },
+        paintBoundingBox (detectedCodes, ctx) {
+            for (const detectedCode of detectedCodes) {
+                const { boundingBox: { x, y, width, height } } = detectedCode
+
+                ctx.lineWidth = 2
+                ctx.strokeStyle = '#007bff'
+                ctx.strokeRect(x, y, width, height)
+            }
+        },
 
     },
     beforeMount() {
