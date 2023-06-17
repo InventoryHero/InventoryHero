@@ -74,7 +74,7 @@
           },
           starredProductsOverview: function(cardId)
           {
-              console.log("Showing all products in box: " + cardId);
+              this.$router.push( "/productsFilteredView?box_id="+cardId+"&starred=true");
           }
       },
   }

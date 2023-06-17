@@ -214,7 +214,7 @@ data() {
             name: this.curr_name,
             box: this.curr_box,
             room: this.curr_room,
-            amount: this.curr_amount,
+            amount: parseInt(this.curr_amount),
             starred: this.curr_starred
         }
         DB_SB_add_product(product).then(() => {

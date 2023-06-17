@@ -21,8 +21,6 @@
 </template>
 
 <script>
-//import AddButton from '@/components/AddButton.vue'
-//import QrButton from '@/components/QrButton.vue'
 import SandwichMenu from "@/components/SandwichMenu.vue";
 import ListContainer from '@/components/ListContainer.vue';
 import AddModal from '@/modals/AddModal.vue';
@@ -37,8 +35,6 @@ export default {
   name: 'App',
   components: {
     SandwichMenu,
-    //AddButton,
-    //QrButton,
     ListContainer,
     AddModal,
     QrReaderModal,
@@ -56,9 +52,6 @@ export default {
     }
   },
   methods: {
-    openMenu() {
-      console.log("open me")
-    },
     closeQrModal()
     {
       this.qrReaderModalVisibility = false;

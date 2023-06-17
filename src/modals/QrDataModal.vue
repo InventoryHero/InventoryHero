@@ -29,7 +29,12 @@
                     styling="height:80vh;background:var(--color-blue)"
             />
 
-            <products-overview-view v-if="this.product_active" :from_qrcode="true" v-bind="getRoomAndBoxIdProp()"></products-overview-view>
+            <products-overview-view
+                    v-if="this.product_active"
+                    :from_qrcode="true"
+                    v-bind="getRoomAndBoxIdProp()"
+                    styling="height:80vh;background:var(--color-blue)"
+            />
         </v-card>
 
     </v-dialog>
@@ -98,7 +103,7 @@ data() {
               result.box_id = this.qrCodeData.id;
 
           }
-          console.log(result);
+          console.log("hiii", result);
           return result;
       }
 

@@ -17,8 +17,8 @@
          </v-toolbar>
          <v-card-text>
            <input-text-enhanced :disabled="true" :place_holder="this.created_at"></input-text-enhanced>
-           <input-dropdown :key="this.redraw_boxes" @valueUpdated="updateSelectedBox" :place_holder="this.ph_boxes" :list=this.users_boxes :emitFullObject="true"/>
-           <input-dropdown :key="this.redraw_rooms" @valueUpdated="updateSelectedRoom" :place_holder="this.ph_rooms" :list=this.users_rooms :emitFullObject="true"/>
+           <input-dropdown @valueUpdated="updateSelectedBox" :place_holder="this.new_box.name" :list=this.users_boxes :emitFullObject="true"/>
+           <input-dropdown @valueUpdated="updateSelectedRoom" :place_holder="this.new_room.name" :list=this.users_rooms :emitFullObject="true"/>
            <input-text-enhanced id="test" type="number" @valueUpdated="updateAmount" label="Amount:" :placeholder="this.current_amount.toString()"></input-text-enhanced>
            <p :style="{color: 'red'}">{{ error_message }}</p>
          </v-card-text>
@@ -31,9 +31,6 @@
                    variant="text"
                    @click="closeModalAndUpdateBox()"
            >Save</v-btn>
-
-
-
          </v-card-actions>
        </v-card>
 
@@ -46,15 +43,11 @@ import InputTextEnhanced from '@/components/InputTextEnhanced.vue';
 import InputDropdown from '@/components/InputDropdown.vue';
 import {
   DB_SB_delete_product,
-  DB_SB_get_box_name,
   DB_SB_get_boxes_of_user,
   DB_SB_get_product_createdat,
-  DB_SB_get_room_name,
   DB_SB_get_room_of_box,
-  DB_SB_get_rooms_of_user,
+  DB_SB_get_rooms_of_user, DB_SB_update_product,
   DB_SB_update_product_amount,
-  DB_SB_update_product_box,
-  DB_SB_update_product_room,
 } from "@/db/supabase";
 import {getUser} from "@/db/dexie";
 
@@ -68,11 +61,31 @@ export default {
       type: String,
       default: "",
     },
+    mapping_id: -1,
     box_id: -1,
     room_id: -1,
+    box_name: "",
+    room_name: "",
     amount: {
       type: Number,
       default: 0,
+    }
+  },
+  watch: {
+    amount: function(newVal, oldVal){
+      this.current_amount = newVal;
+    },
+    box_id: function(newVal, oldVal){
+      this.new_box.id = newVal;
+    },
+    box_name: function(newVal, oldVal){
+      this.new_box.name = newVal;
+    },
+    room_id: function(newVal, oldVal){
+      this.new_room.id = newVal;
+    },
+    room_name: function(newVal, oldVal){
+      this.new_room.name = newVal;
     }
   },
   data() {
@@ -80,18 +93,14 @@ export default {
       created_at: "",
       new_box: {
         id: this.box_id,
-        name: ""
+        name: this.box_name
       },
       new_room: {
         id: this.room_id,
-        name: ""
+        name: this.room_name
       },
       users_boxes: [],
       users_rooms: [],
-      redraw_boxes: 0,
-      redraw_rooms: 0,
-      ph_rooms: "",
-      ph_boxes: "",
       error_message: "",
       current_amount: this.amount
     }
@@ -104,30 +113,28 @@ export default {
     async closeModalAndUpdateBox(){
         if(this.error_message !== "")
           return;
-        if(this.new_box.id !== this.box_id)
-        {
-          this.new_room = undefined
-          if(!await DB_SB_update_product_box(this.id, this.new_box.id))
-          {
-            this.closeModal();
-          }
-        }
-        else if(this.new_room.id !== this.room_id)
-        {
-          this.new_box = undefined
-          if(!await DB_SB_update_product_room(this.id, this.new_room.id))
-          {
-            this.closeModal();
-          }
-        }
+
+
         if(this.current_amount !== this.amount)
         {
-          if(!await DB_SB_update_product_amount(this.id, this.current_amount))
+          if(!await DB_SB_update_product_amount(this.mapping_id, this.current_amount))
           {
             this.closeModal();
           }
         }
-        this.$emit("closeDetailModal", this.new_room, this.new_box, this.current_amount);
+
+        if(this.new_box.id !== this.box_id || this.new_room.id !== this.room_id)
+        {
+          let room_id = this.new_room.id;
+          if(this.new_box.id !== -1)
+          {
+            room_id = -1;
+          }
+          await DB_SB_update_product(this.mapping_id, this.new_box.id, room_id, this.id)
+          this.$emit("reloadProducts");
+          return;
+        }
+        this.$emit("closeDetailModal", this.current_amount);
     },
     async deleteProduct()
     {
@@ -144,22 +151,33 @@ export default {
             id: room[0].id,
             name: room[0].name
           }
-          this.ph_rooms = room[0].name;
-          this.redrawDropdowns(false, true);
-
+        }
+        else
+        {
+          this.new_room = {
+            id: -1,
+            name: "",
+          }
         }
       })
     },
     updateSelectedRoom(room){
       this.new_room = room;
       this.new_box = {
-        id: this.box_id,
-        name: this.box_name,
+        id: -1,
+        name: "",
       }
-      this.ph_boxes = "";
-      this.redrawDropdowns(true, false);
     },
     closeModal(){
+      this.new_box = {
+        id: this.box_id,
+            name: this.box_name
+      }
+      this.new_room =  {
+        id: this.room_id,
+            name: this.room_name
+      }
+
       this.$emit("closeDetailModal");
     },
     updateAmount(new_amount){
@@ -169,12 +187,6 @@ export default {
         this.error_message = "";
       this.current_amount = new_amount;
     },
-    redrawDropdowns(boxes, rooms){
-      if(boxes)
-        this.redraw_boxes += 1;
-      if(rooms)
-        this.redraw_rooms += 1;
-    }
   },
   beforeMount() {
     getUser().then((user) => {
@@ -184,36 +196,6 @@ export default {
       DB_SB_get_boxes_of_user(user).then((boxes) => {
         this.users_boxes = boxes;
       })
-
-      if(this.room_id !== -1)
-      {
-        DB_SB_get_room_name(this.room_id, user).then( (name) => {
-          this.ph_rooms = name;
-          this.new_room.name = name;
-          this.new_box = {
-            id: -1, name: ""
-          }
-          this.ph_boxes = "";
-        })
-      }
-      else
-      {
-        DB_SB_get_box_name(this.box_id, user).then((name) => {
-          this.new_box.name = name;
-          this.ph_boxes = name;
-          this.redrawDropdowns(true, false);
-        })
-        DB_SB_get_room_of_box(this.box_id, user).then((room) => {
-          if(room.length > 0)
-          {
-            this.new_room = {
-              id: room[0].id, name: room[0].name
-            }
-            this.ph_rooms = room[0].name;
-            this.redrawDropdowns(false, true);
-          }
-        })
-      }
       DB_SB_get_product_createdat(this.id, user).then( (created_at) => {
             this.created_at = created_at
       });

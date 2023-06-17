@@ -23,6 +23,12 @@ export default {
       default: false,
     }
   },
+  watch: {
+    place_holder: function(newVal, oldval)
+    {
+      this.my_value = newVal;
+    }
+  },
   data() {
     return {
       my_value: this.place_holder,
@@ -30,8 +36,6 @@ export default {
   },
   methods: {
     emitValueChanged(){
-      console.log("Changing input dropdown value");
-      console.log(this.my_value);
       if(this.emitFullObject)
         this.$emit("valueUpdated", this.my_value);
       else

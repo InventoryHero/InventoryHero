@@ -9,7 +9,7 @@
     :numBoxes="r.box_cnt" 
     :numProducts="r.product_cnt" />
     <load-animation v-if="this.loading"></load-animation>
-    
+    <div id="spacing"></div>
     <add-modal
         :preselected_room="this.preselectedRoom"
         :navbarItems="this.displayedNavbarItems"
@@ -18,7 +18,7 @@
         @closeModal="closeModal()"
     />
 
-    <div id="spacing"></div>
+
     <dock
         @qrButton="this.qrReaderModalVisibility=true"
         @addButton="this.addModalVisibility = true"
@@ -128,6 +128,9 @@ import { rankLocationsBySearch } from '@/scripts/sort';
     }
     .v-virtual-scroll{
         background: var(--color-blue);
+    }
+    #spacing{
+        height: calc(5vh + 25px);
     }
     ::-webkit-scrollbar { width: 0px;  }
 </style>

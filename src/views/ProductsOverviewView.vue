@@ -1,21 +1,32 @@
 <template>
     <SandwichMenu v-if="!this.from_qrcode"  :title="this.title"/>
-    <v-virtual-scroll
-        class="virtual-scroll-bg"
-        :height="80+'vh'"
-        :items="products"
-    >
-        <template v-slot:default="{ item }">
-            <ProductsCard  :id="item.id" :productName="item.name" :amount="item.amount" :room_id="item.room_id" :box_id="item.box_id" @productDeleted="refreshData"/>
-        </template>
-    </v-virtual-scroll>
+
+  <div :style="this.styling">
+    <search-bar :do_transform="this.from_qrcode ? '' : 'transform'" @valueUpdated="sortProducts"/>
+
+    <products-card
+            v-for="p in products" class="card"
+            :id="p.id"
+            :mapping_id="p.mapping_id"
+            :productName="p.name"
+            :amount="p.amount"
+            :room_id="p.room_id"
+            :box_id="p.box_id"
+            :box_name="p.box_name"
+            :room_name="p.room_name"
+            :product_starred="p.starred"
+            @productDeleted="refreshData"
+            @reloadProducts="refreshData"
+            @toggledStarred="updateStarred"
+    />
+  </div>
     <add-modal
             v-model="this.addModalVisibility"
             :defaultAddView="Constants.ProductsView"
             @closeModal="closeModal()"
     />
     <load-animation v-if="this.loading"></load-animation>
-    <div id="spacing"></div>
+    <div v-if="!this.from_qrcode" id="spacing"></div>
     <dock
             @qrButton="this.qrReaderModalVisibility=true"
             @addButton="this.addModalVisibility = true"
@@ -32,7 +43,7 @@
 
   import {
     DB_SB_get_all_products,
-    DB_SB_get_all_products_per_storage_location, DB_SB_get_box, DB_SB_get_products_per_box, DB_SB_get_products_per_room,
+    DB_SB_get_box, DB_SB_get_products_per_box, DB_SB_get_products_per_room,
     DB_SB_get_room,
     DB_SB_getStarredProducts
   } from '@/db/supabase';
@@ -41,6 +52,9 @@
   import { Constants } from "@/global/constants";
   import LoadAnimation from "@/components/LoadAnimation.vue";
   import Dock from "@/components/Dock.vue";
+  import BoxCard from "@/components/BoxCard.vue";
+  import SearchBar from "@/components/SearchBar.vue";
+  import {rankBoxesBySearch} from "@/scripts/sort";
   
   
   export default {
@@ -58,8 +72,17 @@
         type: Boolean,
         default: false
       },
+      styling: {
+        type: String,
+        default: "",
+      },
+      get_starred: {
+        type: Boolean,
+        default: false,
+      }
     },
     components: {
+      SearchBar, BoxCard,
       Dock,
       LoadAnimation,
       AddModal,
@@ -79,46 +102,45 @@
     },
     methods: {
         refreshData(){
-          this.get_boxes();
+          this.get_products();
         },
-        get_boxes() {
+        async get_products() {
           if(this.room_id === -1 && this.box_id === -1)
           {
-            DB_SB_get_all_products(this.currentUser.username).then((products) => {
-              this.products = products;
-              this.loading = false;
-            });
+            this.products = await DB_SB_get_all_products(this.currentUser.username)
+
           }
           else if(this.box_id !== -1)
           {
-            DB_SB_get_products_per_box(this.box_id, this.currentUser.username).then((products) => {
-              if(products !== undefined && products.data !== undefined)
-                this.products = products.data;
-                this.loading = false;
-            })
+            this.products = await DB_SB_get_products_per_box(this.box_id, this.currentUser.username)
           }
           else if(this.room_id !== -1)
           {
-            DB_SB_get_products_per_room(this.room_id, this.currentUser.username).then((products) => {
-              if(products !== undefined && products.data !== undefined)
-                this.products = products.data;
-                this.loading = false;
-            })
+            this.products = await DB_SB_get_products_per_room(this.room_id, this.currentUser.username)
           }
 
-        },
-        getFilteredProducts()
-        {
-          DB_SB_get_all_products_per_storage_location(this.room_id, this.box_id).then( (products) => {
-            this.products = products;
-          })
+          if(this.get_starred)
+          {
+            this.products = this.products.filter(product => product.starred)
+          }
+          this.loading = false;
+
         },
         closeModal() {
-            this.addModalVisibility = false;
-            DB_SB_getStarredProducts().then((res) => {
-                this.starred_products = res;
-            })
+          this.get_products();
+          this.addModalVisibility = false;
         },
+        async sortProducts(needle)
+        {
+          this.products = rankBoxesBySearch(this.products, needle);
+        },
+        updateStarred(id)
+        {
+          this.products.forEach(function(product){
+            if(product.id === id)
+              product.starred = !product.starred;
+          })
+        }
     },
     beforeMount() {
         getUser().then((user) => {
@@ -131,8 +153,13 @@
             if(this.box_id !== -1)
             {
               DB_SB_get_box(this.box_id, user).then((box) => {
-                if(box.length !== 0)
-                  this.title = "Products in " + box[0].name ;
+                if(box.length !== 0) {
+
+                  this.title = "Products in " + box[0].name;
+                  if (this.get_starred) {
+                    this.title = "Starred p" + this.title.substring(1);
+                  }
+                }
               });
             }
             else if(this.rooms !== -1)
@@ -143,7 +170,7 @@
               });
 
             }
-            this.get_boxes();
+            this.get_products();
         });
     }
   
@@ -157,6 +184,9 @@
     }
     .v-virtual-scroll{
         background: var(--color-blue);
+    }
+    #spacing{
+        height: calc(5vh + 25px);
     }
     ::-webkit-scrollbar { width: 0px;  }
   </style>
