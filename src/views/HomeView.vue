@@ -5,7 +5,7 @@
   </div>
 
     <div id="posLastUsed">
-      <h3>{{this.$t('home_view.last_used')}}}</h3>
+      <h3>{{this.$t('home_view.last_used')}}</h3>
       <list-container :list="[{name: 'Müssen wir noch'}, {name:'abklären, wie wir'}, {name: 'das machen wollen'}, {name: '😁'}]" />
     </div>
   <add-modal v-model="this.addModalVisibility" @closeModal="closeModal()"/>
