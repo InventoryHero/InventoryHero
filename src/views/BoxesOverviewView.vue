@@ -47,10 +47,12 @@ import {Constants} from "@/global/constants";
 import {rankBoxesBySearch} from "@/scripts/sort";
 import QrDataModal from "@/modals/QrDataModal.vue";
 import QrReaderModal from "@/modals/QrReaderModal.vue";
+import {useToast} from "vue-toastification";
 
 
 export default {
   name: 'App',
+
   props: {
     roomid: {
       type: Number,

@@ -48,13 +48,14 @@
 
   import {
     DB_SB_get_all_products,
-    DB_SB_get_box, DB_SB_get_products_per_box, DB_SB_get_products_per_room,
-    DB_SB_get_room,
-    DB_SB_getStarredProducts
+    DB_SB_get_box,
+    DB_SB_get_products_per_box,
+    DB_SB_get_products_per_room,
+    DB_SB_get_room
   } from '@/db/supabase';
   import {getUser} from "@/db/dexie";
 
-  import { Constants } from "@/global/constants";
+  import {Constants} from "@/global/constants";
   import LoadAnimation from "@/components/LoadAnimation.vue";
   import Dock from "@/components/Dock.vue";
   import BoxCard from "@/components/BoxCard.vue";
@@ -62,8 +63,8 @@
   import {rankBoxesBySearch} from "@/scripts/sort";
   import QrDataModal from "@/modals/QrDataModal.vue";
   import QrReaderModal from "@/modals/QrReaderModal.vue";
-  
-  
+
+
   export default {
     name: 'App',
     props: {
@@ -121,8 +122,7 @@
         async get_products() {
           if(this.room_id === -1 && this.box_id === -1)
           {
-            this.products = await DB_SB_get_all_products(this.currentUser.username)
-
+            this.products = await DB_SB_get_all_products(this.currentUser.username);
           }
           else if(this.box_id !== -1)
           {

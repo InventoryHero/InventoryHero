@@ -30,12 +30,19 @@
                 </div>
             </v-card>
         </v-col>
-        <box-detail-modal :id="id" :name="this.boxName"  :username="this.username" v-model="this.dialog" @closeDetailModal="closeModal" @boxDeleted="boxDeleted"/>
+        <box-detail-modal
+            :id="id"
+            :name="this.boxName"
+            :username="this.username"
+            v-model="this.dialog"
+            @closeDetailModal="closeModal"
+            @boxDeleted="boxDeleted"/>
     </v-layout>
 </template>
 
 <script>
   import BoxDetailModal from "@/modals/BoxDetailModal.vue";
+  import {useToast} from "vue-toastification";
 
   export default {
       components: {BoxDetailModal},

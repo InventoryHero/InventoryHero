@@ -2,7 +2,11 @@
     <SandwichMenu :title="this.title"/>
     <search-bar @valueUpdated="sortLocations"/>
 
-    <RoomCard v-for="r in this.rooms" @addItemToRoom="displayModal" @roomDeleted="updateRooms" class="card" 
+    <RoomCard
+        v-for="r in this.rooms"
+        @addItemToRoom="displayModal"
+        @roomDeleted="updateRooms"
+        class="card"
     :key="r.id"
     :id="r.id" 
     :roomName="r.name" 
@@ -17,9 +21,6 @@
         v-model="this.addModalVisibility"
         @closeModal="closeModal()"
     />
-    <qr-reader-modal v-model="this.qrReaderModalVisibility" @closeQrModal="closeQrModal()" @loadDetailView="loadDetailView"/>
-    <qr-data-modal v-model="this.qrCodeDataModalVisibility" v-bind:qr-code-data="this.qrCodeData" @closeQrDataModal="this.qrCodeDataModalVisibility=false"></qr-data-modal>
-
 
     <dock
         :show_qr="false"
@@ -44,12 +45,17 @@ import { Constants } from "@/global/constants";
 import { rankLocationsBySearch } from '@/scripts/sort';
 import QrDataModal from "@/modals/QrDataModal.vue";
 import QrReaderModal from "@/modals/QrReaderModal.vue";
+import {useToast} from "vue-toastification";
 
 
 
   
   export default {
     name: 'App',
+    setup(){
+        const toast = useToast();
+        return {toast};
+    },
     components: {
         QrReaderModal, QrDataModal,
         Dock,
@@ -76,8 +82,12 @@ import QrReaderModal from "@/modals/QrReaderModal.vue";
         async updateRooms(id)
         {
             document.getElementById(id).setAttribute("hidden", true);
-            await DB_SB_delete_room(id);
-            this.get_rooms()
+            if(!await DB_SB_delete_room(id)){
+                this.toast.error("Failed to delete room");
+                return;
+            }
+            this.toast.success("Deleted room successfully");
+            await this.get_rooms()
         },
         displayRoomDetailView(id){
           console.warn("I should display the detail view modal " + id);

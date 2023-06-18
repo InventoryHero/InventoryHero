@@ -53,9 +53,14 @@ import {
   DB_SB_update_box_name, DB_SB_update_box_room
 } from "@/db/supabase";
 import {generatePDF} from "@/global/qr_code";
+import {useToast} from "vue-toastification";
 
 
 export default {
+  setup(){
+    const toast = useToast();
+    return {toast};
+  },
   props:{
     id: {
       type: Number,
@@ -78,7 +83,15 @@ export default {
   methods: {
     deleteBox()
     {
-      DB_SB_delete_box(this.id).then(() => {
+      DB_SB_delete_box(this.id).then((result) => {
+        if(result)
+        {
+          this.toast.success("Successfully deleted box");
+        }
+        else
+        {
+          this.toast.error("Error deleting box!");
+        }
         this.$emit("boxDeleted");
       });
     },
@@ -87,7 +100,7 @@ export default {
       let successful = true;
       if(this.new_name !== this.name && this.new_name !== "")
       {
-        successful &= await DB_SB_update_box_name(this.id, this.new_name);
+        successful = await DB_SB_update_box_name(this.id, this.new_name);
       }
       if(this.new_room !== this.placeholder)
       {
@@ -95,10 +108,12 @@ export default {
       }
       if(successful)
       {
+        this.toast.success("Updated box successfully");
         this.$emit("closeDetailModal", this.new_name);
       }
       else
       {
+        this.toast.error("Couldn't update box");
         this.$emit("closeDetailModal");
       }
 

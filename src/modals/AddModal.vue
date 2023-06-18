@@ -86,9 +86,14 @@ import {
 } from '@/db/supabase';
 import { getUser } from '@/db/dexie';
 import {Constants} from  "@/global/constants";
+import {useToast} from "vue-toastification";
 
 export default {
 name: 'App',
+setup(){
+    const toast = useToast();
+    return {toast};
+},
 props: {
     defaultAddView: {
         type: String,
@@ -118,6 +123,18 @@ watch: {
     defaultAddView: function(newVal, oldVal)
     {
         this.active_view = newVal;
+    },
+    preselected_box: function(newVal, oldVal)
+    {
+        this.lockRoom = true;
+        this.updateSelectedBox(newVal);
+
+    },
+    preselected_room: function(newVal, oldVal)
+    {
+        this.lockRoom = true;
+        this.updateSelectedRoom(newVal);
+
     }
 },
 data() {
@@ -168,26 +185,22 @@ data() {
     categoryChange(change_to) {
         this.active_view = change_to;
     },
-    updateSelectedBox(box, init=false) {
+    updateSelectedBox(box) {
         this.curr_box = box;
-        if(init) {
-            this.reloadSelectComponents(true, false);
-        }
+        this.place_holder_box = box;
 
         if(this.curr_room === "")
         {
             DB_SB_get_name_of_room_of_box(box).then((room_name) => {
                 this.curr_room = room_name;
                 this.place_holder_room = room_name;
-                this.reloadSelectComponents(false, true);
+
             });
         }
     },
-    updateSelectedRoom(room, init=false) {
+    updateSelectedRoom(room) {
         this.curr_room = room;
-        if(init) {
-            this.reloadSelectComponents(false, true);
-        }
+        this.place_holder_room = room;
         getUser().then((user) =>  DB_SB_get_boxes_of_user(user, room).then((boxes) => this.boxes = boxes))
     },
     updateStarredProduct(starred) {
@@ -230,6 +243,7 @@ data() {
             starred: this.curr_starred
         }
         DB_SB_add_product(product).then(() => {
+            this.toast.success("Added product!");
             this.closeModal();
         });
     },
@@ -242,6 +256,7 @@ data() {
             room: this.curr_room
         }
         DB_SB_add_box(box).then(() => {
+            this.toast.success("Added box!");
             this.closeModal()
         })
 
@@ -251,6 +266,7 @@ data() {
             name: this.curr_name
         }
         DB_SB_add_room(room).then(() => {
+            this.toast.success("Added room!");
             this.closeModal()
         })
     },
@@ -297,7 +313,7 @@ beforeMount() {
         if(this.preselected_box !== "")
         {
             this.place_holder_box = this.preselected_box;
-            this.updateSelectedBox(this.preselected_box, true);
+            this.updateSelectedBox(this.preselected_box);
             this.lockRoom = true;
         }
         else {
@@ -310,7 +326,7 @@ beforeMount() {
         {
             this.lockRoom = true;
             this.place_holder_room = this.preselected_room;
-            this.updateSelectedRoom(this.preselected_room, true);
+            this.updateSelectedRoom(this.preselected_room);
         }
         else {
             DB_SB_get_rooms_of_user(user).then((rooms) => {
