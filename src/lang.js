@@ -103,6 +103,10 @@ export const localizations = {
         }
       },
     },
+    home_view: {
+      last_used: "⏰ Last Used Products",
+      starred_products: "⭐ Starred Products"
+    }
   },
   de: {
     home: "Home",
@@ -208,6 +212,10 @@ export const localizations = {
         }
       },
     },
+    home_view: {
+      last_used: "⏰ Zuletzt verwendete Produkte",
+      starred_products: "⭐ Favorisierte Produkte"
+    }
   },
   it: {
     home: "Home",
@@ -313,5 +321,9 @@ export const localizations = {
         }
       },
     },
+    home_view: {
+      last_used: "⏰ Ultimi prodotti usati",
+      starred_products: "⭐ Prodotti preferiti"
+    }
   }
 }

@@ -1,11 +1,11 @@
 <template>
   <div id="posStarredMessages">
-    <h3>⭐ Starred Products</h3>
+    <h3>{{this.$t('home_view.starred_products')}}}</h3>
     <list-container :list=this.starred_products />
   </div>
 
     <div id="posLastUsed">
-      <h3>⏰ Last Used Products</h3>
+      <h3>{{this.$t('home_view.last_used')}}}</h3>
       <list-container :list="[{name: 'Müssen wir noch'}, {name:'abklären, wie wir'}, {name: 'das machen wollen'}, {name: '😁'}]" />
     </div>
   <add-modal v-model="this.addModalVisibility" @closeModal="closeModal()"/>
