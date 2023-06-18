@@ -61,8 +61,13 @@ import {
 } from '@/db/supabase';
 import { DB_SB_get_product } from '@/db/supabase';
 import ProductsDetailModal from "@/modals/ProductsDetailModal.vue";
+import {useToast} from "vue-toastification";
 
   export default {
+      setup(){
+          const toast = useToast();
+          return {toast};
+      },
       components: {
         ProductsDetailModal
       },
@@ -113,17 +118,20 @@ import ProductsDetailModal from "@/modals/ProductsDetailModal.vue";
           deletedProduct()
           {
             this.dialog=false;
+            this.toast.success("Successfully deleted product");
             this.$emit("productDeleted");
           },
           reloadProducts()
           {
               this.$emit("reloadProducts");
+              this.toast.success("Successfully updated product(s)");
               this.dialog = false;
           },
           closeModal(new_amount = -1)
           {
               if(new_amount !== -1 && new_amount !== this.updatedAmount)
               {
+                  this.toast.success("Product amount updated!");
                   this.updatedAmount = new_amount;
               }
 
@@ -140,8 +148,13 @@ import ProductsDetailModal from "@/modals/ProductsDetailModal.vue";
           increaseAmount: function()
           {
               DB_SB_change_product_amount(this.mapping_id, 1) .then((updated_amount) => {
-                if(updated_amount !== -1)
+                if(updated_amount !== -1){
                     this.updatedAmount = updated_amount;
+                    this.toast.success("Updated amount!");
+                }else
+                {
+                    this.toast.error("Update failed!");
+                }
             })
             .catch(error => {
                 console.log(error.message);
@@ -156,8 +169,13 @@ import ProductsDetailModal from "@/modals/ProductsDetailModal.vue";
               }
               DB_SB_change_product_amount(this.mapping_id, -1).then((updated_amount) =>
               {
-                  if(updated_amount !== -1)
+                  if(updated_amount !== -1){
                       this.updatedAmount = updated_amount;
+                      this.toast.success("Updated amount!");
+                  }else
+                  {
+                      this.toast.error("Update failed!");
+                  }
               })
               .catch(error => {
                   console.log(error.message);

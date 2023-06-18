@@ -17,7 +17,6 @@ async function map_rooms_with_boxes(only_rooms = false)
 {
     const user = await getUser();
     const {data: db_rooms} = await supabase.from("rooms").select("*").eq("username", user.username);
-
     let boxes = {'-1': {name: "", room_name: ""}};
     let rooms = {'-1': ""};
     db_rooms.forEach(function(room, ){
@@ -173,6 +172,7 @@ export async function DB_SB_get_rooms(user){
 export async function DB_SB_get_all_products(user){
     const {data} = await supabase.from("products").select("*, productmapping(*)").eq("username", user);
     let {rooms, boxes} = await map_rooms_with_boxes();
+
     let products = [];
 
     data.forEach(function(product, index){
@@ -201,7 +201,6 @@ export async function DB_SB_get_all_products(user){
 
         }
     })
-
     return products;
 }
 
@@ -325,7 +324,7 @@ export async function DB_SB_add_product(product) {
 
     let db_product = await DB_SB_get_product_by_name(product.name);
     let product_id = -1;
-    if(db_product !== {})
+    if(db_product !== undefined)
         product_id = db_product.id;
     let mapping = undefined;
     let data = {}
@@ -358,7 +357,7 @@ export async function DB_SB_add_product(product) {
                             .eq("product_id", product_id)
                             .eq("box_id", box_id)
                             .eq("room_id", room_id);
-        if(res !== undefined && res.length !== 0)
+        if(res !== undefined && res !== null && res.length !== 0)
             mapping = res[0];
 
     }
@@ -616,9 +615,14 @@ export async function DB_SB_delete_product(id)
 export async function DB_SB_delete_room(id)
 {
     const user = await getUser();
+    let {data: products} = await supabase.from('products').select("*").eq("username", user.username);
+    console.log(products);
+    let user_product_ids = [];
+    products.forEach(function(product){
+        user_product_ids.push(product.id)
+    });
 
-
-    let {error} = await supabase.from("products").update({room_id: -1}).eq("username", user.username).eq('room_id', id);
+    let {error} = await supabase.from("productmapping").update({room_id: -1}).eq('room_id', id).in("product_id", user_product_ids);
     if (error) {
         console.log("Error :", error.message);
         return false;
@@ -635,9 +639,14 @@ export async function DB_SB_delete_room(id)
 export async function DB_SB_delete_box(id)
 {
     const user = await getUser();
+    const {data: roomid} = await supabase.from("boxes").select("room_id").eq("username", user.username).eq("id", id);
+    let {data: products} = await supabase.from('products').select("*").eq("username", user.username);
+    let user_product_ids = [];
+    products.forEach(function(product){
+        user_product_ids.push(product.id)
+    });
 
-
-    let {error} = await supabase.from("products").update({box_id: -1}).eq("username", user.username).eq('box_id', id);
+    let {error} = await supabase.from("productmapping").update({box_id: -1, room_id: roomid[0].room_id}).eq('box_id', id).in('product_id', user_product_ids);
     if (error) {
         console.log("Error :", error.message);
         return false;
@@ -653,7 +662,7 @@ export async function DB_SB_get_product_by_name(name)
 
     let {data} = await supabase.from("products").select("*").eq("name", name).eq("username", user.username);
     if(data.length === 0)
-        return {};
+        return undefined;
     return data[0];
 
 }

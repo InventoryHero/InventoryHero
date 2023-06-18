@@ -32,13 +32,24 @@
                 </div>
             </v-card>
         </v-col>
-        <room-detail-modal :id="id" :name="this.roomName" v-model="this.dialog" :username="this.username" @closeDetailModal="informationButton" @roomDeleted="roomDeleted"/>
+        <room-detail-modal
+            :id="id"
+            :name="this.roomName"
+            v-model="this.dialog"
+            :username="this.username"
+            @closeDetailModal="informationButton"
+            @roomDeleted="roomDeleted"/>
     </v-layout>
 </template>
 
 <script>
 import RoomDetailModal from "@/modals/RoomDetailModal.vue";
+import {useToast} from "vue-toastification";
   export default {
+      setup(){
+          const toast = useToast();
+          return {toast};
+      },
       components: {
           RoomDetailModal
       },
@@ -57,15 +68,17 @@ import RoomDetailModal from "@/modals/RoomDetailModal.vue";
           }
       },
       methods: {
-          roomDeleted(id)
-          {
-            this.dialog = false;
-            this.$emit("roomDeleted", id);
+        roomDeleted(id)
+        {
+          this.dialog = false;
+          this.$emit("roomDeleted", id);
         },
         informationButton(new_name)
         {
-            if(new_name !== undefined && new_name !== "")
+            if(new_name !== undefined && new_name !== "") {
+                this.toast.success("Successfully renamed room");
                 this.name = new_name
+            }
             this.dialog=false;
         },
         openDetailModal()
