@@ -1,6 +1,6 @@
 <template>
   <div id="posStarredMessages">
-    <h3>{{this.$t('home_view.starred_products')}}}</h3>
+    <h3>{{this.$t('home_view.starred_products')}}</h3>
     <list-container :list=this.starred_products />
   </div>
 
