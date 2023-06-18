@@ -21,8 +21,4 @@ export default {
   color: white;
   margin-top: 60px;
 }
-
-html {
-  background-color: var(--color-blue);
-}
 </style>

@@ -1,8 +1,15 @@
 :root {
-  --color-cyan: #C0E0DE;
-  --color-blue: #292932;
-  --color-darker-back: #1c1c20;
-  --color-darker: #71708D;
+  /* Dark Theme */
+  --color-dark-theme-background: #292932;
+  --color-dark-theme-darker: #1c1c20;
+  --color-dark-theme-lighter: #71708D;
+
+  /* Ligth Theme */
+  --color-light-theme-background: #afafd1;
+  --color-light-theme-darker: #cdcdea;
+  --color-light-theme-lighter: #7c6ce1;
+
+  /* Both */
   --color-faded: rgba(255, 255, 255, 0.253);
 }
 
@@ -17,4 +24,27 @@
 }
 .bm-overlay {
   background-color: transparent !important;
+}
+
+.viewContainer {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+}
+
+.viewContainer.dark-theme {
+  background-color: var(--color-dark-theme-background);
+}
+
+.viewContainer.light-theme {
+  background-color: var(--color-light-theme-background);
+}
+
+.light-theme p, 
+.light-theme h1,
+.light-theme h2,
+.light-theme h3{
+  color: black;
 }

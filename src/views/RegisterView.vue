@@ -1,4 +1,5 @@
 <template>
+  <div class="viewContainer" :class="this.theme">
     <h1> Register </h1>
     <div id="loginPos">
       <input-text class="inputText" :place_holder="this.$t('login_view.username')" :is_pssw="false" @valueUpdated=updateUsername />
@@ -6,7 +7,7 @@
       <register-button @click="register()"/>
     </div>
   <a id="posLogin" @click="this.$router.push('/')">{{ this.$t('login_view.login') }}</a>
-    
+  </div>
   </template>
   
   <script>
@@ -14,6 +15,7 @@
   import RegisterButton from '@/components/RegisterButton.vue';
   
   import { DB_SB_register } from '@/db/supabase';
+  import { global_theme } from "@/db/dexie"
   
   export default {
     name: 'App',
@@ -25,6 +27,7 @@
       return {
         password: "",
         username: "",
+        theme: global_theme
       }
     },
     methods: {

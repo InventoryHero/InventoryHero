@@ -9,7 +9,7 @@
                 <v-card-subtitle v-if='this.box_name !== "" || this.room_name !== ""' align="start">
                     {{ getSubtitle() }}
                 </v-card-subtitle>
-                <div class="d-flex align-center justify-space-evenly room-info mt-1 mb-2 ms-2 me-2 rounded-pill" >
+                <div class="d-flex align-center justify-space-evenly room-info mt-1 mb-2 ms-2 me-2 rounded-pill" :class="theme">
                     <v-list-item density="compact" >
                         <v-list-item-subtitle>
                             <v-icon @click="totalAmount()" class="me-2" icon="fa:fas fa-boxes"/>{{this.updatedAmount}}
@@ -62,89 +62,113 @@ import {
 import { DB_SB_get_product } from '@/db/supabase';
 import ProductsDetailModal from "@/modals/ProductsDetailModal.vue";
 import {useToast} from "vue-toastification";
+import { global_theme } from "@/db/dexie"
 
-  export default {
-      setup(){
-          const toast = useToast();
-          return {toast};
-      },
-      components: {
-        ProductsDetailModal
-      },
-      props: {
-          id: Number,
-          room_id: Number,
-          box_id: Number,
-          productName: String,
-          amount: {
-              type: Number,
-              default: 0,
-          },
-          room_name: String,
-          box_name: String,
-          mapping_id: Number,
-          product_starred: Boolean,
-      },
-      watch: {
-        amount: function(newVal, oldVal)
-        {
-            this.updatedAmount = newVal;
+export default {
+    setup(){
+        const toast = useToast();
+        return {toast};
+    },
+    components: {
+    ProductsDetailModal
+    },
+    props: {
+        id: Number,
+        room_id: Number,
+        box_id: Number,
+        productName: String,
+        amount: {
+            type: Number,
+            default: 0,
         },
-        product_starred: function(newVal, oldVal)
+        room_name: String,
+        box_name: String,
+        mapping_id: Number,
+        product_starred: Boolean,
+    },
+    watch: {
+    amount: function(newVal, oldVal)
+    {
+        this.updatedAmount = newVal;
+    },
+    product_starred: function(newVal, oldVal)
+    {
+        this.starred = newVal;
+    }
+
+    },
+    data(){
+    return{
+        starred: this.product_starred,
+        updatedAmount: this.amount,
+        dialog: false,
+        curr_room_id: this.room_id,
+        curr_box_id: this.box_id,
+        theme: global_theme
+    };
+    },
+    methods: {
+        getSubtitle()
         {
-            this.starred = newVal;
-        }
+        if(this.box_name === "" && this.room_name !== "")
+            return this.room_name;
+        else if(this.box_name !== "" && this.room_name === "")
+            return this.box_name;
+        else
+            return this.room_name + " | " + this.box_name;
+        },
+        deletedProduct()
+        {
+        this.dialog=false;
+        this.$emit("productDeleted");
+        },
+        reloadProducts()
+        {
+            this.$emit("reloadProducts");
+            this.dialog = false;
+        },
+        closeModal(new_amount = -1)
+        {
+            if(new_amount !== -1 && new_amount !== this.updatedAmount)
+            {
+                this.updatedAmount = new_amount;
+            }
 
-      },
-      data(){
-        return{
-            starred: this.product_starred,
-            updatedAmount: this.amount,
-            dialog: false,
-            curr_room_id: this.room_id,
-            curr_box_id: this.box_id,
-        };
-      },
-      methods: {
-          getSubtitle()
-          {
-            if(this.box_name === "" && this.room_name !== "")
-                return this.room_name;
-            else if(this.box_name !== "" && this.room_name === "")
-                return this.box_name;
+            this.dialog = false;
+        },
+        openDetailModal()
+        {
+            this.dialog = true;
+        },
+        totalAmount: function()
+        {
+            console.log("Showing all products " + this.id);
+        },
+        increaseAmount: function()
+        {
+            DB_SB_change_product_amount(this.mapping_id, 1) .then((updated_amount) => {
+            if(updated_amount !== -1){
+                this.updatedAmount = updated_amount;
+                this.toast.success(this.$t('products_card.toasts.success.amountUpdate', {name: this.productName}));
+            }
             else
-                return this.room_name + " | " + this.box_name;
-          },
-          deletedProduct()
-          {
-            this.dialog=false;
-            this.$emit("productDeleted");
-          },
-          reloadProducts()
-          {
-              this.$emit("reloadProducts");
-              this.dialog = false;
-          },
-          closeModal(new_amount = -1)
-          {
-              if(new_amount !== -1 && new_amount !== this.updatedAmount)
-              {
-                  this.updatedAmount = new_amount;
-              }
-
-              this.dialog = false;
-          },
-          openDetailModal()
-          {
-              this.dialog = true;
-          },
-          totalAmount: function()
-          {
-              console.log("Showing all products " + this.id);
-          },
-          increaseAmount: function()
-          {
-              DB_SB_change_product_amount(this.mapping_id, 1) .then((updated_amount) => {
+            {
+                this.toast.success(this.$t('products_card.toasts.success.amountUpdate', {name: this.productName}));
+            }
+        })
+        .catch(error => {
+            console.log(error.message);
+        });
+            
+        },
+        decreaseAmount: function()
+        {
+            if(this.updatedAmount === 0)
+            {
+                return;
+            }
+            DB_SB_change_product_amount(this.mapping_id, -1).then((updated_amount) =>
+            {
                 if(updated_amount !== -1){
                     this.updatedAmount = updated_amount;
                     this.toast.success(this.$t('products_card.toasts.success.amountUpdate', {name: this.productName}));
@@ -157,63 +181,59 @@ import {useToast} from "vue-toastification";
             .catch(error => {
                 console.log(error.message);
             });
-             
-          },
-          decreaseAmount: function()
-          {
-              if(this.updatedAmount === 0)
-              {
-                  return;
-              }
-              DB_SB_change_product_amount(this.mapping_id, -1).then((updated_amount) =>
-              {
-                  if(updated_amount !== -1){
-                      this.updatedAmount = updated_amount;
-                      this.toast.success(this.$t('products_card.toasts.success.amountUpdate', {name: this.productName}));
-                  }
-                  else
-                  {
-                      this.toast.success(this.$t('products_card.toasts.success.amountUpdate', {name: this.productName}));
-                  }
-              })
-              .catch(error => {
-                  console.log(error.message);
-              });
-      },
-          starItem()
-          {
-              DB_SB_toggle_starred(this.id, !this.starred).then(() => {
-                  this.starred = !this.starred;
-                  this.$emit("toggledStarred", this.id);
-              });
+    },
+        starItem()
+        {
+            DB_SB_toggle_starred(this.id, !this.starred).then(() => {
+                this.starred = !this.starred;
+                this.$emit("toggledStarred", this.id);
+            });
 
-          },
-          getStarColor()
-          {
-              if(this.starred)
-              {
-                  return "fa:fas fa-star";
-              }
-              return "fa:far fa-star";
-          }
-      },
-      beforeMount(){
-      }
-  }
-  
+        },
+        getStarColor()
+        {
+            if(this.starred)
+            {
+                return "fa:fas fa-star";
+            }
+            return "fa:far fa-star";
+        }
+    },
+    beforeMount(){
+    }
+}
 </script>
 
 
 <style scoped>
-    .room-info {
-        background-color: var(--color-blue);
-        color: white;
-        height: 2em;
-    }
-    .room-card{
-        background-color: var(--color-darker);
-        color: white;
-    }
+.room-info .dark-theme{
+    background-color: var(--color-dark-theme-background);
+    color: white;
+    height: 2em;
+}
+.room-card {
+    background-color: var(--color-dark-theme-lighter);
+    color: white;
+}
 
+.room-info .light-theme{
+    background-color: var(--color-light-theme-background);
+    color: white;
+    height: 2em;
+}
+
+.light-theme i {
+    color: black
+}
+
+.dark-theme {
+    background-color: var(--color-dark-theme-darker);
+    color: white;
+}
+
+.light-theme {
+    background-color: var(--color-light-theme-darker);
+    color: black;
+}
 
 </style>

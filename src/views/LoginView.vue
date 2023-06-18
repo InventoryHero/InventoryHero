@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="viewContainer" :class="this.theme">
       <h1> Login </h1>
       <div id="loginPos">
         <input-text class="inputText" :place_holder="this.$t('login_view.username')" :is_pssw="false" @valueUpdated=updateUsername />
@@ -18,7 +18,7 @@ import LoginButton from '@/components/LoginButton.vue';
 import { DB_SB_login } from '@/db/supabase';
 
 import {getUser, setUser} from '@/db/dexie';
-
+import { global_theme } from "@/db/dexie"
 export default {
   name: 'App',
   components: {
@@ -29,6 +29,7 @@ export default {
     return {
       password: "",
       username: "",
+      theme: global_theme
     }
   },
   methods: {

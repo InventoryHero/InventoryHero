@@ -6,7 +6,7 @@
                 <v-card-title align="start" :id='id' >
                     {{ this.name }}
                 </v-card-title>
-                <div class="d-flex align-center justify-space-evenly room-info mt-1 mb-2 ms-2 me-2 rounded-pill" >
+                <div class="d-flex align-center justify-space-evenly room-info mt-1 mb-2 ms-2 me-2 rounded-pill" :class="theme">
                     <v-list-item density="compact" >
                         <v-list-item-subtitle>
                             <v-icon @click="boxesOverview(id)" class="me-3" icon="fa:fas fa-boxes"/>{{this.numBoxes}}
@@ -45,6 +45,8 @@
 <script>
 import RoomDetailModal from "@/modals/RoomDetailModal.vue";
 import {useToast} from "vue-toastification";
+import { global_theme } from "@/db/dexie";
+
   export default {
       setup(){
           const toast = useToast();
@@ -64,7 +66,8 @@ import {useToast} from "vue-toastification";
       data() {
           return {
               dialog: false,
-              name: this.roomName
+              name: this.roomName,
+              theme: global_theme
           }
       },
       methods: {
@@ -98,13 +101,33 @@ import {useToast} from "vue-toastification";
 
 
 <style scoped>
-    .room-info {
-        background-color: var(--color-blue);
-        color: white;
-        height: 2em;
-    }
-    .room-card{
-        background-color: var(--color-darker);
-        color: white;
-    }
+    .room-info .dark-theme{
+    background-color: var(--color-dark-theme-background);
+    color: white;
+    height: 2em;
+}
+.room-card {
+    background-color: var(--color-dark-theme-lighter);
+    color: white;
+}
+
+.room-info .light-theme{
+    background-color: var(--color-light-theme-background);
+    color: white;
+    height: 2em;
+}
+
+.light-theme i {
+    color: black
+}
+
+.dark-theme {
+    background-color: var(--color-dark-theme-darker);
+    color: white;
+}
+
+.light-theme {
+    background-color: var(--color-light-theme-darker);
+    color: black;
+}
 </style>

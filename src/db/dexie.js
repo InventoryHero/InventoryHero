@@ -32,3 +32,9 @@ export async function logout()
 {
     await db.curr_user.clear();
 }
+
+export let global_theme = "dark-theme";
+
+export function setGlobalTheme(to) {
+    global_theme = to;
+}

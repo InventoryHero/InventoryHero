@@ -17,7 +17,7 @@ button {
     font-size: 2em;
     border-radius: 10px;
     border: none;
-    background-color: var(--color-darker);
+    background-color: var(--color-dark-theme-lighter);
     color: white;
 }
 </style>

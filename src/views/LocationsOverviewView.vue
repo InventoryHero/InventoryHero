@@ -1,19 +1,24 @@
 <template>
-    <SandwichMenu :title="this.title"/>
-    <search-bar @valueUpdated="sortLocations"/>
+  <div class="viewContainer" :class="this.theme">
 
-    <RoomCard
+    <SandwichMenu :title="this.title"/>
+    <div id="content">
+
+        <search-bar @valueUpdated="sortLocations"/>
+        
+        <RoomCard
         v-for="r in this.rooms"
         @addItemToRoom="displayModal"
         @roomDeleted="updateRooms"
         class="card"
-    :key="r.id"
-    :id="r.id" 
-    :roomName="r.name" 
-    :numBoxes="r.box_cnt" 
-    :numProducts="r.product_cnt" />
-    <load-animation v-if="this.loading"></load-animation>
-    <div id="spacing"></div>
+        :key="r.id"
+        :id="r.id" 
+        :roomName="r.name" 
+        :numBoxes="r.box_cnt" 
+        :numProducts="r.product_cnt" />
+        <load-animation v-if="this.loading"></load-animation>
+        <div id="spacing"></div>
+    </div>
     <add-modal
         :preselected_room="this.preselectedRoom"
         :navbarItems="this.displayedNavbarItems"
@@ -26,6 +31,7 @@
         :show_qr="false"
         @addButton="this.addModalVisibility = true"
     />
+    </div>
 </template>
 
 <script>
@@ -46,6 +52,8 @@ import { rankLocationsBySearch } from '@/scripts/sort';
 import QrDataModal from "@/modals/QrDataModal.vue";
 import QrReaderModal from "@/modals/QrReaderModal.vue";
 import {useToast} from "vue-toastification";
+
+import { global_theme } from "@/db/dexie"
 
 
 
@@ -75,7 +83,8 @@ import {useToast} from "vue-toastification";
             defaultModalView: Constants.LocationsView,
             displayedNavbarItems: Constants.All,
             preselectedRoom: "",
-            loading: true
+            loading: true,
+            theme: global_theme
         }
     },
     methods: {
@@ -138,11 +147,18 @@ import {useToast} from "vue-toastification";
         padding-right: 2.5%;
     }
     .v-virtual-scroll{
-        background: var(--color-blue);
+        background: var(--color-dark-theme-background);
     }
     #spacing{
         height: calc(5vh + 25px);
     }
     ::-webkit-scrollbar { width: 0px;  }
+
+    
+  #content {
+    position: absolute;
+    top: 70px;
+    width: 100%;
+  }
 </style>
   

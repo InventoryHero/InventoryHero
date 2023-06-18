@@ -22,7 +22,7 @@ components: {
     width: 80%;
     border-radius: 10px;
     padding: 10px 0px 10px 0px;
-    background-color: var(--color-darker);
+    background-color: var(--color-dark-theme-lighter);
     cursor: pointer;
 }
 </style>

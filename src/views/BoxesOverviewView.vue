@@ -1,7 +1,8 @@
 <template>
+  <div class="viewContainer" :class="this.theme">
 
   <SandwichMenu v-if="!this.from_qrcode" :title="this.title" @reloadboxes="reloadMe"/>
-  <div :style="this.styling">
+  <div :style="this.styling" id="content">
     <search-bar :do_transform="this.from_qrcode ? '' : 'transform'" @valueUpdated="sortBoxes"/>
     <box-card v-for="b in boxes" class="card"
                         :key="b.id"
@@ -28,6 +29,8 @@
           @addButton="this.addModalVisibility = true"
           v-if="!this.from_qrcode"
   />
+
+  </div>
 </template>
 
 <script>
@@ -48,6 +51,8 @@ import {rankBoxesBySearch} from "@/scripts/sort";
 import QrDataModal from "@/modals/QrDataModal.vue";
 import QrReaderModal from "@/modals/QrReaderModal.vue";
 import {useToast} from "vue-toastification";
+
+import { global_theme } from "@/db/dexie";
 
 
 export default {
@@ -88,6 +93,7 @@ export default {
           defaultModalView: Constants.BoxesView,
           loading: true,
           room_id: -1,
+          theme: global_theme
       }
   },
   methods: {
@@ -169,11 +175,17 @@ export default {
       padding-right: 2.5%;
   }
   .v-virtual-scroll{
-      background: var(--color-blue);
+      background: var(--color-dark-theme-background);
   }
   #spacing{
       height: calc(5vh + 25px);
   }
 
   ::-webkit-scrollbar { width: 0px;  }
+
+  #content {
+    position: absolute;
+    top: 70px;
+    width: 100%;
+  }
 </style>

@@ -438,7 +438,7 @@ beforeMount() {
 
 }
 #addButton{
-    background: var(--color-darker);
+    background: var(--color-dark-theme-lighter);
     border-radius: 5px;
 }
 

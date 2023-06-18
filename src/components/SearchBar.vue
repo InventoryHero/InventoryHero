@@ -1,18 +1,20 @@
 <template>
-    <div id="containerSearchBar">
+    <div id="containerSearchBar" :class="this.theme">
         <input :class="this.do_transform" type="text" v-model="this.value" @input="this.$emit('valueUpdated', this.value)">
         <i class="fa-solid fa-magnifying-glass fa-lg icon"></i>
     </div>
 </template>
 
 <script>
+import { global_theme } from "@/db/dexie"
 
 
 export default {
     name: 'searchBar',
     data() {
           return {
-              value: ""
+              value: "",
+              theme: global_theme
           }
       },
     props: {
@@ -30,14 +32,38 @@ export default {
     position: relative;
     width: 80%;
     height: 50px;
-    border: white solid 2px;
     margin-left: 50%;
     margin-bottom: 10px;
     transform: translateX(-50%);
     top: 15px;
     border-radius: 25px;
-    background: var(--color-darker)
 }
+
+.light-theme  {
+    background-color: var(--color-light-theme-lighter);
+    border: rgba(0, 0, 0, 0.6) solid 2px;
+}
+.dark-theme  {
+    background-color: var(--color-dark-theme-lighter);
+    border: rgba(255, 255, 255, 0.6) solid 2px;
+}
+
+.light-theme input  {
+    background-color: rgba(255,255,255,0.6);
+    color: black;
+}
+.dark-theme input  {
+    background-color: rgba(0,0,0,0.6);
+    color: white;
+}
+
+.dark-theme i  {
+    color: white;
+}
+.light-theme i  {
+    color: rgba(0, 0, 0, 0.6);
+}
+
 .transform{
     transform: translateX(-50%);
 }
@@ -52,7 +78,6 @@ input {
     position: absolute;
     width: 100%;
     height: 100%;
-    background-color: rgba(0,0,0,0.6);
     backdrop-filter: blur(15px);
     border-radius: 25px;
     padding-left: 50px;

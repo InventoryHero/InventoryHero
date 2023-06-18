@@ -6,7 +6,7 @@
                 <v-card-title align="start" :id='id' >
                     {{ this.box_name }}
                 </v-card-title>
-                <div class="d-flex align-center justify-space-evenly box-info mt-1 mb-2 ms-2 me-2 rounded-pill" >
+                <div class="d-flex align-center justify-space-evenly box-info mt-1 mb-2 ms-2 me-2 rounded-pill" :class="theme">
                     <v-list-item density="compact" >
                         <v-list-item-subtitle>
                             <v-icon @click="productsOverview(id)" class="me-3" icon="fa:fas fa-shopping-cart"/>{{this.numProducts}}
@@ -41,63 +41,85 @@
 </template>
 
 <script>
-  import BoxDetailModal from "@/modals/BoxDetailModal.vue";
-  import {useToast} from "vue-toastification";
+import BoxDetailModal from "@/modals/BoxDetailModal.vue";
+import {useToast} from "vue-toastification";
+import { global_theme } from "@/db/dexie"
 
-  export default {
-      components: {BoxDetailModal},
-      props: {
-          id: Number,
-          boxName: String,
-          numProducts: Number,
-          numStarredProducts: Number ,
-          username: String,
-      },
-      data() {
-          return {
-              dialog: false,
-              box_name: this.boxName,
-          }
-      },
-      methods: {
-          boxDeleted()
-          {
-            this.dialog=false;
-            this.$emit("boxDeleted");
-          },
-          closeModal(new_boxname)
-          {
-              if(new_boxname !== undefined && new_boxname !== "")
-                this.box_name = new_boxname;
-              this.dialog = false
-          },
-          openDetailModal()
-          {
-              this.dialog = true;
-          },
-          productsOverview: function(cardId)
-          {
-              this.$router.push( "/productsFilteredView?box_id="+cardId);
-          },
-          starredProductsOverview: function(cardId)
-          {
-              this.$router.push( "/productsFilteredView?box_id="+cardId+"&starred=true");
-          }
-      },
-  }
+
+export default {
+    components: {BoxDetailModal},
+    props: {
+        id: Number,
+        boxName: String,
+        numProducts: Number,
+        numStarredProducts: Number ,
+        username: String,
+    },
+    data() {
+        return {
+            dialog: false,
+            box_name: this.boxName,
+            theme: global_theme
+        }
+    },
+    methods: {
+        boxDeleted()
+        {
+        this.dialog=false;
+        this.$emit("boxDeleted");
+        },
+        closeModal(new_boxname)
+        {
+            if(new_boxname !== undefined && new_boxname !== "")
+            this.box_name = new_boxname;
+            this.dialog = false
+        },
+        openDetailModal()
+        {
+            this.dialog = true;
+        },
+        productsOverview: function(cardId)
+        {
+            this.$router.push( "/productsFilteredView?box_id="+cardId);
+        },
+        starredProductsOverview: function(cardId)
+        {
+            this.$router.push( "/productsFilteredView?box_id="+cardId+"&starred=true");
+        }
+    },
+}
 </script>
 
 
 <style scoped>
-    .box-info {
-        background-color: var(--color-blue);
-        color: white;
-        height: 2em;
-    }
-    .box-card{
-        background-color: var(--color-darker);
-        color: white;
-    }
+.box-info .dark-theme{
+    background-color: var(--color-dark-theme-background);
+    color: white;
+    height: 2em;
+}
+.box-card {
+    background-color: var(--color-dark-theme-lighter);
+    color: white;
+}
 
+.box-info .light-theme{
+    background-color: var(--color-light-theme-background);
+    color: white;
+    height: 2em;
+}
+
+.light-theme i {
+    color: black
+}
+
+.dark-theme {
+    background-color: var(--color-dark-theme-darker);
+    color: white;
+}
+
+.light-theme {
+    background-color: var(--color-light-theme-darker);
+    color: black;
+}
 
 </style>

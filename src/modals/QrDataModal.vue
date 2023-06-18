@@ -36,14 +36,14 @@
                 v-if="this.box_active"
                 :from_qrcode="true"
                 :roomid="getId()"
-                styling="height:80vh;background:var(--color-blue)"
+                styling="height:80vh;background:var(--color-dark-theme-background)"
         />
 
         <products-overview-view
                 v-if="this.product_active"
                 :from_qrcode="true"
                 v-bind="getRoomAndBoxIdProp()"
-                styling="height:80vh;background:var(--color-blue)"
+                styling="height:80vh;background:var(--color-dark-theme-background)"
         />
       </v-card>
     </v-dialog>

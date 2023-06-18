@@ -20,7 +20,7 @@ export default {
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 input {
-  background-color: var(--color-darker);
+  background-color: var(--color-dark-theme-lighter);
   color: white;
   width: 60%;
   font-size: 1.5em;

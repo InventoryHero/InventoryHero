@@ -275,7 +275,7 @@ export const localizations = {
       login: "Login"
     },
     settings_view: {
-      settings: "Idee",
+      settings: "Impostazioni",
       theme: "Tema",
       language: "Lingua"
     },

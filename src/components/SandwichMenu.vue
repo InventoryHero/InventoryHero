@@ -82,7 +82,7 @@ color: white;
 <style scoped>
 #navbar {
     top: 0;
-    background-color: var(--color-darker);
+    background-color: var(--color-dark-theme-lighter);
     color: white;
     height: 60px !important
 }

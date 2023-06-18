@@ -24,7 +24,7 @@ props: ["text", "active"],
 }
 
 .true {
-    background-color: var(--color-darker);
+    background-color: var(--color-dark-theme-lighter);
 }
 </style>
   
