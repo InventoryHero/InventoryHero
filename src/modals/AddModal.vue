@@ -380,7 +380,7 @@ beforeMount() {
         }
         DB_SB_get_products_without_storage_location().then((products) => {
             this.products = products;
-            this.products.splice(0, 0, {id: -1, name: this.$t('add_new_product')})
+            this.products.splice(0, 0, {id: -1, name: this.$t('add_modal.add_new_product')})
         });
     })
 
