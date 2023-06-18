@@ -5,3 +5,8 @@ export const Constants = {
     ProductsView: "products",
     All:  "all"
 }
+
+export function resetLangToDefault()
+{
+    return (navigator.language || navigator.userLanguage).substring(0, 2);
+}

@@ -39,6 +39,7 @@
 <script>
 import { Slide } from 'vue3-burger-menu';
 import {logout} from "@/db/dexie";
+import {resetLangToDefault} from "@/global/constants";
 
 export default {
     name: 'App',
@@ -58,6 +59,7 @@ export default {
     methods: {
       logoutUser(){
         logout().then(() => {
+            this.$i18n.locale = resetLangToDefault();
             this.$router.push("/");
         });
       },
