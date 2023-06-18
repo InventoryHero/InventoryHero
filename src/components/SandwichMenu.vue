@@ -2,23 +2,23 @@
 
 <template>
     <v-toolbar id="navbar" class="cnavbar" :title="this.title" />
-    <Slide class="cnavbar" :crossIcon="false">
+    <Slide class="cnavbar" :crossIcon="false" :closeOnNavigation="true">
       <a id="home" @click="this.$router.push('/Home')">
-          <span>Home</span>
+          <span>{{ this.$t("home") }}</span>
       </a>
-      <a @click="redirectOrReload('/BoxesOverview')">
+      <a @click="redirectOrReload('/BoxesOverview', 'boxes')">
         <span>
-      Boxes
+          {{ this.$t("boxes") }}
         </span>
       </a>
-      <a @click="redirectOrReload('/LocationsOverview')">
+      <a @click="this.$router.push('/LocationsOverview')">
         <span>
-          Locations
+          {{ this.$t("locations") }}
         </span>
       </a>
-      <a @click="redirectOrReload('/ProductsOverview')">
+      <a @click="redirectOrReload('/ProductsOverview', 'products')">
         <span>
-          Products
+          {{ this.$t("products") }}
         </span>
       </a>
       <div id="actionIcons" class="d-flex justify-space-evenly">
@@ -56,14 +56,20 @@ export default {
       }
     },
     methods: {
-        logoutUser(){
-          logout().then(() => {
-              this.$router.push("/");
-          });
-        },
-      redirectOrReload(path)
+      logoutUser(){
+        logout().then(() => {
+            this.$router.push("/");
+        });
+      },
+
+      redirectOrReload(path, view)
       {
-        this.$router.push({path: path}).then(()=> {this.$router.go()})
+        if(view !== this.$route.name) {
+          this.$router.push({path: path});
+        }
+        else{
+          this.$emit("reload"+view);
+        }
       }
     }
 }

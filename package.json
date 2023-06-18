@@ -23,6 +23,7 @@
     "uninstall": "^0.0.0",
     "vue": "^3.2.13",
     "vue-burger-menu": "^2.0.5",
+    "vue-i18n": "^9.2.2",
     "vue-material-design-icons": "^5.2.0",
     "vue-qrcode-reader": "^3.1.7",
     "vue-router": "^4.1.6",

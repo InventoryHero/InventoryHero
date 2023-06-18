@@ -1,9 +1,9 @@
 <template>
 <h1 id="posLanguage">Language</h1>
 <div class="containerFlags">
-  <span class="fi fi-um flag" :class="{selected: selected=='english'}" @click="this.selected = 'english'" ></span> 
-  <span class="fi fi-de flag" :class="{selected: selected=='german'}" @click="this.selected = 'german'" ></span>
-  <span class="fi fi-it flag" :class="{selected: selected=='italian'}" @click="this.selected = 'italian'" ></span>  
+  <span class="fi fi-um flag" :class="{selected: selected==='en'}" @click="changeLocale('en')" ></span>
+  <span class="fi fi-de flag" :class="{selected: selected==='de'}" @click="changeLocale('de')" ></span>
+  <span class="fi fi-it flag" :class="{selected: selected==='it'}" @click="changeLocale('it')" ></span>
 </div>
 
 <h1 id="posTheme">Theme</h1>
@@ -25,11 +25,17 @@ components: {
 },
 data() {
   return {
-    selected: "english",
+    selected: this.$i18n.locale,
     selected_theme: "dark"
   }
 },
 methods: {
+  changeLocale(lang)
+  {
+    console.log(lang);
+    this.selected = lang;
+    this.$i18n.locale = lang;
+  }
 },
 }
 </script>

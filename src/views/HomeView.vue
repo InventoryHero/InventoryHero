@@ -78,6 +78,7 @@ export default {
   },
   
   beforeMount() {
+    console.info("locale home", this.$i18n.locale);
     DB_SB_getStarredProducts().then((res) => {
       this.starred_products = res;
     })

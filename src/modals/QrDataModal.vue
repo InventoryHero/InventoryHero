@@ -28,7 +28,7 @@
         <boxes-overview-view
                 v-if="this.box_active"
                 :from_qrcode="true"
-                :room_id="this.qrCodeData.id"
+                :roomid="getId()"
                 styling="height:80vh;background:var(--color-blue)"
         />
 
@@ -72,6 +72,10 @@ data() {
     }
 },
   methods: {
+    getId()
+    {
+      return this.qrCodeData.id;
+    },
     closeModal() {
         this.$emit('closeQrDataModal')
     },
@@ -87,14 +91,14 @@ data() {
       },
       getRoomAndBoxIdProp()
       {
-          const result = {room_id: -1, box_id: -1};
+          const result = {roomid: -1, boxid: -1};
           if(this.qrCodeData.is_room)
           {
-              result.room_id = this.qrCodeData.id;
+              result.roomid = this.qrCodeData.id;
           }
           if(this.qrCodeData.is_box)
           {
-              result.box_id = this.qrCodeData.id;
+              result.boxid = this.qrCodeData.id;
 
           }
           return result;

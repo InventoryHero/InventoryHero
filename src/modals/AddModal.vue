@@ -154,8 +154,6 @@ data() {
             this.curr_name = product.name;
             this.curr_starred = product.starred;
         }
-        console.log(product);
-        console.log(this.curr_name);
     },
     reloadSelectComponents(boxes, rooms){
         if(boxes)
@@ -322,7 +320,6 @@ beforeMount() {
         DB_SB_get_products_without_storage_location().then((products) => {
             this.products = products;
             this.products.splice(0, 0, {id: -1, name: "Add new product"})
-            console.log(products);
         });
     })
 

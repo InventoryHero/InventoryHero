@@ -1,5 +1,9 @@
 <template>
-    <SandwichMenu v-if="!this.from_qrcode"  :title="this.title"/>
+    <SandwichMenu
+            v-if="!this.from_qrcode"
+            :title="this.title"
+            @reloadproducts="reloadMe"
+    />
 
   <div :style="this.styling">
     <search-bar :do_transform="this.from_qrcode ? '' : 'transform'" @valueUpdated="sortProducts"/>
@@ -63,11 +67,11 @@
   export default {
     name: 'App',
     props: {
-      room_id: {
+      roomid: {
         type: Number,
         default: -1
       },
-      box_id: {
+      boxid: {
         type: Number,
         default: -1
       },
@@ -78,10 +82,6 @@
       styling: {
         type: String,
         default: "",
-      },
-      get_starred: {
-        type: Boolean,
-        default: false,
       }
     },
     components: {
@@ -99,11 +99,22 @@
             currentUser: "",
             addModalVisibility: false,
             Constants,
-            title: "Products",
-            loading: true
+            title: this.$t('products'),
+            loading: true,
+            box_id: -1,
+            room_id: -1,
+            get_starred: false,
         }
     },
     methods: {
+        reloadMe()
+        {
+          this.box_id = -1;
+          this.room_id = -1;
+          this.get_starred = false;
+          this.title = this.$t('products');
+          this.refreshData();
+        },
         refreshData(){
           this.get_products();
         },
@@ -143,9 +154,37 @@
             if(product.id === id)
               product.starred = !product.starred;
           })
+        },
+        getFromQuery()
+        {
+          if(this.$route.query.box_id !== undefined) {
+            this.box_id = this.$route.query.box_id;
+          }
+
+          if(this.$route.query.room_id !== undefined) {
+            this.room_id = this.$route.query.room_id;
+          }
+
+          if(this.$route.query.starred !== undefined) {
+            this.get_starred = true;
+          }
+        },
+        getFromProps()
+        {
+          if(this.room_id === -1) {
+            this.room_id = this.roomid;
+          }
+
+          if(this.box_id === -1) {
+            this.box_id = this.boxid;
+          }
+
         }
     },
     beforeMount() {
+        this.getFromQuery();
+        this.getFromProps();
+
         getUser().then((user) => {
             if(user === undefined)
             {
@@ -158,10 +197,12 @@
               DB_SB_get_box(this.box_id, user).then((box) => {
                 if(box.length !== 0) {
 
-                  this.title = "Products in " + box[0].name;
+                  let locString = "products_view.products_in";
                   if (this.get_starred) {
-                    this.title = "Starred p" + this.title.substring(1);
+                    locString = "products_view.starred_in"
                   }
+
+                  this.title = this.$t(locString, {name: box[0].name});
                 }
               });
             }
@@ -169,7 +210,7 @@
             {
               DB_SB_get_room(this.room_id, user).then((room) => {
                 if(room.length !== 0)
-                  this.title = "Products in " + room[0].name;
+                  this.title = this.$t("products_view.products_in", {name: room[0].name});
               });
 
             }

@@ -1,6 +1,6 @@
 <template>
 
-  <SandwichMenu v-if="!this.from_qrcode" :title="this.title"/>
+  <SandwichMenu v-if="!this.from_qrcode" :title="this.title" @reloadboxes="reloadMe"/>
   <div :style="this.styling">
     <search-bar :do_transform="this.from_qrcode ? '' : 'transform'" @valueUpdated="sortBoxes"/>
     <box-card v-for="b in boxes" class="card"
@@ -52,7 +52,7 @@ import QrReaderModal from "@/modals/QrReaderModal.vue";
 export default {
   name: 'App',
   props: {
-    room_id: {
+    roomid: {
       type: Number,
       default: -1,
     },
@@ -85,9 +85,16 @@ export default {
           displayedNavbarItems: Constants.All,
           defaultModalView: Constants.BoxesView,
           loading: true,
+          room_id: -1,
       }
   },
   methods: {
+      async reloadMe()
+      {
+        this.room_id = -1;
+        this.title = "Boxes";
+        await this.get_boxes();
+      },
       async displayModal(id){
         this.defaultModalView = "products";
         this.displayedNavbarItems = [Constants.ProductsView];
@@ -114,9 +121,24 @@ export default {
       async sortBoxes(search_word) {
         const boxes = await this.get_boxes();
         this.boxes = rankBoxesBySearch(boxes, search_word);
+      },
+      getFromQuery()
+      {
+        if(this.$route.query.room_id !== undefined) {
+          this.room_id = this.$route.query.room_id;
+        }
+      },
+      getFromProps()
+      {
+        if(this.room_id === -1) {
+          console.log(this.roomid);
+          this.room_id = this.roomid;
+        }
       }
   },
   beforeMount() {
+      this.getFromQuery();
+      this.getFromProps();
       getUser().then((user) => {
           if(user === undefined)
           {
