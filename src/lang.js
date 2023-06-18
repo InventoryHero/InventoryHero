@@ -208,7 +208,6 @@ export const localizations = {
         }
       },
     },
-
   },
   it: {
     home: "Home",
@@ -314,6 +313,5 @@ export const localizations = {
         }
       },
     },
-
   }
 }

@@ -86,7 +86,7 @@ const toastOptions = {
 function fun()
 {
     return createI18n({
-        locale: 'en',
+        locale: (navigator.language || navigator.userLanguage).substring(0, 2),
         fallbackLocal: 'en',
         messages: localizations,
         useScope: 'global',
