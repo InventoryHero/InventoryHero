@@ -94,11 +94,11 @@ export default {
       async reloadMe()
       {
         this.room_id = -1;
-        this.title = "Boxes";
+        this.title = this.$t('boxes');
         await this.get_boxes();
       },
       async displayModal(id){
-        this.defaultModalView = "products";
+        this.defaultModalView = Constants.ProductsView;
         this.displayedNavbarItems = [Constants.ProductsView];
         this.preselectedBox = await DB_SB_get_box_name(id);
 
@@ -152,7 +152,7 @@ export default {
           {
             DB_SB_get_room(this.room_id, user).then((room) => {
               if(room.length !== 0)
-                this.title = "Boxes in " + room[0].name;
+                this.title = this.$t('boxes_overview.boxes_in', {location: room[0].name});
             });
           }
 

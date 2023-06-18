@@ -32,7 +32,7 @@
            <v-btn
                    variant="text"
                    @click="closeModalAndUpdateRoom()"
-           >Save</v-btn>
+           > {{this.$t('save')}}</v-btn>
 
          </v-card-actions>
        </v-card>
@@ -45,8 +45,13 @@
 import InputTextEnhanced from '@/components/InputTextEnhanced.vue';
 import {DB_SB_get_room_createdat, DB_SB_update_room_name} from "@/db/supabase";
 import {generatePDF} from "@/global/qr_code";
+import {useToast} from "vue-toastification";
 
 export default {
+  setup(){
+    const toast = useToast();
+    return {toast};
+  },
   props:{
     id: {
       type: Number,
@@ -69,7 +74,6 @@ export default {
   },
   methods: {
     async deleteRoom(){
-
       this.$emit("roomDeleted", this.id);
     },
     closeModalAndUpdateRoom()
@@ -77,9 +81,12 @@ export default {
       if(this.new_name !== this.name && this.new_name !== "")
       {
         DB_SB_update_room_name(this.id, this.new_name).then( (ret) => {
-          if(ret)
+          if(ret) {
+            this.toast.success(this.$t('room_detail_modal.toasts.success.rename', {old: this.name, new: this.new_name}))
             this.$emit("closeDetailModal", this.new_name);
+          }
           else
+            this.toast.success(this.$t('room_detail_modal.toasts.error.rename', {old: this.name}))
             this.$emit("closeDetailModal");
         });
       }
@@ -110,7 +117,7 @@ export default {
             username: this.username,
           }),
           this.name,
-          "QR-Code for room " + this.name
+          this.$t('room_detail_modal.qr_code', {loc: this.name})
       );
     }
   },

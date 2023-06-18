@@ -71,12 +71,11 @@ import {useToast} from "vue-toastification";
         roomDeleted(id)
         {
           this.dialog = false;
-          this.$emit("roomDeleted", id);
+          this.$emit("roomDeleted", id, this.roomName);
         },
         informationButton(new_name)
         {
             if(new_name !== undefined && new_name !== "") {
-                this.toast.success("Successfully renamed room");
                 this.name = new_name
             }
             this.dialog=false;

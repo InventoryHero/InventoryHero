@@ -1,18 +1,18 @@
 <template>
-<h1 id="posLanguage">Language</h1>
+<h1 id="posLanguage">{{ this.$t('settings_view.language') }}</h1>
 <div class="containerFlags">
   <span class="fi fi-um flag" :class="{selected: selected==='en'}" @click="changeLocale('en')" ></span>
   <span class="fi fi-de flag" :class="{selected: selected==='de'}" @click="changeLocale('de')" ></span>
   <span class="fi fi-it flag" :class="{selected: selected==='it'}" @click="changeLocale('it')" ></span>
 </div>
 
-<h1 id="posTheme">Theme</h1>
+<h1 id="posTheme">{{ this.$t('settings_view.theme') }}</h1>
 <div class="containerTheme">
   <div class="circle dark" :class="{selected: selected_theme=='dark'}" @click="this.selected_theme = 'dark'" ></div>
   <div class="circle light" :class="{selected: selected_theme=='light'}" @click="this.selected_theme = 'light'" ></div>
 </div>
 
-<SandwichMenu title="Settings"/>
+<SandwichMenu :title="this.$t('settings_view.settings')"/>
 </template>
 
 <script>
@@ -32,7 +32,6 @@ data() {
 methods: {
   changeLocale(lang)
   {
-    console.log(lang);
     this.selected = lang;
     this.$i18n.locale = lang;
   }

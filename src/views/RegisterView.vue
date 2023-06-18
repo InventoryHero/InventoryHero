@@ -1,11 +1,11 @@
 <template>
     <h1> Register </h1>
     <div id="loginPos">
-      <input-text class="inputText" place_holder="Username" :is_pssw="false" @valueUpdated=updateUsername />
-      <input-text class="inputText" place_holder="Password" :is_pssw="true" @valueUpdated=updatePassword />
+      <input-text class="inputText" :place_holder="this.$t('login_view.username')" :is_pssw="false" @valueUpdated=updateUsername />
+      <input-text class="inputText" :place_holder="this.$t('login_view.password')" :is_pssw="true" @valueUpdated=updatePassword />
       <register-button @click="register()"/>
     </div>
-  <a id="posLogin" @click="this.$router.push('/')">Login</a>
+  <a id="posLogin" @click="this.$router.push('/')">{{ this.$t('login_view.login') }}</a>
     
   </template>
   

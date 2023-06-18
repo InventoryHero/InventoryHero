@@ -118,20 +118,17 @@ import {useToast} from "vue-toastification";
           deletedProduct()
           {
             this.dialog=false;
-            this.toast.success("Successfully deleted product");
             this.$emit("productDeleted");
           },
           reloadProducts()
           {
               this.$emit("reloadProducts");
-              this.toast.success("Successfully updated product(s)");
               this.dialog = false;
           },
           closeModal(new_amount = -1)
           {
               if(new_amount !== -1 && new_amount !== this.updatedAmount)
               {
-                  this.toast.success("Product amount updated!");
                   this.updatedAmount = new_amount;
               }
 
@@ -150,10 +147,11 @@ import {useToast} from "vue-toastification";
               DB_SB_change_product_amount(this.mapping_id, 1) .then((updated_amount) => {
                 if(updated_amount !== -1){
                     this.updatedAmount = updated_amount;
-                    this.toast.success("Updated amount!");
-                }else
+                    this.toast.success(this.$t('products_card.toasts.success.amountUpdate', {name: this.productName}));
+                }
+                else
                 {
-                    this.toast.error("Update failed!");
+                    this.toast.success(this.$t('products_card.toasts.success.amountUpdate', {name: this.productName}));
                 }
             })
             .catch(error => {
@@ -171,10 +169,11 @@ import {useToast} from "vue-toastification";
               {
                   if(updated_amount !== -1){
                       this.updatedAmount = updated_amount;
-                      this.toast.success("Updated amount!");
-                  }else
+                      this.toast.success(this.$t('products_card.toasts.success.amountUpdate', {name: this.productName}));
+                  }
+                  else
                   {
-                      this.toast.error("Update failed!");
+                      this.toast.success(this.$t('products_card.toasts.success.amountUpdate', {name: this.productName}));
                   }
               })
               .catch(error => {

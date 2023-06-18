@@ -19,7 +19,7 @@
             :box_name="p.box_name"
             :room_name="p.room_name"
             :product_starred="p.starred"
-            @productDeleted="refreshData"
+            @productDeleted="deleteProduct"
             @reloadProducts="refreshData"
             @toggledStarred="updateStarred"
     />
@@ -63,10 +63,12 @@
   import {rankBoxesBySearch} from "@/scripts/sort";
   import QrDataModal from "@/modals/QrDataModal.vue";
   import QrReaderModal from "@/modals/QrReaderModal.vue";
+  import {useToast} from "vue-toastification";
 
 
   export default {
     name: 'App',
+
     props: {
       roomid: {
         type: Number,
@@ -116,7 +118,14 @@
           this.title = this.$t('products');
           this.refreshData();
         },
+        deleteProduct()
+        {
+
+          this.refreshData();
+        },
         refreshData(){
+
+
           this.get_products();
         },
         async get_products() {

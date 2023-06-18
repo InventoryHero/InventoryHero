@@ -14,18 +14,18 @@
                 <tag
                     class="ms-5"
                     @click="categoryChange(Constants.ProductsView)"
-                    text="Product"
+                    :text="this.$t('product')"
                     :active="this.isActive(Constants.ProductsView).toString()"
                     :hidden="!this.showSelectionTabs(Constants.ProductsView)" />
                 <tag
                     @click="categoryChange(Constants.BoxesView)"
                     :active="this.isActive(Constants.BoxesView).toString()"
-                    text="Box"
+                    :text="this.$t('box')"
                     :hidden="!this.showSelectionTabs(Constants.BoxesView)"/>
                 <tag
                     @click="categoryChange(Constants.LocationsView)"
                     :active="this.isActive(Constants.LocationsView).toString()"
-                    text="Location"
+                    :text="this.$t('location')"
                     :hidden="!this.showSelectionTabs(Constants.LocationsView)"/>
                 <v-spacer :hidden="this.showSelectionTabs(Constants.LocationsView)"/>
                 <v-spacer :hidden="this.showSelectionTabs(Constants.BoxesView)"/>
@@ -34,22 +34,49 @@
             </v-toolbar>
             <v-card-text>
                 <div id="containerWhat" v-if="this.isActive(Constants.ProductsView)">
-                    <input-dropdown @valueUpdated="setProduct" :emit-full-object="true" place_holder="Select product" :list=this.products :isDisabled='false'/>
-                    <input-text-enhanced @valueUpdated="updateName" placeholder="name" :disabled="this.product_exists" :hidden="this.product_exists"/>
-                    <input-dropdown  @valueUpdated="updateSelectedBox" :place_holder="this.place_holder_box" :list=this.boxes :isDisabled='this.preselected_box !== "" '/>
-                    <input-dropdown  @valueUpdated="updateSelectedRoom" :place_holder="this.place_holder_room" :list=this.rooms :isDisabled='this.lockRoom'/>
-                    <input-text-enhanced @valueUpdated="updateAmount" placeholder="amount"/>
+                    <input-dropdown
+                        @valueUpdated="setProduct"
+                        :emit-full-object="true"
+                        :place_holder="this.$t('add_modal.select_product_placeholder')"
+                        :list=this.products
+                        :isDisabled='false'/>
+                    <input-text-enhanced
+                        @valueUpdated="updateName"
+                        :placeholder="this.$t('add_modal.product_name')"
+                        :disabled="this.product_exists"
+                        :hidden="this.product_exists"/>
+                    <input-dropdown
+                        @valueUpdated="updateSelectedBox"
+                        :place_holder="this.place_holder_box"
+                        :list=this.boxes
+                        :isDisabled='this.preselected_box !== "" '/>
+                    <input-dropdown
+                        @valueUpdated="updateSelectedRoom"
+                        :place_holder="this.place_holder_room"
+                        :list=this.rooms
+                        :isDisabled='this.lockRoom'/>
+                    <input-text-enhanced
+                        @valueUpdated="updateAmount"
+                        :placeholder="this.$t('add_modal.amount_placeholder')"/>
                     <input-starred :starred="this.curr_starred" @valueUpdated="updateStarredProduct" />
                 </div>
 
                 <div id="containerWhat" v-if="this.isActive(Constants.BoxesView)">
-                    <input-text-enhanced @valueUpdated="updateName" placeholder="name"/>
-                    <input-dropdown  @valueUpdated="updateSelectedRoom" :place_holder="this.place_holder_room" :list=this.rooms :isDisabled='this.lockRoom'/>
+                    <input-text-enhanced
+                        @valueUpdated="updateName"
+                        :placeholder="this.$t('add_modal.box_name')"/>
+                    <input-dropdown
+                        @valueUpdated="updateSelectedRoom"
+                        :place_holder="this.place_holder_room"
+                        :list=this.rooms
+                        :isDisabled='this.lockRoom'/>
                 </div>
 
 
                 <div id="containerWhat" v-if="this.isActive(Constants.LocationsView)">
-                    <input-text-enhanced @valueUpdated="updateName" placeholder="name"/>
+                    <input-text-enhanced
+                        @valueUpdated="updateName"
+                        :placeholder="this.$t('add_modal.location_name')"/>
                 </div>
             </v-card-text>
 
@@ -149,10 +176,8 @@ data() {
       curr_amount: 0,
       curr_starred: false,
       Constants,
-      place_holder_box: "box",
-      place_holder_room: "room",
-      redrawRoom: 0,
-      redrawBoxes: 0,
+      place_holder_box: this.$t('add_modal.box_placeholder'),
+      place_holder_room: this.$t('add_modal.location_placeholder'),
       lockRoom: false,
       product_exists: true
     }
@@ -161,7 +186,6 @@ data() {
     setProduct(product){
         if(product.id === -1)
         {
-            console.log("Adding new product")
             this.product_exists = false;
             this.curr_name = "";
         }
@@ -171,12 +195,6 @@ data() {
             this.curr_name = product.name;
             this.curr_starred = product.starred;
         }
-    },
-    reloadSelectComponents(boxes, rooms){
-        if(boxes)
-            this.redrawBoxes += 1;
-        if(rooms)
-            this.redrawRoom += 1;
     },
     isActive(view)
     {
@@ -243,11 +261,26 @@ data() {
             starred: this.curr_starred
         }
         DB_SB_add_product(product).then(() => {
-            this.toast.success("Added product!");
+            this.toast.success(
+                this.$t('add_modal.add_success_product',
+                    {
+                        name: product.name
+                    }
+                )
+            );
             this.closeModal();
         });
     },
     closeModal() {
+        this.curr_name = ""
+        this.curr_room = ""
+        this.curr_box = ""
+        this.curr_amount = 0
+        this.curr_starred = false
+        this.place_holder_box = this.$t('add_modal.box_placeholder')
+        this.place_holder_room = this.$t('add_modal.location_placeholder')
+        this.lockRoom = false
+        this.product_exists = true
         this.$emit('closeModal')
     },
     addBox() {
@@ -256,7 +289,13 @@ data() {
             room: this.curr_room
         }
         DB_SB_add_box(box).then(() => {
-            this.toast.success("Added box!");
+            this.toast.success(
+                this.$t('add_modal.add_success_box',
+                    {
+                        name: box.name
+                    }
+                )
+            );
             this.closeModal()
         })
 
@@ -266,7 +305,13 @@ data() {
             name: this.curr_name
         }
         DB_SB_add_room(room).then(() => {
-            this.toast.success("Added room!");
+            this.toast.success(
+                this.$t('add_modal.add_success_room',
+                    {
+                        name: room.name
+                    }
+                )
+            );
             this.closeModal()
         })
     },
@@ -282,11 +327,11 @@ data() {
           switch(this.active_view)
           {
               case Constants.ProductsView:
-                  return "Add Product";
+                  return this.$t('add_modal.add_btn_product' );
               case Constants.BoxesView:
-                  return "Add Box";
+                  return this.$t('add_modal.add_btn_box' );
               case Constants.LocationsView:
-                  return "Add Location";
+                  return this.$t('add_modal.add_btn_location' );
               default:
                   break;
           }
@@ -335,7 +380,7 @@ beforeMount() {
         }
         DB_SB_get_products_without_storage_location().then((products) => {
             this.products = products;
-            this.products.splice(0, 0, {id: -1, name: "Add new product"})
+            this.products.splice(0, 0, {id: -1, name: this.$t('add_new_product')})
         });
     })
 

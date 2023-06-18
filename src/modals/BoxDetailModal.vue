@@ -34,7 +34,7 @@
            <v-btn
                    variant="text"
                    @click="closeModalAndUpdateBox()"
-           >Save</v-btn>
+           >{{this.$t('save')}}</v-btn>
 
          </v-card-actions>
        </v-card>

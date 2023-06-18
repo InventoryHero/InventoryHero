@@ -2,12 +2,12 @@
     <div>
       <h1> Login </h1>
       <div id="loginPos">
-        <input-text class="inputText" place_holder="Username" :is_pssw="false" @valueUpdated=updateUsername />
-        <input-text class="inputText" place_holder="Password" :is_pssw="true" @valueUpdated=updatePassword />
+        <input-text class="inputText" :place_holder="this.$t('login_view.username')" :is_pssw="false" @valueUpdated=updateUsername />
+        <input-text class="inputText" :place_holder="this.$t('login_view.password')" :is_pssw="true" @valueUpdated=updatePassword />
         <login-button class="loginButton" @click=login() />
       </div>
 
-      <a id="posRegister" @click="this.$router.push('/register')">Register</a>
+      <a id="posRegister" @click="this.$router.push('/register')">{{ this.$t('login_view.register') }}</a>
     </div>
 </template>
 

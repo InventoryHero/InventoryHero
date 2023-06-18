@@ -71,7 +71,7 @@ import {useToast} from "vue-toastification";
             currentUser: "",
             addModalVisibility: false,
             Constants,
-            title: "Locations",
+            title: this.$t('locations'),
             defaultModalView: Constants.LocationsView,
             displayedNavbarItems: Constants.All,
             preselectedRoom: "",
@@ -79,18 +79,15 @@ import {useToast} from "vue-toastification";
         }
     },
     methods: {
-        async updateRooms(id)
+        async updateRooms(id, name)
         {
             document.getElementById(id).setAttribute("hidden", true);
             if(!await DB_SB_delete_room(id)){
-                this.toast.error("Failed to delete room");
+                this.toast.error(this.$t('locations_view.toasts.error.delete', {name: name}));
                 return;
             }
-            this.toast.success("Deleted room successfully");
+            this.toast.success(this.$t('locations_view.toasts.success.delete', {name: name}));
             await this.get_rooms()
-        },
-        displayRoomDetailView(id){
-          console.warn("I should display the detail view modal " + id);
         },
         displayModal(id){
             DB_SB_get_room_name(id).then((room) => {

@@ -16,10 +16,26 @@
          <v-icon class="me-5" icon="fa:fas fa-times" @click="closeModal()"></v-icon>
          </v-toolbar>
          <v-card-text>
-           <input-text-enhanced :disabled="true" :place_holder="this.created_at"></input-text-enhanced>
-           <input-dropdown @valueUpdated="updateSelectedBox" :place_holder="this.new_box.name" :list=this.users_boxes :emitFullObject="true"/>
-           <input-dropdown @valueUpdated="updateSelectedRoom" :place_holder="this.new_room.name" :list=this.users_rooms :emitFullObject="true"/>
-           <input-text-enhanced id="test" type="number" @valueUpdated="updateAmount" label="Amount:" :placeholder="this.current_amount.toString()"></input-text-enhanced>
+           <input-text-enhanced
+                   :disabled="true"
+                   :place_holder="this.created_at"
+           />
+           <input-dropdown
+                   @valueUpdated="updateSelectedBox"
+                   :place_holder="this.new_box.name"
+                   :list=this.users_boxes
+                   :emitFullObject="true"/>
+           <input-dropdown
+                   @valueUpdated="updateSelectedRoom"
+                   :place_holder="this.new_room.name"
+                   :list=this.users_rooms
+                   :emitFullObject="true"/>
+           <input-text-enhanced
+                   id="test"
+                   type="number"
+                   @valueUpdated="updateAmount"
+                   :placeholder="this.current_amount.toString()"
+           />
            <p :style="{color: 'red'}">{{ error_message }}</p>
          </v-card-text>
          <v-card-actions class="justify-end">
@@ -30,7 +46,7 @@
            <v-btn
                    variant="text"
                    @click="closeModalAndUpdateBox()"
-           >Save</v-btn>
+           >{{this.$t('save')}}</v-btn>
          </v-card-actions>
        </v-card>
 
@@ -50,6 +66,7 @@ import {
   DB_SB_update_product_amount,
 } from "@/db/supabase";
 import {getUser} from "@/db/dexie";
+import {useToast} from "vue-toastification";
 
 export default {
   props:{
@@ -105,6 +122,10 @@ export default {
       current_amount: this.amount
     }
   },
+  setup(){
+    const toast = useToast();
+    return {toast};
+  },
   components: {
     InputTextEnhanced,
     InputDropdown
@@ -117,8 +138,13 @@ export default {
 
         if(this.current_amount !== this.amount)
         {
-          if(!await DB_SB_update_product_amount(this.mapping_id, this.current_amount))
+          if(await DB_SB_update_product_amount(this.mapping_id, this.current_amount))
           {
+            this.toast.success(this.$t('product_detail_modal.toasts.success.amountUpdate', {name: this.name}));
+          }
+          else
+          {
+            this.toast.success(this.$t('product_detail_modal.toasts.success.amountUpdate', {name: this.name}));
             this.closeModal();
           }
         }
@@ -130,7 +156,15 @@ export default {
           {
             room_id = -1;
           }
-          await DB_SB_update_product(this.mapping_id, this.new_box.id, room_id, this.id)
+          if(await DB_SB_update_product(this.mapping_id, this.new_box.id, room_id, this.id))
+          {
+            this.toast.success(this.$t('product_detail_modal.toasts.success.update', {name: this.name}));
+          }
+          else
+          {
+            this.toast.error(this.$t('product_detail_modal.toasts.error.update', {name: this.name}));
+          }
+
           this.$emit("reloadProducts");
           return;
         }
@@ -138,7 +172,14 @@ export default {
     },
     async deleteProduct()
     {
-      await DB_SB_delete_product(this.id);
+      if(await DB_SB_delete_product(this.id))
+      {
+        this.toast.success(this.$t('product_detail_modal.toasts.success.delete', {name: this.name}));
+      }
+      else
+      {
+        this.toast.error(this.$t('product_detail_modal.toasts.error.delete', {name: this.name}));
+      }
       this.$emit("productDeleted");
     },
     updateSelectedBox(box) {
@@ -182,7 +223,7 @@ export default {
     },
     updateAmount(new_amount){
       if(new_amount < 0)
-        this.error_message = "Amount cannot be below zero!";
+        this.error_message = this.$t('product_detail_modal.amount_below_zero');
       else
         this.error_message = "";
       this.current_amount = new_amount;

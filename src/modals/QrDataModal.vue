@@ -14,10 +14,17 @@
                 class="toolbar justify-space-evenly"
         >
           <v-list-item density="compact" >
-            <tag text="Product" @click="this.categoryChange(Constants.ProductsView)" :active="this.product_active.toString()"/>
+            <tag
+                    :text="this.$t('product')"
+                    @click="this.categoryChange(Constants.ProductsView)"
+                    :active="this.product_active.toString()"/>
           </v-list-item>
           <v-list-item density="compact">
-            <tag @click="this.categoryChange(Constants.BoxesView)" :active="this.box_active.toString()" text="Box" :hidden="!this.qrCodeData.is_room"/>
+            <tag
+                    @click="this.categoryChange(Constants.BoxesView)"
+                    :active="this.box_active.toString()"
+                    :text="this.$t('box')"
+                    :hidden="!this.qrCodeData.is_room"/>
           </v-list-item>
           <v-spacer v-if="!this.qrCodeData.is_room"/>
           <v-list-item  density="compact">

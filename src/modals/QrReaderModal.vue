@@ -12,7 +12,7 @@
             class="d-flex-column modal-container"
         >
             <v-toolbar
-                title="Scan IH QR-Code"
+                :title="this.$t('qr_reader_modal.title')"
                 class="toolbar"
             >
                 <v-icon class="me-5" icon="fa:fas fa-times" @click="closeModal()"></v-icon>
@@ -60,7 +60,7 @@ export default {
 
                 if(!data.hasOwnProperty("id") || ! data.hasOwnProperty("is_room") || !data.hasOwnProperty("is_box") || !data.hasOwnProperty("username"))
                 {
-                    this.toast.error("Please scan a valid IH qr code!");
+                    this.toast.error(this.$t('qr_reader_modal.invalid_qr'));
                     return;
                 }
 

@@ -603,6 +603,7 @@ export async function DB_SB_update_product_amount(id, amount)
 
 export async function DB_SB_delete_product(id)
 {
+    // TODO REWRITE, this should only delete product if last mapping entry is deleted
     const user = await getUser();
     const {error} = await supabase.from("products").delete().eq("username", user.username).eq('id', id);
     if (error) {

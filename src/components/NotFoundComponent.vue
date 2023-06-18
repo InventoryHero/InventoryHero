@@ -3,7 +3,7 @@
 </script>
 
 <template>
-  <h1>404 not found sorry bro</h1>
+  <h1>{{this.$t('not_found')}}</h1>
 </template>
 
 <style scoped>

@@ -24,7 +24,7 @@
     @qrButton="this.qrReaderModalVisibility=true"
     @addButton="this.addModalVisibility = true"
   />
-  <SandwichMenu title="Home"/>
+  <SandwichMenu :title="this.$t('home')"/>
 </template>
 
 <script>
@@ -78,7 +78,6 @@ export default {
   },
   
   beforeMount() {
-    console.info("locale home", this.$i18n.locale);
     DB_SB_getStarredProducts().then((res) => {
       this.starred_products = res;
     })
