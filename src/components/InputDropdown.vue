@@ -2,7 +2,7 @@
   <div id="mainSelector">
       <select :disabled="this.isSelectDisabled()" v-model="this.my_value" @change="this.emitValueChanged()">
           <option hidden disabled selected>{{ this.place_holder }}</option>
-          <option  v-bind:value="{id: l.id, name: l.name}" v-for="l in this.list" :key="l.key">{{ l.name }} </option>
+          <option  v-bind:value="l" v-for="l in this.list" :key="l.key">{{ l.name }} </option>
       </select>
     </div>
 </template>

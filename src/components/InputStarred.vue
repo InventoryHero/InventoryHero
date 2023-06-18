@@ -13,10 +13,21 @@
 <script>
 export default {
   name: 'InputText',
-  props: ["place_holder"],
+  props: {
+      starred: {
+          type: Boolean,
+          default: false,
+      }
+  },
+    watch: {
+      starred: function(newVal, oldVal)
+      {
+          this.my_value = newVal;
+      }
+    },
   data() {
     return {
-      my_value: false
+      my_value: this.starred
     }
   },
   methods: {

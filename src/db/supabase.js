@@ -205,6 +205,12 @@ export async function DB_SB_get_all_products(user){
     return products;
 }
 
+export async function DB_SB_get_products_without_storage_location()
+{
+    const user = await getUser();
+    const {data} = await supabase.from("products").select("*").eq("username", user.username);
+    return data;
+}
 
 export async function DB_SB_change_product_amount(mapping_id, amount) {
 
@@ -317,11 +323,15 @@ export async function DB_SB_add_product(product) {
         room_id = await DB_SB_get_id_of_room(product.room);
     }
 
-    let product_id = await DB_SB_get_product_by_name(product.name);
+    let db_product = await DB_SB_get_product_by_name(product.name);
+    let product_id = -1;
+    if(db_product !== {})
+        product_id = db_product.id;
     let mapping = undefined;
     let data = {}
     if(product_id === -1)
     {
+        // this is new product
         data = {
             name: product.name,
             username: user.username,
@@ -338,6 +348,11 @@ export async function DB_SB_add_product(product) {
     }
     else
     {
+        if(product.starred !== db_product.starred)
+        {
+            await supabase.from("products").update({starred: product.starred}).eq("id", db_product.id)
+        }
+
         const { data: res} = await supabase.from("productmapping")
                             .select("id, amount")
                             .eq("product_id", product_id)
@@ -362,6 +377,7 @@ export async function DB_SB_add_product(product) {
         data["product_id"] = product_id;
         await supabase.from('productmapping').insert(data);
     }
+
 }
 
 export async function DB_SB_add_box(box) {
@@ -635,10 +651,10 @@ export async function DB_SB_get_product_by_name(name)
 {
     const user = await getUser();
 
-    let {data} = await supabase.from("products").select("id").eq("name", name).eq("username", user.username);
+    let {data} = await supabase.from("products").select("*").eq("name", name).eq("username", user.username);
     if(data.length === 0)
-        return -1;
-    return data[0].id;
+        return {};
+    return data[0];
 
 }
 

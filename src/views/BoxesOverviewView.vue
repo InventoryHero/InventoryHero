@@ -18,7 +18,7 @@
               :preselected_box="this.preselectedBox"
               :navbarItems="this.displayedNavbarItems"
               :defaultAddView="this.defaultModalView"
-              :dialog="this.addModalVisibility"
+              v-model="this.addModalVisibility"
   />
   <load-animation v-if="this.loading"></load-animation>
   <div v-if="!this.from_qrcode" id="spacing"></div>

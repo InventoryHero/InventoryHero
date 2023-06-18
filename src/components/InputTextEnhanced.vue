@@ -1,5 +1,5 @@
 <template>
-    <input :id="this.id" :disabled="this.disabled" :placeholder=this.place_holder :type="this.input_type" v-model="this.my_value" @input="$emit('valueUpdated', this.my_value)">
+    <input :id="this.id" :disabled="this.disabled" :hidden="this.hidden" :placeholder=this.place_holder :type="this.input_type" v-model="this.my_value" @input="$emit('valueUpdated', this.my_value)">
 </template>
 
 <script>
@@ -17,6 +17,10 @@ export default {
       input_type: {
           type: String,
           default: "text"
+      },
+      hidden: {
+          type: Boolean,
+          default: false,
       }
   },
   data() {

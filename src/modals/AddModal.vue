@@ -1,6 +1,5 @@
 <template>
     <v-dialog
-        v-model="this.dialog"
         transition="dialog-bottom-transition"
         width="100%"
         height="80%"
@@ -35,16 +34,17 @@
             </v-toolbar>
             <v-card-text>
                 <div id="containerWhat" v-if="this.isActive(Constants.ProductsView)">
-                    <input-text-enhanced @valueUpdated="updateName" placeholder="name"/>
-                    <input-dropdown :key="redrawBoxes" @valueUpdated="updateSelectedBox" :place_holder="this.place_holder_box" :list=this.boxes :isDisabled='this.preselected_box !== "" '/>
-                    <input-dropdown :key="redrawRoom" @valueUpdated="updateSelectedRoom" :place_holder="this.place_holder_room" :list=this.rooms :isDisabled='this.lockRoom'/>
+                    <input-dropdown @valueUpdated="setProduct" :emit-full-object="true" place_holder="Select product" :list=this.products :isDisabled='false'/>
+                    <input-text-enhanced @valueUpdated="updateName" placeholder="name" :disabled="this.product_exists" :hidden="this.product_exists"/>
+                    <input-dropdown  @valueUpdated="updateSelectedBox" :place_holder="this.place_holder_box" :list=this.boxes :isDisabled='this.preselected_box !== "" '/>
+                    <input-dropdown  @valueUpdated="updateSelectedRoom" :place_holder="this.place_holder_room" :list=this.rooms :isDisabled='this.lockRoom'/>
                     <input-text-enhanced @valueUpdated="updateAmount" placeholder="amount"/>
-                    <input-starred @valueUpdated="updateStarredProduct" />
+                    <input-starred :starred="this.curr_starred" @valueUpdated="updateStarredProduct" />
                 </div>
 
                 <div id="containerWhat" v-if="this.isActive(Constants.BoxesView)">
                     <input-text-enhanced @valueUpdated="updateName" placeholder="name"/>
-                    <input-dropdown :key="redrawRoom" @valueUpdated="updateSelectedRoom" :place_holder="this.place_holder_room" :list=this.rooms :isDisabled='this.lockRoom'/>
+                    <input-dropdown  @valueUpdated="updateSelectedRoom" :place_holder="this.place_holder_room" :list=this.rooms :isDisabled='this.lockRoom'/>
                 </div>
 
 
@@ -82,7 +82,7 @@ import {
     DB_SB_add_product,
     DB_SB_add_box,
     DB_SB_add_room,
-    DB_SB_get_name_of_room_of_box
+    DB_SB_get_name_of_room_of_box, DB_SB_get_all_products, DB_SB_get_products_without_storage_location
 } from '@/db/supabase';
 import { getUser } from '@/db/dexie';
 import {Constants} from  "@/global/constants";
@@ -105,10 +105,6 @@ props: {
     preselected_room: {
         type: String,
         default: ""
-    },
-    dialog: {
-        type: Boolean,
-        default: false,
     }
 },
 components: {
@@ -129,6 +125,7 @@ data() {
       active_view: this.defaultAddView,
       rooms: [],
       boxes: [],
+      products: [],
       curr_name: "",
       curr_room: "",
       curr_box: "",
@@ -140,9 +137,26 @@ data() {
       redrawRoom: 0,
       redrawBoxes: 0,
       lockRoom: false,
+      product_exists: true
     }
 },
   methods: {
+    setProduct(product){
+        if(product.id === -1)
+        {
+            console.log("Adding new product")
+            this.product_exists = false;
+            this.curr_name = "";
+        }
+        else
+        {
+            this.product_exists = true;
+            this.curr_name = product.name;
+            this.curr_starred = product.starred;
+        }
+        console.log(product);
+        console.log(this.curr_name);
+    },
     reloadSelectComponents(boxes, rooms){
         if(boxes)
             this.redrawBoxes += 1;
@@ -305,6 +319,11 @@ beforeMount() {
                 this.rooms = rooms;
             });
         }
+        DB_SB_get_products_without_storage_location().then((products) => {
+            this.products = products;
+            this.products.splice(0, 0, {id: -1, name: "Add new product"})
+            console.log(products);
+        });
     })
 
 
