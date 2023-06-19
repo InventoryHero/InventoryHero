@@ -528,8 +528,6 @@ export async function DB_SB_update_box_room(id, name)
 {
     const user = await getUser();
     let room_id = await DB_SB_get_id_of_room(name);
-    if(room_id === -1)
-        return false;
 
     const {error} = await supabase.from("boxes").update({room_id: room_id}).eq("username", user.username).eq('id', id);
     if (error) {

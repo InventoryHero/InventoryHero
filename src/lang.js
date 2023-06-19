@@ -28,7 +28,9 @@ export const localizations = {
       add_btn_location: "Add Location",
       add_btn_box: "Add Box",
       add_btn_product: "Add Product",
-      add_new_product: "Add new product"
+      add_new_product: "Add new product",
+      no_box: "No box selected",
+      no_room: "No room selected"
     },
     qr_data_modal: {
 
@@ -55,6 +57,7 @@ export const localizations = {
       password: "Password",
       register: "Register",
       login: "Login",
+      login_invalid: "Wrong username/password"
     },
     settings_view: {
       settings: "Settings",
@@ -191,6 +194,7 @@ export const localizations = {
       password: "Passwort",
       register: "Registrieren",
       login: "Einloggen",
+      login_invalid: "Falscher Username / Falsches Passwort"
     },
     settings_view: {
       settings: "Einstellungen",
@@ -244,18 +248,39 @@ export const localizations = {
       starred_products: "⭐ Favorisierte Produkte"
     },
     confirmation_modal: {
-      delete_product_expl: "Do you want to delete the whole product (in all locations)? Then press the red button.",
-      delete_product_at_loc_expl: "Do you want to delete the products at location '{loc}'? Then press the yellow button",
-      delete_product_at_box_expl: "Do you want to delete the products at box '{box}'? Then press the yellow button",
-      delete_product_at_def_expl: "Do you want to delete the products w/o location/box? Then press the yellow button"
+      box: "Box",
+      location: "Ort",
+      delete_product_expl: "Möchten Sie das Produkt (in allen Aufbewahrungsorten) löschen? Dann drücken Sie den roten Knopf.",
+      delete_product_at_loc_expl: "Möchten Sie alle Produkte in Ort '{loc}' löschen? Dann drücken Sie den gelben Knopf.",
+      delete_product_at_box_expl: "Möchten Sie alle Produkte in Box '{box}' löschen? Dann drücken Sie den gelben Knopf.",
+      delete_product_at_def_expl: "Möchten Sie alle Produkte ohne Ort/Box löschen? Dann drücken Sie den gelben Knopf.",
+      delete: "Löschen",
+      delete_box: "Lösche Box",
+      delete_location: "Lösche Ort",
+      delete_product: "Alle",
+      delete_product_at_loc: "Nur Dieses",
+      delete_storage: "Möchten Sie {type} '{loc}' löschen? Diese Aktion wird alle Produkte/Boxen in den darüberliegenden Container verschieben."
+    },
+    box_detail_modal: {
+      toasts: {
+        success: {
+          delete: "Box '{name}' erfolgreich gelöscht",
+          update: "Box '{name}' erfolgreich aktualisiert"
+        },
+        error: {
+          delete: "Fehler beim Löschen von Box '{name}'",
+          update: "Fehler beim Aktualisieren von Box '{name}'"
+        },
+        qr_code: "QR-Code für Box '{box}'"
+      }
     }
   },
   it: {
     home: "Home",
-    boxes: "Scatole",
+    boxes: "Box",
     locations: "Luoghi",
     products: "Prodotti",
-    box: "Scatola",
+    box: "Box",
     product: "Prodotto",
     location: "Posizione",
     save: "Salva",
@@ -303,9 +328,10 @@ export const localizations = {
     },
     login_view: {
       username: "Username",
-      password: "Parola d'ordine",
+      password: "Password",
       register: "Registrare",
-      login: "Login"
+      login: "Login",
+      login_invalid: "Username/password errata"
     },
     settings_view: {
       settings: "Impostazioni",
@@ -357,6 +383,33 @@ export const localizations = {
     home_view: {
       last_used: "⏰ Ultimi prodotti usati",
       starred_products: "⭐ Prodotti preferiti"
+    },
+    confirmation_modal: {
+      box: "Box",
+      location: "Posizione",
+      delete_product_expl: "Vuoi eliminare il prodotto (in tutte le posizioni di archiviazione)? Quindi premere il pulsante rosso.",
+      delete_product_at_loc_expl: "Vuoi eliminare tutti i prodotti nella posizione '{loc}'? Quindi premere il pulsante giallo.",
+      delete_product_at_box_expl: "Vuoi eliminare tutti i prodotti nella casella '{box}'? Quindi premere il pulsante giallo.",
+      delete_product_at_def_expl: "Vuoi eliminare tutti i prodotti senza posto/scatola? Quindi premere il pulsante giallo.",
+      delete: "Spegnere",
+      delete_box: "Eliminare la casella",
+      delete_location: "Elimina posizione",
+      delete_product: "Tutto",
+      delete_product_at_loc: "Solo questo",
+      delete_storage: "Vuoi eliminare {type} '{loc}'? Questa azione sposterà tutti i prodotti/scatole nel contenitore sopra."
+    },
+    box_detail_modal: {
+      toasts: {
+        success: {
+          delete: "Casella '{name}' eliminata con successo",
+          update: "Casella '{name}' aggiornata con successo"
+        },
+        error: {
+          delete: "Errore durante l'eliminazione della casella '{name}'",
+          update: "Errore durante l'aggiornamento della casella '{name}'"
+        },
+        qr_code: "Codice QR per il box '{box}'"
+      }
     }
   }
 }

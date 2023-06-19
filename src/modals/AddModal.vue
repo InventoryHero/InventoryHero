@@ -49,12 +49,14 @@
                     <input-dropdown
                         @valueUpdated="updateSelectedBox"
                         :place_holder="this.place_holder_box"
-                        :list=this.boxes
+                        :emit-full-object="true"
+                        :list='[{id: -1, name: this.$t("add_modal.no_box")}].concat(this.boxes)'
                         :isDisabled='this.preselected_box !== "" '/>
                     <input-dropdown
                         @valueUpdated="updateSelectedRoom"
                         :place_holder="this.place_holder_room"
-                        :list=this.rooms
+                        :emit-full-object="true"
+                        :list='[{id: -1, name: this.$t("add_modal.no_room")}].concat(this.rooms)'
                         :isDisabled='this.lockRoom'/>
                     <input-text-enhanced
                         @valueUpdated="updateAmount"
@@ -69,7 +71,8 @@
                     <input-dropdown
                         @valueUpdated="updateSelectedRoom"
                         :place_holder="this.place_holder_room"
-                        :list=this.rooms
+                        :emit-full-object="true"
+                        :list='[{id: -1, name: this.$t("add_modal.no_room")}].concat(this.rooms)'
                         :isDisabled='this.lockRoom'/>
                 </div>
 
@@ -211,22 +214,45 @@ data() {
         this.active_view = change_to;
     },
     updateSelectedBox(box) {
-        this.curr_box = box;
-        this.place_holder_box = box;
+        if(box.id === -1)
+        {
+            this.resetBox();
+            return;
+        }
+
+        this.curr_box = box.name;
+        this.place_holder_box = box.name;
 
         if(this.curr_room === "")
         {
-            DB_SB_get_name_of_room_of_box(box).then((room_name) => {
+            DB_SB_get_name_of_room_of_box(box.name).then((room_name) => {
                 this.curr_room = room_name;
                 this.place_holder_room = room_name;
 
             });
         }
     },
+    resetBox()
+    {
+        this.curr_box = "";
+        this.place_holder_box = this.$t('add_modal.box_placeholder');
+    },
+      resetRoom()
+      {
+          this.curr_room = "";
+          this.place_holder_room = this.$t('add_modal.location_placeholder');
+      },
     updateSelectedRoom(room) {
-        this.curr_room = room;
-        this.place_holder_room = room;
-        getUser().then((user) =>  DB_SB_get_boxes_of_user(user, room).then((boxes) => this.boxes = boxes))
+        if(room.id === -1)
+        {
+            this.resetRoom();
+            this.resetBox();
+            return;
+        }
+        this.curr_room = room.name;
+        this.place_holder_room = room.name;
+        this.resetBox();
+        getUser().then((user) =>  DB_SB_get_boxes_of_user(user, room.name).then((boxes) => this.boxes = boxes))
     },
     updateStarredProduct(starred) {
         this.curr_starred = starred;

@@ -23,14 +23,15 @@
            />
            <input-dropdown
                    @valueUpdated="updateSelectedBox"
-                   :place_holder="this.new_box.name"
-                   :list=this.users_boxes
+                   :place_holder='this.new_box.name === "" ? this.$t("add_modal.no_box") : this.new_box.name'
+                   :list='[{id: -1, name: this.$t("add_modal.no_box")}].concat(this.users_boxes)'
                    :emitFullObject="true"/>
            <input-dropdown
                    @valueUpdated="updateSelectedRoom"
-                   :place_holder="this.new_room.name"
-                   :list=this.users_rooms
-                   :emitFullObject="true"/>
+                   :place_holder='this.new_room.name === "" ? this.$t("add_modal.no_room") : this.new_room.name'
+                   :list='[{id: -1, name: this.$t("add_modal.no_room")}].concat(this.users_rooms)'
+                   :emitFullObject="true"
+           />
            <input-text-enhanced
                    id="test"
                    type="number"
@@ -217,7 +218,7 @@ export default {
         {
           this.new_room = {
             id: -1,
-            name: "",
+            name:this.$t("add_modal.no_room"),
           }
         }
       })
@@ -226,10 +227,11 @@ export default {
       this.new_room = room;
       this.new_box = {
         id: -1,
-        name: "",
+        name: this.$t("add_modal.no_box"),
       }
     },
     closeModal(){
+      console.log(this.new_box.name);
       this.new_box = {
         id: this.box_id,
             name: this.box_name

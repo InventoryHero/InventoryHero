@@ -19,7 +19,9 @@
          <v-card-text>
            <input-text-enhanced @valueUpdated="updateBoxName" :place_holder="this.name"/>
            <input-text-enhanced :disabled="true" :place_holder="this.created_at"></input-text-enhanced>
-           <input-dropdown @valueUpdated="updateBoxRoom" :place_holder="this.placeholder" :list="this.rooms"/>
+           <input-dropdown @valueUpdated="updateBoxRoom" :place_holder="this.placeholder"
+                           :list='[{id: -1, name: this.$t("add_modal.no_room")}].concat(this.rooms)'
+           />
          </v-card-text>
          <delete-confirm-modal
             :name="this.name"
@@ -81,9 +83,20 @@ export default {
     },
     username: String
   },
+  watch: {
+    name: function(newVal, oldVal)
+    {
+      this.new_name = newVal;
+    }
+  },
   data() {
     return {
-      confirm_modal: false
+      created_at: "",
+      placeholder: "",
+      rooms: [],
+      confirm_modal: false,
+      new_room: "",
+      new_name: this.name,
     }
   },
   components: {
@@ -116,6 +129,7 @@ export default {
       if(this.new_room !== this.placeholder)
       {
         await DB_SB_update_box_room(this.id, this.new_room);
+        this.placeholder = this.new_room;
       }
       if(successful)
       {
@@ -131,6 +145,10 @@ export default {
     },
     updateBoxRoom(new_room)
     {
+      if(new_room.id === -1)
+      {
+        new_room = "";
+      }
       this.new_room = new_room;
     },
     closeModal()
@@ -162,7 +180,7 @@ export default {
   beforeMount() {
     this.updateCreatedDate();
     DB_SB_get_name_of_room_of_box(this.name).then((room) => {
-      this.placeholder = room;
+      this.placeholder = room === "" ? this.$t("add_modal.no_room") : room;
     })
     DB_SB_get_rooms_of_user(undefined).then((rooms) => {
       this.rooms = rooms;
