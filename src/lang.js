@@ -30,7 +30,7 @@ export const localizations = {
       add_btn_product: "Add Product",
       add_new_product: "Add new product",
       no_box: "No box selected",
-      no_room: "No room selected"
+      no_room: "No location selected"
     },
     qr_data_modal: {
 
@@ -167,7 +167,9 @@ export const localizations = {
       add_btn_location: "Ort hinzufügen",
       add_btn_box: "Box hinzufügen",
       add_btn_product: "Produkt hinzufügen",
-      add_new_product: "Neues Produkt hinzufügen"
+      add_new_product: "Neues Produkt hinzufügen",
+      no_box: "Keine Box ausgewählt",
+      no_room: "Kein Ort ausgewählt"
     },
     qr_data_modal: {
 
@@ -304,7 +306,9 @@ export const localizations = {
       add_btn_location: "Aggiungi luogo",
       add_btn_box: "Aggiungi scatola",
       add_btn_product: "Aggiungere prodotto",
-      add_new_product: "Add new product"
+      add_new_product: "Add new product",
+      no_box: "No box selected",
+      no_room: "No location selected"
     },
     qr_data_modal: {
 
