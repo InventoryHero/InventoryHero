@@ -1,19 +1,24 @@
 <template>
     <div class="viewContainer" :class="this.theme">
-      <h1> Login </h1>
+      <h1 class="loginTitle"> Login </h1>
       <div id="loginPos">
-        <input-text class="inputText" :place_holder="this.$t('login_view.username')" :is_pssw="false" @valueUpdated=updateUsername />
-        <input-text class="inputText" :place_holder="this.$t('login_view.password')" :is_pssw="true" @valueUpdated=updatePassword />
-        <login-button class="loginButton" @click=login() />
+        <input-text class="inputUsername" :place_holder="this.$t('login_view.username')" :is_pssw="false" @valueUpdated=updateUsername />
+        <input-text class="inputPassword" :place_holder="this.$t('login_view.password')" :is_pssw="true" @valueUpdated=updatePassword />
+   
+        <button class="settingsButton" @click="redirectToSettings"> <v-icon>fa:fas fa-cog</v-icon> </button>
       </div>
-
-      <a id="posRegister" @click="this.$router.push('/register')">{{ this.$t('login_view.register') }}</a>
+      <div class="buttonContainer">
+      <login-button class="loginButton" @click=login() />
+        <register-button class="posRegister" @click="redirectToRegister">{{ this.$t('login_view.register') }}</register-button>
+      </div>
+      
     </div>
 </template>
 
 <script>
 import InputText from '@/components/InputText.vue';
 import LoginButton from '@/components/LoginButton.vue';
+import RegisterButton from '@/components/RegisterButton.vue';
 
 import { DB_SB_login } from '@/db/supabase';
 
@@ -23,7 +28,8 @@ export default {
   name: 'App',
   components: {
     InputText,
-    LoginButton
+    LoginButton,
+    RegisterButton
   },
   data() {
     return {
@@ -33,11 +39,17 @@ export default {
     }
   },
   methods: {
+    redirectToSettings() {
+      this.$router.push("/settings");
+    },
     updateUsername(username) {
       this.username = username;
     },
     updatePassword(password) {
       this.password = password;
+    },
+    redirectToRegister() {
+      this.$router.push("/register");
     },
     login() {
       DB_SB_login(this.username, this.password).then((login_succeeded) => {
@@ -68,23 +80,58 @@ export default {
 }
 </script>
 
+
 <style scoped>
-.inputText {
-  margin-bottom: 10px;
+
+
+.inputUsername {
+  margin-bottom: 10%;
+}
+
+.buttonContainer {
+  position: relative;
+  margin-top: 10%;
+}
+
+.inputPassword {
+  margin-bottom: 10%;
 }
 
 .loginButton {
-  margin-left: 48vw;
+  position: absolute;
+
+  right: 25%;
+
 }
 
 #loginPos {
   margin-top: 30%;
 }
 
-#posRegister {
+.posRegister {
   position: absolute;
-  bottom: 50px;
+  right: 45%;
   transform: translateX(-50%);
-  text-decoration: underline;
+
+
+}
+
+.loginTitle {
+  margin-top: 10%;
+  text-align: center;
+  color: rgb(243, 243, 243);
+  font-size: 50px;
+  position: relative;
+  top: 10%;
+}
+
+.settingsButton {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 24px;
 }
 </style>
