@@ -45,7 +45,7 @@
 <script>
 import RoomDetailModal from "@/modals/RoomDetailModal.vue";
 import {useToast} from "vue-toastification";
-import { global_theme } from "@/db/dexie";
+import {getSettings} from "@/db/dexie";
 
   export default {
       setup(){
@@ -67,7 +67,7 @@ import { global_theme } from "@/db/dexie";
           return {
               dialog: false,
               name: this.roomName,
-              theme: global_theme
+              theme: ""
           }
       },
       methods: {
@@ -95,8 +95,13 @@ import { global_theme } from "@/db/dexie";
         {
             this.$router.push( "/boxesFilteredView?room_id="+roomId);
         }
-    }
-}
+    },
+      beforeMount() {
+          getSettings().then((settings) => {
+              this.theme =  settings.theme;
+          })
+      }
+  }
 </script>
 
 

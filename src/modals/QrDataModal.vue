@@ -30,7 +30,7 @@
             </v-list-item>
           </v-toolbar>
         </div>
-        <div class="modal-content">
+        <div class="data-modal-content">
           <boxes-overview-view
                   v-if="this.box_active"
                   :from_qrcode="true"
@@ -45,9 +45,9 @@
                   styling="cardScrollSpacingModal"
           />
         </div>
-
-
       </div>
+
+
     </v-dialog>
 
 </template>

@@ -1,11 +1,11 @@
 <template>
-  <div class="viewContainer" :class="this.theme">
+
 
     <SandwichMenu :title="this.title"/>
-    <div id="content">
+    <div class="scrollableDiv">
 
         <search-bar @valueUpdated="sortLocations"/>
-        
+        <load-animation v-if="this.loading"></load-animation>
         <RoomCard
         v-for="r in this.rooms"
         @addItemToRoom="displayModal"
@@ -17,7 +17,7 @@
         :numBoxes="r.box_cnt" 
         :numProducts="r.product_cnt"
         />
-        <load-animation v-if="this.loading"></load-animation>
+
         <div id="spacing"></div>
     </div>
     <add-modal
@@ -32,7 +32,7 @@
         :show_qr="false"
         @addButton="this.addModalVisibility = true"
     />
-    </div>
+
 </template>
 
 <script>
@@ -47,14 +47,13 @@ import AddModal from "@/modals/AddModal.vue";
 
 
 import { DB_SB_delete_room, DB_SB_get_room_name, DB_SB_get_rooms, DB_SB_getStarredProducts} from '@/db/supabase';
-import { getUser } from "@/db/dexie";
+import {getSettings, getUser} from "@/db/dexie";
 import { Constants } from "@/global/constants";
 import { rankLocationsBySearch } from '@/scripts/sort';
 import QrDataModal from "@/modals/QrDataModal.vue";
 import QrReaderModal from "@/modals/QrReaderModal.vue";
 import {useToast} from "vue-toastification";
 
-import { global_theme } from "@/db/dexie"
 
 
 
@@ -85,7 +84,7 @@ import { global_theme } from "@/db/dexie"
             displayedNavbarItems: Constants.All,
             preselectedRoom: "",
             loading: true,
-            theme: global_theme
+            theme: ""
         }
     },
     methods: {
@@ -137,6 +136,10 @@ import { global_theme } from "@/db/dexie"
             this.currentUser = user;
             this.get_rooms();
         });
+        getSettings().then((settings) => {
+            this.theme =  settings.theme;
+        })
+
     }
 
   }

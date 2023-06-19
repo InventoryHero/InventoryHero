@@ -58,10 +58,10 @@ export default {
         {
             try{
                 let data = JSON.parse(decodedString);
-
+                console.log(data);
                 if(!data.hasOwnProperty("id") || ! data.hasOwnProperty("is_room") || !data.hasOwnProperty("is_box") || !data.hasOwnProperty("username"))
                 {
-                    console.log(data);
+
                     this.toast.error(this.$t('qr_reader_modal.invalid_qr'));
                     return;
                 }

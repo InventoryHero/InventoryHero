@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import { global_theme } from "@/db/dexie"
+import {getSettings} from "@/db/dexie"
 
 
 export default {
@@ -14,7 +14,7 @@ export default {
     data() {
           return {
               value: "",
-              theme: global_theme
+              theme: ""
           }
       },
     props: {
@@ -22,7 +22,12 @@ export default {
             type: String,
             default: "transform",
         }
-    }
+    },
+     beforeMount() {
+         getSettings().then((settings) => {
+             this.theme =  settings.theme;
+         })
+     }
 }
 </script>
 

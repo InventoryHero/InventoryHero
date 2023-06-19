@@ -1,24 +1,23 @@
 <template>
-  <div class="viewContainer" :class="this.theme">
+
 
   <SandwichMenu v-if="!this.from_qrcode" :title="this.title" @reloadboxes="reloadMe"/>
-  <div :class="this.styling">
-    <div class="scrollableDiv">
-      <search-bar :do_transform="this.from_qrcode ? '' : 'transform'" @valueUpdated="sortBoxes"/>
-      <load-animation v-if="this.loading"></load-animation>
-      <box-card v-for="b in boxes" class="card"
-                          :key="b.id"
-                          :id="b.id"
-                          :boxName="b.name"
-                          :numProducts="b.product_cnt"
-                          :numStarredProducts="b.starred_product_cnt"
-                          @boxDeleted="get_boxes"
-                          @addItemToBox="displayModal"
-      />
-      <div :id="this.styling"></div>
+  <div class="scrollableDiv">
+    <search-bar :do_transform="this.from_qrcode ? '' : 'transform'" @valueUpdated="sortBoxes"/>
+    <load-animation v-if="this.loading"></load-animation>
+    <box-card v-for="b in boxes" class="card"
+                        :key="b.id"
+                        :id="b.id"
+                        :boxName="b.name"
+                        :numProducts="b.product_cnt"
+                        :numStarredProducts="b.starred_product_cnt"
+                        @boxDeleted="get_boxes"
+                        @addItemToBox="displayModal"
+    />
+    <div :id="this.styling"></div>
 
-    </div>
   </div>
+
   <add-modal
       @closeModal="closeModal()"
       :preselected_box="this.preselectedBox"
@@ -32,7 +31,7 @@
           @addButton="this.addModalVisibility = true"
           v-if="!this.from_qrcode"
   />
-  </div>
+
 </template>
 
 <script>
@@ -47,14 +46,13 @@ import AddModal from "@/modals/AddModal.vue";
 
 
 import {DB_SB_get_box_name, DB_SB_get_boxes, DB_SB_get_room, DB_SB_getStarredProducts} from '@/db/supabase';
-import {getUser} from "@/db/dexie";
+import {getSettings, getUser} from "@/db/dexie";
 import {Constants} from "@/global/constants";
 import {rankBoxesBySearch} from "@/scripts/sort";
 import QrDataModal from "@/modals/QrDataModal.vue";
 import QrReaderModal from "@/modals/QrReaderModal.vue";
 import {useToast} from "vue-toastification";
 
-import { global_theme } from "@/db/dexie";
 
 
 export default {
@@ -95,7 +93,7 @@ export default {
           defaultModalView: Constants.BoxesView,
           loading: true,
           room_id: -1,
-          theme: global_theme
+          theme: ""
       }
   },
   methods: {
@@ -165,6 +163,9 @@ export default {
           }
 
       });
+      getSettings().then((settings) => {
+        this.theme =  settings.theme;
+      })
 
   }
 

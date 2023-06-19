@@ -43,7 +43,7 @@
 <script>
 import BoxDetailModal from "@/modals/BoxDetailModal.vue";
 import {useToast} from "vue-toastification";
-import { global_theme } from "@/db/dexie"
+import {getSettings} from "@/db/dexie";
 
 
 export default {
@@ -59,7 +59,7 @@ export default {
         return {
             dialog: false,
             box_name: this.boxName,
-            theme: global_theme
+            theme: ""
         }
     },
     methods: {
@@ -87,6 +87,11 @@ export default {
             this.$router.push( "/productsFilteredView?box_id="+cardId+"&starred=true");
         }
     },
+    beforeMount() {
+        getSettings().then((settings) => {
+            this.theme =  settings.theme;
+        })
+    }
 }
 </script>
 

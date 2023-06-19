@@ -5,15 +5,23 @@
 </template>
 
 <script>
-import { global_theme } from "@/db/dexie"
+import {getSettings} from "@/db/dexie"
 
 export default {
 name: 'containerListContainer',
 props: ["list"],
 data() {
     return {
-      theme: global_theme,
+      theme: "",
     }
+},
+beforeMount()
+{
+
+    getSettings().then((settings) => {
+        this.theme = settings.theme;
+        console.log(this.theme);
+    })
 }
 }
 

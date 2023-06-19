@@ -62,7 +62,7 @@ import {
 import { DB_SB_get_product } from '@/db/supabase';
 import ProductsDetailModal from "@/modals/ProductsDetailModal.vue";
 import {useToast} from "vue-toastification";
-import { global_theme } from "@/db/dexie"
+import {getSettings} from "@/db/dexie"
 
 export default {
     setup(){
@@ -104,7 +104,7 @@ export default {
         dialog: false,
         curr_room_id: this.room_id,
         curr_box_id: this.box_id,
-        theme: global_theme
+        theme: ""
     };
     },
     methods: {
@@ -200,6 +200,9 @@ export default {
         }
     },
     beforeMount(){
+        getSettings().then((settings) => {
+            this.theme =  settings.theme;
+        })
     }
 }
 </script>

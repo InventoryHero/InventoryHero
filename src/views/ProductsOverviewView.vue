@@ -1,5 +1,5 @@
 <template>
-  <div class="viewContainer" :class="this.theme">
+
 
   <SandwichMenu
           v-if="!this.from_qrcode"
@@ -36,7 +36,7 @@
             @addButton="this.addModalVisibility = true"
             v-if="!this.from_qrcode"
       />
-  </div>
+
 </template>
 
 <script>
@@ -45,8 +45,6 @@ import ProductsCard from "@/components/ProductsCard.vue";
 import SandwichMenu from "@/components/SandwichMenu.vue";
 import AddModal from "@/modals/AddModal.vue";
 
-import { global_theme } from "@/db/dexie";
-
 import {
   DB_SB_get_all_products,
   DB_SB_get_box,
@@ -54,7 +52,7 @@ import {
   DB_SB_get_products_per_room,
   DB_SB_get_room
 } from '@/db/supabase';
-import {getUser} from "@/db/dexie";
+import {getSettings, getUser} from "@/db/dexie";
 
 import {Constants} from "@/global/constants";
 import LoadAnimation from "@/components/LoadAnimation.vue";
@@ -108,7 +106,7 @@ export default {
           box_id: -1,
           room_id: -1,
           get_starred: false,
-          theme: global_theme
+          theme: ""
       }
   },
   methods: {
@@ -195,7 +193,9 @@ export default {
   beforeMount() {
       this.getFromQuery();
       this.getFromProps();
-
+      getSettings().then((settings) => {
+        this.theme =  settings.theme;
+      })
       getUser().then((user) => {
           if(user === undefined)
           {

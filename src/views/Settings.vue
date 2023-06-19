@@ -1,26 +1,26 @@
 <template>
-  <div class="viewContainer" :class="this.theme">
-    <h1 id="posLanguage">{{ this.$t('settings_view.language') }}</h1>
-    <div class="containerFlags">
-      <span class="fi fi-um flag" :class="{selected: selected==='en'}" @click="changeLocale('en')" ></span>
-      <span class="fi fi-de flag" :class="{selected: selected==='de'}" @click="changeLocale('de')" ></span>
-      <span class="fi fi-it flag" :class="{selected: selected==='it'}" @click="changeLocale('it')" ></span>
-    </div>
-    
-    <h1 id="posTheme">{{ this.$t('settings_view.theme') }}</h1>
-    <div class="containerTheme">
-      <div class="circle dark" :class="{selected: selected_theme=='dark-theme'}" @click="changeTheme('dark-theme')" ></div>
-      <div class="circle light" :class="{selected: selected_theme=='light-theme'}" 
-                    @click="changeTheme('light-theme')" ></div>
-    </div>
-    
-    <SandwichMenu :title="this.$t('settings_view.settings')"/>
+
+  <h1 id="posLanguage">{{ this.$t('settings_view.language') }}</h1>
+  <div class="containerFlags">
+    <span class="fi fi-um flag" :class="{selected: selected==='en'}" @click="changeLocale('en')" ></span>
+    <span class="fi fi-de flag" :class="{selected: selected==='de'}" @click="changeLocale('de')" ></span>
+    <span class="fi fi-it flag" :class="{selected: selected==='it'}" @click="changeLocale('it')" ></span>
   </div>
+
+  <h1 id="posTheme">{{ this.$t('settings_view.theme') }}</h1>
+  <div class="containerTheme">
+    <div class="circle dark" :class="{selected: selected_theme==='dark-theme'}" @click="changeTheme('dark-theme')" ></div>
+    <div class="circle light" :class="{selected: selected_theme==='light-theme'}"
+                  @click="changeTheme('light-theme')" ></div>
+  </div>
+
+  <SandwichMenu :title="this.$t('settings_view.settings')"/>
+
 </template>
 
 <script>
 import SandwichMenu from "@/components/SandwichMenu.vue";
-import { global_theme, setGlobalTheme } from "@/db/dexie"
+import {getSettings, setLanguage, setTheme} from "@/db/dexie"
 
 export default {
 name: 'App',
@@ -30,8 +30,8 @@ components: {
 data() {
   return {
     selected: this.$i18n.locale,
-    selected_theme: global_theme,
-    theme: global_theme
+    selected_theme: "",
+    theme: ""
   }
 },
 methods: {
@@ -39,15 +39,15 @@ methods: {
   {
     this.selected = lang;
     this.$i18n.locale = lang;
+    setLanguage(lang);
   },
   changeTheme(to) {
-    console.log(to)
-    this.selected_theme = to;
-    setGlobalTheme(to);
-    this.theme = to;
+    setTheme(to).then(() => {});
   }
 }, beforeMount() {
-  console.log(global_theme)
+    getSettings().then((settings) => {
+      this.theme =  settings.theme;
+    })
 }
 }
 </script>

@@ -1,5 +1,4 @@
 <template>
-  <div class="viewContainer" :class="this.theme">
 
   <div id="posStarredMessages">
     <h3>{{this.$t('home_view.starred_products')}}</h3>
@@ -27,7 +26,7 @@
     @addButton="this.addModalVisibility = true"
   />
   <SandwichMenu :title="this.$t('home')"/>
-</div>
+
 </template>
 
 <script>
@@ -38,8 +37,8 @@ import QrReaderModal from "@/modals/QrReaderModal.vue";
 import QrDataModal from "@/modals/QrDataModal.vue";
 import Dock from "@/components/Dock.vue";
 
-import { global_theme } from "@/db/dexie"
 import { DB_SB_getStarredProducts } from '@/db/supabase';
+import {getSettings} from "@/db/dexie";
 
 export default {
   name: 'App',
@@ -59,7 +58,7 @@ export default {
       qrReaderModalVisibility: false,
       qrCodeDataModalVisibility: false,
       qrCodeData: Object,
-      theme: global_theme,
+      theme: "",
     }
   },
   methods: {
@@ -84,6 +83,9 @@ export default {
   beforeMount() {
     DB_SB_getStarredProducts().then((res) => {
       this.starred_products = res;
+    })
+    getSettings().then((settings) => {
+      this.theme =  settings.theme;
     })
   }
 }

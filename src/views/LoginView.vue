@@ -1,14 +1,14 @@
 <template>
-    <div class="viewContainer" :class="this.theme">
-      <h1> Login </h1>
-      <div id="loginPos">
-        <input-text class="inputText" :place_holder="this.$t('login_view.username')" :is_pssw="false" @valueUpdated=updateUsername />
-        <input-text class="inputText" :place_holder="this.$t('login_view.password')" :is_pssw="true" @valueUpdated=updatePassword />
-        <login-button class="loginButton" @click=login() />
-      </div>
 
-      <a id="posRegister" @click="this.$router.push('/register')">{{ this.$t('login_view.register') }}</a>
+    <h1> Login </h1>
+    <div id="loginPos">
+      <input-text class="inputText" :place_holder="this.$t('login_view.username')" :is_pssw="false" @valueUpdated=updateUsername />
+      <input-text class="inputText" :place_holder="this.$t('login_view.password')" :is_pssw="true" @valueUpdated=updatePassword />
+      <login-button class="loginButton" @click=login() />
     </div>
+
+    <a id="posRegister" @click="this.$router.push('/register')">{{ this.$t('login_view.register') }}</a>
+
 </template>
 
 <script>
@@ -17,8 +17,7 @@ import LoginButton from '@/components/LoginButton.vue';
 
 import { DB_SB_login } from '@/db/supabase';
 
-import {getUser, setUser} from '@/db/dexie';
-import { global_theme } from "@/db/dexie"
+import {getSettings, getUser, setUser} from '@/db/dexie';
 export default {
   name: 'App',
   components: {
@@ -29,7 +28,7 @@ export default {
     return {
       password: "",
       username: "",
-      theme: global_theme
+      settings: Object
     }
   },
   methods: {
@@ -58,6 +57,10 @@ export default {
     }
   },
   beforeMount() {
+      getSettings().then((settings) => {
+        this.settings = settings;
+        this.$i18n.locale = this.settings.language;
+      })
       getUser().then((user) => {
           if(user !== undefined)
           {

@@ -45,10 +45,10 @@ body.light-theme {
   background-color: var(--color-light-theme-background)  !important;
 }
 
-.light-theme p, 
-.light-theme h1,
-.light-theme h2,
-.light-theme h3{
+body.light-theme p,
+body.light-theme h1,
+body.light-theme h2,
+body.light-theme h3{
   color: black;
 }
 .scrollableDiv::-webkit-scrollbar{
@@ -58,17 +58,17 @@ body.light-theme {
   overflow-y: scroll;
   height: 100%;
   top: 60px !important;
-  position: absolute;
   width: 100%;
 }
 
 #cardScrollSpacingOverview{
-  height: 115px;
+  height: 75px;
 }
 
 #cardScrollSpacingModal{
-  height: 60px;
+  height: 13px;
 }
+
 
 .modal-container{
   background-color: rgba(0,0,0,0.5) !important;
@@ -104,5 +104,10 @@ body.light-theme {
   margin-top: 10px;
   height: calc(60vh - 65px - 40px);
   left: 5%;
+}
+
+.data-modal-content {
+  margin-top: 5px;
+  height: calc(60vh - 69px);
 }
 
