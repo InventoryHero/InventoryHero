@@ -138,7 +138,8 @@ props: {
     preselected_room: {
         type: String,
         default: ""
-    }
+    },
+    data_changed: false
 },
 components: {
     Tag,
@@ -162,7 +163,12 @@ watch: {
     {
         this.lockRoom = true;
         this.updateSelectedRoom(newVal);
-
+    },
+    data_changed: async function(newVal, oldVal){
+        if(newVal){
+            this.init()
+            this.$emit("initAck");
+        }
     }
 },
 data() {
@@ -337,57 +343,49 @@ data() {
                   break;
           }
       },
+      init(){
+          getUser().then((user) => {
+              if (Array.isArray(this.navbarItems)) {
+                  if (this.navbarItems.includes(this.defaultAddView))
+                      this.categoryChange(this.defaultAddView)
+                  else
+                      this.categoryChange(this.navbarItems.at(0))
+              } else {
+                  if (this.navbarItems !== Constants.All && this.navbarItems !== this.defaultAddView)
+                      this.categoryChange(this.navbarItems)
+                  else
+                      this.categoryChange(this.defaultAddView)
+              }
+
+              if (this.preselected_box !== "") {
+                  this.place_holder_box = this.preselected_box;
+                  this.updateSelectedBox(this.preselected_box);
+                  this.lockRoom = true;
+              } else {
+                  DB_SB_get_boxes_of_user(user).then((boxes) => {
+                      this.boxes = boxes;
+                  })
+              }
+
+              if (this.preselected_room !== "" && this.preselected_box === "") {
+                  this.lockRoom = true;
+                  this.place_holder_room = this.preselected_room;
+                  this.updateSelectedRoom(this.preselected_room);
+              } else {
+                  DB_SB_get_rooms_of_user(user).then((rooms) => {
+                      this.rooms = rooms;
+                  });
+              }
+              DB_SB_get_products_without_storage_location().then((products) => {
+                  this.products = products;
+                  this.products.splice(0, 0, {id: -1, name: this.$t('add_modal.add_new_product')})
+              });
+          })
+      }
 
 },
 beforeMount() {
-    getUser().then((user) => {
-        if(Array.isArray(this.navbarItems))
-        {
-            if(this.navbarItems.includes(this.defaultAddView))
-                this.categoryChange(this.defaultAddView)
-            else
-                this.categoryChange(this.navbarItems.at(0))
-        }
-        else
-        {
-            if(this.navbarItems !== Constants.All && this.navbarItems !== this.defaultAddView)
-                this.categoryChange(this.navbarItems)
-            else
-                this.categoryChange(this.defaultAddView)
-        }
-
-        if(this.preselected_box !== "")
-        {
-            this.place_holder_box = this.preselected_box;
-            this.updateSelectedBox(this.preselected_box);
-            this.lockRoom = true;
-        }
-        else {
-            DB_SB_get_boxes_of_user(user).then((boxes) => {
-                this.boxes = boxes;
-            })
-        }
-
-        if(this.preselected_room !== "" && this.preselected_box === "")
-        {
-            this.lockRoom = true;
-            this.place_holder_room = this.preselected_room;
-            this.updateSelectedRoom(this.preselected_room);
-        }
-        else {
-            DB_SB_get_rooms_of_user(user).then((rooms) => {
-                this.rooms = rooms;
-            });
-        }
-        DB_SB_get_products_without_storage_location().then((products) => {
-            this.products = products;
-            this.products.splice(0, 0, {id: -1, name: this.$t('add_modal.add_new_product')})
-        });
-    })
-
-
-
-
+    this.init()
 }
 }
 </script>

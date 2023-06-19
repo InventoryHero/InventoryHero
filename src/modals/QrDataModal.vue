@@ -120,18 +120,6 @@ beforeMount() {
 </script>
 
 <style scoped>
-.modal-container{
-    background-color: rgba(0,0,0,0.5);
-    backdrop-filter: blur(15px);
-    border-radius: 10px;
-    border: white solid 1px;
-    height: 60vh;
-    color: white;
-}
-.toolbar{
-    background-color: transparent;
-    border-bottom: white solid 1px;
-    color: white;
-}
+
 </style>
   

@@ -601,15 +601,44 @@ export async function DB_SB_update_product_amount(id, amount)
     return true;
 }
 
-export async function DB_SB_delete_product(id)
+export async function DB_SB_delete_product(id, mapping_id, delete_all)
 {
-    // TODO REWRITE, this should only delete product if last mapping entry is deleted
     const user = await getUser();
-    const {error} = await supabase.from("products").delete().eq("username", user.username).eq('id', id);
-    if (error) {
-        console.log("Error :", error.message);
-        return false;
+    if(delete_all)
+    {
+        const {error} = await supabase.from("products").delete().eq("username", user.username).eq('id', id);
+        if (error) {
+            console.log("Error :", error.message);
+            return false;
+        }
     }
+    else
+    {
+        const {data} = await supabase.from("products").select("*").eq("username", user.username).eq("id", id);
+        if(data.length === 0)
+        {
+            return false;
+        }
+
+        const {data: mapping_entries} = await supabase.from("productmapping").select("*").eq("product_id", id);
+        if(mapping_entries.length === 1)
+        {
+            const {error} = await supabase.from("products").delete().eq("username", user.username).eq('id', id);
+            if (error) {
+                console.log("Error :", error.message);
+                return false;
+            }
+        }
+        else
+        {
+            const {error} = await supabase.from("productmapping").delete().eq('id', mapping_id);
+            if (error) {
+                console.log("Error :", error.message);
+                return false;
+            }
+        }
+    }
+
     return true;
 }
 

@@ -39,10 +39,23 @@
            />
            <p :style="{color: 'red'}">{{ error_message }}</p>
          </v-card-text>
+
+         <delete-product-confirm-modal
+                 v-model="this.confirmation_modal"
+                 :is_box="this.box_id !== -1"
+                 :is_room="this.box_id === -1 && this.room_id !== -1"
+                 :box_name="this.box_name"
+                 :room_name="this.room_name"
+                 @deleteProduct="deleteProduct(true)"
+                 @deleteProductAtLocation="deleteProduct"
+                 @closeConfirmationModal="this.confirmation_modal=false;"
+         />
+
+
          <v-card-actions class="justify-end">
            <v-btn
                    icon="fa:fas fa-trash"
-                   @click="deleteProduct()"
+                   @click="this.confirmation_modal = true;"
            ></v-btn>
            <v-btn
                    variant="text"
@@ -58,6 +71,7 @@
 <script>
 import InputTextEnhanced from '@/components/InputTextEnhanced.vue';
 import InputDropdown from '@/components/InputDropdown.vue';
+import DeleteProductConfirmModal from "@/modals/DeleteProductConfirmModal.vue";
 import {
   DB_SB_delete_product,
   DB_SB_get_boxes_of_user,
@@ -84,6 +98,7 @@ export default {
     room_id: -1,
     box_name: "",
     room_name: "",
+
     amount: {
       type: Number,
       default: 0,
@@ -120,7 +135,8 @@ export default {
       users_boxes: [],
       users_rooms: [],
       error_message: "",
-      current_amount: this.amount
+      current_amount: this.amount,
+      confirmation_modal: false,
     }
   },
   setup(){
@@ -129,7 +145,8 @@ export default {
   },
   components: {
     InputTextEnhanced,
-    InputDropdown
+    InputDropdown,
+    DeleteProductConfirmModal
   },
   methods: {
     async closeModalAndUpdateBox(){
@@ -171,9 +188,11 @@ export default {
         }
         this.$emit("closeDetailModal", this.current_amount);
     },
-    async deleteProduct()
+
+    async deleteProduct(delete_all=false)
     {
-      if(await DB_SB_delete_product(this.id))
+      this.confirmation_modal = false;
+      if(await DB_SB_delete_product(this.id, this.mapping_id, delete_all))
       {
         this.toast.success(this.$t('product_detail_modal.toasts.success.delete', {name: this.name}));
       }

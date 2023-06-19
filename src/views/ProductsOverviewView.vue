@@ -29,6 +29,8 @@
       <add-modal
               v-model="this.addModalVisibility"
               :defaultAddView="Constants.ProductsView"
+              :data_changed="this.data_changed"
+              @initAck="this.data_changed=false"
               @closeModal="closeModal()"
       />
       <dock
@@ -106,7 +108,8 @@ export default {
           box_id: -1,
           room_id: -1,
           get_starred: false,
-          theme: ""
+          theme: "",
+          data_changed: false,
       }
   },
   methods: {
@@ -117,6 +120,7 @@ export default {
         this.get_starred = false;
         this.title = this.$t('products');
         this.refreshData();
+        this.$router.push({path: "/ProductsOverview"})
       },
       deleteProduct()
       {
@@ -125,7 +129,7 @@ export default {
       },
       refreshData(){
 
-
+        this.data_changed = true;
         this.get_products();
       },
       async get_products() {

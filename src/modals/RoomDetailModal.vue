@@ -20,6 +20,13 @@
            <input-text-enhanced @valueUpdated="updateRoomName" :place_holder="this.name"/>
            <input-text-enhanced :disabled="true" :place_holder="this.created_at"></input-text-enhanced>
          </v-card-text>
+         <delete-confirm-modal
+                 :name="this.name"
+                 type="location"
+                 v-model="this.confirm_modal"
+                 @closeConfirmationModal="this.confirm_modal=false;"
+                 @deleteContainer="deleteRoom"
+         />
          <v-card-actions class="justify-end">
            <v-btn
                    icon="fa:fas fa-qrcode"
@@ -28,7 +35,7 @@
            </v-btn>
            <v-btn
                    icon="fa:fas fa-trash"
-                   @click="deleteRoom()"
+                   @click="this.confirm_modal=true"
            ></v-btn>
            <v-btn
                    variant="text"
@@ -48,6 +55,7 @@ import {DB_SB_get_room_createdat, DB_SB_update_room_name} from "@/db/supabase";
 import {generatePDF} from "@/global/qr_code";
 import {useToast} from "vue-toastification";
 import {getUser} from "@/db/dexie";
+import DeleteConfirmModal from "@/modals/DeleteConfirmModal.vue";
 
 export default {
   setup(){
@@ -68,14 +76,17 @@ export default {
   data() {
     return {
       new_name: "",
-      created_at: ""
+      created_at: "",
+      confirm_modal: false,
     }
   },
   components: {
+    DeleteConfirmModal,
     InputTextEnhanced,
   },
   methods: {
     async deleteRoom(){
+      this.confirm_modal=false;
       this.$emit("roomDeleted", this.id);
     },
     closeModalAndUpdateRoom()

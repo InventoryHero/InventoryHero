@@ -106,6 +106,33 @@ export const localizations = {
     home_view: {
       last_used: "⏰ Last Used Products",
       starred_products: "⭐ Starred Products"
+    },
+    confirmation_modal: {
+      box: "box",
+      location: "location",
+      delete_product_expl: "Do you want to delete the whole product (in all locations)? Then press the red button.",
+      delete_product_at_loc_expl: "Do you want to delete the products at location '{loc}'? Then press the yellow button",
+      delete_product_at_box_expl: "Do you want to delete the products at box '{box}'? Then press the yellow button",
+      delete_product_at_def_expl: "Do you want to delete the products w/o location/box? Then press the yellow button",
+      delete: "Delete",
+      delete_box: "Delete box",
+      delete_location: "Delete location",
+      delete_product: "All",
+      delete_product_at_loc: "This",
+      delete_storage: "Do you want to delete {type} '{loc}'? This will move all products/boxes inside to the parent container."
+    },
+    box_detail_modal: {
+      toasts: {
+        success: {
+          delete: "Successfully deleted box '{name}'",
+          update: "Successfully updated box '{name}'"
+        },
+        error: {
+          delete: "Error while deleting box '{name}'",
+          update: "Error while updating box '{name'}"
+        },
+        qr_code: "QR-Code for box '{box}'"
+      }
     }
   },
   de: {
@@ -215,6 +242,12 @@ export const localizations = {
     home_view: {
       last_used: "⏰ Zuletzt verwendete Produkte",
       starred_products: "⭐ Favorisierte Produkte"
+    },
+    confirmation_modal: {
+      delete_product_expl: "Do you want to delete the whole product (in all locations)? Then press the red button.",
+      delete_product_at_loc_expl: "Do you want to delete the products at location '{loc}'? Then press the yellow button",
+      delete_product_at_box_expl: "Do you want to delete the products at box '{box}'? Then press the yellow button",
+      delete_product_at_def_expl: "Do you want to delete the products w/o location/box? Then press the yellow button"
     }
   },
   it: {

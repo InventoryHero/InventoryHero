@@ -87,7 +87,7 @@ function fun()
 {
     return createI18n({
         locale: (navigator.language || navigator.userLanguage).substring(0, 2),
-        fallbackLocal: 'en',
+        fallbackLocale: 'en',
         messages: localizations,
         useScope: 'global',
     })

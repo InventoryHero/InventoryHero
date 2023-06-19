@@ -24,6 +24,8 @@
       :navbarItems="this.displayedNavbarItems"
       :defaultAddView="this.defaultModalView"
       v-model="this.addModalVisibility"
+      :data_changed="this.data_changed"
+      @initAck="this.data_changed=false"
   />
 
   <dock
@@ -93,7 +95,8 @@ export default {
           defaultModalView: Constants.BoxesView,
           loading: true,
           room_id: -1,
-          theme: ""
+          theme: "",
+          data_changed: false,
       }
   },
   methods: {
@@ -102,6 +105,7 @@ export default {
         this.room_id = -1;
         this.title = this.$t('boxes');
         await this.get_boxes();
+        this.$router.push({path: "/BoxesOverview"})
       },
       async displayModal(id){
         this.defaultModalView = Constants.ProductsView;
@@ -111,6 +115,7 @@ export default {
         this.addModalVisibility = true;
       },
       async get_boxes() {
+          this.data_changed = true;
           const boxes = await DB_SB_get_boxes(this.currentUser.username, this.room_id);
           this.boxes = rankBoxesBySearch(boxes, "");
           this.loading = false;

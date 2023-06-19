@@ -21,7 +21,13 @@
            <input-text-enhanced :disabled="true" :place_holder="this.created_at"></input-text-enhanced>
            <input-dropdown @valueUpdated="updateBoxRoom" :place_holder="this.placeholder" :list="this.rooms"/>
          </v-card-text>
-
+         <delete-confirm-modal
+            :name="this.name"
+            type="box"
+            v-model="this.confirm_modal"
+            @closeConfirmationModal="this.confirm_modal=false;"
+            @deleteContainer="deleteBox"
+         />
          <v-card-actions class="justify-end">
            <v-btn
              icon="fa:fas fa-qrcode"
@@ -30,7 +36,7 @@
            </v-btn>
            <v-btn
                    icon="fa:fas fa-trash"
-                   @click="deleteBox()"
+                   @click="this.confirm_modal=true"
            ></v-btn>
            <v-btn
                    variant="text"
@@ -46,6 +52,7 @@
 <script>
 import InputTextEnhanced from '@/components/InputTextEnhanced.vue';
 import InputDropdown from '@/components/InputDropdown.vue';
+import DeleteConfirmModal from "@/modals/DeleteConfirmModal.vue";
 import {
   DB_SB_delete_box,
   DB_SB_get_box_createdat,
@@ -76,11 +83,13 @@ export default {
   },
   data() {
     return {
+      confirm_modal: false
     }
   },
   components: {
     InputTextEnhanced,
-    InputDropdown
+    InputDropdown,
+    DeleteConfirmModal
   },
   methods: {
     deleteBox()
@@ -88,11 +97,11 @@ export default {
       DB_SB_delete_box(this.id).then((result) => {
         if(result)
         {
-          this.toast.success("Successfully deleted box");
+          this.toast.success(this.$t("box_detail_modal.toasts.success.delete", {name: this.name}));
         }
         else
         {
-          this.toast.error("Error deleting box!");
+          this.toast.error(this.$t("box_detail_modal.toasts.error.delete", {name: this.name}));
         }
         this.$emit("boxDeleted");
       });
@@ -110,12 +119,12 @@ export default {
       }
       if(successful)
       {
-        this.toast.success("Updated box successfully");
+        this.toast.success(this.$t("box_detail_modal.toasts.success.update", {name: this.name}));
         this.$emit("closeDetailModal", this.new_name);
       }
       else
       {
-        this.toast.error("Couldn't update box");
+        this.toast.error(this.$t("box_detail_modal.toasts.error.update", {name: this.name}));
         this.$emit("closeDetailModal");
       }
 
@@ -146,7 +155,7 @@ export default {
             username: username,
           }),
           this.name,
-          "QR-Code for box " + this.name
+          this.$t("box_detail_modal.qr_code", {box: this.name})
       );
     }
   },

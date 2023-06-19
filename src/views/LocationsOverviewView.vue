@@ -25,6 +25,8 @@
         :navbarItems="this.displayedNavbarItems"
         :defaultAddView="this.defaultModalView"
         v-model="this.addModalVisibility"
+        :data_changed="this.data_changed"
+        @initAck="this.data_changed=false"
         @closeModal="closeModal()"
     />
 
@@ -84,7 +86,8 @@ import {useToast} from "vue-toastification";
             displayedNavbarItems: Constants.All,
             preselectedRoom: "",
             loading: true,
-            theme: ""
+            theme: "",
+            data_changed: false,
         }
     },
     methods: {
@@ -107,6 +110,7 @@ import {useToast} from "vue-toastification";
             })
         },
         async get_rooms() {
+            this.data_changed = true;
             const locations = await DB_SB_get_rooms(this.currentUser.username)
             this.rooms = rankLocationsBySearch(locations, "");
             this.loading = false;
