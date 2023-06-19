@@ -1,45 +1,42 @@
 <template>
-<div class="viewContainer" :class="this.theme">
+  <div class="viewContainer" :class="this.theme">
 
   <SandwichMenu
           v-if="!this.from_qrcode"
           :title="this.title"
           @reloadproducts="reloadMe"
   />
-
-<div :style="this.styling" id="content">
-  <search-bar :do_transform="this.from_qrcode ? '' : 'transform'" @valueUpdated="sortProducts"/>
-
-  <products-card
-          v-for="p in products" class="card"
-          :id="p.id"
-          :mapping_id="p.mapping_id"
-          :productName="p.name"
-          :amount="p.amount"
-          :room_id="p.room_id"
-          :box_id="p.box_id"
-          :box_name="p.box_name"
-          :room_name="p.room_name"
-          :product_starred="p.starred"
-          @productDeleted="deleteProduct"
-          @reloadProducts="refreshData"
-          @toggledStarred="updateStarred"
-  />
-</div>
-  <add-modal
-          v-model="this.addModalVisibility"
-          :defaultAddView="Constants.ProductsView"
-          @closeModal="closeModal()"
-  />
-  <load-animation v-if="this.loading"></load-animation>
-  <div v-if="!this.from_qrcode" id="spacing"></div>
-
-  <dock
-        :show_qr="false"
-        @addButton="this.addModalVisibility = true"
-        v-if="!this.from_qrcode"
-  />
-</div>
+    <div class="scrollableDiv">
+        <search-bar :do_transform="this.from_qrcode ? '' : 'transform'" @valueUpdated="sortProducts"/>
+        <load-animation v-if="this.loading"></load-animation>
+        <products-card
+                v-for="p in products" class="card"
+                :id="p.id"
+                :mapping_id="p.mapping_id"
+                :productName="p.name"
+                :amount="p.amount"
+                :room_id="p.room_id"
+                :box_id="p.box_id"
+                :box_name="p.box_name"
+                :room_name="p.room_name"
+                :product_starred="p.starred"
+                @productDeleted="deleteProduct"
+                @reloadProducts="refreshData"
+                @toggledStarred="updateStarred"
+        />
+        <div  :id="this.styling"></div>
+    </div>
+      <add-modal
+              v-model="this.addModalVisibility"
+              :defaultAddView="Constants.ProductsView"
+              @closeModal="closeModal()"
+      />
+      <dock
+            :show_qr="false"
+            @addButton="this.addModalVisibility = true"
+            v-if="!this.from_qrcode"
+      />
+  </div>
 </template>
 
 <script>
@@ -88,7 +85,7 @@ export default {
     },
     styling: {
       type: String,
-      default: "",
+      default: "cardScrollSpacingOverview",
     }
   },
   components: {
@@ -240,16 +237,6 @@ export default {
       padding-left: 2.5%;
       padding-right: 2.5%;
   }
-  .v-virtual-scroll{
-      background: var(--color-dark-theme-background);
-  }
-  #spacing{
-      height: calc(5vh + 25px);
-  }
+
   ::-webkit-scrollbar { width: 0px;  }
-  #content {
-    position: absolute;
-    top: 70px;
-    width: 100%;
-  }
 </style>

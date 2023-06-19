@@ -36,5 +36,7 @@ export async function logout()
 export let global_theme = "dark-theme";
 
 export function setGlobalTheme(to) {
+    document.body.classList.remove(global_theme);
     global_theme = to;
+    document.body.classList.add(global_theme);
 }

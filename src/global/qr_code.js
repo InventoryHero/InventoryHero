@@ -4,6 +4,7 @@ pdfMake.vfs = pdfFonts.pdfMake.vfs;
 
 export function generatePDF(qrText, headerText, titleText)
 {
+
   let docDefinition = {
     pageSize: 'A6',
     info: {
@@ -22,7 +23,7 @@ export function generatePDF(qrText, headerText, titleText)
       }
     }
   };
-  console.log(docDefinition.content.qr);
+  console.log("hallo", qrText);
   const pdf = pdfMake.createPdf(docDefinition)
   pdf.download(titleText)
 }

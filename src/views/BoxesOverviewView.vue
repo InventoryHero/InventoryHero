@@ -2,34 +2,36 @@
   <div class="viewContainer" :class="this.theme">
 
   <SandwichMenu v-if="!this.from_qrcode" :title="this.title" @reloadboxes="reloadMe"/>
-  <div :style="this.styling" id="content">
-    <search-bar :do_transform="this.from_qrcode ? '' : 'transform'" @valueUpdated="sortBoxes"/>
-    <box-card v-for="b in boxes" class="card"
-                        :key="b.id"
-                        :id="b.id"
-                        :boxName="b.name"
-                        :numProducts="b.product_cnt"
-                        :numStarredProducts="b.starred_product_cnt"
-                        @boxDeleted="get_boxes"
-                        @addItemToBox="displayModal"
-    />
+  <div :class="this.styling">
+    <div class="scrollableDiv">
+      <search-bar :do_transform="this.from_qrcode ? '' : 'transform'" @valueUpdated="sortBoxes"/>
+      <load-animation v-if="this.loading"></load-animation>
+      <box-card v-for="b in boxes" class="card"
+                          :key="b.id"
+                          :id="b.id"
+                          :boxName="b.name"
+                          :numProducts="b.product_cnt"
+                          :numStarredProducts="b.starred_product_cnt"
+                          @boxDeleted="get_boxes"
+                          @addItemToBox="displayModal"
+      />
+      <div :id="this.styling"></div>
+
+    </div>
   </div>
   <add-modal
-              @closeModal="closeModal()"
-              :preselected_box="this.preselectedBox"
-              :navbarItems="this.displayedNavbarItems"
-              :defaultAddView="this.defaultModalView"
-              v-model="this.addModalVisibility"
+      @closeModal="closeModal()"
+      :preselected_box="this.preselectedBox"
+      :navbarItems="this.displayedNavbarItems"
+      :defaultAddView="this.defaultModalView"
+      v-model="this.addModalVisibility"
   />
-  <load-animation v-if="this.loading"></load-animation>
-  <div v-if="!this.from_qrcode" id="spacing"></div>
 
   <dock
           :show_qr="false"
           @addButton="this.addModalVisibility = true"
           v-if="!this.from_qrcode"
   />
-
   </div>
 </template>
 
@@ -69,7 +71,7 @@ export default {
     },
     styling: {
       type: String,
-      default: "",
+      default: "cardScrollSpacingOverview",
     }
   },
   components: {
@@ -177,15 +179,9 @@ export default {
   .v-virtual-scroll{
       background: var(--color-dark-theme-background);
   }
-  #spacing{
-      height: calc(5vh + 25px);
-  }
+
 
   ::-webkit-scrollbar { width: 0px;  }
 
-  #content {
-    position: absolute;
-    top: 70px;
-    width: 100%;
-  }
+
 </style>

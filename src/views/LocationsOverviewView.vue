@@ -15,7 +15,8 @@
         :id="r.id" 
         :roomName="r.name" 
         :numBoxes="r.box_cnt" 
-        :numProducts="r.product_cnt" />
+        :numProducts="r.product_cnt"
+        />
         <load-animation v-if="this.loading"></load-animation>
         <div id="spacing"></div>
     </div>

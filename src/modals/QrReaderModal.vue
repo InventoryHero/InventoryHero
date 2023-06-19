@@ -6,6 +6,7 @@
         width="auto"
         persistent
         no-click-animation
+        height="100%"
     >
         <v-card
             height="100%"
@@ -13,7 +14,7 @@
         >
             <v-toolbar
                 :title="this.$t('qr_reader_modal.title')"
-                class="toolbar"
+                class="modal-toolbar"
             >
                 <v-icon class="me-5" icon="fa:fas fa-times" @click="closeModal()"></v-icon>
             </v-toolbar>
@@ -60,6 +61,7 @@ export default {
 
                 if(!data.hasOwnProperty("id") || ! data.hasOwnProperty("is_room") || !data.hasOwnProperty("is_box") || !data.hasOwnProperty("username"))
                 {
+                    console.log(data);
                     this.toast.error(this.$t('qr_reader_modal.invalid_qr'));
                     return;
                 }
@@ -97,19 +99,8 @@ export default {
 </script>
 
 <style scoped>
-.modal-container{
-    background-color: rgba(0,0,0,0.5);
-    backdrop-filter: blur(15px);
-    border-radius: 10px;
-    border: white solid 1px;
-    height: 60vh;
-    color: white;
-}
-.toolbar{
-    background-color: transparent;
-    border-bottom: white solid 1px;
-    color: white;
-}
+
+
 
 
 </style>

@@ -27,19 +27,22 @@
 }
 
 .viewContainer {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  height: 100vh;
+  height: 100%;
+  bottom: 0;
+  overflow: hidden;
+  z-index: -1;
 }
 
-.viewContainer.dark-theme {
-  background-color: var(--color-dark-theme-background);
+body.dark-theme {
+  background-color: var(--color-dark-theme-background) !important;
 }
 
-.viewContainer.light-theme {
-  background-color: var(--color-light-theme-background);
+body.light-theme {
+  background-color: var(--color-light-theme-background)  !important;
 }
 
 .light-theme p, 
@@ -48,3 +51,58 @@
 .light-theme h3{
   color: black;
 }
+.scrollableDiv::-webkit-scrollbar{
+  display: none;
+}
+.scrollableDiv {
+  overflow-y: scroll;
+  height: 100%;
+  top: 60px !important;
+  position: absolute;
+  width: 100%;
+}
+
+#cardScrollSpacingOverview{
+  height: 115px;
+}
+
+#cardScrollSpacingModal{
+  height: 60px;
+}
+
+.modal-container{
+  background-color: rgba(0,0,0,0.5) !important;
+  backdrop-filter: blur(15px) !important;
+  border-radius: 10px !important;
+  border: white solid 1px !important;
+  height: 60vh !important;
+  color: white !important;
+  margin-top: 15vh;
+}
+
+.modal-toolbar{
+  background: transparent !important;
+  border-bottom: white solid 1px !important;
+  color: white !important;
+  height: 60px !important;
+}
+
+.vuetify-toolbar-override {
+  background: transparent !important;
+  height: 100% !important;
+  color: white !important;
+}
+
+.modal-footer{
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+}
+
+.modal-content {
+  position: absolute;
+  margin-top: 10px;
+  height: calc(60vh - 65px - 40px);
+  left: 5%;
+}
+

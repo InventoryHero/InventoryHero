@@ -91,6 +91,7 @@ color: white;
     bottom: 0vh;
     width: 85%;
 }
+
 .cnavbar{
     position: fixed;
     z-index: 1000;

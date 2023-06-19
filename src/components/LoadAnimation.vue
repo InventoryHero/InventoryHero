@@ -10,7 +10,8 @@
   display: inline-block;
   width: 80px;
   height: 80px;
-  margin-top: 50px;
+  margin-top: 50%;
+  transform: translateY(-50%);
 }
 .lds-dual-ring:after {
   content: " ";

@@ -2,37 +2,38 @@
     <v-dialog
         transition="dialog-bottom-transition"
         width="100%"
-        height="80%"
-    >
-        <v-card
-            height="100%"
-            class="d-flex-column modal-container"
-        >
-            <v-toolbar
-                class="toolbar justify-space-evenly"
-            >
-                <tag
-                    class="ms-5"
-                    @click="categoryChange(Constants.ProductsView)"
-                    :text="this.$t('product')"
-                    :active="this.isActive(Constants.ProductsView).toString()"
-                    :hidden="!this.showSelectionTabs(Constants.ProductsView)" />
-                <tag
-                    @click="categoryChange(Constants.BoxesView)"
-                    :active="this.isActive(Constants.BoxesView).toString()"
-                    :text="this.$t('box')"
-                    :hidden="!this.showSelectionTabs(Constants.BoxesView)"/>
-                <tag
-                    @click="categoryChange(Constants.LocationsView)"
-                    :active="this.isActive(Constants.LocationsView).toString()"
-                    :text="this.$t('location')"
-                    :hidden="!this.showSelectionTabs(Constants.LocationsView)"/>
-                <v-spacer :hidden="this.showSelectionTabs(Constants.LocationsView)"/>
-                <v-spacer :hidden="this.showSelectionTabs(Constants.BoxesView)"/>
-                <v-icon class="me-5" icon="fa:fas fa-times" @click="closeModal()"/>
+        height="100%"
 
-            </v-toolbar>
-            <v-card-text>
+    >
+        <div class="d-flex-column modal-container" >
+            <div class="modal-toolbar ">
+                <v-toolbar
+                    class="justify-space-evenly vuetify-toolbar-override"
+                >
+                    <tag
+                        class="ms-5"
+                        @click="categoryChange(Constants.ProductsView)"
+                        :text="this.$t('product')"
+                        :active="this.isActive(Constants.ProductsView).toString()"
+                        :hidden="!this.showSelectionTabs(Constants.ProductsView)" />
+                    <tag
+                        @click="categoryChange(Constants.BoxesView)"
+                        :active="this.isActive(Constants.BoxesView).toString()"
+                        :text="this.$t('box')"
+                        :hidden="!this.showSelectionTabs(Constants.BoxesView)"/>
+                    <tag
+                        @click="categoryChange(Constants.LocationsView)"
+                        :active="this.isActive(Constants.LocationsView).toString()"
+                        :text="this.$t('location')"
+                        :hidden="!this.showSelectionTabs(Constants.LocationsView)"/>
+                    <v-spacer :hidden="this.showSelectionTabs(Constants.LocationsView)"/>
+                    <v-spacer :hidden="this.showSelectionTabs(Constants.BoxesView)"/>
+                    <v-icon class="me-5" icon="fa:fas fa-times" @click="closeModal()"/>
+
+                </v-toolbar>
+            </div>
+
+            <div class="modal-content scrollableDiv">
                 <div id="containerWhat" v-if="this.isActive(Constants.ProductsView)">
                     <input-dropdown
                         @valueUpdated="setProduct"
@@ -78,9 +79,9 @@
                         @valueUpdated="updateName"
                         :placeholder="this.$t('add_modal.location_name')"/>
                 </div>
-            </v-card-text>
 
-            <v-card-actions class="justify-end">
+            </div>
+            <div class="modal-footer">
                 <div id="addButton">
                     <v-btn
                         class="addButton"
@@ -88,10 +89,10 @@
                         @click="addItem"
                     >{{this.getBtnString()}}</v-btn>
                 </div>
+            </div>
 
-            </v-card-actions>
 
-        </v-card>
+        </div>
 
     </v-dialog>
 </template>
@@ -423,10 +424,6 @@ beforeMount() {
 }
 
 #containerWhat {
-    position: absolute;
-    top: 17vh;
-    left: 5%;
-    bottom: 10px;
     width: 90%;
 }
 
@@ -442,18 +439,5 @@ beforeMount() {
     border-radius: 5px;
 }
 
-.modal-container{
-    background-color: rgba(0,0,0,0.5);
-    backdrop-filter: blur(15px);
-    border-radius: 10px;
-    border: white solid 1px;
-    height: 60vh;
-    color: white;
-}
-.toolbar{
-    background-color: transparent;
-    border-bottom: white solid 1px;
-    color: white;
-}
 </style>
   

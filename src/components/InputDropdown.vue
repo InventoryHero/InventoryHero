@@ -57,13 +57,15 @@ select {
   padding-left: 20px;
   padding-top: 5px;
   padding-bottom: 5px;
-  border: none;
   width: 100%;
   border-radius: 15px;
   border: 1px solid white;
   margin-bottom: 10px;
 }
-
+option {
+    background: var(--color-dark-theme-darker);
+    color: white;
+}
 ::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
   color: var(--color-faded);
 }

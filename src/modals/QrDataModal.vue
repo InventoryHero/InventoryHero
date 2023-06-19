@@ -4,48 +4,50 @@
         width="auto"
         persistent
         no-click-animation
+        height="100%"
     >
+      <div class="d-flex-column modal-container">
+        <div class="modal-toolbar">
+          <v-toolbar
+                  class="justify-space-evenly vuetify-toolbar-override"
+          >
+            <v-list-item density="compact" >
+              <tag
+                      :text="this.$t('product')"
+                      @click="this.categoryChange(Constants.ProductsView)"
+                      :active="this.product_active.toString()"/>
+            </v-list-item>
+            <v-list-item density="compact">
+              <tag
+                      @click="this.categoryChange(Constants.BoxesView)"
+                      :active="this.box_active.toString()"
+                      :text="this.$t('box')"
+                      :hidden="!this.qrCodeData.is_room"/>
+            </v-list-item>
+            <v-spacer v-if="!this.qrCodeData.is_room"/>
+            <v-list-item  density="compact">
+              <v-icon  class="me-5" icon="fa:fas fa-times" @click="closeModal()"/>
+            </v-list-item>
+          </v-toolbar>
+        </div>
+        <div class="modal-content">
+          <boxes-overview-view
+                  v-if="this.box_active"
+                  :from_qrcode="true"
+                  :roomid="getId()"
+                  styling="cardScrollSpacingModal"
+          />
 
-      <v-card
-              height="100%"
-              class="d-flex-column modal-container"
-      >
-        <v-toolbar
-                class="toolbar justify-space-evenly"
-        >
-          <v-list-item density="compact" >
-            <tag
-                    :text="this.$t('product')"
-                    @click="this.categoryChange(Constants.ProductsView)"
-                    :active="this.product_active.toString()"/>
-          </v-list-item>
-          <v-list-item density="compact">
-            <tag
-                    @click="this.categoryChange(Constants.BoxesView)"
-                    :active="this.box_active.toString()"
-                    :text="this.$t('box')"
-                    :hidden="!this.qrCodeData.is_room"/>
-          </v-list-item>
-          <v-spacer v-if="!this.qrCodeData.is_room"/>
-          <v-list-item  density="compact">
-            <v-icon  class="me-5" icon="fa:fas fa-times" @click="closeModal()"/>
-          </v-list-item>
-        </v-toolbar>
+          <products-overview-view
+                  v-if="this.product_active"
+                  :from_qrcode="true"
+                  v-bind="getRoomAndBoxIdProp()"
+                  styling="cardScrollSpacingModal"
+          />
+        </div>
 
-        <boxes-overview-view
-                v-if="this.box_active"
-                :from_qrcode="true"
-                :roomid="getId()"
-                styling="height:80vh;background:var(--color-dark-theme-background)"
-        />
 
-        <products-overview-view
-                v-if="this.product_active"
-                :from_qrcode="true"
-                v-bind="getRoomAndBoxIdProp()"
-                styling="height:80vh;background:var(--color-dark-theme-background)"
-        />
-      </v-card>
+      </div>
     </v-dialog>
 
 </template>

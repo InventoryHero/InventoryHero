@@ -24,10 +24,10 @@ export default {
 <style scoped>
 #dock{
     position: fixed;
-    bottom: 25px;
+    bottom: 10px;
     left: 0;
     width: 100%;
-    height: 5vh;
+    height: 50px;
     z-index: 999;
 }
 .button{

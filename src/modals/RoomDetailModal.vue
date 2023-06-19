@@ -3,6 +3,7 @@
    <v-dialog
            transition="dialog-bottom-transition"
            width="auto"
+           height="100%"
    >
 
        <v-card
@@ -11,7 +12,7 @@
        >
          <v-toolbar
                  :title="this.name"
-                 class="toolbar"
+                 class="modal-toolbar"
          >
          <v-icon class="me-5" icon="fa:fas fa-times" @click="closeModal()"></v-icon>
          </v-toolbar>
@@ -46,6 +47,7 @@ import InputTextEnhanced from '@/components/InputTextEnhanced.vue';
 import {DB_SB_get_room_createdat, DB_SB_update_room_name} from "@/db/supabase";
 import {generatePDF} from "@/global/qr_code";
 import {useToast} from "vue-toastification";
+import {getUser} from "@/db/dexie";
 
 export default {
   setup(){
@@ -108,13 +110,14 @@ export default {
     {
       this.new_name = new_name;
     },
-    generateQRCode(){
+    async generateQRCode(){
+      let username = (await getUser()).username;
       generatePDF(
           JSON.stringify({
             id: this.id,
             is_room: true,
             is_box: false,
-            username: this.username,
+            username: username,
           }),
           this.name,
           this.$t('room_detail_modal.qr_code', {loc: this.name})
@@ -130,17 +133,4 @@ export default {
 </script>
 
 <style scoped>
-.modal-container{
-   background-color: rgba(0,0,0,0.5);
-   backdrop-filter: blur(15px);
-   border-radius: 10px;
-   border: white solid 1px;
-   height: 60vh;
-   color: white;
- }
-.toolbar{
-    background-color: transparent;
-    border-bottom: white solid 1px;
-    color: white;
-}
 </style>
