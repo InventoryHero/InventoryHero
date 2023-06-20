@@ -23,7 +23,11 @@ export function generatePDF(qrText, headerText, titleText)
       }
     }
   };
-  console.log("hallo", qrText);
+
   const pdf = pdfMake.createPdf(docDefinition)
   pdf.download(titleText)
+  pdf.getBase64((data) => {
+    let pdfData = {title: titleText, b64: data}
+    console.log(JSON.stringify(pdfData));
+  })
 }
