@@ -49,12 +49,16 @@ export async function DB_SB_register(username, password) {
         password: HASH(password),
     }
     const { data } = await supabase.from('users').select().eq("username", username)
-    if(data.length != 0) {
+    if(data.length !== 0) {
         console.log("[ERR] username already taken");
-        return false;
+        return "username_taken";
     }
-    await supabase.from('users').insert(user);
-    return true;
+    const {error} = await supabase.from('users').insert(user);
+    if(error !== null)
+    {
+        return "generic_err";
+    }
+    return "";
 }
 
 

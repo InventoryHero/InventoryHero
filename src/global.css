@@ -13,9 +13,6 @@
   --color-faded: rgba(255, 255, 255, 0.253);
 }
 
-.bm-burger-bars {
-  background-color: white !important;
-}
 .bm-burger-button {
   position: fixed !important;
   top: 0 !important;
@@ -46,9 +43,13 @@ body.light-theme {
 }
 
 body.light-theme p,
+body.light-theme > * > p,
 body.light-theme h1,
+body.light-theme > * > h1,
 body.light-theme h2,
-body.light-theme h3{
+body.light-theme > * > h2,
+body.light-theme h3,
+body.light-theme > * > h3{
   color: black;
 }
 .scrollableDiv::-webkit-scrollbar{

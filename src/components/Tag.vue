@@ -1,6 +1,6 @@
 <template>
     <div id="containerTag" :class="this.active">
-        <p class="text-center">{{ this.text }}</p>
+        <p class="text-center i-mog-nerma">{{ this.text }}</p>
     </div>
 </template>
 
@@ -20,7 +20,16 @@ props: ["text", "active"],
     padding: 5px;
     border-radius: 100px;
     width: 20vw;
+    max-width: 20vw;
+
     cursor: pointer;
+}
+
+.i-mog-nerma{
+    color: white !important;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
 }
 
 .true {

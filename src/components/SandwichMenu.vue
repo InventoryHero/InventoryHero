@@ -1,7 +1,9 @@
 
 
 <template>
-    <v-toolbar id="navbar" class="cnavbar" :title="this.title" />
+    <v-toolbar id="navbar" class="cnavbar justify-center ">
+      <h3 class="title">{{this.title}}</h3>
+    </v-toolbar>
     <Slide class="cnavbar" :crossIcon="false" :closeOnNavigation="true">
       <a id="home" @click="this.$router.push('/Home')">
           <span>{{ this.$t("home") }}</span>
@@ -38,8 +40,8 @@
 </template>
 <script>
 import { Slide } from 'vue3-burger-menu';
-import {logout} from "@/db/dexie";
-import {resetLangToDefault} from "@/global/constants";
+import {getSettings, logout} from "@/db/dexie";
+import {colorBurgerBars, resetLangToDefault} from "@/global/constants";
 
 export default {
     name: 'App',
@@ -73,6 +75,13 @@ export default {
           this.$emit("reload"+view);
         }
       }
+    },
+    beforeMount()
+    {
+      getSettings().then((settings) => {
+        colorBurgerBars(settings.theme);
+      })
+
     }
 }
 </script>
@@ -96,4 +105,14 @@ color: white;
     position: fixed;
     z-index: 1000;
 }
+
+.title{
+    width: 110% !important;
+    margin-left: 30%;
+    transform: translateX(-15%);
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
 </style>

@@ -57,7 +57,18 @@ export const localizations = {
       password: "Password",
       register: "Register",
       login: "Login",
-      login_invalid: "Wrong username/password"
+      login_invalid: "Wrong username/password",
+       toasts: {
+          success: {
+            register: "Registration successful"
+          },
+          error: {
+            register: {
+              username_taken: "This username is already taken!",
+              generic_error: "Something went wrong please try again later!"
+            }
+          }
+       }
     },
     settings_view: {
       settings: "Settings",
@@ -195,8 +206,19 @@ export const localizations = {
       username: "Username",
       password: "Passwort",
       register: "Registrieren",
-      login: "Einloggen",
-      login_invalid: "Falscher Username / Falsches Passwort"
+      login: "Login",
+      login_invalid: "Falscher Username / Falsches Passwort",
+      toasts: {
+        success: {
+          register: "Registrierung erfolgreich"
+        },
+        error: {
+          register: {
+            username_taken: "Dieser Username ist bereits vergeben!",
+            generic_error: "Ein Fehler ist aufgetreten, bitte versuche es später erneut!"
+          }
+        }
+      }
     },
     settings_view: {
       settings: "Einstellungen",
@@ -335,7 +357,18 @@ export const localizations = {
       password: "Password",
       register: "Registrare",
       login: "Login",
-      login_invalid: "Username/password errata"
+      login_invalid: "Username/password errata",
+      toasts: {
+        success: {
+          register: "Iscrizione completata con successo"
+        },
+        error: {
+          register: {
+            username_taken: "Questo username è già in uso!",
+            generic_error: "Si è verificato un errore, riprova più tardi!"
+          }
+        }
+      }
     },
     settings_view: {
       settings: "Impostazioni",

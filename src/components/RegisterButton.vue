@@ -1,6 +1,6 @@
 <template>
 <div class="containerLoginButton">
-    <button>Register</button>
+    <button>{{ this.$t('login_view.register') }}</button>
 </div>
 </template>
 

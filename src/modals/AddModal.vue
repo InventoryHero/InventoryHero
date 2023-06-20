@@ -15,17 +15,20 @@
                         @click="categoryChange(Constants.ProductsView)"
                         :text="this.$t('product')"
                         :active="this.isActive(Constants.ProductsView).toString()"
-                        :hidden="!this.showSelectionTabs(Constants.ProductsView)" />
+                        :hidden="!this.showSelectionTabs(Constants.ProductsView)"
+                    />
                     <tag
                         @click="categoryChange(Constants.BoxesView)"
                         :active="this.isActive(Constants.BoxesView).toString()"
                         :text="this.$t('box')"
-                        :hidden="!this.showSelectionTabs(Constants.BoxesView)"/>
+                        :hidden="!this.showSelectionTabs(Constants.BoxesView)"
+                    />
                     <tag
                         @click="categoryChange(Constants.LocationsView)"
                         :active="this.isActive(Constants.LocationsView).toString()"
                         :text="this.$t('location')"
-                        :hidden="!this.showSelectionTabs(Constants.LocationsView)"/>
+                        :hidden="!this.showSelectionTabs(Constants.LocationsView)"
+                    />
                     <v-spacer :hidden="this.showSelectionTabs(Constants.LocationsView)"/>
                     <v-spacer :hidden="this.showSelectionTabs(Constants.BoxesView)"/>
                     <v-icon class="me-5" icon="fa:fas fa-times" @click="closeModal()"/>

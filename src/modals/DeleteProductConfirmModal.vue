@@ -14,8 +14,8 @@
                 <v-icon class="me-5" icon="fa:fas fa-times" @click="closeModal()"/>
             </v-toolbar>
             <v-card-text>
-                <div class="mb-4">
-                    <p v-if="this.is_room">
+                <div class="scroll">
+                    <p class="wrapMe" v-if="this.is_room">
                         {{ this.$t('confirmation_modal.delete_product_at_loc_expl', {loc: this.room_name}) }}
                     </p>
                     <p v-else-if="this.is_box">
@@ -50,23 +50,7 @@
 </template>
 
 <script>
-import Tag from '@/components/Tag.vue';
-import InputTextEnhanced from '@/components/InputTextEnhanced.vue';
-import BiggerButtonCenter from '@/components/BiggerButtonCenter.vue';
-import InputDropdown from '@/components/InputDropdown.vue';
-import InputStarred from '@/components/InputStarred.vue';
 
-import {
-    DB_SB_get_boxes_of_user,
-    DB_SB_get_rooms_of_user,
-    DB_SB_add_product,
-    DB_SB_add_box,
-    DB_SB_add_room,
-    DB_SB_get_name_of_room_of_box, DB_SB_get_all_products, DB_SB_get_products_without_storage_location
-} from '@/db/supabase';
-import { getUser } from '@/db/dexie';
-import {Constants} from  "@/global/constants";
-import {useToast} from "vue-toastification";
 
 export default {
 name: 'App',
@@ -109,6 +93,15 @@ beforeMount() {
 }
 .deleteProductAtLoc{
     border: orange 1px solid;
+}
+.wrapMe{
+    width: 100%;
+    word-wrap: anywhere;
+    overflow-wrap: anywhere;
+}
+.scroll{
+    height: 27vh;
+    overflow-y: scroll;
 }
 </style>
   

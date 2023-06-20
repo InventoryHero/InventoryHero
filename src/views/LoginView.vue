@@ -1,17 +1,45 @@
 <template>
-      <h1 class="loginTitle"> Login </h1>
-      <div id="loginPos">
-        <input-text class="inputUsername" :place_holder="this.$t('login_view.username')" :is_pssw="false" @valueUpdated=updateUsername />
-        <input-text class="inputPassword" :place_holder="this.$t('login_view.password')" :is_pssw="true" @valueUpdated=updatePassword />
-   
-        <button class="settingsButton" @click="redirectToSettings"> <v-icon>fa:fas fa-cog</v-icon> </button>
-      </div>
-      <div class="buttonContainer">
-      <login-button class="loginButton" @click=login() />
-        <register-button class="posRegister" @click="redirectToRegister">{{ this.$t('login_view.register') }}</register-button>
-    </div>
+      <div class="loginCard">
+        <div class="modal-toolbar">
+          <v-toolbar
+                  class="justify-space-evenly vuetify-toolbar-override"
+                  :title="this.$t('login_view.login')"
+          >
+              <v-icon @click="redirectToSettings" class="me-5" icon="fa:fas fa-cog"></v-icon>
+          </v-toolbar>
+        </div>
+        <div id="loginContainer">
+            <input-text-enhanced
+                :place_holder="this.$t('login_view.username')"
+                @valueUpdated=updateUsername
+            />
+            <input-text-enhanced
+              :place_holder="this.$t('login_view.password')"
+              @valueUpdated=updatePassword
+              input_type="password"
+            />
 
-    <a id="posRegister" @click="this.$router.push('/register')">{{ this.$t('login_view.register') }}</a>
+        </div>
+        <v-card-actions  class="loginCardFooter justify-space-evenly">
+
+          <v-btn
+                  :text="this.$t('login_view.register')"
+                  class="posRegister"
+                  @click="redirectToRegister"
+          />
+          <v-btn
+                  icon="fa:fas fa-long-arrow-alt-right"
+                  class="loginButton"
+                  @click="login"
+          />
+
+
+
+        </v-card-actions >
+
+      </div>
+
+
 
 </template>
 
@@ -19,16 +47,23 @@
 import InputText from '@/components/InputText.vue';
 import LoginButton from '@/components/LoginButton.vue';
 import RegisterButton from '@/components/RegisterButton.vue';
+import InputTextEnhanced from "@/components/InputTextEnhanced.vue";
 
 import { DB_SB_login } from '@/db/supabase';
 
 import {getSettings, getUser, setUser} from '@/db/dexie';
+import {useToast} from "vue-toastification";
 export default {
   name: 'App',
+  setup(){
+    const toast = useToast();
+    return {toast};
+  },
   components: {
     InputText,
     LoginButton,
-    RegisterButton
+    RegisterButton,
+    InputTextEnhanced
   },
   data() {
     return {
@@ -62,7 +97,7 @@ export default {
             }
           })
         } else {
-          console.log("[ERR] wrong username or password")
+          this.toast.error(this.$t("login_view.login_invalid"));
         }
       });
     
@@ -71,6 +106,7 @@ export default {
   beforeMount() {
       getSettings().then((settings) => {
         this.settings = settings;
+        console.log(this.settings);
         this.$i18n.locale = this.settings.language;
       })
       getUser().then((user) => {
@@ -87,54 +123,50 @@ export default {
 <style scoped>
 
 
-.inputUsername {
-  margin-bottom: 10%;
-}
-
-.buttonContainer {
-  position: relative;
-  margin-top: 10%;
-}
-
-.inputPassword {
-  margin-bottom: 10%;
-}
 
 .loginButton {
-  position: absolute;
+    border: rgba(255,255,255,0.5) solid 1px;
+    background-color: rgba(0,0,0,0.4);
+    background: var(--color-dark-theme-lighter);
+    border-radius: 5px;
+    height: fit-content;
+    padding-top: 1px;
+    padding-bottom: 1px;
+}
 
-  right: 25%;
+#loginContainer {
+  margin-top: 30px;
+  width: 90%;
+  margin-left: 5%;
 
 }
 
-#loginPos {
-  margin-top: 30%;
+.posRegister  {
+    border: rgba(255,255,255,0.5) solid 1px;
+    background-color: rgba(0,0,0,0.4);
+    background: var(--color-dark-theme-lighter);
+    border-radius: 5px;
+    height: fit-content;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
-.posRegister {
-  position: absolute;
-  right: 45%;
-  transform: translateX(-50%);
-
+.loginCard {
+    position: relative;
+    background-color: rgba(0,0,0,0.5) !important;
+    backdrop-filter: blur(15px) !important;
+    border-radius: 10px !important;
+    border: white solid 1px !important;
+    width: 90%;
+    margin-left: 5%;
+    margin-top: 50vh;
+    transform: translateY(-50%);
 
 }
 
-.loginTitle {
-  margin-top: 10%;
-  text-align: center;
-  color: rgb(243, 243, 243);
-  font-size: 50px;
+.loginCardFooter {
   position: relative;
-  top: 10%;
-}
-
-.settingsButton {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background-color: transparent;
-  border: none;
-  cursor: pointer;
-  font-size: 24px;
+  width: 90%;
+  margin-left: 5%;
 }
 </style>

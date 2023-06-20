@@ -1,18 +1,45 @@
 <template>
-    <h1> Register </h1>
-    <h1 class="loginTitle"> Register </h1>
-    <div id="loginPos">
-      <input-text class="inputUsername" :place_holder="this.$t('login_view.username')" :is_pssw="false" @valueUpdated=updateUsername />
-      <input-text class="inputPassword" :place_holder="this.$t('login_view.password')" :is_pssw="true" @valueUpdated=updatePassword />
-     
+  <div class="loginCard">
+    <div class="modal-toolbar">
+      <v-toolbar
+              class="justify-space-evenly vuetify-toolbar-override"
+              :title="this.$t('login_view.register')"
+      >
+        <v-icon @click="redirectToSettings" class="me-5" icon="fa:fas fa-cog"></v-icon>
+      </v-toolbar>
     </div>
-    <div class="buttonContainer">
-      <register-button @click="register()"/>
-       </div>
+    <div id="loginContainer">
+      <input-text-enhanced
+              :place_holder="this.$t('login_view.username')"
+              @valueUpdated=updateUsername
+      />
+      <input-text-enhanced
+              :place_holder="this.$t('login_view.password')"
+              @valueUpdated=updatePassword
+              input_type="password"
+      />
 
-  <div class ="loginContainer"> <a id="posLogin" @click="this.$router.push('/')">{{ this.$t('login_view.login') }}</a> </div>
- 
+    </div>
+    <v-card-actions  class="loginCardFooter justify-space-evenly">
+      <v-btn
+              :text="this.$t('login_view.login')"
+              class="loginButton"
+              @click="this.$router.push('/')"
+      />
+      <v-btn
+              :text="this.$t('login_view.register')"
+              class="posRegister"
+              @click="register"
+      />
+
+
+
+
+    </v-card-actions >
+
   </div>
+
+
   </template>
   
   <script>
@@ -21,10 +48,17 @@
   
   import { DB_SB_register } from '@/db/supabase';
   import {getSettings} from "@/db/dexie";
+  import InputTextEnhanced from "@/components/InputTextEnhanced.vue";
+  import {useToast} from "vue-toastification";
   
   export default {
     name: 'App',
+    setup(){
+      const toast = useToast();
+      return {toast};
+    },
     components: {
+      InputTextEnhanced,
       InputText,
       RegisterButton
     },
@@ -36,6 +70,9 @@
       }
     },
     methods: {
+      redirectToSettings() {
+        this.$router.push("/settings");
+      },
       updateUsername(username) {
         this.username = username;
       },
@@ -44,10 +81,18 @@
       },
       register() {
         DB_SB_register(this.username, this.password).then((register_succeeded) => {
-          if (register_succeeded) {
+          if (register_succeeded === "") {
+            this.toast.success(this.$t("login_view.toasts.success.register"))
             this.$router.push("/");
           } else {
-            console.log("something went wrong ops");
+            if(register_succeeded === "username_taken")
+            {
+              this.toast.error(this.$t("login_view.toasts.error.register.username_taken"));
+            }
+            else if(register_succeeded === "generic_err")
+            {
+              this.toast.error(this.$t("login_view.toasts.error.register.generic_error"));
+            }
           }
         });
 
@@ -60,54 +105,53 @@
     }
   }
   </script>
-  
-  <style>
-  .inputText {
-    margin-bottom: 10px;
-  }
-  
-  .loginButton {
-    margin-left: 48vw;
-  }
-  
-  #loginPos {
-    margin-top: 30%;
-  }
-  
-  .buttonContainer {
-  position: relative;
-  margin-top: 10%;
+
+<style scoped>
+
+
+
+.loginButton {
+    border: rgba(255,255,255,0.5) solid 1px;
+    background-color: rgba(0,0,0,0.4);
+    background: var(--color-dark-theme-lighter);
+    border-radius: 5px;
+    height: fit-content;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
-.loginContainer {
-  position: relative;
-  margin-top: 10%;
+#loginContainer {
+    margin-top: 30px;
+    width: 90%;
+    margin-left: 5%;
+
 }
 
-.inputPassword {
-  margin-bottom: 10%;
+.posRegister  {
+    border: rgba(255,255,255,0.5) solid 1px;
+    background-color: rgba(0,0,0,0.4);
+    background: var(--color-dark-theme-lighter);
+    border-radius: 5px;
+    height: fit-content;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
-.inputUsername {
-  margin-bottom: 10%;
+.loginCard {
+    position: relative;
+    background-color: rgba(0,0,0,0.5) !important;
+    backdrop-filter: blur(15px) !important;
+    border-radius: 10px !important;
+    border: white solid 1px !important;
+    width: 90%;
+    margin-left: 5%;
+    margin-top: 30vh;
+    height: 40vh;
 }
 
-.loginTitle {
-  margin-top: 10%;
-  text-align: center;
-  color: rgb(243, 243, 243);
-  font-size: 50px;
-  position: relative;
-  top: 10%;
+.loginCardFooter {
+    position: relative;
+    width: 90%;
+    margin-left: 5%;
 }
-
-
-  
-#posLogin {
-  position: absolute;
-
-  transform: translateX(-50%);
-  text-decoration: underline;
-}
-  </style>
-  
+</style>

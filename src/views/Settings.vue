@@ -8,8 +8,8 @@
     
     <h1 id="posTheme">{{ this.$t('settings_view.theme') }}</h1>
     <div class="containerTheme">
-      <div class="circle dark" :class="{selected: selected_theme=='dark-theme'}" @click="changeTheme('dark-theme')" ></div>
-      <div class="circle light" :class="{selected: selected_theme=='light-theme'}" 
+      <div class="circle dark" :class="{selected: theme=='dark-theme'}" @click="changeTheme('dark-theme')" ></div>
+      <div class="circle light" :class="{selected: theme=='light-theme'}"
                     @click="changeTheme('light-theme')" ></div>
     </div>
     
@@ -24,6 +24,7 @@
 import SandwichMenu from "@/components/SandwichMenu.vue";
 import {getSettings, setLanguage, setTheme} from "@/db/dexie"
 import {getUser} from "@/db/dexie";
+import {colorBurgerBars} from "@/global/constants";
 
 export default {
 name: 'App',
@@ -34,7 +35,6 @@ data() {
   return {
     selected: this.$i18n.locale,
     disable_sandwich: false,
-    selected_theme: "",
     theme: ""
   }
 },
@@ -50,7 +50,12 @@ methods: {
     setLanguage(lang);
   },
   changeTheme(to) {
+    this.theme = to;
+    colorBurgerBars(to);
     setTheme(to).then(() => {});
+
+
+
   }
 }, beforeMount() {
     getSettings().then((settings) => {
