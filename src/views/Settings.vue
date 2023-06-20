@@ -14,13 +14,16 @@
                     @click="changeTheme('light-theme')" ></div>
     </div>
     
-    <SandwichMenu :title="this.$t('settings_view.settings')"/>
+    <SandwichMenu v-if="!disable_sandwich" :title="this.$t('settings_view.settings')"/>
+    <button v-if="disable_sandwich" class="loginButton" @click="redirectToLogin"> <i class="fa-solid fa-arrow-left"></i> </button>
+
   </div>
 </template>
 
 <script>
 import SandwichMenu from "@/components/SandwichMenu.vue";
 import { global_theme, setGlobalTheme } from "@/db/dexie"
+import {getUser} from "@/db/dexie";
 
 export default {
 name: 'App',
@@ -31,10 +34,15 @@ data() {
   return {
     selected: this.$i18n.locale,
     selected_theme: global_theme,
-    theme: global_theme
+    theme: global_theme,
+    disable_sandwich: false,
   }
 },
 methods: {
+  redirectToLogin() {
+    this.$router.push("/");
+  },
+
   changeLocale(lang)
   {
     this.selected = lang;
@@ -47,12 +55,34 @@ methods: {
     this.theme = to;
   }
 }, beforeMount() {
-  console.log(global_theme)
+
+  getUser().then((user) => {
+          if(user === undefined)
+          {
+            this.disable_sandwich = true;
+            console.log(this.disable_sandwich)
+          }}).catch((error) => {
+              console.log(error)
+          })
+
+  
+  
+  
 }
 }
 </script>
 
 <style scoped>
+
+.loginButton{
+
+  margin-top: 10%;
+  margin-right: 50%;
+
+  font-size: 200%;
+
+}
+
 .flag {
   font-size: 3em;
   cursor: pointer;
