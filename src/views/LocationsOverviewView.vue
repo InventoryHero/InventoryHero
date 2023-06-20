@@ -7,15 +7,16 @@
         <search-bar @valueUpdated="sortLocations"/>
         <load-animation v-if="this.loading"></load-animation>
         <RoomCard
-        v-for="r in this.rooms"
-        @addItemToRoom="displayModal"
-        @roomDeleted="updateRooms"
-        class="card"
-        :key="r.id"
-        :id="r.id" 
-        :roomName="r.name" 
-        :numBoxes="r.box_cnt" 
-        :numProducts="r.product_cnt"
+            v-for="r in this.rooms"
+            @addItemToRoom="displayModal"
+            @roomDeleted="updateRooms"
+            @refreshData="get_rooms"
+            class="card"
+            :key="r.id"
+            :id="r.id"
+            :roomName="r.name"
+            :numBoxes="r.box_cnt"
+            :numProducts="r.product_cnt"
         />
 
         <div id="spacing"></div>
@@ -84,7 +85,7 @@ import {useToast} from "vue-toastification";
             title: this.$t('locations'),
             defaultModalView: Constants.LocationsView,
             displayedNavbarItems: Constants.All,
-            preselectedRoom: "",
+            preselectedRoom: {id: -1, name: this.$t('add_modal.location_placeholder')},
             loading: true,
             theme: "",
             data_changed: false,
@@ -103,7 +104,7 @@ import {useToast} from "vue-toastification";
         },
         displayModal(id){
             DB_SB_get_room_name(id).then((room) => {
-                this.preselectedRoom = room;
+                this.preselectedRoom = {id: id, name: room};
                 this.defaultModalView = Constants.ProductsView;
                 this.displayedNavbarItems = [Constants.ProductsView, Constants.BoxesView];
                 this.addModalVisibility = true;

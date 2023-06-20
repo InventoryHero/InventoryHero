@@ -23,12 +23,12 @@
            />
            <input-dropdown
                    @valueUpdated="updateSelectedBox"
-                   :place_holder='this.new_box.name === "" ? this.$t("add_modal.no_box") : this.new_box.name'
+                   :place_holder='this.new_box.name === "" ? this.$t("add_modal.box_placeholder") : this.new_box.name'
                    :list='[{id: -1, name: this.$t("add_modal.no_box")}].concat(this.users_boxes)'
                    :emitFullObject="true"/>
            <input-dropdown
                    @valueUpdated="updateSelectedRoom"
-                   :place_holder='this.new_room.name === "" ? this.$t("add_modal.no_room") : this.new_room.name'
+                   :place_holder='this.new_room.name === "" ? this.$t("add_modal.location_placeholder") : this.new_room.name'
                    :list='[{id: -1, name: this.$t("add_modal.no_room")}].concat(this.users_rooms)'
                    :emitFullObject="true"
            />
@@ -218,7 +218,7 @@ export default {
         {
           this.new_room = {
             id: -1,
-            name:this.$t("add_modal.no_room"),
+            name:this.$t("add_modal.location_placeholder"),
           }
         }
       })
@@ -227,7 +227,7 @@ export default {
       this.new_room = room;
       this.new_box = {
         id: -1,
-        name: this.$t("add_modal.no_box"),
+        name: this.$t("add_modal.box_placeholder"),
       }
     },
     closeModal(){

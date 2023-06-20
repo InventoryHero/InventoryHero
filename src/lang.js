@@ -132,10 +132,10 @@ export const localizations = {
         },
         error: {
           delete: "Error while deleting box '{name}'",
-          update: "Error while updating box '{name'}"
-        },
-        qr_code: "QR-Code for box '{box}'"
-      }
+          update: "Error while updating box '{name}'"
+        }
+      },
+      qr_code: "QR-Code for box '{box}'"
     }
   },
   de: {
@@ -272,9 +272,9 @@ export const localizations = {
         error: {
           delete: "Fehler beim Löschen von Box '{name}'",
           update: "Fehler beim Aktualisieren von Box '{name}'"
-        },
-        qr_code: "QR-Code für Box '{box}'"
-      }
+        }
+      },
+      qr_code: "QR-Code für Box '{box}'"
     }
   },
   it: {
@@ -411,9 +411,9 @@ export const localizations = {
         error: {
           delete: "Errore durante l'eliminazione della casella '{name}'",
           update: "Errore durante l'aggiornamento della casella '{name}'"
-        },
-        qr_code: "Codice QR per il box '{box}'"
-      }
+        }
+      },
+      qr_code: "Codice QR per il box '{box}'"
     }
   }
 }

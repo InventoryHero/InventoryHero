@@ -70,8 +70,10 @@ export default {
         },
         closeModal(new_boxname)
         {
-            if(new_boxname !== undefined && new_boxname !== "")
-            this.box_name = new_boxname;
+            if(new_boxname !== undefined && new_boxname !== "") {
+                this.box_name = new_boxname;
+                this.$emit("refreshData")
+            }
             this.dialog = false
         },
         openDetailModal()

@@ -83,20 +83,15 @@ export default {
     },
     username: String
   },
-  watch: {
-    name: function(newVal, oldVal)
-    {
-      this.new_name = newVal;
-    }
-  },
+
   data() {
     return {
       created_at: "",
-      placeholder: "",
+      placeholder: this.$t('add_modal.location_placeholder'),
       rooms: [],
       confirm_modal: false,
       new_room: "",
-      new_name: this.name,
+      new_name: "",
     }
   },
   components: {
@@ -126,7 +121,7 @@ export default {
       {
         successful = await DB_SB_update_box_name(this.id, this.new_name);
       }
-      if(this.new_room !== this.placeholder)
+      if(this.new_room !== this.placeholder && this.new_room !== "")
       {
         await DB_SB_update_box_room(this.id, this.new_room);
         this.placeholder = this.new_room;
@@ -173,14 +168,14 @@ export default {
             username: username,
           }),
           this.name,
-          this.$t("box_detail_modal.qr_code", {box: this.name})
+          this.$t('box_detail_modal.qr_code', {box: this.name})
       );
     }
   },
   beforeMount() {
     this.updateCreatedDate();
     DB_SB_get_name_of_room_of_box(this.name).then((room) => {
-      this.placeholder = room === "" ? this.$t("add_modal.no_room") : room;
+      this.placeholder = room === "" ? this.$t("add_modal.location_placeholder") : room;
     })
     DB_SB_get_rooms_of_user(undefined).then((rooms) => {
       this.rooms = rooms;

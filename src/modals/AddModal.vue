@@ -48,13 +48,13 @@
                         :hidden="this.product_exists"/>
                     <input-dropdown
                         @valueUpdated="updateSelectedBox"
-                        :place_holder="this.place_holder_box"
+                        :place_holder="this.place_holder_box.name"
                         :emit-full-object="true"
                         :list='[{id: -1, name: this.$t("add_modal.no_box")}].concat(this.boxes)'
-                        :isDisabled='this.preselected_box !== "" '/>
+                        :isDisabled='this.preselected_box.id !== -1 '/>
                     <input-dropdown
                         @valueUpdated="updateSelectedRoom"
-                        :place_holder="this.place_holder_room"
+                        :place_holder="this.place_holder_room.name"
                         :emit-full-object="true"
                         :list='[{id: -1, name: this.$t("add_modal.no_room")}].concat(this.rooms)'
                         :isDisabled='this.lockRoom'/>
@@ -70,7 +70,7 @@
                         :placeholder="this.$t('add_modal.box_name')"/>
                     <input-dropdown
                         @valueUpdated="updateSelectedRoom"
-                        :place_holder="this.place_holder_room"
+                        :place_holder="this.place_holder_room.name"
                         :emit-full-object="true"
                         :list='[{id: -1, name: this.$t("add_modal.no_room")}].concat(this.rooms)'
                         :isDisabled='this.lockRoom'/>
@@ -135,12 +135,18 @@ props: {
         default: Constants.All
     },
     preselected_box: {
-        type: String,
-        default: ""
+        type: Object,
+        default: () => ({
+            id: -1,
+            name: "",
+        })
     },
     preselected_room: {
-        type: String,
-        default: ""
+        type: Object,
+        default: () => ({
+            id: -1,
+            name: "",
+        })
     },
     data_changed: false
 },
@@ -186,8 +192,8 @@ data() {
       curr_amount: 0,
       curr_starred: false,
       Constants,
-      place_holder_box: this.$t('add_modal.box_placeholder'),
-      place_holder_room: this.$t('add_modal.location_placeholder'),
+      place_holder_box: {id: -1, name: this.$t('add_modal.box_placeholder')},
+      place_holder_room: {id: -1, name: this.$t('add_modal.location_placeholder')},
       lockRoom: false,
       product_exists: true
     }
@@ -221,13 +227,13 @@ data() {
         }
 
         this.curr_box = box.name;
-        this.place_holder_box = box.name;
+        this.place_holder_box = box;
 
         if(this.curr_room === "")
         {
             DB_SB_get_name_of_room_of_box(box.name).then((room_name) => {
                 this.curr_room = room_name;
-                this.place_holder_room = room_name;
+                this.place_holder_room = {id: -1, name: room_name};
 
             });
         }
@@ -235,12 +241,12 @@ data() {
     resetBox()
     {
         this.curr_box = "";
-        this.place_holder_box = this.$t('add_modal.box_placeholder');
+        this.place_holder_box = {id: -1, name: this.$t('add_modal.box_placeholder')};
     },
       resetRoom()
       {
           this.curr_room = "";
-          this.place_holder_room = this.$t('add_modal.location_placeholder');
+          this.place_holder_room = {id: -1, name: this.$t('add_modal.location_placeholder')};
       },
     updateSelectedRoom(room) {
         if(room.id === -1)
@@ -250,7 +256,7 @@ data() {
             return;
         }
         this.curr_room = room.name;
-        this.place_holder_room = room.name;
+        this.place_holder_room = room;
         this.resetBox();
         getUser().then((user) =>  DB_SB_get_boxes_of_user(user, room.name).then((boxes) => this.boxes = boxes))
     },
@@ -310,8 +316,8 @@ data() {
         this.curr_box = ""
         this.curr_amount = 0
         this.curr_starred = false
-        this.place_holder_box = this.$t('add_modal.box_placeholder')
-        this.place_holder_room = this.$t('add_modal.location_placeholder')
+        this.resetBox();
+        this.resetRoom();
         this.lockRoom = false
         this.product_exists = true
         this.$emit('closeModal')
@@ -370,6 +376,14 @@ data() {
           }
       },
       init(){
+        if(this.preselected_box.id === -1)
+        {
+            this.preselected_box.name = this.$t('add_modal.box_placeholder');
+        }
+        if(this.preselected_room.id === -1)
+        {
+            this.preselected_room.name = this.$t('add_modal.location_placeholder');
+        }
           getUser().then((user) => {
               if (Array.isArray(this.navbarItems)) {
                   if (this.navbarItems.includes(this.defaultAddView))
@@ -383,7 +397,7 @@ data() {
                       this.categoryChange(this.defaultAddView)
               }
 
-              if (this.preselected_box !== "") {
+              if (this.preselected_box !== undefined && this.preselected_box.id !== -1) {
                   this.place_holder_box = this.preselected_box;
                   this.updateSelectedBox(this.preselected_box);
                   this.lockRoom = true;
@@ -392,8 +406,7 @@ data() {
                       this.boxes = boxes;
                   })
               }
-
-              if (this.preselected_room !== "" && this.preselected_box === "") {
+              if (this.preselected_room.id !== -1 && this.preselected_box === -1) {
                   this.lockRoom = true;
                   this.place_holder_room = this.preselected_room;
                   this.updateSelectedRoom(this.preselected_room);

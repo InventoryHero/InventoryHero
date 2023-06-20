@@ -6,13 +6,14 @@
     <search-bar :do_transform="this.from_qrcode ? '' : 'transform'" @valueUpdated="sortBoxes"/>
     <load-animation v-if="this.loading"></load-animation>
     <box-card v-for="b in boxes" class="card"
-                        :key="b.id"
-                        :id="b.id"
-                        :boxName="b.name"
-                        :numProducts="b.product_cnt"
-                        :numStarredProducts="b.starred_product_cnt"
-                        @boxDeleted="get_boxes"
-                        @addItemToBox="displayModal"
+        :key="b.id"
+        :id="b.id"
+        :boxName="b.name"
+        :numProducts="b.product_cnt"
+        :numStarredProducts="b.starred_product_cnt"
+        @boxDeleted="get_boxes"
+        @addItemToBox="displayModal"
+        @refreshData="get_boxes"
     />
     <div :id="this.styling"></div>
 
@@ -20,7 +21,7 @@
 
   <add-modal
       @closeModal="closeModal()"
-      :preselected_box="this.preselectedBox"
+      v-bind:preselected_box="this.preselectedBox"
       :navbarItems="this.displayedNavbarItems"
       :defaultAddView="this.defaultModalView"
       v-model="this.addModalVisibility"
@@ -90,7 +91,7 @@ export default {
           addModalVisibility: false,
           Constants,
           title: "Boxes",
-          preselectedBox: "",
+          preselectedBox: {id: -1, name: this.$t('add_modal.box_placeholder')},
           displayedNavbarItems: Constants.All,
           defaultModalView: Constants.BoxesView,
           loading: true,
@@ -110,7 +111,7 @@ export default {
       async displayModal(id){
         this.defaultModalView = Constants.ProductsView;
         this.displayedNavbarItems = [Constants.ProductsView];
-        this.preselectedBox = await DB_SB_get_box_name(id);
+        this.preselectedBox = {id: id, name: await DB_SB_get_box_name(id)};
 
         this.addModalVisibility = true;
       },
@@ -125,7 +126,7 @@ export default {
         this.addModalVisibility = false;
         this.defaultModalView = Constants.BoxesView;
         this.displayedNavbarItems = Constants.All;
-        this.preselectedBox = "";
+        this.preselectedBox = {id: -1, name: this.$t('add_modal.box_placeholder')};
         this.get_boxes();
           DB_SB_getStarredProducts().then((res) => {
               this.starred_products = res;

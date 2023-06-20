@@ -34,13 +34,13 @@
             <v-card-actions class="justify-space-evenly">
                 <v-btn
                     class="deleteProduct"
-                    :text="this.$('confirmation_modal.delete_product')"
+                    :text="this.$t('confirmation_modal.delete_product')"
                     @click="deleteProduct"
                 />
                 <v-btn
                     class="deleteProductAtLoc"
                     color="warning"
-                    :text="this.$('confirmation_modal.delete_product_at_loc')"
+                    :text="this.$t('confirmation_modal.delete_product_at_loc')"
                     @click="deleteProductAtLocation"
                 />
             </v-card-actions>

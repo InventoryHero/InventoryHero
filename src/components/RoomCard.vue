@@ -80,6 +80,7 @@ import {getSettings} from "@/db/dexie";
         {
             if(new_name !== undefined && new_name !== "") {
                 this.name = new_name
+                this.$emit("refreshData")
             }
             this.dialog=false;
         },

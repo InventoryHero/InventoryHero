@@ -110,17 +110,17 @@ export default {
     methods: {
         getSubtitle()
         {
-        if(this.box_name === "" && this.room_name !== "")
-            return this.room_name;
-        else if(this.box_name !== "" && this.room_name === "")
-            return this.box_name;
-        else
-            return this.room_name + " | " + this.box_name;
+            if(this.box_name === "" && this.room_name !== "")
+                return this.room_name;
+            else if(this.box_name !== "" && this.room_name === "")
+                return this.box_name;
+            else
+                return this.room_name + " | " + this.box_name;
         },
         deletedProduct()
         {
-        this.dialog=false;
-        this.$emit("productDeleted");
+            this.dialog=false;
+            this.$emit("productDeleted");
         },
         reloadProducts()
         {
