@@ -27,7 +27,12 @@ export function generatePDF(qrText, headerText, titleText)
   const pdf = pdfMake.createPdf(docDefinition)
   pdf.download(titleText)
   pdf.getBase64((data) => {
-    let pdfData = {title: titleText, b64: data}
+    let pdfData =
+      {
+        isPdf: true,
+        title: titleText,
+        b64: data
+      }
     console.log(JSON.stringify(pdfData));
   })
 }

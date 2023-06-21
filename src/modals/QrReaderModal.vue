@@ -58,7 +58,6 @@ export default {
         {
             try{
                 let data = JSON.parse(decodedString);
-                console.log(data);
                 if(!data.hasOwnProperty("id") || ! data.hasOwnProperty("is_room") || !data.hasOwnProperty("is_box") || !data.hasOwnProperty("username"))
                 {
 
@@ -69,7 +68,6 @@ export default {
                 this.$emit('loadDetailView', data);
             }catch(e)
             {
-                console.log(e);
                 console.log("error while reading qr code");
             }
 

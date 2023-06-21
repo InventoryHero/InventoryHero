@@ -13,14 +13,14 @@
                 <v-spacer></v-spacer>
                 <v-icon class="me-5" icon="fa:fas fa-times" @click="closeModal()"/>
             </v-toolbar>
-            <v-card-text>
+            <div class="content">
                 <div class="scroll">
                     <p class="wrapMe">
                         {{ this.$t('confirmation_modal.delete_storage', {type: this.$t("confirmation_modal."+this.type), loc: this.name}) }}
                     </p>
                 </div>
 
-            </v-card-text>
+            </div>
             <v-card-actions class="justify-space-evenly">
                 <v-btn
                     class="delete"
@@ -71,10 +71,19 @@ beforeMount() {
 .wrapMe{
     width: 100%;
     word-wrap: break-word;
+    color: white !important;
 }
 .scroll{
     height: 27vh;
     overflow-y: scroll;
 }
+.content{
+
+    margin-left: 2.5%;
+    width: 95%;
+    word-wrap: break-word;
+
+}
+
 </style>
   

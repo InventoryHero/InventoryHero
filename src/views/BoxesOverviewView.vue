@@ -145,7 +145,6 @@ export default {
       getFromProps()
       {
         if(this.room_id === -1) {
-          console.log(this.roomid);
           this.room_id = this.roomid;
         }
       }

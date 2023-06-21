@@ -66,7 +66,6 @@ methods: {
           if(user === undefined)
           {
             this.disable_sandwich = true;
-            console.log(this.disable_sandwich)
           }}).catch((error) => {
               console.log(error)
           })

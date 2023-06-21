@@ -13,22 +13,22 @@
                 <v-spacer></v-spacer>
                 <v-icon class="me-5" icon="fa:fas fa-times" @click="closeModal()"/>
             </v-toolbar>
-            <v-card-text>
+            <div class="content">
                 <div class="scroll">
                     <p class="wrapMe" v-if="this.is_room">
                         {{ this.$t('confirmation_modal.delete_product_at_loc_expl', {loc: this.room_name}) }}
                     </p>
-                    <p v-else-if="this.is_box">
+                    <p class="wrapMe" v-else-if="this.is_box">
                         {{ this.$t('confirmation_modal.delete_product_at_box_expl', {box: this.box_name}) }}
                     </p>
-                    <p v-else>
+                    <p class="wrapMe" v-else>
                         {{ this.$t('confirmation_modal.delete_product_at_def_expl') }}
                     </p>
-                    <p class="mt-5">
+                    <p class="mt-5 wrapMe">
                         {{this.$t('confirmation_modal.delete_product_expl')}}
                     </p>
                 </div>
-            </v-card-text>
+            </div>
             <v-card-actions class="justify-space-evenly">
                 <v-btn
                     class="deleteProduct"
@@ -94,12 +94,20 @@ beforeMount() {
 }
 .wrapMe{
     width: 100%;
-    word-wrap: anywhere;
-    overflow-wrap: anywhere;
+    word-wrap: break-word;
+    color: white !important;
 }
 .scroll{
     height: 27vh;
     overflow-y: scroll;
+}
+.content{
+
+    margin-left: 2.5%;
+    width: 95%;
+    word-wrap: break-word;
+
+
 }
 </style>
   

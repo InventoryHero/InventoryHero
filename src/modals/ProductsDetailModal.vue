@@ -231,7 +231,6 @@ export default {
       }
     },
     closeModal(){
-      console.log(this.new_box.name);
       this.new_box = {
         id: this.box_id,
             name: this.box_name

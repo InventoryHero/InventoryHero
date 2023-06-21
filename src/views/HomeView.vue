@@ -101,11 +101,14 @@ export default {
 #posStarredMessages {
   margin-top: 20vh;
   width: 100%;
+  word-wrap: break-word;
 }
 
 #posLastUsed {
   margin-top: 5vh;
+    word-wrap: break-word;
 }
+
 
 h3 {
   text-align: left;

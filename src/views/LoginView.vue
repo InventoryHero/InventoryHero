@@ -106,7 +106,6 @@ export default {
   beforeMount() {
       getSettings().then((settings) => {
         this.settings = settings;
-        console.log(this.settings);
         this.$i18n.locale = this.settings.language;
       })
       getUser().then((user) => {

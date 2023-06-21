@@ -55,6 +55,9 @@ body.light-theme > * > h3{
 .scrollableDiv::-webkit-scrollbar{
   display: none;
 }
+*::-webkit-scrollbar{
+  display: none;
+}
 .scrollableDiv {
   overflow-y: scroll;
   overflow-x: hidden;

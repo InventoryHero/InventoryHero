@@ -20,7 +20,6 @@ beforeMount()
 
     getSettings().then((settings) => {
         this.theme = settings.theme;
-        console.log(this.theme);
     })
 }
 }
@@ -34,6 +33,8 @@ beforeMount()
     border-radius: 10px;
     padding: 10px 10px 10px 20px;
     text-align: left;
+    height: 20vh;
+    overflow-y: scroll;
 }
 
 .light-theme  {

@@ -227,7 +227,6 @@ export async function DB_SB_change_product_amount(mapping_id, amount) {
       console.log("Error occurred:", error.message);
       return -1;
     } else {
-      console.log("Product amount increased successfully");
       return data;
     }
   }
@@ -648,7 +647,6 @@ export async function DB_SB_delete_room(id)
 {
     const user = await getUser();
     let {data: products} = await supabase.from('products').select("*").eq("username", user.username);
-    console.log(products);
     let user_product_ids = [];
     products.forEach(function(product){
         user_product_ids.push(product.id)
