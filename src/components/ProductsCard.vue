@@ -9,32 +9,16 @@
                 <v-card-subtitle v-if='this.box_name !== "" || this.room_name !== ""' align="start">
                     {{ getSubtitle() }}
                 </v-card-subtitle>
-                <div class="d-flex align-center justify-space-evenly room-info mt-1 mb-2 ms-2 me-2 rounded-pill" :class="theme">
-                    <v-list-item density="compact" >
-                        <v-list-item-subtitle>
-                            <v-icon class="me-2" icon="fa:fas fa-shopping-cart"/>{{this.updatedAmount}}
-                            </v-list-item-subtitle>
-                    </v-list-item>
-                    <v-list-item density="compact" >
-                        <v-list-item-subtitle>
-                            <v-icon @click="increaseAmount()" icon="mdi-plus"/>
-                        </v-list-item-subtitle>
-                    </v-list-item>
-                    <v-list-item density="compact">
-                        <v-list-item-subtitle>
-                            <v-icon @click="decreaseAmount()" size="x-large" icon="mdi-minus"/>
-                        </v-list-item-subtitle>
-                    </v-list-item>
-                    <v-list-item density="compact">
-                        <v-list-item-subtitle>
-                            <v-icon @click="starItem()" size="large" :icon="getStarColor()"/>
-                        </v-list-item-subtitle>
-                    </v-list-item>
-                    <v-list-item density="compact">
-                        <v-list-item-subtitle>
-                            <v-icon @click="openDetailModal()" size="large" icon="mdi-information"/>
-                        </v-list-item-subtitle>
-                    </v-list-item>
+                <div
+                    class="d-flex align-center justify-space-evenly room-info mt-1 mb-2 ms-2 me-2 rounded-pill"
+                    :class="theme"
+                >
+                    <v-icon class="color" icon="fa:fas fa-shopping-cart" size="x-small"/><p style="margin-left: -7.5%">{{this.updatedAmount}}</p>
+                    <v-icon class="color" @click="increaseAmount()" size="large" icon="mdi-plus"/>
+                    <v-icon class="color" @click="decreaseAmount()" size="large" icon="mdi-minus"/>
+                    <v-icon class="color" @click="starItem()" size="medium" :icon="getStarColor()"/>
+                    <v-icon class="color" @click="openDetailModal()" size="x-small" icon="fa:fas fa-info-circle"/>
+
                 </div>
             </v-card>
         </v-col>
@@ -233,6 +217,10 @@ export default {
 .light-theme {
     background-color: var(--color-light-theme-darker);
     color: black;
+}
+
+.color {
+    color: lightgray;
 }
 
 </style>

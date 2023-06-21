@@ -7,26 +7,10 @@
                     {{ this.box_name }}
                 </v-card-title>
                 <div class="d-flex align-center justify-space-evenly box-info mt-1 mb-2 ms-2 me-2 rounded-pill" :class="theme">
-                    <v-list-item density="compact" >
-                        <v-list-item-subtitle>
-                            <v-icon @click="productsOverview(id)" class="me-3" icon="fa:fas fa-shopping-cart"/>{{this.numProducts}}
-                        </v-list-item-subtitle>
-                    </v-list-item>
-                    <v-list-item density="compact" >
-                        <v-list-item-subtitle>
-                            <v-icon @click="starredProductsOverview(id)" class="me-3" icon="fa:fas fa-star"/>{{this.numStarredProducts}}
-                        </v-list-item-subtitle>
-                    </v-list-item>
-                    <v-list-item density="compact">
-                        <v-list-item-subtitle>
-                            <v-icon @click="this.$emit('addItemToBox', id)" size="x-large" icon="mdi-plus"/>
-                        </v-list-item-subtitle>
-                    </v-list-item>
-                    <v-list-item density="compact">
-                        <v-list-item-subtitle>
-                            <v-icon @click="openDetailModal()" size="large" icon="mdi-information"/>
-                        </v-list-item-subtitle>
-                    </v-list-item>
+                    <v-icon @click="productsOverview(id)" size="x-small" icon="fa:fas fa-shopping-cart"/><p style="margin-left: -7.5%">{{this.numProducts}}</p>
+                    <v-icon @click="starredProductsOverview(id)" size="medium" icon="fa:fas fa-star"/><p style="margin-left: -7.5%">{{this.numStarredProducts}}</p>
+                    <v-icon @click="this.$emit('addItemToBox', id)" size="large" icon="mdi-plus"/>
+                    <v-icon @click="openDetailModal()"  size="x-small" icon="fa:fas fa-info-circle"/>
                 </div>
             </v-card>
         </v-col>
@@ -128,5 +112,9 @@ export default {
     background-color: var(--color-light-theme-darker);
     color: black;
 }
+.dark-theme i {
+    color: lightgray;
+}
+
 
 </style>

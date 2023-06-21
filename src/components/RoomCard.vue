@@ -7,28 +7,10 @@
                     {{ this.name }}
                 </v-card-title>
                 <div class="d-flex align-center justify-space-evenly room-info mt-1 mb-2 ms-2 me-2 rounded-pill" :class="theme">
-                    <v-list-item density="compact" >
-                        <v-list-item-subtitle>
-                            <v-icon @click="boxesOverview(id)" class="me-3" icon="fa:fas fa-boxes"/>{{this.numBoxes}}
-                            </v-list-item-subtitle>
-                    </v-list-item>
-                    <v-list-item density="compact" >
-                        <v-list-item-subtitle>
-                            <v-icon @click="productsOverview(id)" class="me-3" icon="fa:fas fa-shopping-cart"/>{{this.numProducts}}
-                        </v-list-item-subtitle>
-                    </v-list-item>
-                    <v-list-item density="compact">
-                        <v-list-item-subtitle>
-                            <v-icon @click="$emit('addItemToRoom', id)" size="x-large" icon="mdi-plus"> </v-icon>
-
-                        </v-list-item-subtitle>
-                    </v-list-item>
-                    <v-list-item density="compact">
-                        <v-list-item-subtitle>
-                            <v-icon @click="openDetailModal()" size="large" icon="mdi-information">
-                            </v-icon>
-                        </v-list-item-subtitle>
-                    </v-list-item>
+                    <v-icon @click="boxesOverview(id)"  size="x-small" icon="fa:fas fa-boxes"/><p style="margin-left: -7.5%">{{this.numBoxes}}</p>
+                    <v-icon @click="productsOverview(id)" size="x-small" icon="fa:fas fa-shopping-cart"/><p style="margin-left: -7.5%">{{this.numProducts}}</p>
+                    <v-icon @click="$emit('addItemToRoom', id)" size="large" icon="mdi-plus"/>
+                    <v-icon @click="openDetailModal()" size="x-small" icon="fa:fas fa-info-circle"/>
                 </div>
             </v-card>
         </v-col>
@@ -122,11 +104,6 @@ import {getSettings} from "@/db/dexie";
     color: white;
     height: 2em;
 }
-
-.light-theme i {
-    color: black
-}
-
 .dark-theme {
     background-color: var(--color-dark-theme-darker);
     color: white;
@@ -135,5 +112,13 @@ import {getSettings} from "@/db/dexie";
 .light-theme {
     background-color: var(--color-light-theme-darker);
     color: black;
+}
+.light-theme i {
+    color: black
+}
+
+
+.dark-theme i {
+    color: lightgray;
 }
 </style>
