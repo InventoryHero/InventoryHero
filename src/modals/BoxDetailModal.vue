@@ -2,7 +2,7 @@
 
    <v-dialog
            transition="dialog-bottom-transition"
-           width="auto"
+           width="90%"
            height="100%"
    >
 

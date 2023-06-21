@@ -156,8 +156,8 @@ export default {
       getUser().then((user) => {
           if(user === undefined)
           {
-              this.$router.push("/login");
-          }
+              this.$router.push("/");
+          }  
           this.currentUser = user;
           this.get_boxes();
           if(this.room_id !== -1)

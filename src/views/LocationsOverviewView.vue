@@ -136,7 +136,7 @@ import {useToast} from "vue-toastification";
         getUser().then((user) => {
             if(user === undefined)
             {
-                this.$router.push("/login");
+                this.$router.push("/");
             }
             this.currentUser = user;
             this.get_rooms();

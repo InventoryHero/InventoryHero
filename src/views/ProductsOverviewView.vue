@@ -163,6 +163,7 @@ export default {
       },
       updateStarred(id)
       {
+        this.data_changed = true;
         this.products.forEach(function(product){
           if(product.id === id)
             product.starred = !product.starred;
@@ -203,7 +204,7 @@ export default {
       getUser().then((user) => {
           if(user === undefined)
           {
-              this.$router.push("/login");
+              this.$router.push("/");
           }
           this.currentUser = user;
 

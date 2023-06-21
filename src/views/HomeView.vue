@@ -38,7 +38,7 @@ import QrDataModal from "@/modals/QrDataModal.vue";
 import Dock from "@/components/Dock.vue";
 
 import { DB_SB_getStarredProducts } from '@/db/supabase';
-import {getSettings} from "@/db/dexie";
+import {getSettings, getUser} from "@/db/dexie";
 
 export default {
   name: 'App',
@@ -81,6 +81,12 @@ export default {
   },
   
   beforeMount() {
+    getUser().then((user) => {
+      if(user === undefined)
+      {
+        this.$router.push("/");
+      }
+    });
     DB_SB_getStarredProducts().then((res) => {
       this.starred_products = res;
     })

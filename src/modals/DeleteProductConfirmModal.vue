@@ -24,9 +24,7 @@
                     <p v-else>
                         {{ this.$t('confirmation_modal.delete_product_at_def_expl') }}
                     </p>
-                </div>
-                <div>
-                    <p>
+                    <p class="mt-5">
                         {{this.$t('confirmation_modal.delete_product_expl')}}
                     </p>
                 </div>
