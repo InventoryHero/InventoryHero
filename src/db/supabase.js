@@ -125,11 +125,90 @@ export async function DB_SB_get_products_per_room(room_id, user)
     return products;
 }
 
+export async function DB_SB_getLastUsedProducts(user){
+    const {data} = await supabase.from("products").select("*, productmapping(*)").eq("username", user);
+    let {rooms, boxes} = await map_rooms_with_boxes();
 
-export async function DB_SB_getStarredProducts() {
-    const user = await getUser()
-    const { data } = await supabase.from('products').select().eq("username", user.username).eq("starred", true)
-    return data;
+    let products = [];
+
+    data.forEach(function(product, index){
+        let mapping = product.productmapping;
+        for(let i = 0; i < mapping.length; ++i)
+        {
+            let curr_product = {
+                id: product.id,
+                name: product.name,
+                box_id: mapping[i].box_id,
+                box_name: boxes[mapping[i].box_id].name,
+                room_id: mapping[i].room_id,
+                room_name: rooms[mapping[i].room_id],
+                amount: mapping[i].amount,
+                updated_at: mapping[i].updated_at,
+                username: product.username,
+                starred: product.starred,
+                creation_date: product.creation_date,
+                mapping_id: mapping[i].id,
+
+            }
+            if(curr_product.room_id === -1)
+            {
+                curr_product.room_name = boxes[curr_product.box_id].room_name
+            }
+            products.push(curr_product);
+
+        }
+    })
+
+    products.sort((left, right) => {
+        var leftDate = new Date(left.updated_at),
+            rightDate = new Date(right.updated_at);
+        if (leftDate < rightDate){
+            return 1;
+        }
+        if (leftDate > rightDate){
+            return -1;
+        }
+        return 0;
+    });
+
+    return products.slice(0, 10);
+}
+
+export async function DB_SB_getStarredProducts(user){
+    const {data} = await supabase.from("products").select("*, productmapping(*)").eq("username", user).eq("starred", true);
+    let {rooms, boxes} = await map_rooms_with_boxes();
+
+    let products = [];
+
+    data.forEach(function(product, index){
+        let mapping = product.productmapping;
+        for(let i = 0; i < mapping.length; ++i)
+        {
+            let curr_product = {
+                id: product.id,
+                name: product.name,
+                box_id: mapping[i].box_id,
+                box_name: boxes[mapping[i].box_id].name,
+                room_id: mapping[i].room_id,
+                room_name: rooms[mapping[i].room_id],
+                amount: mapping[i].amount,
+                updated_at: mapping[i].updated_at,
+                username: product.username,
+                starred: product.starred,
+                creation_date: product.creation_date,
+                mapping_id: mapping[i].id,
+
+            }
+            if(curr_product.room_id === -1)
+            {
+                curr_product.room_name = boxes[curr_product.box_id].room_name
+            }
+            products.push(curr_product);
+
+        }
+    })
+
+    return products;
 }
 
 export async function DB_SB_getStarredProducts_per_box(box_id, user) {
