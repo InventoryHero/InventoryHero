@@ -23,6 +23,7 @@ export const localizations = {
       location_name: "Name (location)",
       box_name: "Name (box)",
       add_success_product: "Successfully added product '{name}'",
+      error_add_product: "Error while adding product '{name}'",
       add_success_box: "Successfully added box '{name}'",
       add_success_room: "Successfully added location '{name}'",
       add_btn_location: "Add Location",
@@ -30,7 +31,8 @@ export const localizations = {
       add_btn_product: "Add Product",
       add_new_product: "Add new product",
       no_box: "No box selected",
-      no_room: "No location selected"
+      no_room: "No location selected",
+      amount_negative: "Negative amount for product is not possible"
     },
     qr_data_modal: {
 
@@ -173,6 +175,7 @@ export const localizations = {
       location_name: "Name (Ort)",
       box_name: "Name (Box)",
       add_success_product: "Produkt '{name}' erfolgreich hinzugefügt",
+      error_add_product: "Fehler beim Hinzufügen des Produktes '{name}'",
       add_success_box: "Box '{name}' erfolgreich hinzugefügt",
       add_success_room: "Ort '{name}' erfolgreich hinzugefügt",
       add_btn_location: "Ort hinzufügen",
@@ -180,13 +183,14 @@ export const localizations = {
       add_btn_product: "Produkt hinzufügen",
       add_new_product: "Neues Produkt hinzufügen",
       no_box: "Keine Box ausgewählt",
-      no_room: "Kein Ort ausgewählt"
+      no_room: "Kein Ort ausgewählt",
+      amount_negative: "Negative Menge kann nicht gesetzt werden"
     },
     qr_data_modal: {
 
     },
     qr_reader_modal: {
-      invalid_qr: "Bitte scannen Sie einen gültigen IH QR Code",
+      invalid_qr: "Bitte scanne einen gültigen IH QR Code",
       title: "IH QR-Code scannen"
     },
     locations_view:{
@@ -274,16 +278,16 @@ export const localizations = {
     confirmation_modal: {
       box: "Box",
       location: "Ort",
-      delete_product_expl: "Möchten Sie das Produkt (in allen Aufbewahrungsorten) löschen? Dann drücken Sie den roten Knopf.",
-      delete_product_at_loc_expl: "Möchten Sie alle Produkte in Ort '{loc}' löschen? Dann drücken Sie den gelben Knopf.",
-      delete_product_at_box_expl: "Möchten Sie alle Produkte in Box '{box}' löschen? Dann drücken Sie den gelben Knopf.",
-      delete_product_at_def_expl: "Möchten Sie alle Produkte ohne Ort/Box löschen? Dann drücken Sie den gelben Knopf.",
+      delete_product_expl: "Soll das Produkt (in allen Aufbewahrungsorten) gelöscht werden? Dann drücke den roten Knopf.",
+      delete_product_at_loc_expl: "Sollen alle Produkte in Ort '{loc}' gelöscht werden? Dann drücke den gelben Knopf.",
+      delete_product_at_box_expl: "Sollen alle Produkte in Box '{box}' gelöscht werden? Dann drücke den gelben Knopf.",
+      delete_product_at_def_expl: "Sollen alle Produkte ohne Ort/Box gelöscht werden? Dann drücke den gelben Knopf.",
       delete: "Löschen",
       delete_box: "Lösche Box",
       delete_location: "Lösche Ort",
       delete_product: "Alle",
       delete_product_at_loc: "Nur Dieses",
-      delete_storage: "Möchten Sie {type} '{loc}' löschen? Diese Aktion wird alle Produkte/Boxen in den darüberliegenden Container verschieben."
+      delete_storage: "Soll {type} '{loc}' gelöscht werden? Diese Aktion wird alle Produkte/Boxen in den darüberliegenden Container verschieben."
     },
     box_detail_modal: {
       toasts: {
@@ -323,6 +327,7 @@ export const localizations = {
       location_name: "Nome (Posizione)",
       box_name: "Nome (Scatola)",
       add_success_product: "Prodotto '{name}' aggiunto con successo",
+      error_add_product: "Errore durante l'aggiunta del prodotto '{name}'",
       add_success_box: "Casella '{name}' aggiunta con successo",
       add_success_room: "Località '{name}' aggiunta con successo",
       add_btn_location: "Aggiungi luogo",
@@ -330,7 +335,8 @@ export const localizations = {
       add_btn_product: "Aggiungere prodotto",
       add_new_product: "Add new product",
       no_box: "No box selected",
-      no_room: "No location selected"
+      no_room: "No location selected",
+      amount_negative: "Non è possibile impostare quantità negative"
     },
     qr_data_modal: {
 

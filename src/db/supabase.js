@@ -423,7 +423,7 @@ export async function DB_SB_add_product(product) {
         {
             // ERROR
             console.error(product_id.error);
-            return;
+            return false;
         }
         product_id = product_id.data[0].id;
     }
@@ -451,13 +451,18 @@ export async function DB_SB_add_product(product) {
     if(mapping !== undefined)
     {
         data.amount += mapping.amount;
-        await supabase.from('productmapping').update(data).eq("id", mapping.id);
+        const {error} = await supabase.from('productmapping').update(data).eq("id", mapping.id);
+        if(error !== null)
+            return false;
     }
     else
     {
         data["product_id"] = product_id;
-        await supabase.from('productmapping').insert(data);
+        const {error} =await supabase.from('productmapping').insert(data);
+        if(error !== null)
+            return false;
     }
+    return true;
 
 }
 

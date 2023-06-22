@@ -3,7 +3,8 @@
         transition="dialog-bottom-transition"
         width="100%"
         height="100%"
-
+        persistent
+        no-click-animation
     >
         <div class="d-flex-column modal-container" >
             <div class="modal-toolbar ">
@@ -63,6 +64,7 @@
                         :isDisabled='this.lockRoom'/>
                     <input-text-enhanced
                         @valueUpdated="updateAmount"
+                        input_type="number"
                         :placeholder="this.$t('add_modal.amount_placeholder')"/>
                     <input-starred :starred="this.curr_starred" @valueUpdated="updateStarredProduct" />
                 </div>
@@ -273,11 +275,13 @@ data() {
         this.curr_name = name;
     },
     addItem()
-    {
+    {let refresh = true;
         switch(this.active_view)
         {
+
             case Constants.ProductsView:
                 this.addProduct();
+
                 break;
             case Constants.BoxesView:
                 this.addBox();
@@ -286,7 +290,12 @@ data() {
                 this.addRoom();
                 break;
             default:
+                refresh = false;
                 break;
+        }
+        if(refresh)
+        {
+            //this.init();
         }
     },
     addProduct() {
@@ -302,15 +311,43 @@ data() {
             amount: parseInt(this.curr_amount),
             starred: this.curr_starred
         }
-        DB_SB_add_product(product).then(() => {
-            this.toast.success(
-                this.$t('add_modal.add_success_product',
-                    {
-                        name: product.name
-                    }
-                )
-            );
-            this.closeModal();
+
+        if(this.curr_amount < 0)
+        {
+            this.toast.error(this.$t("add_modal.amount_negative"));
+            return;
+        }
+
+
+        DB_SB_add_product(product).then((success) => {
+            if(success) {
+                this.toast.success(
+                    this.$t('add_modal.add_success_product',
+                        {
+                            name: product.name
+                        }
+                    )
+
+                );
+                DB_SB_get_products_without_storage_location().then((products) => {
+                    this.products = products;
+                });
+                this.closeModal();
+            }
+            else
+            {
+                this.toast.error(
+                    this.$t('add_modal.error_add_product',
+                        {
+                            name: product.name
+                        }
+                    )
+
+                );
+            }
+
+
+
         });
     },
     closeModal() {
