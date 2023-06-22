@@ -1,34 +1,36 @@
 <template>
   <div class="list-padding" id="posStarredMessages">
-      <v-card class="dark-theme card">
-        <v-card-title align="start">
-          {{this.$t('home_view.starred_products')}}
-        </v-card-title>
-        <v-list class="scroll dark-theme">
-          <usage-component 
-            v-for="p in starredProducts" 
-            :id="p.id"
-            :mapping_id="p.mapping_id"
-            :productName="p.name"
-            :amount="p.amount"
-            :updated_at="p.updated_at"
-            :room_id="p.room_id"
-            :box_id="p.box_id"
-            :box_name="p.box_name"
-            :room_name="p.room_name"
-            @productDeleted="deleteProduct"
-            @reloadProducts="refreshData"
-          />
-      </v-list>
-      </v-card>
-    </div>
+    <v-card class="dark-theme card roundMe">
+      <v-card-title align="start">
+        {{this.$t('home_view.starred_products')}}
+      </v-card-title>
+      <load-animation  style="z-index: 3" v-if="this.loadingStarred"/>
+      <v-list class="scroll dark-theme">
+        <usage-component
+          v-for="p in starredProducts"
+          :id="p.id"
+          :mapping_id="p.mapping_id"
+          :productName="p.name"
+          :amount="p.amount"
+          :updated_at="p.updated_at"
+          :room_id="p.room_id"
+          :box_id="p.box_id"
+          :box_name="p.box_name"
+          :room_name="p.room_name"
+          @productDeleted="deleteProduct"
+          @reloadProducts="refreshData"
+        />
+    </v-list>
+    </v-card>
+  </div>
 
     <div class="list-padding" id="posLastUsed">
-      <v-card class="dark-theme card">
+      <v-card class="roundMe dark-theme card">
         <v-card-title align="start">
           {{this.$t('home_view.last_used')}}
                 </v-card-title>
         <v-list class="scroll dark-theme">
+          <load-animation  style="z-index: 3" v-if="this.loading"/>
         <usage-component
           v-for="p in lastUsedProducts" 
           :id="p.id"
@@ -78,10 +80,12 @@ import Dock from "@/components/Dock.vue";
 import { DB_SB_getStarredProducts } from '@/db/supabase';
 import { DB_SB_getLastUsedProducts } from '@/db/supabase';
 import {getSettings, getUser} from "@/db/dexie";
+import LoadAnimation from "@/components/LoadAnimation.vue";
 
 export default {
   name: 'App',
   components: {
+    LoadAnimation,
     SandwichMenu,
     ListContainer,
     UsageComponent,
@@ -102,6 +106,8 @@ export default {
       lastUsedProducts: [],
       starredProducts: [],
       theme: "",
+      loadingStarred: true,
+      loading: true,
     }
   },
   methods: {
@@ -131,9 +137,10 @@ export default {
     },
     async get_products() {
         this.lastUsedProducts = await DB_SB_getLastUsedProducts(this.currentUser.username);
-        this.starredProducts = await DB_SB_getStarredProducts(this.currentUser.username);
         this.loading = false;
-      },
+        this.starredProducts = await DB_SB_getStarredProducts(this.currentUser.username);
+        this.loadingStarred = false;
+    },
     
   },
   
@@ -165,11 +172,15 @@ export default {
 
 <style scoped>
 #posStarredMessages {
-  margin-top: 15vh;
+  margin-top: 10vh;
   width: 100%;
   word-wrap: break-word;
-}
 
+}
+.roundMe{
+    border-radius: 10px !important;
+    border: rgba(255, 255, 255, 0.2) 1px solid;
+}
 #posLastUsed {
   margin-top: 5vh;
     word-wrap: break-word;
@@ -186,13 +197,13 @@ h3 {
 }
 
 .list-padding {
-  padding-left: 12.5%;
-  padding-right: 12.5%;
+  padding-left: 8%;
+  padding-right: 8%;
 }
 
 .scroll {
     overflow-y: scroll;
-    height: 26vh;
+    height: 28vh;
 }
 
 </style>

@@ -3,8 +3,6 @@
 </template>
 
 
-
-
 <style scoped>
 .lds-dual-ring {
   display: inline-block;
@@ -34,4 +32,8 @@
     transform: rotate(360deg);
   }
 }
+
+
+
+
 </style>

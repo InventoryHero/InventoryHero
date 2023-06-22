@@ -32,9 +32,11 @@
 <script>
 import {getSettings} from "@/db/dexie"
 import ProductsDetailModal from "@/modals/ProductsDetailModal.vue";
+import LoadAnimation from "@/components/LoadAnimation.vue";
 
 export default {
     components: {
+        LoadAnimation,
         ProductsDetailModal
     },
     props: {
@@ -190,7 +192,7 @@ export default {
     margin-left: 2%;
     margin-bottom: 5px;
     width: 96%;
-    background: rgba(255, 255, 255, 0.05);
+    background: rgba(113, 112, 141, 0.3);
     border-radius: 4px;
 }
 </style>
