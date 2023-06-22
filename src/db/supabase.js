@@ -48,6 +48,10 @@ export async function DB_SB_register(username, password) {
         username: username,
         password: HASH(password),
     }
+    if(username === "" || username.length === 0)
+    {
+        return "pls_username"
+    }
     const { data } = await supabase.from('users').select().eq("username", username)
     if(data.length !== 0) {
         console.log("[ERR] username already taken");

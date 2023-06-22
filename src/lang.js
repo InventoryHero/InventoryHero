@@ -67,6 +67,7 @@ export const localizations = {
           error: {
             register: {
               username_taken: "This username is already taken!",
+              pls_username: "A username is necessary, sorry!",
               generic_error: "Something went wrong please try again later!"
             }
           }
@@ -219,6 +220,7 @@ export const localizations = {
         error: {
           register: {
             username_taken: "Dieser Username ist bereits vergeben!",
+            pls_username: "Ein Nutzername muss angegeben werden, sorry!",
             generic_error: "Ein Fehler ist aufgetreten, bitte versuche es später erneut!"
           }
         }
@@ -371,6 +373,7 @@ export const localizations = {
         error: {
           register: {
             username_taken: "Questo username è già in uso!",
+            pls_username: "Un username é necessario, sorry!",
             generic_error: "Si è verificato un errore, riprova più tardi!"
           }
         }

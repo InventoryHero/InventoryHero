@@ -92,6 +92,9 @@
             else if(register_succeeded === "generic_err")
             {
               this.toast.error(this.$t("login_view.toasts.error.register.generic_error"));
+            }else if(register_succeeded === "pls_username")
+            {
+              this.toast.error(this.$t("login_view.toasts.error.register.pls_username"));
             }
           }
         });
