@@ -1,0 +1,9 @@
+{
+  "presets": [
+    {
+      "name": "InventoryHero",
+      "color": "#2196f3",
+      "dark": true
+    }
+  ]
+}

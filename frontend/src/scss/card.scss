@@ -1,0 +1,29 @@
+.v-card.v-theme--dark {
+  .v-card-title.shadowed {
+    box-shadow: 0 2px 4px -1px #0003, 0 4px 5px #00000024, 0 1px 10px #0000001f;
+    border-bottom: thin solid rgba(map-get($shades, 'white'), .1) !important;
+  }
+  .v-card-actions.shadowed{
+    box-shadow: 0 -2px 4px -1px #0003,0 -4px 5px #00000024,0 -1px 10px #0000001f;
+    border-top: thin solid rgba(map-get($shades, 'white'),.1) !important;
+  }
+}
+
+.v-card.v-theme--light {
+  .v-card-title.shadowed{
+    box-shadow: 0 2px 4px -1px #0003,0 4px 5px #00000024,0 1px 10px #0000001f;
+    border-bottom: thin solid rgba(map-get($shades, 'black'),.1) !important;
+  }
+  .v-card-actions.shadowed{
+    box-shadow: 0 -2px 4px -1px #0003,0 -4px 5px #00000024,0 -1px 10px #0000001f;
+    border-top: thin solid rgba(map-get($shades, 'black'),.1) !important;
+  }
+}
+
+
+.create-card-content{
+  min-height: calc((100svh - 280px) * 0.65);
+  max-height: calc(100svh - 280px);
+  overflow: auto;
+}
+

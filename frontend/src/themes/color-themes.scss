@@ -1,0 +1,332 @@
+@import 'vuetify/lib/styles/settings/_colors.scss';
+@import 'variables.scss';
+
+body[data-color='pink']{
+  $color: $pink;
+  $accent1: map-get($color, accent-1);
+  --clr-base: #{map-get($color, "base")};
+  --clr-overview-table-hdr: #{map-get($color, lighten-3)};
+  --clr-sidebar-active: #{map-get($color, darken-2)};
+  --clr-filter-pressed: #{map-get($color, lighten-2)};
+  --clr-task-duration: #{map-get($color, lighten-3)};
+  --clr-border: #{$accent1};
+  --clr-border-alpha: rgba(#{red($accent1)}, #{green($accent1)}, #{blue($accent1)}, 0.4);
+  --clr-btn-clicked: #{map-get($color, accent-2)};
+  --clr-product-starred: #{map-get($color, darken-1)};
+  --clr-modal-title: #{map-get($color, lighten-3)};
+  --clr-clear-btn: #{map-get($color, lighten-3)};
+  --clr-clear-btn-disabled: #{map-get($color, lighten-5)};
+}
+
+body[data-color='deep-purple']{
+  $color: $deep-purple;
+  $accent1: map-get($color, accent-1);
+  --clr-base: #{map-get($color, "base")};
+  --clr-overview-table-hdr: #{map-get($color, lighten-3)};
+  --clr-sidebar-active: #{map-get($color, darken-2)};
+  --clr-filter-pressed: #{map-get($color, lighten-2)};
+  --clr-task-duration: #{map-get($color, lighten-3)};
+  --clr-border: #{$accent1};
+  --clr-border-alpha: rgba(#{red($accent1)}, #{green($accent1)}, #{blue($accent1)}, 0.4);
+  --clr-btn-clicked: #{map-get($color, accent-2)};
+  --clr-product-starred: #{map-get($color, darken-1)};
+  --clr-modal-title: #{map-get($color, lighten-3)};
+    --clr-clear-btn: #{map-get($color, lighten-3)};
+  --clr-clear-btn-disabled: #{map-get($color, lighten-5)};
+  
+}
+
+
+body[data-color='red']{
+  $color: $red;
+  $accent1: map-get($color, accent-1);
+  --clr-base: #{map-get($color, "base")};
+  --clr-overview-table-hdr: #{map-get($color, lighten-3)};
+  --clr-sidebar-active: #{map-get($color, darken-2)};
+  --clr-filter-pressed: #{map-get($color, lighten-2)};
+  --clr-task-duration: #{map-get($color, lighten-3)};
+  --clr-border: #{$accent1};
+  --clr-border-alpha: rgba(#{red($accent1)}, #{green($accent1)}, #{blue($accent1)}, 0.4);
+  --clr-btn-clicked: #{map-get($color, accent-2)};
+  --clr-product-starred: #{map-get($color, darken-1)};
+  --clr-modal-title: #{map-get($color, lighten-3)};
+    --clr-clear-btn: #{map-get($color, lighten-3)};
+  --clr-clear-btn-disabled: #{map-get($color, lighten-5)};
+}
+
+body[data-color='purple']{
+  $color: $purple;
+  $accent1: map-get($color, accent-1);
+  --clr-base: #{map-get($color, "base")};
+  --clr-overview-table-hdr: #{map-get($color, lighten-3)};
+  --clr-sidebar-active: #{map-get($color, darken-2)};
+  --clr-filter-pressed: #{map-get($color, lighten-2)};
+  --clr-task-duration: #{map-get($color, lighten-3)};
+  --clr-border: #{$accent1};
+  --clr-border-alpha: rgba(#{red($accent1)}, #{green($accent1)}, #{blue($accent1)}, 0.4);
+  --clr-btn-clicked: #{map-get($color, accent-2)};
+  --clr-product-starred: #{map-get($color, darken-1)};
+  --clr-modal-title: #{map-get($color, lighten-3)};
+    --clr-clear-btn: #{map-get($color, lighten-3)};
+  --clr-clear-btn-disabled: #{map-get($color, lighten-5)};
+}
+
+body[data-color='light-blue']{
+  $color: $light-blue;
+  $accent1: map-get($color, accent-1);
+  --clr-base: #{map-get($color, "base")};
+  --clr-overview-table-hdr: #{map-get($color, lighten-3)};
+  --clr-sidebar-active: #{map-get($color, darken-2)};
+  --clr-filter-pressed: #{map-get($color, lighten-2)};
+  --clr-task-duration: #{map-get($color, lighten-3)};
+  --clr-border: #{$accent1};
+  --clr-border-alpha: rgba(#{red($accent1)}, #{green($accent1)}, #{blue($accent1)}, 0.4);
+  --clr-btn-clicked: #{map-get($color, accent-2)};
+  --clr-product-starred: #{map-get($color, darken-1)};
+  --clr-modal-title: #{map-get($color, lighten-3)};
+    --clr-clear-btn: #{map-get($color, lighten-3)};
+  --clr-clear-btn-disabled: #{map-get($color, lighten-5)};
+}
+
+body[data-color='green']{
+  $color: $green;
+  $accent1: map-get($color, accent-1);
+  --clr-base: #{map-get($color, "base")};
+  --clr-overview-table-hdr: #{map-get($color, lighten-3)};
+  --clr-sidebar-active: #{map-get($color, darken-2)};
+  --clr-filter-pressed: #{map-get($color, lighten-2)};
+  --clr-task-duration: #{map-get($color, lighten-3)};
+  --clr-border: #{$accent1};
+  --clr-border-alpha: rgba(#{red($accent1)}, #{green($accent1)}, #{blue($accent1)}, 0.4);
+  --clr-btn-clicked: #{map-get($color, accent-2)};
+  --clr-product-starred: #{map-get($color, darken-1)};
+  --clr-modal-title: #{map-get($color, lighten-3)};
+    --clr-clear-btn: #{map-get($color, lighten-3)};
+  --clr-clear-btn-disabled: #{map-get($color, lighten-5)};
+}
+
+body[data-color='deep-orange']{
+  $color: $deep-orange;
+  $accent1: map-get($color, accent-1);
+  --clr-base: #{map-get($color, "base")};
+
+  --clr-overview-table-hdr: #{map-get($color, lighten-3)};
+  --clr-sidebar-active: #{map-get($color, darken-2)};
+  --clr-filter-pressed: #{map-get($color, lighten-2)};
+  --clr-task-duration: #{map-get($color, lighten-3)};
+  --clr-border: #{$accent1};
+  --clr-border-alpha: rgba(#{red($accent1)}, #{green($accent1)}, #{blue($accent1)}, 0.4);
+  --clr-btn-clicked: #{map-get($color, accent-2)};
+  --clr-product-starred: #{map-get($color, darken-1)};
+  --clr-modal-title: #{map-get($color, lighten-3)};
+    --clr-clear-btn: #{map-get($color, lighten-3)};
+  --clr-clear-btn-disabled: #{map-get($color, lighten-5)};
+}
+
+body[data-color='blue']{
+  $color: $blue;
+  $accent1: map-get($color, accent-1);
+  --clr-base: #{map-get($color, "base")};
+  --clr-overview-table-hdr: #{map-get($color, lighten-3)};
+  --clr-sidebar-active: #{map-get($color, darken-2)};
+  --clr-filter-pressed: #{map-get($color, lighten-2)};
+  --clr-task-duration: #{map-get($color, lighten-3)};
+  --clr-border: #{$accent1};
+  --clr-border-alpha: rgba(#{red($accent1)}, #{green($accent1)}, #{blue($accent1)}, 0.4);
+  --clr-btn-clicked: #{map-get($color, accent-2)};
+  --clr-product-starred: #{map-get($color, darken-1)};
+  --clr-modal-title: #{map-get($color, lighten-3)};
+    --clr-clear-btn: #{map-get($color, lighten-3)};
+  --clr-clear-btn-disabled: #{map-get($color, lighten-5)};
+}
+
+body[data-color='indigo']{
+  $color: $indigo;
+  $accent1: map-get($color, accent-1);
+  --clr-base: #{map-get($color, "base")};
+  --clr-overview-table-hdr: #{map-get($color, lighten-3)};
+  --clr-sidebar-active: #{map-get($color, darken-2)};
+  --clr-filter-pressed: #{map-get($color, lighten-2)};
+  --clr-task-duration: #{map-get($color, lighten-3)};
+  --clr-border: #{$accent1};
+  --clr-border-alpha: rgba(#{red($accent1)}, #{green($accent1)}, #{blue($accent1)}, 0.4);
+  --clr-btn-clicked: #{map-get($color, accent-2)};
+  --clr-product-starred: #{map-get($color, darken-1)};
+  --clr-modal-title: #{map-get($color, lighten-3)};
+    --clr-clear-btn: #{map-get($color, lighten-3)};
+  --clr-clear-btn-disabled: #{map-get($color, lighten-5)};
+}
+
+body[data-color='cyan']{
+  $color: $cyan;
+  $accent1: map-get($color, accent-1);
+  --clr-base: #{map-get($color, "base")};
+  --clr-overview-table-hdr: #{map-get($color, lighten-3)};
+  --clr-sidebar-active: #{map-get($color, darken-2)};
+  --clr-filter-pressed: #{map-get($color, lighten-2)};
+  --clr-task-duration: #{map-get($color, lighten-3)};
+  --clr-border: #{$accent1};
+  --clr-border-alpha: rgba(#{red($accent1)}, #{green($accent1)}, #{blue($accent1)}, 0.4);
+  --clr-btn-clicked: #{map-get($color, accent-2)};
+  --clr-product-starred: #{map-get($color, darken-1)};
+  --clr-modal-title: #{map-get($color, lighten-3)};
+    --clr-clear-btn: #{map-get($color, lighten-3)};
+  --clr-clear-btn-disabled: #{map-get($color, lighten-5)};
+}
+
+body[data-color='teal']{
+  $color: $teal;
+  $accent1: map-get($color, accent-1);
+  --clr-base: #{map-get($color, "base")};
+  --clr-overview-table-hdr: #{map-get($color, lighten-3)};
+  --clr-sidebar-active: #{map-get($color, darken-2)};
+  --clr-filter-pressed: #{map-get($color, lighten-2)};
+  --clr-task-duration: #{map-get($color, lighten-3)};
+  --clr-border: #{$accent1};
+  --clr-border-alpha: rgba(#{red($accent1)}, #{green($accent1)}, #{blue($accent1)}, 0.4);
+  --clr-btn-clicked: #{map-get($color, accent-2)};
+  --clr-product-starred: #{map-get($color, darken-1)};
+  --clr-modal-title: #{map-get($color, lighten-3)};
+    --clr-clear-btn: #{map-get($color, lighten-3)};
+  --clr-clear-btn-disabled: #{map-get($color, lighten-5)};
+}
+
+body[data-color='light-green']{
+  $color: $light-green;
+  $accent1: map-get($color, accent-1);
+  --clr-base: #{map-get($color, "base")};
+  --clr-overview-table-hdr: #{map-get($color, lighten-3)};
+  --clr-sidebar-active: #{map-get($color, darken-2)};
+  --clr-filter-pressed: #{map-get($color, lighten-2)};
+  --clr-task-duration: #{map-get($color, lighten-3)};
+  --clr-border: #{$accent1};
+  --clr-border-alpha: rgba(#{red($accent1)}, #{green($accent1)}, #{blue($accent1)}, 0.4);
+  --clr-btn-clicked: #{map-get($color, accent-2)};
+  --clr-product-starred: #{map-get($color, darken-1)};
+  --clr-modal-title: #{map-get($color, lighten-3)};
+    --clr-clear-btn: #{map-get($color, lighten-3)};
+  --clr-clear-btn-disabled: #{map-get($color, lighten-5)};
+}
+
+body[data-color='grey']{
+  $color: $grey;
+  $accent1: map-get($color, lighten-3);
+  --clr-base: #{map-get($color, "base")};
+  --clr-overview-table-hdr: #{map-get($color, lighten-3)};
+  --clr-sidebar-active: #{map-get($color, darken-2)};
+  --clr-filter-pressed: #{map-get($color, lighten-2)};
+  --clr-task-duration: #{map-get($color, lighten-3)};
+  --clr-border: #{$accent1};
+  --clr-border-alpha: rgba(#{red($accent1)}, #{green($accent1)}, #{blue($accent1)}, 0.4);
+  --clr-btn-clicked: #{map-get($color, darken-1)};
+  --clr-product-starred: #{map-get($color, darken-1)};
+  --clr-modal-title: #{map-get($color, lighten-3)};
+    --clr-clear-btn: #{map-get($color, lighten-3)};
+  --clr-clear-btn-disabled: #{map-get($color, lighten-5)};
+}
+
+body[data-color='blue-grey']{
+  $color: $blue-grey;
+  $accent1: map-get($color, lighten-3);
+  --clr-base: #{map-get($color, "base")};
+  --clr-overview-table-hdr: #{map-get($color, lighten-3)};
+  --clr-sidebar-active: #{map-get($color, darken-2)};
+  --clr-filter-pressed: #{map-get($color, lighten-2)};
+  --clr-task-duration: #{map-get($color, lighten-3)};
+  --clr-border: #{$accent1};
+  --clr-border-alpha: rgba(#{red($accent1)}, #{green($accent1)}, #{blue($accent1)}, 0.4);
+  --clr-btn-clicked: #{map-get($color, darken-1)};
+  --clr-product-starred: #{map-get($color, darken-1)};
+  --clr-modal-title: #{map-get($color, lighten-3)};
+    --clr-clear-btn: #{map-get($color, lighten-3)};
+  --clr-clear-btn-disabled: #{map-get($color, lighten-5)};
+}
+
+body[data-color='brown']{
+  $color: $brown;
+  $accent1: map-get($color, lighten-3);
+  --clr-base: #{map-get($color, "base")};
+  --clr-overview-table-hdr: #{map-get($color, lighten-3)};
+  --clr-sidebar-active: #{map-get($color, darken-2)};
+  --clr-filter-pressed: #{map-get($color, lighten-2)};
+  --clr-task-duration: #{map-get($color, lighten-3)};
+  --clr-border: #{$accent1};
+  --clr-border-alpha: rgba(#{red($accent1)}, #{green($accent1)}, #{blue($accent1)}, 0.4);
+  --clr-btn-clicked: #{map-get($color, darken-1)};
+  --clr-product-starred: #{map-get($color, darken-1)};
+  --clr-modal-title: #{map-get($color, lighten-3)};
+    --clr-clear-btn: #{map-get($color, lighten-3)};
+  --clr-clear-btn-disabled: #{map-get($color, lighten-5)};
+}
+
+body[data-color='lime']{
+  $color: $lime;
+  $accent1: map-get($color, accent-1);
+  --clr-base: #{map-get($color, "base")};
+  --clr-overview-table-hdr: #{map-get($color, lighten-3)};
+  --clr-sidebar-active: #{map-get($color, darken-2)};
+  --clr-filter-pressed: #{map-get($color, lighten-2)};
+  --clr-task-duration: #{map-get($color, lighten-3)};
+  --clr-border: #{$accent1};
+  --clr-border-alpha: rgba(#{red($accent1)}, #{green($accent1)}, #{blue($accent1)}, 0.4);
+  --clr-btn-clicked: #{map-get($color, accent-2)};
+  --clr-product-starred: #{map-get($color, darken-1)};
+  --clr-modal-title: #{map-get($color, lighten-3)};
+    --clr-clear-btn: #{map-get($color, lighten-3)};
+  --clr-clear-btn-disabled: #{map-get($color, lighten-5)};
+}
+
+body[data-color='orange']{
+  $color: $orange;
+  $accent1: map-get($color, accent-1);
+  --clr-base: #{map-get($color, "base")};
+  --clr-overview-table-hdr: #{map-get($color, lighten-3)};
+  --clr-sidebar-active: #{map-get($color, darken-2)};
+  --clr-filter-pressed: #{map-get($color, lighten-2)};
+  --clr-task-duration: #{map-get($color, lighten-3)};
+  --clr-border: #{$accent1};
+  --clr-border-alpha: rgba(#{red($accent1)}, #{green($accent1)}, #{blue($accent1)}, 0.4);
+  --clr-btn-clicked: #{map-get($color, accent-2)};
+  --clr-product-starred: #{map-get($color, darken-1)};
+  --clr-modal-title: #{map-get($color, lighten-3)};
+    --clr-clear-btn: #{map-get($color, lighten-3)};
+  --clr-clear-btn-disabled: #{map-get($color, lighten-5)};
+}
+
+body[data-color='amber']{
+  $color: $amber;
+  $accent1: map-get($color, accent-1);
+  --clr-base: #{map-get($color, "base")};
+  --clr-overview-table-hdr: #{map-get($color, lighten-3)};
+  --clr-sidebar-active: #{map-get($color, darken-2)};
+  --clr-filter-pressed: #{map-get($color, lighten-2)};
+  --clr-task-duration: #{map-get($color, lighten-3)};
+  --clr-border: #{$accent1};
+  --clr-border-alpha: rgba(#{red($accent1)}, #{green($accent1)}, #{blue($accent1)}, 0.4);
+  --clr-btn-clicked: #{map-get($color, accent-2)};
+  --clr-product-starred: #{map-get($color, darken-1)};
+  --clr-modal-title: #{map-get($color, lighten-3)};
+    --clr-clear-btn: #{map-get($color, lighten-3)};
+  --clr-clear-btn-disabled: #{map-get($color, lighten-5)};
+}
+
+body[data-color='yellow']{
+  $color: $yellow;
+  $accent1: map-get($color, accent-1);
+  --clr-base: #{map-get($color, "base")};
+  --clr-overview-table-hdr: #{map-get($color, lighten-3)};
+  --clr-sidebar-active: #{map-get($color, darken-2)};
+  --clr-filter-pressed: #{map-get($color, lighten-2)};
+  --clr-task-duration: #{map-get($color, lighten-3)};
+  --clr-border: #{$accent1};
+  --clr-border-alpha: rgba(#{red($accent1)}, #{green($accent1)}, #{blue($accent1)}, 0.4);
+  --clr-btn-clicked: #{map-get($color, accent-2)};
+  --clr-product-starred: #{map-get($color, darken-1)};
+  --clr-modal-title: #{map-get($color, lighten-3)};
+    --clr-clear-btn: #{map-get($color, lighten-3)};
+  --clr-clear-btn-disabled: #{map-get($color, lighten-5)};
+}
+
+
+
+

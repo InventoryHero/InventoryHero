@@ -1,0 +1,271 @@
+{
+  "app": {
+    "title": "InventoryHero"
+  },
+  "settings": {
+    "ui": {
+      "title": "UI Settings",
+      "preset": "Theme preset",
+      "select_color": "Select Color",
+      "color": "Color",
+      "reset": "Reset",
+      "theme": "Dark mode",
+      "use_dock": "Mobile Dock",
+      "colors": {
+        "r": "R",
+        "g": "G",
+        "b": "B"
+      }
+    }
+  },
+  "nav": {
+    "home": "Home",
+    "products": "Product Overview",
+    "boxes": "Box overview",
+    "location": "Location overview",
+    "create_new": "Create",
+    "account": "Account",
+    "households": "Households",
+    "settings": "Settings",
+    "logout": "Logout"
+  },
+  "add": {
+    "product": {
+      "tab": "Product",
+      "title": "New product",
+      "labels": {
+        "product": "Product name",
+        "star": "Star product",
+        "location": "Product storage container",
+        "amount": "Amount"
+      },
+      "hints": {
+        "combobox": "Either enter a new product name (must be unique) or select an existing product",
+        "locationSelect": "If you want to store your product at a location or in a box, select the container here",
+        "amount": "How many instances of this product do you want to store?",
+        "star": "Mark as favourite"
+      },
+      "rules": {
+        "need_product": "A name must be supplied"
+      }
+    },
+    "box": {
+      "tab": "Box",
+      "title":"New Box",
+      "labels": {
+        "box": "Name of the new box",
+        "location": "Location of the box"
+      },
+      "hints": {
+        "boxName": "Name of the box you want to create",
+        "locationSelect": "If your box should be stored at a location, select it here"
+      },
+      "rules": {
+        "name_needed": "A name must be supplied"
+      }
+    },
+    "location": {
+      "tab": "Location",
+      "title": "New Location",
+      "labels": {
+        "location": "Location name"
+      },
+      "hints": {
+        "locationName": "Name of the location you want to add"
+      },
+      "rules": {
+        "name_needed": "A name must be supplied"
+      }
+    },
+
+    "save": "Save item",
+    "clear": "Clear input"
+  },
+
+  "product": "product {name}",
+  "products": {
+    "product": {
+      "created": "Created at",
+      "amount": "Amount stored",
+      "last_used": "Last used at",
+      "no_container": "",
+      "updated": "Updated at"
+    },
+    "locations": {
+      "all_displayed": "Every storage location of this product has been displayed."
+    },
+    "all_displayed": "You've reached the end. No more products to see here.",
+    "no_matches": "No products match the current filter.",
+    "no_products": "Nothing there..."
+  },
+  "box": "box {name}",
+  "boxes": {
+    "box": {
+      "created": "Created at",
+      "product_amount": "Products in box",
+      "all_displayed": "No more items left in box to display"
+    },
+    "prefiltered": "Prefiltered from {box}",
+    "all_displayed": "You've reached the end. No more boxes to see here.",
+    "no_matches": "No boxes match the current filter.",
+    "no_boxes": "Nothing there..."
+  },
+  "locations": {
+    "location": {
+      "created": "Created at",
+      "product_amount": "Products in location",
+      "boxes_amount": "Boxes in location",
+      "all_displayed": "No more items left at location to display"
+    },
+    "prefiltered": "Prefiltered from {prefilter}",
+    "all_displayed": "You've reached the end. No more locations to see here.",
+    "no_matches": "No locations match the current filter.",
+    "no_locations": "Nothing there..."
+  },
+  "households": {
+    "all_displayed": "All households have been displayed!",
+    "create_new": {
+      "title": "Create new household",
+      "labels": {
+        "name": "Household name"
+      },
+      "save": "Save household"
+    },
+    "rules": {
+      "name_required": "A name needs to be set!"
+    }
+  },
+  "account": {
+    "profile_card": {
+      "title": "You 😊",
+      "user_name": "Username",
+      "email": "email",
+      "change_pw": "Change password",
+      "save_changes": "Save"
+    },
+    "household_card": {
+      "title": "Current household",
+      "edit_households": "Edit households",
+      "save_changes": "Save"
+    }
+  },
+  "login": {
+    "login": {
+      "title": "Login",
+      "forgot_password_btn": "Password forgotten?",
+      "btn": "Login",
+      "username": "Username",
+      "password": "Password",
+      "username_needed": "An username needs to be supplied",
+      "password_needed": "A password needs to be supplied"
+    },
+    "register": {
+      "title": "Register",
+      "username": "Username",
+      "password": "password",
+      "email": "Email",
+      "repeat_password": "Repeat password",
+      "username_needed": "An username needs to be supplied",
+      "password_needed": "A password needs to be supplied",
+      "email_needed": "An email must be supplied",
+      "passwords_not_equal": "Passwords do not match",
+      "btn": "Sign up!"
+    }
+  },
+  "print": {
+    "print_qr": "Print QR-Codes",
+    "select_ok": "Ok",
+    "print_selected": "Print"
+  },
+  "scan": {
+    "go_to": {
+      "boxes": "Show box"
+    },
+    "scanned_type": {
+      "boxes": "Box: "
+    }
+  },
+  "confirm": {
+    "leave": {
+      "deny": "Stay",
+      "accept": "Leave",
+      "text": "You are about to leave this page. Any unsaved inputs will be lost!",
+      "title": "Leave...?"
+    }
+  },
+  "titles": {
+    "products": "Products - InventoryHero",
+    "boxes": "Boxes - InventoryHero",
+    "locations": "Locations - InventoryHero",
+    "account": "Account - InventoryHero",
+    "households": "Households - InventoryHero",
+    "settings": "Settings - InventoryHero",
+    "create": "Add new item - InventoryHero"
+  },
+  "confirmation": {
+    "redirect_in": "Redirect in {seconds}"
+  },
+  "join": {
+    "title": "{owner} wants you to join their household!",
+    "text": "If you want to join the their household <b>{name}</b> and start inventorying with <b>{owner}</b> accept below.",
+    "accept": "Accept invite",
+    "deny": "Inventory' alone!"
+  },
+  "toasts": {
+    "titles": {
+      "info": {
+        "no_households": "No households received"
+      },
+      "error": {
+        "invalid_request": "Invalid request",
+        "unauthorized": "Unauthorized",
+        "not_found": "Requested resource not found",
+        "conflict": "Conflict",
+
+        "undefined_server_error": "Unknown Error occured",
+        "duplicate_household_name": "Duplicate Household",
+        "username_not_found": "Username not found",
+        "username_or_pw_invalid": "Invalid username or password",
+        "no_username": "No username supplied",
+        "no_password": "No password supplied",
+        "no_email": "No email supplied",
+        "username_in_use": "Username already in use",
+        "email_in_use": "Email already in use"
+      },
+      "success": {
+        "default_household_set": "Default household updated",
+        "register": "User {name} successfully created"
+      },
+      "new-content": {
+        "new": "{user} updated your household"
+      }
+    },
+    "text": {
+      "info": {
+        "no_households": "Please create a new household to get started with InventoryHero 😊"
+      },
+      "error": {
+        "invalid_request": "",
+        "unauthorized": "",
+        "not_found": "",
+        "conflict": "",
+        "undefined_server_error": "While fetching data from the server, an unknown error occurred. Please try again later.",
+        "duplicate_household_name": "A household with this name already exists",
+        "username_not_found": "The provided username does not exist, pleas sign up if you want to use InventoryHero.",
+        "username_or_pw_invalid": "",
+        "no_username": "",
+        "no_password": "",
+        "no_email": "",
+        "username_in_use": "Please choose a different username, this one is already in use!",
+        "email_in_use": "Please use a different email address, this one is already in use!"
+      },
+      "success": {
+        "default_household_set": "",
+        "register": "You can now login with your account! Happy Inventoring! 🤩"
+      },
+      "new-content": {
+        "new": "Some things in your household might have changed. Click here to load the most recent data!"
+      }
+    }
+  }
+}

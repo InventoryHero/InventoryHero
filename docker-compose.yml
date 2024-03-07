@@ -1,10 +1,16 @@
+version: "3.4"
 services:
   inventoryhero:
+    container_name: inventory-hero
+    image: inventoryhero
     build:
-      context: .
-      dockerfile: ./deploy/Dockerfile
+      target: release
+      dockerfile: Dockerfile
+    restart: always
+    volumes:
+      - ./dev/test.db:/db/test.db
     ports:
-      - "80:80"
-      - "443:443"
+      - 8080:80
     env_file:
       - .env
+      
