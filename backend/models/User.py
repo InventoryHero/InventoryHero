@@ -7,7 +7,7 @@ class User(db.Model):
     id: int = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username: str = db.Column(db.String(80), unique=True, nullable=False)
     email: str = db.Column(db.String(120), unique=True, nullable=False)
-    password: bytes = db.Column(db.String(1024), nullable=False)
+    password: str = db.Column(db.String(1024), nullable=False)
     email_confirmed: bool = db.Column(db.Boolean, default=False, nullable=False)
     confirmation_code: uuid.UUID = db.Column(db.Uuid, unique=True, nullable=True)
 

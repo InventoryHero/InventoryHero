@@ -82,7 +82,7 @@ class User(Blueprint):
             user = ApplicationUser(
                 username=username,
                 email=email,
-                password=password,
+                password=password.decode("utf-8"),
                 email_confirmed=not self.app.config["CONFIRMATION_NEEDED"],
                 confirmation_code=confirmation_code
             )
@@ -124,7 +124,7 @@ class User(Blueprint):
             if not user.email_confirmed:
                 return jsonify(status="email_not_confirmed"), 403
 
-            pw_valid = bcrypt.checkpw(password.encode('utf-8'), user.password)
+            pw_valid = bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8'))
             if not pw_valid:
                 return {"status": "username_or_pw_invalid"}, 401
 
