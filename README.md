@@ -2,7 +2,7 @@
 
 InventoryHero started as an university project for the course "Mobile Applications" at TU Graz. The basic idea was to provide a simple and easy to use inventorying system for home users. It should be easy to use and simplistic in it's design. 
 
-This marks my first "big" project using Vue.js with Vite and Vuetify for frontend and Python Flask for the backend. 
+Though after the course ended we noticed a few things off with the initial draft of the app and I started working on it alone besides univeristy and other projects. Staying true to the origins of InventoryHero the frontend is developed in Vue.js (which I started learning with this project) and Python is used for the backend (where I am also still learning and experimenting with this project). 
 
 ## Setup 
 
