@@ -24,6 +24,7 @@ declare module 'vue' {
     AppScanQrCode: typeof import('./src/components/ui/AppScanQrCode.vue')['default']
     AppScrollToTopBtn: typeof import('./src/components/ui/AppScrollToTopBtn.vue')['default']
     AppSetting: typeof import('./src/components/ui/AppSetting.vue')['default']
+    AppSettingsCard: typeof import('./src/components/settings/AppSettingsCard.vue')['default']
     AppStorageQrCode: typeof import('./src/components/ui/AppStorageQrCode.vue')['default']
     AppStorageSelect: typeof import('./src/components/ui/AppStorageSelect.vue')['default']
     AppStorageTitle: typeof import('./src/components/ui/AppStorageTitle.vue')['default']
@@ -35,6 +36,7 @@ declare module 'vue' {
     CreateLocationCard: typeof import('./src/components/widgets/Create/CreateLocationCard.vue')['default']
     CreateProductCard: typeof import('./src/components/widgets/Create/CreateProductCard.vue')['default']
     DetailOverlay: typeof import('./src/components/common/DetailOverlay.vue')['default']
+    GeneralSettings: typeof import('./src/components/settings/GeneralSettings.vue')['default']
     HouseholdItem: typeof import('./src/components/household/HouseholdItem.vue')['default']
     HouseholdQuickSelectCard: typeof import('./src/components/widgets/Households/HouseholdQuickSelectCard.vue')['default']
     InviteModal: typeof import('./src/components/widgets/Households/InviteModal.vue')['default']
@@ -58,5 +60,6 @@ declare module 'vue' {
     ScanQrCode: typeof import('./src/components/widgets/QrCode/Scan/ScanQrCode.vue')['default']
     ScanQrCodeModal: typeof import('./src/components/widgets/QrCode/Scan/ScanQrCodeModal.vue')['default']
     TextFilter: typeof import('./src/components/common/TextFilter.vue')['default']
+    UiSettings: typeof import('./src/components/settings/UiSettings.vue')['default']
   }
 }

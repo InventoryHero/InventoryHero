@@ -1,6 +1,11 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
 
+// PRETTY MUCH TAKEN FROM
+// https://github.com/fluidd-core/fluidd/blob/develop/src/components/ui/AppSetting.vue
+
+
+
 export default defineComponent({
   name: "AppSetting",
   props: {
@@ -72,6 +77,11 @@ export default defineComponent({
 </template>
 
 <style scoped lang="scss">
+
+
+
+
+
 .setting {
   // align-items: center;
   display: flex;

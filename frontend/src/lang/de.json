@@ -1,153 +1,21 @@
 {
-  "home": "Home",
-  "boxes": "Boxen",
-  "locations": "Orte",
-  "products": "Produkte",
-  "box": "Box",
-  "product": "Produkt",
-  "location": "Ort",
-  "save": "Speichern",
-  "not_found": "Die angeforderte Resource konnte nicht gefunden werden!",
-  "products_view": {
-    "products_in": "Produkte in {name}",
-    "starred_in": "Favorisierte Produkte in {name}"
-  },
-  "add_modal": {
-    "select_product_placeholder": "Produkt auswählen",
-    "box_placeholder": "Box",
-    "location_placeholder": "Ort",
-    "amount_placeholder": "Menge",
-    "starred": "Favorisiert",
-    "product_name": "Name (Produkt)",
-    "location_name": "Name (Ort)",
-    "box_name": "Name (Box)",
-    "add_success_product": "Produkt '{name}' erfolgreich hinzugefügt",
-    "error_add_product": "Fehler beim Hinzufügen des Produktes '{name}'",
-    "add_success_box": "Box '{name}' erfolgreich hinzugefügt",
-    "add_success_room": "Ort '{name}' erfolgreich hinzugefügt",
-    "add_btn_location": "Ort hinzufügen",
-    "add_btn_box": "Box hinzufügen",
-    "add_btn_product": "Produkt hinzufügen",
-    "add_new_product": "Neues Produkt hinzufügen",
-    "no_box": "Keine Box ausgewählt",
-    "no_room": "Kein Ort ausgewählt",
-    "amount_negative": "Negative Menge kann nicht gesetzt werden"
-  },
-  "qr_data_modal": {
-  },
-  "qr_reader_modal": {
-    "invalid_qr": "Bitte scanne einen gültigen IH QR Code",
-    "title": "IH QR-Code scannen"
-  },
-  "locations_view": {
-    "toasts": {
-      "success": {
-        "delete": "Ort '{name}' erfolgreich gelöscht"
-      },
-      "error": {
-        "delete": "Ort '{name}' konnte nicht gelöscht werden"
-      }
-    }
-  },
-  "boxes_overview": {
-    "boxes_in": "Boxen in {location}"
-  },
-  "login_view": {
-    "username": "Username",
-    "password": "Passwort",
-    "register": "Registrieren",
-    "login": "Login",
-    "login_invalid": "Falscher Username / Falsches Passwort",
-    "toasts": {
-      "success": {
-        "register": "Registrierung erfolgreich"
-      },
-      "error": {
-        "register": {
-          "username_taken": "Dieser Username ist bereits vergeben!",
-          "pls_username": "Ein Nutzername muss angegeben werden, sorry!",
-          "generic_error": "Ein Fehler ist aufgetreten, bitte versuche es später erneut!"
-        }
-      }
-    }
-  },
-  "settings_view": {
-    "settings": "Einstellungen",
-    "theme": "Theme",
-    "language": "Sprache"
-  },
-  "room_detail_modal": {
-    "toasts": {
-      "success": {
-        "rename": "Umbenennen von Ort '{old}' zu '{new}' erfolgreich"
-      },
-      "error": {
-        "rename": "Umbenennen von Ort '{old}' fehlgeschlagen"
-      }
-    },
-    "qr_code": "QR-Code für Ort '{loc}'"
-  },
-  "product_detail_modal": {
-    "toasts": {
-      "success": {
-        "delete": "Produkt '{name}' erfolgreich gelöscht",
-        "update": "Produkt '{name}' erfoglreich aktualisiert",
-        "amountUpdate": "Menge von Produkt '{name}' erfoglreich aktualisiert"
-      },
-      "error": {
-        "delete": "Fehler beim Löschen von Produkt '{name}'",
-        "update": "Fehler beim Aktualisieren von Produkt '{name}'",
-        "amountUpdate": "Fehler beim Aktualisieren der Menge von Produkt '{name}'"
-      }
-    },
-    "amount_below_zero": "Menge darf nicht unter null sein!"
-  },
-  "room_card": {
-  },
-  "box_card": {
-  },
-  "products_card": {
-    "toasts": {
-      "success": {
-        "amountUpdate": "Menge von Produkt '{name}' erfoglreich aktualisiert"
-      },
-      "error": {
-        "amountUpdate": "Fehler beim Aktualisieren der Menge von Produkt '{name}'"
-      }
-    }
-  },
-  "home_view": {
-    "last_used": "⏰ Zuletzt verwendete Produkte",
-    "starred_products": "⭐ Favorisierte Produkte"
-  },
-  "confirmation_modal": {
-    "box": "Box",
-    "location": "Ort",
-    "delete_product_expl": "Soll das Produkt (in allen Aufbewahrungsorten) gelöscht werden? Dann drücke den roten Knopf.",
-    "delete_product_at_loc_expl": "Sollen alle Produkte in Ort '{loc}' gelöscht werden? Dann drücke den gelben Knopf.",
-    "delete_product_at_box_expl": "Sollen alle Produkte in Box '{box}' gelöscht werden? Dann drücke den gelben Knopf.",
-    "delete_product_at_def_expl": "Sollen alle Produkte ohne Ort/Box gelöscht werden? Dann drücke den gelben Knopf.",
-    "delete": "Löschen",
-    "delete_box": "Lösche Box",
-    "delete_location": "Lösche Ort",
-    "delete_product": "Alle",
-    "delete_product_at_loc": "Nur Dieses",
-    "delete_storage": "Soll {type} '{loc}' gelöscht werden? Diese Aktion wird alle Produkte/Boxen in den darüberliegenden Container verschieben."
-  },
-  "box_detail_modal": {
-    "toasts": {
-      "success": {
-        "delete": "Box '{name}' erfolgreich gelöscht",
-        "update": "Box '{name}' erfolgreich aktualisiert"
-      },
-      "error": {
-        "delete": "Fehler beim Löschen von Box '{name}'",
-        "update": "Fehler beim Aktualisieren von Box '{name}'"
-      }
-    },
-    "qr_code": "QR-Code für Box '{box}'"
-  },
   "app": {
     "title": "InventoryHero"
+  },
+  "settings": {
+    "ui": {
+      "title": "UI Einstellungen",
+      "preset": "Theme-Voreinstellung",
+      "select_color": "Farbe wählen",
+      "color": "Farbe",
+      "reset": "Zurücksetzen",
+      "theme": "Nachtmodus",
+      "use_dock": "Dock",
+      "colors": {
+        "r": "R",
+        "g": "G",
+        "b": "B"
+      }
+    }
   }
 }

@@ -6,6 +6,10 @@ import {useConfigStore} from "@/store";
 import { ColorPickerProps} from "@jaames/iro/dist/ColorPicker";
 import {IroColor} from "@irojs/iro-core";
 
+
+// PRETTY MUCH TAKEN FROM
+// https://github.com/fluidd-core/fluidd/blob/develop/src/components/ui/AppColorPicker.vue
+
 type Color = {
   hex: string,
   rgb: {

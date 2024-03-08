@@ -7,6 +7,8 @@ import {IroColor} from "@irojs/iro-core";
 
 type SupportedEvents = 'color:change' | 'color:init'
 
+// PRETTY MUCH TAKEN FROM
+// https://github.com/fluidd-core/fluidd/blob/develop/src/components/ui/AppIroColorPicker.vue
 
 export default defineComponent({
   name: "IroColorPicker",
