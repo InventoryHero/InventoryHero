@@ -150,7 +150,7 @@ export default defineComponent({
               <v-col
                   class="d-flex justify-start align-center"
               >
-                {{ $t('print.qr_code_settings')}}
+                {{ $t('print.qr_code_settings.title')}}
               </v-col>
               <v-col
                   cols="1"
@@ -168,7 +168,7 @@ export default defineComponent({
               v-if="qrCodeSettingsVisible"
           >
             <app-setting
-                :title="$t('print.print_label')"
+                :title="$t('print.qr_code_settings.print_label')"
             >
               <v-checkbox
                   :hide-details="true"
@@ -178,7 +178,7 @@ export default defineComponent({
               />
             </app-setting>
             <app-setting
-                :title="$t('print.show_title')"
+                :title="$t('print.qr_code_settings.show_title')"
             >
               <v-checkbox
                   :hide-details="true"
@@ -190,7 +190,7 @@ export default defineComponent({
             <v-divider/>
             <app-setting
                 :r-cols="3"
-                :title="$t('print.show_storage_type_icon')"
+                :title="$t('print.qr_code_settings.show_storage_type_icon')"
             >
               <v-checkbox
                   :hide-details="true"
@@ -202,7 +202,7 @@ export default defineComponent({
             <v-divider/>
             <app-setting
                 :r-cols="3"
-                :title="$t('print.show_border')"
+                :title="$t('print.qr_code_settings.show_border')"
             >
               <v-checkbox
                   :hide-details="true"
@@ -214,7 +214,7 @@ export default defineComponent({
             <v-divider/>
             <app-setting
                 :r-cols="3"
-                :title="$t('print.show_qr_code_icon')"
+                :title="$t('print.qr_code_settings.show_qr_code_icon')"
             >
               <v-checkbox
                   :hide-details="true"
@@ -239,7 +239,7 @@ export default defineComponent({
               <v-col
                 class="d-flex justify-start align-center"
               >
-                {{ $t('print.page_settings')}}
+                {{ $t('print.page_settings.title')}}
               </v-col>
               <v-col
                   cols="1"
@@ -256,7 +256,7 @@ export default defineComponent({
           <template v-if="pageSettingsVisible">
             <app-setting
                 :r-cols="3"
-                :title="$t('print.preview_scale')"
+                :title="$t('print.page_settings.preview_scale')"
             >
               <v-text-field
                   type="number"
@@ -282,7 +282,7 @@ export default defineComponent({
             <v-divider/>
             <app-setting
                 :r-cols="3"
-                :title="$t('print.items_per_row')"
+                :title="$t('print.page_settings.items_per_row')"
             >
               <v-text-field
                   type="number"
@@ -308,7 +308,7 @@ export default defineComponent({
             <v-divider/>
             <app-setting
                 :r-cols="3"
-                :title="$t('print.margin_top')"
+                :title="$t('print.page_settings.margin_top')"
             >
               <v-text-field
                   type="number"
@@ -334,7 +334,7 @@ export default defineComponent({
             <v-divider/>
             <app-setting
                 :r-cols="3"
-                :title="$t('print.margin_bottom')"
+                :title="$t('print.page_settings.margin_bottom')"
             >
               <v-text-field
                   type="number"
@@ -360,7 +360,7 @@ export default defineComponent({
             <v-divider/>
             <app-setting
                 :r-cols="3"
-                :title="$t('print.margin_right')"
+                :title="$t('print.page_settings.margin_right')"
             >
               <v-text-field
                   type="number"
@@ -386,7 +386,7 @@ export default defineComponent({
             <v-divider/>
             <app-setting
                 :r-cols="3"
-                :title="$t('print.margin_left')"
+                :title="$t('print.page_settings.margin_left')"
             >
               <v-text-field
                   type="number"

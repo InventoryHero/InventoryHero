@@ -58,8 +58,36 @@ export default defineComponent({
 </template>
 
 <style scoped lang="scss">
-#qr-code-full-region{
-  border: none !important;
+:deep(button){
+
+  background: rgba(var(--v-theme-on-surface), 0.4);
+  border-radius: 5px;
+  padding: 4px 4px
+}
+
+:deep(#html5-qrcode-button-camera-permission){
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+:deep(#html5-qrcode-button-camera-stop)
+
+{
+  margin-top: 8px;
+}
+
+:deep(#html5-qrcode-button-camera-start){
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+:deep(select){
+  &:not(:disabled){
+    border-bottom: 1px solid rgba(var(--v-theme-primary));
+    background: rgba(var(--v-theme-on-surface), 0.4);
+    border-radius: 5px;
+    padding: 4px 4px
+  }
+
 }
 
 </style>

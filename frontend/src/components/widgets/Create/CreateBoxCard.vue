@@ -163,33 +163,24 @@ export default defineComponent({
         <v-col
             cols="12"
         >
-          <v-select
-              :clearable="true"
-              :persistent-clear="true"
+          <app-storage-select
+              v-model="location"
               density="comfortable"
               :label="$t('add.box.labels.location')"
               :persistent-hint="locationSelectHint.active"
               :hint="locationSelectHint.hint"
-              v-model="location"
-              :items="locations"
-              item-title="name"
-              :return-object="true"
-              :disabled="locationsLoading"
+              :hide-details="false"
+              content-type="box"
           >
-            <template #loader>
-              <v-progress-linear
-                  color="primary"
-                  :indeterminate="true"
-                  :active="locationsLoading"
-              />
-            </template>
-            <template #append>
+            <template #hint>
               <app-help-indicator
                   @click:outside="disableHint('locationSelect')"
                   @click="enableHint('locationSelect')"
               />
             </template>
-          </v-select>
+          </app-storage-select>
+
+
         </v-col>
       </v-row>
     </v-form>

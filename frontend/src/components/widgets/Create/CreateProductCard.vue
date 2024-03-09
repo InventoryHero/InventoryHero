@@ -216,7 +216,20 @@ export default defineComponent({
               />
             </template>
             <template #no-data>
-              <v-list-item :title="$t('add.product.new_product')"/>
+              <v-list-item>
+                <v-list-item-title
+                    v-if="product !== null && product !== ''"
+                >
+                   {{ $t('add.product.new_product')}}
+                    <p class="text-primary font-weight-bold d-inline">{{product}}</p>
+                </v-list-item-title>
+                <v-list-item-title
+                  v-else
+                >
+                  {{ $t('add.product.start_typing')}}
+                </v-list-item-title>
+
+              </v-list-item>
             </template>
             <template #append>
               <app-help-indicator

@@ -125,13 +125,13 @@ export default defineComponent({
                     :title="item.name"
                 >
                   <template v-slot:prepend="{ isActive }">
-
-                    <v-list-item-action start>
                       <v-checkbox-btn
+                          density="comfortable"
                           color="primary"
                           v-model="checkedItems[item.id]"
+
                       ></v-checkbox-btn>
-                    </v-list-item-action>
+
                   </template>
                 </v-list-item>
               </template>
@@ -171,7 +171,7 @@ export default defineComponent({
 
 <style scoped lang="scss">
 .select{
-  height: 70svh;
+  max-height: 70svh;
   overflow: auto;
 }
 </style>

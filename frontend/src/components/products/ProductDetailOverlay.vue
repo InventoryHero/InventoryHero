@@ -232,8 +232,8 @@ export default defineComponent({
           @accept="del.accept()"
           :dialog="del.active"
           :no-click-animation="true"
-          :title="$t('products.product.confirm.title.delete')"
-          :body="$t('products.product.confirm.body.delete')"
+          :title="$tc('products.confirm.detail.delete.title', containerTitle.name !== '' ? 0 : 1, {storage: containerTitle.name})"
+          :body="$t('products.confirm.detail.delete.body')"
       />
     </template>
     <template v-slot:save-confirm="save">
@@ -242,8 +242,8 @@ export default defineComponent({
           @accept="save.accept()"
           :dialog="save.active"
           :no-click-animation="true"
-          :title="$t('products.product.confirm.title.save')"
-          :body="$t('products.product.confirm.body.save')"
+          :title="$t('products.confirm.detail.save.title')"
+          :body="$t('products.confirm.detail.save.body')"
       />
     </template>
   </detail-overlay>

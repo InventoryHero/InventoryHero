@@ -179,7 +179,11 @@ export default defineComponent({
         if(success)
         {
           this.visible = false
-          this.$notify({"title": "DELETED"})
+          this.$notify({
+            title: this.$t('toasts.titles.success.deleted_location'),
+            text: this.$t('toasts.text.success.deleted_location'),
+            type: "success"
+          })
           this.$emit('deleted')
           return true
         }
@@ -202,7 +206,11 @@ export default defineComponent({
       {
 
         this.$emit('updated', result.updated)
-        this.$notify({'title': "UPDATED", type: "success"})
+        this.$notify({
+          title: this.$t('toasts.titles.success.updated_location'),
+          text: this.$t('toasts.text.success.updated_location'),
+          type: "success"
+        })
       }
     },
     async eventHandler(event: string, type: string, callback: () => void){
@@ -235,7 +243,11 @@ export default defineComponent({
       let success = await this.productEndpoint.deleteProductAt(id)
 
       if (success) {
-        this.$notify({title: "DELETED"})
+        this.$notify({
+          title: this.$t('toasts.titles.success.deleted_detail'),
+          text: this.$t('toasts.text.success.deleted_detail'),
+          type: "success"
+        })
         this.loadContent()
         this.$emit('contentChanged', this.location?.id)
       }
@@ -253,7 +265,11 @@ export default defineComponent({
       }
       this.products = []
       this.loadContent()
-      this.$notify({title: "UPDATE SUCCESS"})
+      this.$notify({
+        title: this.$t('toasts.titles.success.updated_detail'),
+        text: this.$t('toasts.text.success.updated_detail'),
+        type: "success"
+      })
       if(
           deleted !== undefined ||
           updated!.id !== this.overlayProduct?.id ||
@@ -261,8 +277,8 @@ export default defineComponent({
       )
       {
         this.$emit('contentChanged', this.location?.id, updated?.storage?.id)
+        this.overlayProduct = undefined
       }
-      this.overlayProduct = undefined
     }
   }
 })
@@ -346,8 +362,8 @@ export default defineComponent({
           @accept="del.accept()"
           :dialog="del.active"
           :no-click-animation="true"
-          :title="$t('products.product.confirm.title.delete')"
-          :body="$t('products.product.confirm.body.delete')"
+          :title="$t('locations.confirm.delete.title')"
+          :body="$t('locations.confirm.delete.body')"
       />
     </template>
     <template v-slot:save-confirm="save">
@@ -356,8 +372,8 @@ export default defineComponent({
           @accept="save.accept()"
           :dialog="save.active"
           :no-click-animation="true"
-          :title="$t('products.product.confirm.title.save')"
-          :body="$t('products.product.confirm.body.save')"
+          :title="$t('locations.confirm.save.title')"
+          :body="$t('locations.confirm.save.body')"
       />
     </template>
   </detail-overlay>

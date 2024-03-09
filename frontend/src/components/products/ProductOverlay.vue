@@ -105,7 +105,11 @@ export default defineComponent({
       this.deleting = false
       if(success){
         this.visible=false
-        this.$notify({"title": "DELETED"})
+        this.$notify({
+          title: this.$t('toasts.titles.success.deleted_product'),
+          text: this.$t('toasts.text.success.deleted_product'),
+          type: "success"
+        })
         this.$emit('deleted', this.product!.id)
       }
       return success
@@ -132,7 +136,11 @@ export default defineComponent({
       this.saving = false
       if(success){
         this.$emit('updated', product!)
-        this.$notify({'title': "UPDATED", type: "success"})
+        this.$notify({
+          title: this.$t('toasts.titles.success.updated_product'),
+          text: this.$t('toasts.text.success.updated_product'),
+          type: "success"
+        })
       }
       // TODO NOTIFICATION
       return success
@@ -162,7 +170,11 @@ export default defineComponent({
         return false;
       }
       // TODO NOTIFICATION LOCALIZATION
-      this.$notify({title: "UPDATED"})
+      this.$notify({
+        title: this.$t('toasts.titles.success.updated_detail'),
+        text: this.$t('toasts.text.success.updated_detail'),
+        type: "success"
+      })
       this.$emit('updateMapping', updated!, callback)
 
       if(updated!.id === this.mappingOverlay?.id)
@@ -183,19 +195,22 @@ export default defineComponent({
     },
     async deleteMapping(id: number, product_id: number, callback: () => void){
       let success = await this.axios.deleteProductAt(id)
-      if(success){
-        // TODO NOTIFY LOCALIZATION
-        this.$notify({title: "DELETED"})
-        callback = () => {
-          callback()
-          if(this.mappingOverlay?.id === id)
-          {
-            this.mappingOverlay = undefined
-          }
-        }
-        id = product_id
+
+      if(!success){
+        this.$emit('deleteMapping', id, callback)
+        return
       }
-      this.$emit('deleteMapping', id, callback)
+
+      this.$emit('deleteMapping', product_id, callback)
+      this.$notify({
+        title: this.$t('toasts.titles.success.deleted_detail'),
+        text: this.$t('toasts.text.success.deleted_detail'),
+        type: "success"
+      })
+      if(this.mappingOverlay?.id === id)
+      {
+        this.mappingOverlay = undefined
+      }
     },
     showMappingOverlay(item: ProductLocations)
     {
@@ -275,8 +290,8 @@ export default defineComponent({
           @accept="del.accept()"
           :dialog="del.active"
           :no-click-animation="true"
-          :title="$t('confirm.delete')"
-          :body="$t('products.product.confirm.body.delete')"
+          :title="$t('products.confirm.product.delete.title')"
+          :body="$t('products.confirm.product.delete.body')"
         />
       </template>
       <template v-slot:save-confirm="save">
@@ -285,8 +300,8 @@ export default defineComponent({
             @accept="save.accept()"
             :dialog="save.active"
             :no-click-animation="true"
-            :title="$t('products.product.confirm.title.save')"
-            :body="$t('products.product.confirm.body.save')"
+            :title="$t('products.confirm.product.save.title')"
+            :body="$t('products.confirm.product.save.body')"
         />
       </template>
   </detail-overlay>

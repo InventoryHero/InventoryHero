@@ -16,6 +16,15 @@
         "g": "G",
         "b": "B"
       }
+    },
+    "general": {
+      "title": "General Settings",
+      "language": "Language",
+      "languages": {
+        "en": "English",
+        "de": "Deutsch",
+        "it": "Italiano"
+      }
     }
   },
   "nav": {
@@ -29,10 +38,17 @@
     "settings": "Settings",
     "logout": "Logout"
   },
+  "storage": {
+    "select": {
+      "no_storage": "No storage available"
+    }
+  },
   "add": {
     "product": {
       "tab": "Product",
       "title": "New product",
+      "new_product": "Create new product",
+      "start_typing": "Start typing to create a new product 😊",
       "labels": {
         "product": "Product name",
         "star": "Star product",
@@ -46,7 +62,8 @@
         "star": "Mark as favourite"
       },
       "rules": {
-        "need_product": "A name must be supplied"
+        "need_product": "A name must be supplied",
+        "amount_nan": "Please enter an amount (at least 0)."
       }
     },
     "box": {
@@ -83,6 +100,28 @@
   },
   "product": "product {name}",
   "products": {
+    "confirm": {
+      "detail": {
+        "delete": {
+          "title": "Delete product | Delete product at {storage}",
+          "body": "This is a destructive operation and will lead to all data of this product in the storage container be deleted. Are you sure you want to proceed?"
+        },
+        "save": {
+          "title": "Update product",
+          "body": "This will update the changed fields of the currently opened product. Are you sure you want to proceed?"
+        }
+      },
+      "product": {
+        "delete": {
+          "title": "Delete product",
+          "body": "This will delete ALL occurrences of the product at every location. This is destructive and cannot be undone. Do you want to proceed?"
+        },
+        "save": {
+          "title": "Save product",
+          "body": "This will update the changed fields of the product. Do you want to proceed?"
+        }
+      }
+    },
     "product": {
       "created": "Created at",
       "amount": "Amount stored",
@@ -99,6 +138,16 @@
   },
   "box": "box {name}",
   "boxes": {
+    "confirm": {
+      "delete": {
+        "title": "Delete box",
+        "body": "This will delete this box. Content will be moved to the default storage ('void'). This is destructive and cannot be undone. Do you want to proceed?"
+      },
+      "save": {
+        "title": "Save box",
+        "body": "This will update the changed fields of the box. Do you want to proceed?"
+      }
+    },
     "box": {
       "created": "Created at",
       "product_amount": "Products in box",
@@ -110,6 +159,16 @@
     "no_boxes": "Nothing there..."
   },
   "locations": {
+    "confirm": {
+      "delete": {
+        "title": "Delete location",
+        "body": "This will delete this location. Content will be moved to the default storage ('void'). This is destructive and cannot be undone. Do you want to proceed?"
+      },
+      "save": {
+        "title": "Save location",
+        "body": "This will update the changed fields of the location. Do you want to proceed?"
+      }
+    },
     "location": {
       "created": "Created at",
       "product_amount": "Products in location",
@@ -172,9 +231,34 @@
     }
   },
   "print": {
-    "print_qr": "Print QR-Codes",
     "select_ok": "Ok",
-    "print_selected": "Print"
+    "print_selected": "Print",
+    "select_all": "Select all",
+    "select_storage": "Select Storage",
+    "deselect_all": "Deselect all",
+    "qr_code": "Print QR-Codes",
+    "qr_code_settings": {
+      "title": "QR Code Settings",
+      "show_qr_code_icon": "Display icon",
+      "show_border": "QR Code border",
+      "show_storage_type_icon": "Display storage type icon",
+      "show_title": "Display storage name",
+      "print_label": "Display storage label"
+    },
+    "page_settings": {
+      "margin_left": "Margin on the left",
+      "margin_right": "Margin on the right",
+      "margin_top": "Margin on the top",
+      "margin_bottom": "Margin on the bottom",
+      "items_per_row": "QR Codes per row",
+      "preview_scale": "Scale of the preview",
+      "title": "Print Settings"
+
+    },
+    "show_preview": "Show print preview",
+    "close_preview": "Close print preview",
+    "print": "Print",
+    "example_storage": "Example Storage"
   },
   "scan": {
     "go_to": {
@@ -185,6 +269,10 @@
     }
   },
   "confirm": {
+    "actions": {
+      "abort": "Abort",
+      "proceed": "Proceed"
+    },
     "leave": {
       "deny": "Stay",
       "accept": "Leave",
@@ -233,7 +321,15 @@
       },
       "success": {
         "default_household_set": "Default household updated",
-        "register": "User {name} successfully created"
+        "register": "User {name} successfully created",
+        "deleted_detail": "Product successfully removed from storage",
+        "updated_detail": "Product successfully updated",
+        "updated_product": "Product successfully updated",
+        "deleted_product": "Product successfully deleted",
+        "deleted_box": "Box successfully deleted",
+        "updated_box": "Box successfully updated",
+        "deleted_location": "Location successfully deleted",
+        "updated_location": "Location successfully updated"
       },
       "new-content": {
         "new": "{user} updated your household"
@@ -257,10 +353,19 @@
         "no_email": "",
         "username_in_use": "Please choose a different username, this one is already in use!",
         "email_in_use": "Please use a different email address, this one is already in use!"
+
       },
       "success": {
         "default_household_set": "",
-        "register": "You can now login with your account! Happy Inventoring! 🤩"
+        "register": "You can now login with your account! Happy Inventoring! 🤩",
+        "deleted_detail": "",
+        "updated_detail": "",
+        "updated_product": "",
+        "deleted_product": "",
+        "deleted_box": "",
+        "updated_box": "",
+        "deleted_location": "",
+        "updated_location": ""
       },
       "new-content": {
         "new": "Some things in your household might have changed. Click here to load the most recent data!"

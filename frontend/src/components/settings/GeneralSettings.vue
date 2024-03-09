@@ -12,7 +12,12 @@ export default defineComponent({
   },
   computed:{
     languages() {
-      return this.$i18n.availableLocales;
+      return this.$i18n.availableLocales.map((value) => {
+        return {
+          key: value,
+          title: this.$t(`settings.general.languages.${value}`)
+        }
+      });
     },
     currentLanguage:{
       get(){
@@ -40,7 +45,7 @@ export default defineComponent({
   :title="$t('settings.general.title')"
 >
   <app-setting
-      :title="$t('settings.general.lang')"
+      :title="$t('settings.general.language')"
   >
     <v-select
       ref="language-select"
@@ -48,6 +53,10 @@ export default defineComponent({
       hide-details="true"
       v-model="currentLanguage"
       :items="languages"
+      :single-line="true"
+      color="primary"
+      item-title="title"
+      item-value="key"
     >
       <template #prepend-item>
         <v-list-item
@@ -55,7 +64,6 @@ export default defineComponent({
             @click="defaultLanguage"
             title="Browser default"
         >
-
         </v-list-item>
       </template>
     </v-select>

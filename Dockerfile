@@ -64,8 +64,6 @@ COPY /docker/entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/bin/sh", "/entrypoint.sh"]
 COPY backend /app
 
-ENV DATABASE_URI sqlite:////db/test.db
-
 EXPOSE 5000
 EXPOSE 80
 

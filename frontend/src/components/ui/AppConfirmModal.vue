@@ -62,8 +62,7 @@ export default defineComponent({
           </slot>
         </v-card-title>
         <v-card-text
-            class="mt-4"
-            style="height: 25svh"
+            class="mt-4 text-justify"
         >
           <slot name="body">
             {{ body }}
@@ -75,11 +74,15 @@ export default defineComponent({
           <slot>
             <v-btn
                 @click="$emit('deny')"
+
+                variant="tonal"
             >
               {{ $t('confirm.actions.abort')}}
             </v-btn>
             <v-btn
                 @click="$emit('accept')"
+                variant="tonal"
+
             >
               {{ $t('confirm.actions.proceed')}}
             </v-btn>

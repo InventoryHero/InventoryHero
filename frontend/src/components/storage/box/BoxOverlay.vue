@@ -148,8 +148,11 @@ export default defineComponent({
         this.deleting = false
         if (status) {
           this.visible = false
-          // TODO LOCALIZATION
-          this.$notify({"title": "DELETED"})
+          this.$notify({
+            title: this.$t('toasts.titles.success.deleted_box'),
+            text: this.$t('toasts.text.success.deleted_box'),
+            type: "success"
+          })
           this.$emit('deleted')
         }
         return status
@@ -170,9 +173,11 @@ export default defineComponent({
       this.saving = false
       if (updated !== undefined) {
         this.$emit('updated', updated)
-
-        // TODO LOCALIZATION
-        this.$notify({'title': "UPDATED", type: "success"})
+        this.$notify({
+          title: this.$t('toasts.titles.success.updated_box'),
+          text: this.$t('toasts.text.success.updated_box'),
+          type: "success"
+        })
       }
     },
     async eventHandler(event: string, type: string, callback: () => void) {
@@ -193,10 +198,12 @@ export default defineComponent({
     async deleteProduct(id: number, product_id: number, callback: () => void) {
 
       let success = await this.productEndpoint.deleteProductAt(id)
-
-      console.log(id, product_id)
       if (success) {
-        this.$notify({title: "DELETED"})
+        this.$notify({
+          title: this.$t('toasts.titles.success.deleted_detail'),
+          text: this.$t('toasts.text.success.deleted_detail'),
+          type: "success"
+        })
         this.products = []
         this.loadProducts()
         this.$emit('contentChanged', this.box?.id)
@@ -215,7 +222,11 @@ export default defineComponent({
       callback()
       this.products = []
       this.loadProducts()
-      this.$notify({title: "UPDATE SUCCESS"})
+      this.$notify({
+        title: this.$t('toasts.titles.success.updated_detail'),
+        text: this.$t('toasts.text.success.updated_detail'),
+        type: "success"
+      })
       if(
           deleted !== undefined ||
           updated!.id !== this.product?.id ||
@@ -223,8 +234,9 @@ export default defineComponent({
       )
       {
         this.$emit('contentChanged', this.box?.id, updated?.storage?.id)
+        this.product = undefined
       }
-      this.product = undefined
+
     }
   }
 })
@@ -307,8 +319,8 @@ export default defineComponent({
           @accept="del.accept()"
           :dialog="del.active"
           :no-click-animation="true"
-          :title="$t('products.product.confirm.title.delete')"
-          :body="$t('products.product.confirm.body.delete')"
+          :title="$t('boxes.confirm.delete.title')"
+          :body="$t('boxes.confirm.delete.body')"
       />
     </template>
     <template v-slot:save-confirm="save">
@@ -317,8 +329,8 @@ export default defineComponent({
           @accept="save.accept()"
           :dialog="save.active"
           :no-click-animation="true"
-          :title="$t('products.product.confirm.title.save')"
-          :body="$t('products.product.confirm.body.save')"
+          :title="$t('boxes.confirm.save.title')"
+          :body="$t('boxes.confirm.save.body')"
       />
     </template>
   </detail-overlay>

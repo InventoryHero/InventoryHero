@@ -7,18 +7,53 @@ from flask_cors import CORS
 from database import db
 from datetime import timedelta
 
+from exceptions.inventory_hero_exceptions import UnknownDatabaseType
 
+
+def parse_db_parameters(db_type, db_host, db_port, db_name, db_user, db_password):
+    logger = logging.getLogger('config')
+    if db_type != "sqlite" and any(param is None for param in [db_host, db_port, db_name, db_user, db_password]):
+        logger.warning(f"Invalid database parameters for type {db_type}. Using sqlite as a default.")
+        db_type = "sqlite"
+
+    if db_type == "sqlite":
+        driver = "sqlite+pysqlite"
+        file_path = ""
+        if os.path.exists("/home/app/inventoryhero"):
+            file_path = "//home/app/inventoryhero/inventoryhero.db"
+        else:
+            logger.warning("/home/app/inventoryhero/inventoryhero.db not found, using memory based sqlite instance.")
+        db_uri = f"{driver}://{file_path}"
+    elif db_type == "mysql":
+        driver = "mysql+mysqldb"
+        db_uri = f"{driver}://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+    elif db_type == "postgresql":
+        driver = "postgresql+psycopg2"
+        db_uri = f"{driver}://{db_user}:{db_password}@{db_host}:{db_port}/{db_name}"
+    else:
+        raise UnknownDatabaseType()
+    return db_uri
 
 
 class Config(object):
-    SQLALCHEMY_DATABASE_URI = \
-        os.getenv("DATABASE_URI", "") or os.getenv("DATABASE_CONNECTION", "") or "sqlite:///:memory:"
+    logger = logging.getLogger('config')
+    DB_TYPE = os.getenv('INVENTORYHERO_DB_TYPE', "sqlite")
+    DB_HOST = os.getenv('INVENTORYHERO_DB_HOST', None)
+    DB_PORT = os.getenv('INVENTORYHERO_DB_PORT', None)
+    DB_NAME = os.getenv('INVENTORYHERO_DB_NAME', None)
+    DB_USER = os.getenv('INVENTORYHERO_DB_USER', None)
+    DB_PASSWORD = os.getenv('INVENTORYHERO_DB_PASSWORD', None)
 
+    SQLALCHEMY_DATABASE_URI = ""
 
-    # TODO CHECK IF FILE EXISTS / CREATE FILE
-
-    if SQLALCHEMY_DATABASE_URI.startswith("sqlite"):
-        SQLALCHEMY_DATABASE_URI = SQLALCHEMY_DATABASE_URI.replace("sqlite", "sqlite+pysqlite")
+    DB_URI = os.getenv("INVENTORYHERO_DB_URI", None)
+    if DB_URI is None:
+        SQLALCHEMY_DATABASE_URI = parse_db_parameters(DB_TYPE, DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD)
+    else:
+        logger.warning("If you entered a sqlite uri you need to make sure the specified path is available")
+        SQLALCHEMY_DATABASE_URI = (DB_URI.replace("sqlite", "sqlite+pysqlite")
+                                   .replace("postgresql", "postgresql+psycopg2")
+                                   .replace("mysql", "mysql+mysqldb"))
 
     SECRET_KEY = os.getenv("JWT_SECRET_KEY", "SUPER_SECRET_KEY")
 
@@ -35,7 +70,7 @@ class Config(object):
     }
 
     SMTP["in_use"] = (SMTP["server"] is not None and SMTP["port"] is not None
-                             and SMTP["password"] is not None and SMTP["username"] is not None)
+                      and SMTP["password"] is not None and SMTP["username"] is not None)
 
     CONFIRMATION_NEEDED = os.getenv("CONFIRMATION_NEEDED", "False").lower() in ('true', '1', 't')
 
@@ -46,11 +81,13 @@ class Config(object):
 
 
 class DebugConfig(Config):
-    FLASK_DEBUG = True
+    DEBUG = True
+    TESTING = True
 
 
 class ProdConfig(Config):
-    FLASK_DEBUG = False
+    DEBUG = False
+    TESTING = False
 
 
 def get_config():

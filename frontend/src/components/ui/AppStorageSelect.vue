@@ -126,6 +126,13 @@ export default defineComponent({
     <template #append>
       <slot name="hint" />
     </template>
+    <template #no-data>
+      <v-list-item
+        :title="$t('storage.select.no_storage')"
+      >
+
+      </v-list-item>
+    </template>
   </v-select>
 
 </template>
