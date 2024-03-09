@@ -8,7 +8,6 @@ import useStorageTitle from "@/composables/useStorageTitle.ts";
 import useNewAxios from "@/composables/useNewAxios.ts";
 import {BoxEndpoint, ProductEndpoint} from "@/api/http";
 
-// TODO MAYBE REFACTOR OVERLAY
 export default defineComponent({
   name: "BoxOverlay",
   components: {AppPrintQrCode, AppStorageSelect, FontAwesomeIcon},

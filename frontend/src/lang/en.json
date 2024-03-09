@@ -2,6 +2,9 @@
   "app": {
     "title": "InventoryHero"
   },
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "save": "Save",
   "settings": {
     "ui": {
       "title": "UI Settings",
@@ -261,11 +264,17 @@
     "example_storage": "Example Storage"
   },
   "scan": {
+    "from": "scanned QR Code",
+    "qr_code": {
+      "title": "Scan Storage QR Code"
+    },
     "go_to": {
-      "boxes": "Show box"
+      "boxes": "Show box",
+      "locations": "Show Location"
     },
     "scanned_type": {
-      "boxes": "Box: "
+      "boxes": "Box: ",
+      "locations": "Location: "
     }
   },
   "confirm": {
@@ -290,7 +299,12 @@
     "create": "Add new item - InventoryHero"
   },
   "confirmation": {
-    "redirect_in": "Redirect in {seconds}"
+    "redirect_in": "Redirect in {seconds}",
+    "email_confirmed": "Email verified, thank you 😊",
+    "redirect_now": "Go now!",
+    "failure": "Failure while verifying email",
+    "invalid_code": "This email address was already verified, try logging in please",
+    "go_to_login": "Go to login"
   },
   "join": {
     "title": "{owner} wants you to join their household!",
@@ -298,17 +312,24 @@
     "accept": "Accept invite",
     "deny": "Inventory' alone!"
   },
+  "invite": {
+    "title": "Invite your friend",
+    "copy_to_clipboard": "Copy the invite link into your clipboard...",
+    "or": "...or share it directly"
+  },
   "toasts": {
     "titles": {
       "info": {
-        "no_households": "No households received"
+        "no_households": "No households received",
+        "leave_household": "Leaving this household will soon be possible",
+        "edit_household": "Editing this household will soon be possible",
+        "confirm_email": "Confirmation email sent"
       },
       "error": {
         "invalid_request": "Invalid request",
         "unauthorized": "Unauthorized",
         "not_found": "Requested resource not found",
         "conflict": "Conflict",
-
         "undefined_server_error": "Unknown Error occured",
         "duplicate_household_name": "Duplicate Household",
         "username_not_found": "Username not found",
@@ -329,7 +350,11 @@
         "deleted_box": "Box successfully deleted",
         "updated_box": "Box successfully updated",
         "deleted_location": "Location successfully deleted",
-        "updated_location": "Location successfully updated"
+        "updated_location": "Location successfully updated",
+        "add_product": "Successfully added {amount} instances of product {name}",
+        "add_box":"Successfully created box {name}",
+        "add_location":"Successfully created location {name}",
+        "copied_to_clipboard": "Copied to clipboard!"
       },
       "new-content": {
         "new": "{user} updated your household"
@@ -337,7 +362,8 @@
     },
     "text": {
       "info": {
-        "no_households": "Please create a new household to get started with InventoryHero 😊"
+        "no_households": "Please create a new household to get started with InventoryHero 😊",
+        "confirm_email": "Please confirm your email before proceeding! 😊"
       },
       "error": {
         "invalid_request": "",
@@ -365,7 +391,11 @@
         "deleted_box": "",
         "updated_box": "",
         "deleted_location": "",
-        "updated_location": ""
+        "updated_location": "",
+        "add_product": "",
+        "add_box": "",
+        "add_location": "",
+        "copied_to_clipboard": ""
       },
       "new-content": {
         "new": "Some things in your household might have changed. Click here to load the most recent data!"

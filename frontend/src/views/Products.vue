@@ -93,7 +93,6 @@ export default defineComponent({
       }
       let product = this.products.at(i)
       if(i >= this.products.length || product === undefined){
-        // TODO NOTIFY
         this.overlayProduct = undefined
         this.loadProducts()
         return
@@ -111,7 +110,6 @@ export default defineComponent({
       }
 
       if(m >= mappings){
-        // TODO NOTIFY
         this.overlayProduct = undefined
         this.loadProducts()
         return

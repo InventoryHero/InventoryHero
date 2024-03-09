@@ -49,6 +49,7 @@ export default defineComponent({
     async fetchHouseholds(){
       this.loadingHouseholds = true;
       this.households = await this.axios.getHouseholds()
+      console.log(this.households)
       if(this.authStore.user.household === null && this.households.length >= 1)
       {
         this.setDefaultHousehold(this.households[0].id)
@@ -102,14 +103,14 @@ export default defineComponent({
     },
     leaveHousehold(id: number){
       this.$notify({
-        title: "leaving",
-        text: "soon",
+        title: this.$t('toasts.titles.info.leave_household'),
+        type: "info"
       })
     },
     toggleEdit(id: number){
       this.$notify({
-        title: "edit",
-        text: "soon",
+        title: this.$t('toasts.titles.info.edit_household'),
+        type: "info"
       })
     }
   }
@@ -221,7 +222,7 @@ export default defineComponent({
               class="list"
               :items="households"
               style="height: 100%;"
-              :min-item-size="40"
+              :min-item-size="30"
           >
             <template #default="{ item, index, active }">
               <DynamicScrollerItem

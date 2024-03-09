@@ -126,7 +126,6 @@ export default defineComponent({
       }
       if(this.newName === '')
       {
-        // TODO NOTIFY
         return false
       }
       this.saving = true
@@ -142,7 +141,6 @@ export default defineComponent({
           type: "success"
         })
       }
-      // TODO NOTIFICATION
       return success
     },
     async eventHandler(event: string, type: string, callback: () => void){
@@ -169,7 +167,6 @@ export default defineComponent({
         this.$emit('updateMapping', mapping, callback)
         return false;
       }
-      // TODO NOTIFICATION LOCALIZATION
       this.$notify({
         title: this.$t('toasts.titles.success.updated_detail'),
         text: this.$t('toasts.text.success.updated_detail'),

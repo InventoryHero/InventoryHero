@@ -13,7 +13,7 @@ from typing import Optional
 
 
 from sqlalchemy import and_
-# TODO REFACTOR API FOR /id ROUTES
+
 def get_storage(storage_type, storage, household):
     query = None
     if storage_type == ContainerTypes.Box:

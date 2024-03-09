@@ -10,9 +10,6 @@ type Clear = {
   [K in Views]: boolean
 }
 
-// TODO BOX CARD ALSO WITH APP STORAGE SELECT
-// TODO REFACTOR WITH NEW AXIOS
-
 export default defineComponent({
   name: "CreateProductCard",
   setup(){
@@ -134,10 +131,12 @@ export default defineComponent({
         return
 
       this.$refs["add-form"].reset()
-      // TODO LOCALIZATION
       this.$notify({
-        title: 'SUCCESS',
-        text: 'ADDED',
+        title: this.$t('toasts.titles.success.add_product', {
+          name: data.name || this.product?.name,
+          amount: data.amount
+        }),
+        text: this.$t('toasts.text.success.add_product'),
         type: "success"
       })
 

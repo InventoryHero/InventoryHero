@@ -86,10 +86,16 @@ export class UserEndpoint extends Endpoint{
         const response = await this.internalAxios.post(`/confirm/${code}`)
         if(response.status === 200)
         {
-            return true
+            return {
+                verified: true,
+                status: ""
+            }
         }
         this.handleNonErrorNotifications(response)
-        return false
+        return {
+            verified: false,
+            status: response.data.status
+        }
     }
 
 }

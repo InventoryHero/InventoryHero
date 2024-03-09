@@ -80,6 +80,12 @@ export default defineComponent({
         scanned.name = name
         this.scanned = scanned
         this.scanSuccess = true
+        setTimeout(() => {
+         this.$refs.scanner.$el.scrollTo({
+           top: this.$refs.scanner.$el.scrollHeight,
+           behaviour: 'smooth'
+         })
+        }, 200)
       }
     },
     goToStorage(){
@@ -100,9 +106,11 @@ export default defineComponent({
   v-model="visible"
   :persistent="true"
   :no-click-animation="true"
+  :scrollable="true"
 >
   <v-row
     justify="center"
+
   >
     <v-col
       cols="12"
@@ -128,6 +136,8 @@ export default defineComponent({
           </v-row>
         </v-card-title>
         <v-card-text
+            ref="scanner"
+            id="scanner"
         >
           <app-qr-code-scanner
               v-model="visible"
@@ -137,11 +147,11 @@ export default defineComponent({
             justify="center"
           >
             <v-col
-              cols="6"
-              lg="4"
+              cols="8"
+              lg="6"
             >
               <v-sheet
-                  class="d-flex justify-center mt-16 pt-4 pb-4"
+                  class="d-flex justify-center mt-4 pt-4 pb-4"
                   v-if="scanSuccess"
                   color="green-lighten-2"
                   elevation="5"
@@ -187,4 +197,10 @@ export default defineComponent({
     }
   }
 }
+.v-card-text{
+  max-height: 65vh;
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+}
+
 </style>

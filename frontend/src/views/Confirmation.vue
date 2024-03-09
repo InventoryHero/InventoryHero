@@ -3,7 +3,6 @@ import {defineComponent} from 'vue'
 import {UserEndpoint} from "@/api/http";
 import useNewAxios from "@/composables/useNewAxios.ts";
 
-// TODO VERIFICCATION FAILURE
 
 export default defineComponent({
   name: "Confirmation",
@@ -27,6 +26,7 @@ export default defineComponent({
   data(){
     return {
       verified: false,
+      status: "",
       countdown: 5,
       time: 5
     }
@@ -38,8 +38,9 @@ export default defineComponent({
     }
   },
   async mounted() {
-    this.verified = await this.userEndpoint.confirmEmail(this.code)
-
+    const {verified, status} = await this.userEndpoint.confirmEmail(this.code)
+    this.verified = verified
+    this.status = status
   }
 })
 </script>
@@ -50,7 +51,7 @@ export default defineComponent({
     class="fill-height mt-4"
   >
     <v-col
-      cols="8"
+      cols="12"
       lg="6"
     >
       <v-card
@@ -94,7 +95,22 @@ export default defineComponent({
         </v-card-actions>
       </v-card>
       <v-card v-else>
-        something went wrong sorry
+        <v-card-title>
+          {{ $t('confirmation.failure') }}
+        </v-card-title>
+        <v-card-text>
+          {{ $t(`confirmation.${status}`) }}
+        </v-card-text>
+        <v-card-actions
+          class="justify-end">
+          <v-btn
+            variant="elevated"
+            color="primary"
+            @click="$router.push('/login')"
+          >
+            {{ $t('confirmation.go_to_login')}}
+          </v-btn>
+        </v-card-actions>
       </v-card>
     </v-col>
   </v-row>

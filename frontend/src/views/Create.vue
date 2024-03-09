@@ -111,7 +111,7 @@ export default defineComponent({
         </v-btn>
       </app-confirm-modal>
       <router-view v-slot="{Component}">
-        <transition :name="animationName">
+        <transition :name="animationName" mode="out-in">
           <component :is="Component" />
         </transition>
       </router-view>
@@ -120,68 +120,39 @@ export default defineComponent({
 </template>
 
 <style scoped lang="scss">
-.slide-left-enter-active,
- .slide-left-leave-active {
-   transition: all 0.75s ease-out;
- }
+.slide-left-enter-active{
+  transition: all 0.5s ease-in-out;
+}
 
-.slide-left-enter-to {
-  position: fixed;
-  right: 0;
-  top: calc(var(--v-layout-top) + 16px);
+.slide-left-leave-active{
+  transition: all 0.75s ease-in-out;
 }
 
 .slide-left-enter-from {
-  position: fixed;
-  right: -100%;
-  top: calc(var(--v-layout-top) + 16px);
+  transform: scale(0.75);
 }
 
 .slide-left-leave-to {
-  position: fixed;
-  left: -100%;
-  top: calc(var(--v-layout-top) + 16px);
+  transform: translateX(-110%);
 }
 
-.slide-left-leave-from {
-  position: fixed;
-  left: 0;
-  top: calc(var(--v-layout-top) + 16px);
+.slide-right-enter-active{
+  transition: all 0.5s ease-in-out;
 }
-
-
-
-.slide-right-enter-active,
 .slide-right-leave-active {
-  transition: all 0.75s ease-out;
+  transition: all 0.75s ease-in-out;
 }
 
 .slide-right-leave-to{
-  position: fixed;
-  right: -100%;
-
-  top: calc(var(--v-layout-top) + 16px);
+  transform: translateX(110%);
 }
 
-.slide-right-leave-from{
-  position: fixed;
-  right: 0;
-  top: calc(var(--v-layout-top) + 16px);
+.slide-right-enter-from {
+  transform: scale(0.75);
 }
 
 
-.slide-right-enter-to {
-  position: fixed;
-  left: 0;
-  top: calc(var(--v-layout-top) + 16px);
-}
 
-
-.slide-right-enter-from{
-  position: fixed;
-  left: -100%;
-  top: calc(var(--v-layout-top) + 16px);
-}
 
 
 </style>

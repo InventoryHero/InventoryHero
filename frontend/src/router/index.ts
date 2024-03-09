@@ -210,7 +210,6 @@ export const router = createRouter({
 
 router.beforeEach(async (to, from) => {
 
-  // TODO FIX FETCH HOUSEHOLD ERROR WHEN LOGGING OUT
   if(to.path === "/logout")
     return;
 
@@ -224,6 +223,9 @@ router.beforeEach(async (to, from) => {
       return
     }
     if(to.path.startsWith("/confirmation")){
+      return
+    }
+    if(to.path === "/settings"){
       return
     }
     authStore.setReturnUrl(to.fullPath)

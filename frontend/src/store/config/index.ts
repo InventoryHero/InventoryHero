@@ -56,10 +56,6 @@ export const useConfigStore = defineStore('config', {
                 this.config.language = newLanguage
                 i18n.global.locale = this.config.language
             }
-
-
-
-            // TODO NOTIFY
         },
         init(){
             this.themeChange(this.config.theme)

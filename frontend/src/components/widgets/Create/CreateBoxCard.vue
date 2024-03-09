@@ -92,14 +92,16 @@ export default defineComponent({
       this.postingBox = false
 
       if(success){
-        this.$refs["add-form"].reset()
 
-        // TODO LOCALIZATION
+
         this.$notify({
-          title: 'SUCCESS',
-          text: 'ADDED',
-          type: 'success'
+          title: this.$t('toasts.titles.success.add_box', {
+            name: this.box
+          }),
+          text: this.$t('toasts.text.success.add_box'),
+          type: "success"
         })
+        this.$refs["add-form"].reset()
       }
 
     }

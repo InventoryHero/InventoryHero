@@ -2,12 +2,15 @@
 import {defineComponent} from 'vue'
 import useNewAxios from "@/composables/useNewAxios.ts";
 import {HouseholdEndpoint} from "@/api/http";
+import {useAuthStore} from "@/store";
 
 export default defineComponent({
   name: "Join",
   setup(){
     const householdEndpoint = useNewAxios("household")
+    const authStore = useAuthStore();
     return {
+      authStore,
       endpoint: householdEndpoint.axios as HouseholdEndpoint
     }
   },
@@ -37,6 +40,9 @@ export default defineComponent({
         // TODO
         return
       }
+
+      // reset return url otherwise user will be redirected to this join route again
+      this.authStore.returnUrl = "";
       this.$router.push("/households")
 
     }

@@ -51,16 +51,12 @@ export default defineComponent({
     async save(){
       const validation = await this.$refs["add-form"].validate()
       if(!validation.valid){
-        this.$emit('save:handled')
         return
       }
 
       let formData = new FormData();
       formData.append("household", this.user.household)
       formData.append("name", this.location)
-
-      this.$emit('save:handled')
-      this.$emit('posting')
       this.postingLocation = true
       const {success, newLocation} = await this.axios.createLocation({
         name: this.location
@@ -68,12 +64,14 @@ export default defineComponent({
 
       this.postingLocation = false
       if(success){
-        this.$refs["add-form"].reset()
-        this.$emit('posted')
         this.$notify({
-          title: 'SUCCESS',
-          title: 'ADDED'
+          title: this.$t('toasts.titles.success.add_location', {
+            name: this.location
+          }),
+          text: this.$t('toasts.text.success.add_location'),
+          type: "success"
         })
+        this.$refs["add-form"].reset()
       }
 
     },

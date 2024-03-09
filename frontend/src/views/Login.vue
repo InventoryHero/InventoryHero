@@ -56,13 +56,17 @@ export default defineComponent({
                 :text="$t('login.register.title')"
             />
         </v-card-title>
-        <login-card
-            v-if="selected==='login'"
-        />
-        <register-card
-            v-else
-            @registered="changeCard('login')"
-        />
+
+          <login-card
+
+              v-if="selected==='login'"
+          />
+          <register-card
+
+              v-else
+              @registered="changeCard('login')"
+          />
+
       </v-card>
     </v-col>
   </v-row>
@@ -75,4 +79,6 @@ export default defineComponent({
   flex-direction: column;
   justify-content: center;
 }
+
+
 </style>

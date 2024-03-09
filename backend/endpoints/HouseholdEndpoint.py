@@ -63,6 +63,7 @@ class HouseholdEndpoint(Blueprint):
         @jwt_required()
         @auth
         def get_household_invite_code(household):
+            # TODO FIND A WAY TO INVALIDATE THOSE AFTER A WHILE (SO NO SPAMMING IS ALLOWED) ...
             household = Household.query.filter_by(id=household, creator=current_user.id).first()
             if household is None:
                 return jsonify(status="invite_not_possible"), 403
@@ -76,6 +77,7 @@ class HouseholdEndpoint(Blueprint):
         @self.route("/meta/<string:invite_code>", methods=["GET"])
         @jwt_required()
         def get_household_invite_meta(invite_code):
+            # TODO PROHIBIT OWN HOUSEHOLD JOINING
             invite_code = uuid.UUID(invite_code)
             member = HouseholdMembers.query.filter_by(invite=invite_code).first()
             if member is None:

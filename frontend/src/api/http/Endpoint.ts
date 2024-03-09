@@ -14,9 +14,8 @@ async function requestRefresh(refreshToken: string): Promise<IAuthTokens | strin
     return response.data.access_token
 }
 
-// TODO ENV VARIABLE
-const baseURL = '/api/v1/'
 
+const baseURL = '/api/v1/'
 export class Endpoint {
     protected internalAxios: AxiosInstance
     protected prependHousehold: boolean = true

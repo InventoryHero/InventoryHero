@@ -2,7 +2,6 @@
 import {useAuthStore} from "@/store/index.ts";
 import {defineComponent} from "vue";
 
-// TODO MAKE LOGOUT DIALOG NICE
 export default defineComponent({
   name: "AppBarOverflowMenu",
   setup(){
