@@ -73,8 +73,7 @@ export default defineConfig({
     port: 3000,
     proxy: {
       "/api/v1": {
-        target: 'http://127.0.0.1:5000/',
-        changeOrigin: true
+        target: 'http://127.0.0.1:5000/'
       },
       "/socket.io": {
         target: 'ws://localhost:5000',

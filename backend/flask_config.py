@@ -7,7 +7,8 @@ from flask_cors import CORS
 from backend.database import db, migrate
 from datetime import timedelta
 
-from backend.exceptions.inventory_hero_exceptions import UnknownDatabaseType
+from backend.exceptions.inventory_hero_exceptions import UnknownDatabaseType, MissingSmtpConfig, InvalidAppUrl, \
+    UnsupportedSmtpProtocol
 
 
 def parse_db_parameters(db_type, db_host, db_port, db_name, db_user, db_password):
@@ -22,7 +23,7 @@ def parse_db_parameters(db_type, db_host, db_port, db_name, db_user, db_password
         if os.path.exists("/app/inventoryhero/data"):
             file_path = "//app/inventoryhero/data/inventoryhero.db"
         else:
-            logger.warning("/home/app/inventoryhero/inventoryhero.db not found, using memory based sqlite instance.")
+            logger.warning("/app/inventoryhero/inventoryhero.db not found, using memory based sqlite instance.")
         db_uri = f"{driver}://{file_path}"
     elif db_type == "mysql":
         driver = "mysql+mysqldb"
@@ -44,55 +45,52 @@ class Config(object):
     DB_USER = os.getenv('INVENTORYHERO_DB_USER', None)
     DB_PASSWORD = os.getenv('INVENTORYHERO_DB_PASSWORD', None)
 
-    SQLALCHEMY_DATABASE_URI = ""
+    SQLALCHEMY_DATABASE_URI = parse_db_parameters(DB_TYPE, DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD)
 
-    DB_URI = os.getenv("INVENTORYHERO_DB_URI", None)
-    if DB_URI is None:
-        SQLALCHEMY_DATABASE_URI = parse_db_parameters(DB_TYPE, DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD)
-    else:
-        logger.warning("If you entered a sqlite uri you need to make sure the specified path is available")
-        SQLALCHEMY_DATABASE_URI = (DB_URI.replace("sqlite", "sqlite+pysqlite")
-                                   .replace("postgresql", "postgresql+psycopg2")
-                                   .replace("mysql", "mysql+mysqldb"))
+    SECRET_KEY = os.getenv("INVENTORYHERO_SECRET_KEY", "SUPER_SECRET_KEY")
 
-    SECRET_KEY = os.getenv("JWT_SECRET_KEY", "SUPER_SECRET_KEY")
-
-    JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=int(os.getenv("JWT_ACCESS_TOKEN_EXPIRES", "60")))
-    JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=int(os.getenv("JWT_REFRESH_TOKEN_EXPIRES", "30")))
+    JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=60)
+    JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
 
     SMTP = {
-        "server": os.getenv("SMTP_SERVER", None),
-        "port": os.getenv("SMTP_PORT", None),
-        "username": os.getenv("SMTP_USERNAME", None),
-        "password": os.getenv("SMTP_PASSWORD", None),
-        "sender_email": os.getenv("SMTP_EMAIL_ADDRESS", "noreply@inventory-hero.local"),
+        "server": os.getenv("INVENTORYHERO_SMTP_SERVER", None),
+        "port": os.getenv("INVENTORYHERO_SMTP_PORT", None),
+        "protocol": os.getenv("INVENTORYHERO_SMTP_PROTOCOL", "SSL"),
+        "username": os.getenv("INVENTORYHERO_SMTP_USERNAME", None),
+        "password": os.getenv("INVENTORYHERO_SMTP_PASSWORD", None),
+        "from_email": os.getenv("INVENTORYHERO_SMTP_FROM_ADDRESS", "noreply@inventory-hero.local"),
+        "from_name": os.getenv("INVENTORYHERO_SMTP_FROM_NAME", "InventoryHero"),
         "in_use": False
     }
+
+    if SMTP["protocol"] != "SSL":
+        raise UnsupportedSmtpProtocol()
 
     SMTP["in_use"] = (SMTP["server"] is not None and SMTP["port"] is not None
                       and SMTP["password"] is not None and SMTP["username"] is not None)
 
-    CONFIRMATION_NEEDED = os.getenv("CONFIRMATION_NEEDED", "False").lower() in ('true', '1', 't')
+    CONFIRMATION_NEEDED = os.getenv("INVENTORYHERO_CONFIRMATION_NEEDED", "false").lower() in ('true', '1', 't')
 
     if CONFIRMATION_NEEDED and not SMTP["in_use"]:
-        raise Exception("ENTER SMTP CONFIG OR DISABLE CONFIRMATION")
+        raise MissingSmtpConfig("ENTER SMTP CONFIG OR DISABLE CONFIRMATION")
 
-    APP_URL = os.getenv("APP_URL", "http://localhost:3000")
-
+    APP_URL = os.getenv("INVENTORYHERO_APP_URL", "http://localhost:8080")
 
 
 class DebugConfig(Config):
     DEBUG = True
     TESTING = True
+    ALLOWED_ORIGINS = ["https://localhost:3000", "http://localhost:3000"]
 
 
 class ProdConfig(Config):
     DEBUG = False
     TESTING = False
+    ALLOWED_ORIGINS = [Config.APP_URL]
 
 
 def get_config():
-    is_development = os.getenv("IS_DEVELOPMENT", "True").lower() in ('true', '1', 't')
+    is_development = os.getenv("IS_DEVELOPMENT", "true").lower() in ('true', '1', 't')
     if is_development:
         return DebugConfig
     return ProdConfig
@@ -104,9 +102,9 @@ app.logger.error(app.config)
 jwt = JWTManager(app)
 
 
-socketio = SocketIO(app, cors_allowed_origins="*")
+socketio = SocketIO(app, cors_allowed_origins=app.config["ALLOWED_ORIGINS"])
 gunicorn_logger = logging.getLogger('gunicorn.error')
 app.logger.handlers.extend(gunicorn_logger.handlers)
 app.logger.setLevel(logging.INFO)
-CORS(app, origins=["*"])
+CORS(app, origins=app.config["ALLOWED_ORIGINS"])
 

@@ -26,24 +26,26 @@ services:
 
 The following environment variables are available to configure InventoryHero to your needs. For example database configurations please see [Database](#database)
 
-|Variable                 | Description                                                             |
-|-------------------------|-------------------------------------------------------------------------|
-|INVENTORYHERO_DATABASE_URI             | SQL Alchemy Database URI                                  |
-|INVENTORYHERO_DB_TYPE   | Database type (mysql, postgresql or sqlite)                             |
-|INVENTORYHERO_DB_HOST   | Database host                                                            |
-|INVENTORYHERO_DB_PORT   | Database port                                                            |
-|INVENTORYHERO_DB_NAME   | Database name                                                            |
-|INVENTORYHERO_DB_USER   | Database username                                                        |
-|INVENTORYHERO_DB_PASSWORD |  Database password                                                     |
-|APP_URL                  | Needed such that confirmation emails have the proper URL set. (Should be the you configured for InventoryHero)|
-|CONFIRMATION_NEEDED      | States if you want to force email confirmation upon registration|
-|SMTP_EMAIL_ADDRESS       | The email address InventoryHero should send emails with       |
-|SMTP_SERVER              | The smtp server used to send emails                           |
-|SMTP_USERNAME            | The smtp server username to login to                          |
-|SMTP_PASSWORD            | The smtp server password to login with                        |
-|SMTP_PORT                | The smtp port (currently onyl 465 ssl supported)              |
-|PGID                     | Group id (docker). Default: 1000                              |
-|PUID                     | User id (docker). Default: 1000                               |
+| Variable                            | Description                                                                                                      |
+|-------------------------------------|------------------------------------------------------------------------------------------------------------------|
+| INVENTORYHERO_DB_TYPE               | Database type (mysql, postgresql or sqlite)                                                                      |
+| INVENTORYHERO_DB_HOST               | Database host                                                                                                    |
+| INVENTORYHERO_DB_PORT               | Database port                                                                                                    |
+| INVENTORYHERO_DB_NAME               | Database name                                                                                                    |
+| INVENTORYHERO_DB_USER               | Database username                                                                                                |
+| INVENTORYHERO_DB_PASSWORD           | Database password                                                                                                |
+| INVENTORYHERO_APP_URL               | Needed such that confirmation emails have the proper URL set. (Should be the you configured for InventoryHero)   |
+| INVENTORYHERO_CONFIRMATION_NEEDED   | States if you want to force email confirmation upon registration                                                 |
+| INVENTORYHERO_SECRET_KEY            | JWT_SECRET_KEY used by Flask. Override this!                                                                     |
+| INVENTORYHERO_SMTP_FROM_ADDRESS     | The email address InventoryHero should send emails with                                                          |
+| INVENTORYHERO_SMTP_FROM_NAME        | The name InventoryHero should send emails with                                                                   |
+| INVENTORYHERO_SMTP_SERVER           | The smtp server used to send emails                                                                              |
+| INVENTORYHERO_SMTP_USERNAME         | The smtp server username to login to                                                                             |
+| INVENTORYHERO_SMTP_PASSWORD         | The smtp server password to login with                                                                           |
+| INVENTORYHERO_SMTP_PORT             | The smtp port                                                                                                    |
+| INVENTORYHERO_SMTP_PROTOCOL         | The smtp protocol (currently ony SSL is supported)                                                               |
+| PGID                                | Group id (docker). Default: 1000                                                                                 |
+| PUID                                | User id (docker). Default: 1000                                                                                  |
 
 ### Database
 
@@ -60,3 +62,4 @@ Thanks to:
     * [Fluidd Core](https://github.com/fluidd-core/fluidd)
     * [Spoolman](https://github.com/Donkie/Spoolman)
     * [Vikunja](https://github.com/go-vikunja/vikunja)
+    * [Mealie](https://github.com/mealie-recipes/mealie/tree/mealie-next)

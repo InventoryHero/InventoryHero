@@ -3,12 +3,11 @@ import uuid
 
 from dataclasses import dataclass
 
-from backend.db.base import Base
 from backend.database import db
 
 
 @dataclass
-class User(db.Model, Base):
+class User(db.Model):
     id: int = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username: str = db.Column(db.String(80), unique=True, nullable=False)
     email: str = db.Column(db.String(120), unique=True, nullable=False)
@@ -22,7 +21,7 @@ class User(db.Model, Base):
 
 
 @dataclass
-class Household(db.Model, Base):
+class Household(db.Model):
     __tablename__ = "household"
     id: int = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name: str = db.Column(db.String(65535), nullable=False)
@@ -44,7 +43,7 @@ class Household(db.Model, Base):
         }
 
 
-class HouseholdMembers(db.Model, Base):
+class HouseholdMembers(db.Model):
     __tablename__ = "household_members"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     household_id: int = db.Column(db.Integer, db.ForeignKey("household.id"), nullable=False)

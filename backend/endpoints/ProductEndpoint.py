@@ -26,11 +26,12 @@ def get_storage(storage_type, storage, household):
     return result, result.id
 
 
+# TODO errors
 def parse_storage_params(id, type, household):
     try:
         storage_type = ContainerTypes(int(type))
     except ValueError:
-        return False, {"status": "Invalid storage type given"}, 400
+        return False, {"status": "storage_type_invalid"}, 400
 
     if storage_type == ContainerTypes.NoContainer:
         return True, {"id": None, "type": ContainerTypes.NoContainer}, 200
@@ -38,7 +39,7 @@ def parse_storage_params(id, type, household):
     storage, _ = get_storage(storage_type, id, household)
 
     if storage is None:
-        return False, {"status": "Trying to add product to storage but given storage doesnt exist"}, 400
+        return False, {"status": "storage_not_found"}, 400
 
     return True, {"id": storage.id, "type": storage_type}, 200
 
@@ -52,7 +53,7 @@ def check_storage_for_update(storage_type, storage, entry, household, all_entrie
 
     if storage_type != ContainerTypes.NoContainer and storage is None:
         return {
-            "error": (jsonify(status="Trying to update storage, but no valid storage id given"), 400)
+            "error": (jsonify(status="storage_not_found"), 400)
         }
 
     if int(storage_type) == entry.storage_type and storage_id == entry.storage_id:
@@ -85,11 +86,6 @@ def serialize_product(product):
     return serialized
 
 
-def add_existing_product(id, data):
-    pass
-    return {}, 200
-
-
 class ProductEndpoint(Blueprint):
     def __init__(self, name, import_name, application, db, url_prefix="", *args):
         self.app = application
@@ -118,7 +114,7 @@ class ProductEndpoint(Blueprint):
                 return jsonify(status="create_product_invalid_data"), 400
 
             starred = request.json.get("starred", False)
-            creation_date = datetime.datetime.utcnow()
+            creation_date = datetime.datetime.now(datetime.UTC)
             storage_id = request.json.get("storage_id", None)
             storage_type = request.json.get("storage_type", 0)
             storage_valid, ret, code = parse_storage_params(storage_id, storage_type, household)
@@ -185,7 +181,6 @@ class ProductEndpoint(Blueprint):
                 result.append(serialize_product(product))
             return jsonify(result), 200
 
-
         @self.route("/<int:product_id>", methods=["DELETE"])
         @jwt_required()
         @auth
@@ -236,7 +231,7 @@ class ProductEndpoint(Blueprint):
             product = Product.query.filter_by(id=product_id, household_id=household).first()
 
             if product is None or mapping is None:
-                return jsonify(status="update_product_not_found_at_storage"), 400
+                return jsonify(status="product_not_found_at_storage"), 400
 
             update = False
             if new_amount is not None:
@@ -267,7 +262,7 @@ class ProductEndpoint(Blueprint):
             if update:
                 if deleted is not None:
                     deleted = deleted.serialize()
-                mapping.updated_at = datetime.datetime.utcnow()
+                mapping.updated_at = datetime.datetime.now(datetime.UTC)
                 self.db.session.commit()
                 return jsonify(updated=mapping.serialize(), deleted=deleted), 200
             return jsonify(), 200
@@ -281,7 +276,7 @@ class ProductEndpoint(Blueprint):
             product_id = (mapping.product_id if mapping is not None else None)
             product = Product.query.filter_by(id=product_id, household_id=household).first()
             if product is None or mapping is None:
-                return jsonify(status="product_at_storage_not_found")
+                return jsonify(status="product_not_found_at_storage"), 400
             self.db.session.delete(mapping)
             self.db.session.commit()
             return {}, 200

@@ -3,6 +3,8 @@ import ssl
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
+from flask import render_template
+
 
 class Mail:
     def __init__(self, smtp_config, app_url):
@@ -10,41 +12,19 @@ class Mail:
         self.smtp_password = smtp_config['password']
         self.smtp_server = smtp_config['server']
         self.smtp_port = smtp_config['port']
-        self.sender_email = smtp_config['sender_email']
+        self.sender_email = smtp_config['from_email']
+        self.sender_name = smtp_config['from_name']
         self.app_url = app_url
 
     def send_registration_confirmation(self, to, confirmation_code):
         message = MIMEMultipart('alternative')
-        message['From'] = self.sender_email
+        message['From'] = f"{self.sender_name} <{self.sender_email}>"
         message['To'] = to
         message['Subject'] = "Please confirm your email address"
-        text = f"""\
-        Hi, 
-        
-        please follow the link below to activate your account and start using InventoryHero!
-        {self.app_url}/confirmation/{confirmation_code}
-        
-        Your InventoryHero Team!
-        """
+        url = f"{self.app_url}/confirmation/{confirmation_code}"
 
-        html = f"""\
-        <html>
-            <body>
-                <p> Hi, <br>
-                    please click <a href="{self.app_url}/confirmation/{confirmation_code}">here</a> to activate your
-                    account and start using InventoryHero! <br>
-                    If you are not sure if the link embedded above is save here it is again in plain: 
-                    {self.app_url}/confirmation/{confirmation_code} <br>
-                    Your InventoryHero Team!
-                <p>
-            <body>
-        <html>
-        """
-        part1 = MIMEText(text, "plain")
-        part2 = MIMEText(html, "html")
-        message.attach(part1)
-        message.attach(part2)
-
+        html = render_template("/mail/register.html", url=url)
+        message.attach(MIMEText(html, "html"))
         self.send_email(message, to)
 
     def send_email(self, message, to):

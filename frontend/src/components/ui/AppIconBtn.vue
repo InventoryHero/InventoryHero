@@ -33,9 +33,9 @@
         type: Boolean,
         default: false
       },
-      colored:{
-        type: Boolean,
-        default: true,
+      color:{
+        type: String,
+        default: "",
       },
       size: {
         default: "1x"
@@ -56,6 +56,7 @@
             v-bind="props"
             :icon="icon"
             :size="size"
+            :color="color"
             fixed-width
             class="app-font-awesome-btn"
             :class="{

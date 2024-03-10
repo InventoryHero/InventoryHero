@@ -40,6 +40,9 @@ export default defineComponent({
         default:
           return ""
       }
+    },
+    scannedButNotFound(){
+      return this.scanned !== undefined && !this.scanSuccess
     }
   },
   data(){
@@ -61,6 +64,9 @@ export default defineComponent({
         scanned.storage_type !== this.scanned.storage_type)
       {
         // ONLY FETCH NAME AND UPDATE DATA IF IT DIFFERS
+        this.scanned = scanned
+        this.scanSuccess = false
+
         let name = ""
         switch(scanned.storage_type)
         {
@@ -68,17 +74,15 @@ export default defineComponent({
               name = await this.locationEndpoint.getLocationName(scanned.id)
               break
           case StorageTypes.Box:
-              name = name = await this.boxEndpoint.getBoxName(scanned.id)
+              name = await this.boxEndpoint.getBoxName(scanned.id)
               break
           default:
             return
         }
-
         if(name === ""){
           return
         }
-        scanned.name = name
-        this.scanned = scanned
+        this.scanned.name = name
         this.scanSuccess = true
         setTimeout(() => {
          this.$refs.scanner.$el.scrollTo({
@@ -161,17 +165,32 @@ export default defineComponent({
                     {{ $t(`scan.scanned_type.${type}`) }}
                   </v-col>
                   <v-col
-                      class="d-flex justify-center align-center"
+                      class="text-center"
                   >
                     {{ scanned?.name }}
                   </v-col>
+                </v-row>
+              </v-sheet>
+              <v-sheet
+                v-else-if="scannedButNotFound"
+                class="d-flex justify-center mt-4 pt-4 pb-4"
+                color="red-darken-1"
+                elevation="5"
+              >
+                <v-row
+                  :no-gutters="true"
+                  justify="center"
+                >
+                    <v-col class="text-center">
+                      {{ $t('scan.right_household')}}
+                    </v-col>
                 </v-row>
               </v-sheet>
             </v-col>
           </v-row>
         </v-card-text>
         <v-card-actions
-            v-if="scanned !== undefined"
+            v-if="scanSuccess"
             class="d-flex justify-center"
         >
           <v-btn

@@ -214,7 +214,7 @@ class StorageEndpoint(Blueprint):
         def delete_location(household, location_id):
             location = Location.query.filter_by(id=location_id, household_id=household).first()
             if location is None:
-                return jsonify(status="Trying to delete box, but no box supplied or box does not exist in your household"), 400
+                return jsonify(status="location_not_found"), 400
 
             for product in location.product_mappings:
                 product.storage_id = None
@@ -234,7 +234,7 @@ class StorageEndpoint(Blueprint):
         def edit_location(household, location_id):
             location = Location.query.filter_by(id=location_id, household_id=household).first()
             if location is None:
-                return jsonify(status="no_location"), 400
+                return jsonify(status="location_not_found"), 400
 
             to_update = request.json.get("storage", None)
             if location is None:
@@ -255,7 +255,7 @@ class StorageEndpoint(Blueprint):
         def box_name(household, box_id):
             box = Box.query.filter_by(id=box_id, household_id=household).first()
             if box is None:
-                return jsonify(status="get_name_storage_not_found"), 400
+                return jsonify(status="box_not_found"), 400
 
             return jsonify(name=box.name), 200
 
@@ -265,6 +265,6 @@ class StorageEndpoint(Blueprint):
         def location_name(household, location_id):
             location = Location.query.filter_by(id=location_id, household_id=household).first()
             if location is None:
-                return jsonify(status="get_name_storage_not_found"), 400
+                return jsonify(status="location_not_found"), 400
 
             return jsonify(name=location.name), 200

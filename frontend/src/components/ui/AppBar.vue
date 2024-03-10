@@ -3,11 +3,9 @@
 import {defineComponent} from "vue";
 import {useAuthStore} from "@/store";
 import {useRoute} from "vue-router";
-import AppQrCode from "@/components/ui/AppScanQrCode.vue";
 
 export default defineComponent({
   name: "AppBar",
-  components: {AppQrCode},
   setup(){
     const authStore = useAuthStore()
     const route = useRoute()
@@ -65,8 +63,12 @@ export default defineComponent({
       {{ $t('app.title') }}
     </v-toolbar-title>
     <template v-slot:append>
-      <app-scan-qr-code
+      <app-icon-btn
         v-if="isAuthorized"
+        icon="mdi-qrcode-scan"
+        color="primary"
+        class="me-2"
+        size="small"
         @click="scanQrCode=true"
       />
       <app-bar-overflow-menu

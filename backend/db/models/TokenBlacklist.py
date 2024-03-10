@@ -3,10 +3,9 @@ from sqlalchemy.sql import func
 
 
 from backend.database import db
-from backend.db.base import Base
 
 
-class TokenBlacklist(db.Model, Base):
+class TokenBlacklist(db.Model):
     id: int = db.Column(db.Integer, primary_key=True, autoincrement=True)
     jti: str = db.Column(db.String(36), nullable=False, index=True)
     type: str = db.Column(db.String(16), nullable=False)

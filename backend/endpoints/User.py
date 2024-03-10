@@ -135,12 +135,10 @@ class User(Blueprint):
         @self.route("", methods=["GET"])
         @jwt_required()
         def get_user():
-            #household = HouseholdMembers.query.filter_by(member_id=current_user.id).first()
             return {
                 "id": current_user.id,
                 "username": current_user.username,
                 "email": current_user.email,
-                #"household": household.household.to_dict() if household is not None else None
             }, 200
 
         @self.route("/refresh_token", methods=["POST"])
@@ -148,8 +146,6 @@ class User(Blueprint):
         def refresh():
             access_token = create_access_token(identity=current_user)
             return jsonify(access_token=access_token)
-
-
 
         @self.route("/logout", methods=["DELETE"])
         @jwt_required()
@@ -178,9 +174,6 @@ class User(Blueprint):
             user.email_confirmed = True
             self.db.session.commit()
             return jsonify(), 200
-
-
-
 
     def blacklist_token(self, token):
         jti = token["jti"]

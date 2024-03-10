@@ -27,7 +27,7 @@ class HouseholdEndpoint(Blueprint):
             household = Household.query.filter_by(name=household_name) \
                                     .join(HouseholdMembers).filter_by(member_id=current_user.id).first()
 
-            in_household, _ = user_in_household(current_user.id, household.id if household is not None else None)
+            in_household = user_in_household(current_user.id, household.id if household is not None else None)
             if in_household:
                 return {"status": "duplicate_household_name"}, 400
             household = Household(name=household_name, creator=current_user.id)
@@ -76,7 +76,11 @@ class HouseholdEndpoint(Blueprint):
                 return jsonify(status="invite_code_invalid"), 403
             creator = ApplicationUser.query.filter_by(id=member.household.creator).first()
             if creator is None:
-                return jsonify(status="invite_not_possible"), 403
+                return jsonify(), 500
+
+            if creator.id == current_user.id:
+                return jsonify(status="already_member"), 400
+
             return jsonify(
                 owner=creator.username,
                 name=member.household.name
@@ -89,6 +93,11 @@ class HouseholdEndpoint(Blueprint):
             member = HouseholdMembers.query.filter_by(invite=invite_code).first()
             if member is None or member.joined:
                 return jsonify(status="invite_code_invalid"), 403
+
+            user = HouseholdMembers.query.filter_by(member_id=current_user.id).first()
+            if user.id == current_user.id:
+                return jsonify(status="already_member"), 400
+
             member.member_id = current_user.id
             member.invite = None
             member.joined = True

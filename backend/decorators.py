@@ -15,7 +15,7 @@ def auth(f):
         if household_id is None:
             return jsonify(status="no_household_set"), 400
 
-        in_household, _ = user_in_household(current_user.id, household_id)
+        in_household = user_in_household(current_user.id, household_id)
         if not in_household:
             return jsonify(status="user_not_in_household"), 401
         return f(*args, **kwargs)
