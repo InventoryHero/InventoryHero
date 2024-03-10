@@ -2,6 +2,7 @@
   "app": {
     "title": "InventoryHero"
   },
+  "description": "An easy to use inventory management system",
   "cancel": "Cancel",
   "delete": "Delete",
   "save": "Save",

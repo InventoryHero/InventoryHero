@@ -4,8 +4,8 @@ from functools import wraps
 from flask import jsonify
 from flask_jwt_extended import current_user
 
-from endpoints.Helper import user_in_household
-from flask_config import socketio
+from backend.endpoints.Helper import user_in_household
+from backend.flask_config import socketio
 
 
 def auth(f):

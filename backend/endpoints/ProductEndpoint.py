@@ -4,15 +4,12 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, current_user
 from werkzeug.datastructures import auth
 
-from flask_config import socketio
-from models.Product import Product, ProductContainerMapping
-from models.StorageContainer import Location, Box, ContainerTypes
-from decorators import auth, emit_update
+from backend.flask_config import socketio
+from backend.db.models.Product import Product, ProductContainerMapping
+from backend.db.models.StorageContainer import Location, Box, ContainerTypes
+from backend.decorators import auth, emit_update
 from typing import Optional
 
-
-
-from sqlalchemy import and_
 
 def get_storage(storage_type, storage, household):
     query = None

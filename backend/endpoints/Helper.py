@@ -1,5 +1,5 @@
-from models.StorageContainer import Box, Location, ContainerTypes
-from models.User import User, HouseholdMembers
+from backend.db.models.StorageContainer import Box, Location, ContainerTypes
+from backend.db.models.User import HouseholdMembers
 
 
 def user_in_household(user_id, household_id):

@@ -1,9 +1,11 @@
-from database import db
+from backend.database import db
 from enum import Enum
 from dataclasses import dataclass
 from sqlalchemy.orm import Mapped
 from datetime import datetime
 import sys
+
+from backend.db.base import Base
 
 
 class ContainerTypes(Enum):
@@ -20,7 +22,7 @@ location_product_conditions = dict(primaryjoin="and_(Location.id == orm.foreign(
 
 
 @dataclass
-class Location(db.Model):
+class Location(db.Model, Base):
     __tablename__ = "location"
     id: int = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name: str = db.Column(db.String(65535), nullable=False)
@@ -60,7 +62,7 @@ class Location(db.Model):
 
 
 @dataclass
-class Box(db.Model):
+class Box(db.Model, Base):
     __tablename__ = "box"
     id: int = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name: str = db.Column(db.String(65535), nullable=False)

@@ -1,19 +1,11 @@
-import time
 import uuid
-from datetime import datetime, timezone
 
-import sqlalchemy.exc
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import create_access_token, jwt_required, current_user, create_refresh_token, get_jwt, \
-    decode_token
+from flask_jwt_extended import jwt_required, current_user
 
-from decorators import auth
-from endpoints.Helper import user_in_household
-from models.TokenBlacklist import TokenBlacklist
-from models.User import User as ApplicationUser, Household, HouseholdMembers
-import bcrypt
-
-from flask_config import jwt
+from backend.decorators import auth
+from backend.endpoints.Helper import user_in_household
+from backend.db.models.User import User as ApplicationUser, Household, HouseholdMembers
 
 
 class HouseholdEndpoint(Blueprint):

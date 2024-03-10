@@ -1,15 +1,14 @@
 import json
 from functools import wraps
 
-from flask import jsonify
 from flask_jwt_extended import verify_jwt_in_request, current_user
 from flask_jwt_extended.exceptions import NoAuthorizationError, RevokedTokenError, JWTDecodeError
 from flask_socketio import namespace, join_room, emit, leave_room, rooms
 from jwt import ExpiredSignatureError
 
-from models.User import HouseholdMembers
+from backend.db.models.User import HouseholdMembers
 
-from flask_config import app
+from backend.flask_config import app
 
 
 def socket_token():

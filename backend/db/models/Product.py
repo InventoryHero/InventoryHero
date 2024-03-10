@@ -1,14 +1,15 @@
-from database import db
+from ...database import db
 from datetime import datetime
 from dataclasses import dataclass
 from sqlalchemy.orm import Mapped
 
 
-from .StorageContainer import Box, Location, box_product_conditions, location_product_conditions, ContainerTypes
+from backend.db.models.StorageContainer import Box, Location, box_product_conditions, location_product_conditions, ContainerTypes
+from backend.db.base import Base
 
 
 @dataclass
-class Product(db.Model):
+class Product(db.Model, Base):
     __tablename__ = "products"
     id: int = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name: str = db.Column(db.String(65535), nullable=False)
@@ -30,7 +31,7 @@ class Product(db.Model):
         return hash(self.id)
 
 @dataclass
-class ProductContainerMapping(db.Model):
+class ProductContainerMapping(db.Model, Base):
     __tablename__ = "product_container_mapping"
     id: int = db.Column(db.Integer, primary_key=True, autoincrement=True)
     product_id: int = db.Column(db.Integer, db.ForeignKey("products.id"), nullable=False)

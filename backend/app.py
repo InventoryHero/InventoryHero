@@ -1,15 +1,16 @@
 import os
 
-from database import db
-from endpoints.User import User
-from endpoints.ProductEndpoint import ProductEndpoint
-from endpoints.StorageEndpoint import StorageEndpoint
-from endpoints.HouseholdEndpoint import HouseholdEndpoint
-
-from flask_config import app, socketio
-from sockets.sockets import HouseholdSocket
-
 from dotenv import load_dotenv
+import flask_migrate
+
+from backend.endpoints.User import User
+from backend.endpoints.ProductEndpoint import ProductEndpoint
+from backend.endpoints.StorageEndpoint import StorageEndpoint
+from backend.endpoints.HouseholdEndpoint import HouseholdEndpoint
+
+from backend.flask_config import app, socketio
+from backend.sockets.sockets import HouseholdSocket
+from backend.database import db, migrate
 
 load_dotenv()
 
@@ -24,14 +25,19 @@ app.register_blueprint(storage)
 app.register_blueprint(household)
 
 
+def setup_app():
+    db.init_app(app)
+    migrate.init_app(app, db)
+    socketio.on_namespace(HouseholdSocket("/household"))
+    with app.app_context():
+        db.create_all()
+        flask_migrate.migrate()
+        flask_migrate.upgrade()
 
-socketio.on_namespace(HouseholdSocket("/household"))
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
-    with app.app_context():
-        db.create_all()
+    setup_app()
     socketio.run(app, port=port, host="0.0.0.0")
 else:
-    with app.app_context():
-        db.create_all()
+    setup_app()

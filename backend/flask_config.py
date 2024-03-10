@@ -4,10 +4,10 @@ from flask import Flask
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
 
-from database import db
+from backend.database import db, migrate
 from datetime import timedelta
 
-from exceptions.inventory_hero_exceptions import UnknownDatabaseType
+from backend.exceptions.inventory_hero_exceptions import UnknownDatabaseType
 
 
 def parse_db_parameters(db_type, db_host, db_port, db_name, db_user, db_password):
@@ -19,8 +19,8 @@ def parse_db_parameters(db_type, db_host, db_port, db_name, db_user, db_password
     if db_type == "sqlite":
         driver = "sqlite+pysqlite"
         file_path = ""
-        if os.path.exists("/home/app/inventoryhero"):
-            file_path = "//home/app/inventoryhero/inventoryhero.db"
+        if os.path.exists("/app/inventoryhero/data"):
+            file_path = "//app/inventoryhero/data/inventoryhero.db"
         else:
             logger.warning("/home/app/inventoryhero/inventoryhero.db not found, using memory based sqlite instance.")
         db_uri = f"{driver}://{file_path}"
@@ -80,6 +80,7 @@ class Config(object):
     APP_URL = os.getenv("APP_URL", "http://localhost:3000")
 
 
+
 class DebugConfig(Config):
     DEBUG = True
     TESTING = True
@@ -102,9 +103,10 @@ app.config.from_object(get_config())
 app.logger.error(app.config)
 jwt = JWTManager(app)
 
-db.init_app(app)
+
+socketio = SocketIO(app, cors_allowed_origins="*")
 gunicorn_logger = logging.getLogger('gunicorn.error')
 app.logger.handlers.extend(gunicorn_logger.handlers)
 app.logger.setLevel(logging.INFO)
 CORS(app, origins=["*"])
-socketio = SocketIO(app, cors_allowed_origins="*")
+

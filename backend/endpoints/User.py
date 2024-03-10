@@ -6,12 +6,12 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, current_user, create_refresh_token, get_jwt, \
     decode_token
 
-from mail.Mail import Mail
-from models.TokenBlacklist import TokenBlacklist
-from models.User import User as ApplicationUser, Household, HouseholdMembers
+from backend.mail.Mail import Mail
+from backend.db.models.TokenBlacklist import TokenBlacklist
+from backend.db.models.User import User as ApplicationUser
 import bcrypt
 
-from flask_config import jwt
+from backend.flask_config import jwt
 
 
 @jwt.user_identity_loader

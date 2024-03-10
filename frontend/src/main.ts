@@ -34,7 +34,8 @@ import vueQr from 'vue-qr/src/packages/vue-qr.vue'
 import VueCountdown from '@chenfengyuan/vue-countdown';
 import { SWhatsApp, STelegram, SEmail} from 'vue-socials';
 
-
+// TODO OPTION TO DISABLE REGISTER AND INVITE USERS
+// TODO ADMINISTRATION ROUTE
 
 const app = createApp(App)
 

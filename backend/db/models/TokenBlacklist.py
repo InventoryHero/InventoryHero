@@ -1,12 +1,12 @@
 from flask_jwt_extended import get_current_user
-
-from database import db
-from dataclasses import dataclass
 from sqlalchemy.sql import func
 
 
+from backend.database import db
+from backend.db.base import Base
 
-class TokenBlacklist(db.Model):
+
+class TokenBlacklist(db.Model, Base):
     id: int = db.Column(db.Integer, primary_key=True, autoincrement=True)
     jti: str = db.Column(db.String(36), nullable=False, index=True)
     type: str = db.Column(db.String(16), nullable=False)

@@ -1,22 +1,28 @@
 import uuid
 
-from database import db
+
 from dataclasses import dataclass
+
+from backend.db.base import Base
+from backend.database import db
+
+
 @dataclass
-class User(db.Model):
+class User(db.Model, Base):
     id: int = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username: str = db.Column(db.String(80), unique=True, nullable=False)
     email: str = db.Column(db.String(120), unique=True, nullable=False)
     password: str = db.Column(db.String(1024), nullable=False)
     email_confirmed: bool = db.Column(db.Boolean, default=False, nullable=False)
     confirmation_code: uuid.UUID = db.Column(db.Uuid, unique=True, nullable=True)
+    is_admin: bool = db.Column(db.Boolean, default=False, nullable=False)
 
     def __repr__(self):
         return '<User %r>' % self.username
 
 
 @dataclass
-class Household(db.Model):
+class Household(db.Model, Base):
     __tablename__ = "household"
     id: int = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name: str = db.Column(db.String(65535), nullable=False)
@@ -38,7 +44,7 @@ class Household(db.Model):
         }
 
 
-class HouseholdMembers(db.Model):
+class HouseholdMembers(db.Model, Base):
     __tablename__ = "household_members"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     household_id: int = db.Column(db.Integer, db.ForeignKey("household.id"), nullable=False)
