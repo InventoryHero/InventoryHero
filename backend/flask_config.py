@@ -108,3 +108,7 @@ app.logger.handlers.extend(gunicorn_logger.handlers)
 app.logger.setLevel(logging.INFO)
 CORS(app, origins=app.config["ALLOWED_ORIGINS"])
 
+db.init_app(app)
+migrate.init_app(app, db, render_as_batch=True)
+
+

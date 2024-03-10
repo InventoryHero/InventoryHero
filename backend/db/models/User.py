@@ -1,7 +1,11 @@
+import datetime
 import uuid
 
 
 from dataclasses import dataclass
+
+from sqlalchemy.sql.functions import now
+from sqlalchemy.sql import expression
 
 from backend.database import db
 
@@ -14,7 +18,10 @@ class User(db.Model):
     password: str = db.Column(db.String(1024), nullable=False)
     email_confirmed: bool = db.Column(db.Boolean, default=False, nullable=False)
     confirmation_code: uuid.UUID = db.Column(db.Uuid, unique=True, nullable=True)
-    is_admin: bool = db.Column(db.Boolean, default=False, nullable=False)
+    is_admin: bool = db.Column(db.Boolean, server_default=expression.false(), nullable=False)
+    first_name: str = db.Column(db.String(80), nullable=False, server_default="")
+    last_name: str = db.Column(db.String(80), nullable=False, server_default="")
+    registration_date: datetime = db.Column(db.DateTime(timezone=True), default=lambda: datetime.datetime.now(datetime.UTC), nullable=False)
 
     def __repr__(self):
         return '<User %r>' % self.username
@@ -27,6 +34,7 @@ class Household(db.Model):
     name: str = db.Column(db.String(65535), nullable=False)
     creator: int = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     members = db.relationship("HouseholdMembers", back_populates="household", cascade="all, delete-orphan")
+    creation_date: datetime = db.Column(db.DateTime, default=datetime.datetime.now(datetime.UTC))
 
     def to_dict(self):
         return {

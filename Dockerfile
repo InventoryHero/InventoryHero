@@ -21,6 +21,7 @@ COPY --from=frontend-build /app/dist /var/www/html
 
 WORKDIR /app/inventoryhero/backend
 ENV PYTHONPATH="/app/inventoryhero:${PYTHONPATH}"
+ENV PYTHONPATH="/app/inventoryhero/backend:${PYTHONPATH}"
 COPY backend/requirements.txt requirements.txt
 RUN apk update 
 RUN apk add --no-cache --virtual build-deps gcc musl-dev pkgconf mariadb-dev && \
@@ -37,6 +38,8 @@ VOLUME [ "/app/inventoryhero/data" ]
 COPY /docker/entrypoint.sh /entrypoint.sh
 ENTRYPOINT ["/bin/sh", "/entrypoint.sh"]
 COPY backend .
+
+
 
 EXPOSE 80
 RUN chmod +x /entrypoint.sh

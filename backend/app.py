@@ -24,20 +24,12 @@ app.register_blueprint(products)
 app.register_blueprint(storage)
 app.register_blueprint(household)
 
+socketio.on_namespace(HouseholdSocket("/household"))
 
-def setup_app():
-    db.init_app(app)
-    migrate.init_app(app, db)
-    socketio.on_namespace(HouseholdSocket("/household"))
-    with app.app_context():
-        db.create_all()
-        flask_migrate.migrate()
-        flask_migrate.upgrade()
+#with app.app_context():
+#    db.create_all()
 
 
 if __name__ == "__main__":
     port = int(os.environ.get('PORT', 5000))
-    setup_app()
     socketio.run(app, port=port, host="0.0.0.0")
-else:
-    setup_app()

@@ -1,6 +1,4 @@
 from flask_jwt_extended import get_current_user
-from sqlalchemy.sql import func
-
 
 from backend.database import db
 
@@ -12,10 +10,5 @@ class TokenBlacklist(db.Model):
     user_id = db.Column(
         db.ForeignKey('user.id'),
         default=lambda: get_current_user().id,
-        nullable=False,
-    )
-    created_at = db.Column(
-        db.DateTime,
-        server_default=func.now(),
         nullable=False,
     )
