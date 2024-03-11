@@ -128,8 +128,12 @@ export default defineComponent({
     </template>
     <template #no-data>
       <v-list-item
-        :title="$t('storage.select.no_storage')"
       >
+        <v-list-item-title
+          class="text-wrap"
+        >
+          {{ $t('storage.select.no_storage') }}
+        </v-list-item-title>
 
       </v-list-item>
     </template>
@@ -138,5 +142,4 @@ export default defineComponent({
 </template>
 
 <style scoped lang="scss">
-
 </style>
