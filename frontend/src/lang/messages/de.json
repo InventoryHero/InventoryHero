@@ -186,257 +186,257 @@
     "no_locations": "Keine Orte vorhanden"
   },
   "households": {
-    "all_displayed": "All households have been displayed!",
+    "all_displayed": "Alle Haushalte wurden angezeigt!",
     "create_new": {
-      "title": "Create new household",
+      "title": "Erstelle einen neuen Haushalt",
       "labels": {
-        "name": "Household name"
+        "name": "Name"
       },
-      "save": "Save household"
+      "save": "Haushalt speichern"
     },
     "rules": {
-      "name_required": "A name needs to be set!"
+      "name_required": "Ein Name muss angegeben werden"
     }
   },
   "account": {
     "profile_card": {
-      "title": "You 😊",
+      "title": "Du 😊",
       "user_name": "Username",
-      "email": "email",
-      "change_pw": "Change password",
-      "save_changes": "Save"
+      "email": "E-Mail",
+      "change_pw": "Passwort ändern",
+      "save_changes": "Speichern"
     },
     "household_card": {
-      "title": "Current household",
-      "edit_households": "Edit households",
-      "save_changes": "Save"
+      "title": "Aktueller Haushalt",
+      "edit_households": "Haushalte bearbeiten",
+      "save_changes": "Speichern"
     }
   },
   "login": {
     "login": {
       "title": "Login",
-      "forgot_password_btn": "Password forgotten?",
+      "forgot_password_btn": "Passwort vergessen?",
       "btn": "Login",
       "username": "Username",
-      "password": "Password",
-      "username_needed": "An username needs to be supplied",
-      "password_needed": "A password needs to be supplied"
+      "password": "Passwort",
+      "username_needed": "Ein Nutzername muss angegeben werden!",
+      "password_needed": "Ein Passwort muss angegeben werden!"
     },
     "register": {
-      "title": "Register",
-      "username": "Username",
+      "title": "Registrieren",
+      "username": "Usernamn",
       "password": "password",
-      "email": "Email",
-      "repeat_password": "Repeat password",
-      "username_needed": "An username needs to be supplied",
-      "password_needed": "A password needs to be supplied",
-      "email_needed": "An email must be supplied",
-      "passwords_not_equal": "Passwords do not match",
-      "btn": "Sign up!"
+      "email": "E-Mail",
+      "repeat_password": "Passwort wiederholen",
+      "username_needed": "Ein Nutzername muss angegeben werden!",
+      "password_needed": "Ein Passwort muss angegeben werden!",
+      "email_needed": "Eine E-Mail Adresse muss angegeben werden!",
+      "passwords_not_equal": "Passwörter stimmen nicht überein",
+      "btn": "Registrieren!"
     }
   },
   "print": {
     "select_ok": "Ok",
-    "print_selected": "Print",
-    "select_all": "Select all",
-    "select_storage": "Select Storage",
-    "deselect_all": "Deselect all",
-    "qr_code": "Print QR-Codes",
+    "print_selected": "Drucken",
+    "select_all": "Alle auswählen",
+    "select_storage": "Lager auswählen",
+    "deselect_all": "Alle abwählen",
+    "qr_code": "QR-Codes drucken",
     "qr_code_settings": {
-      "title": "QR Code Settings",
-      "show_qr_code_icon": "Display icon",
-      "show_border": "QR Code border",
-      "show_storage_type_icon": "Display storage type icon",
-      "show_title": "Display storage name",
-      "print_label": "Display storage label"
+      "title": "QR Code Einstellungen",
+      "show_qr_code_icon": "Icon anzeigen",
+      "show_border": "Etikettrahmen",
+      "show_storage_type_icon": "Lagertyp Symbol anzeigen",
+      "show_title": "Lagerort Name anzeigen",
+      "print_label": "Etikett anzeigen"
     },
     "page_settings": {
-      "margin_left": "Margin on the left",
-      "margin_right": "Margin on the right",
-      "margin_top": "Margin on the top",
-      "margin_bottom": "Margin on the bottom",
-      "items_per_row": "QR Codes per row",
-      "preview_scale": "Scale of the preview",
-      "title": "Print Settings"
+      "margin_left": "Rand links",
+      "margin_right": "Rand rechts",
+      "margin_top": "Rand oben",
+      "margin_bottom": "Rand unten",
+      "items_per_row": "Etiketten per Reihe",
+      "preview_scale": "Vorschauskala",
+      "title": "Druckeinstellungen"
 
     },
-    "show_preview": "Show print preview",
-    "close_preview": "Close print preview",
-    "print": "Print",
-    "example_storage": "Example Storage"
+    "show_preview": "Druckvorschau",
+    "close_preview": "Druckvorschau schließen",
+    "print": "Drucken",
+    "example_storage": "Beispiellager"
   },
   "scan": {
-    "right_household": "Have you selected the correct household?",
-    "from": "scanned QR Code",
+    "right_household": "Ist der richtige Haushalt gewählt?",
+    "from": "gescanntem QR-Code",
     "qr_code": {
-      "title": "Scan Storage QR Code"
+      "title": "Lager-QR-Code einscannen"
     },
     "go_to": {
-      "boxes": "Show box",
-      "locations": "Show Location"
+      "boxes": "Box anzeigen",
+      "locations": "Ort anzeigen"
     },
     "scanned_type": {
       "boxes": "Box: ",
-      "locations": "Location: "
+      "locations": "Ort: "
     }
   },
   "confirm": {
     "actions": {
-      "abort": "Abort",
-      "proceed": "Proceed"
+      "abort": "Abbrechen",
+      "proceed": "Fortfahren"
     },
     "leave": {
-      "deny": "Stay",
-      "accept": "Leave",
-      "text": "You are about to leave this page. Any unsaved inputs will be lost!",
-      "title": "Leave...?"
+      "deny": "Bleiben",
+      "accept": "Gehen",
+      "text": "Du bist dabei diese Seite zu verlassen. Nicht gespeicherte Eingaben gehen verloren!",
+      "title": "Gehen...?"
     }
   },
   "titles": {
-    "products": "Products - InventoryHero",
-    "boxes": "Boxes - InventoryHero",
-    "locations": "Locations - InventoryHero",
+    "products": "Produkte - InventoryHero",
+    "boxes": "Boxen - InventoryHero",
+    "locations": "Orte - InventoryHero",
     "account": "Account - InventoryHero",
-    "households": "Households - InventoryHero",
-    "settings": "Settings - InventoryHero",
-    "create": "Add new item - InventoryHero"
+    "households": "Haushalte - InventoryHero",
+    "settings": "Einstellungen - InventoryHero",
+    "create": "Hinzufügen - InventoryHero"
   },
   "confirmation": {
-    "redirect_in": "Redirect in {seconds}",
-    "email_confirmed": "Email verified, thank you 😊",
-    "redirect_now": "Go now!",
-    "failure": "Failure while verifying email",
-    "invalid_code": "This email address was already verified, try logging in please",
-    "go_to_login": "Go to login"
+    "redirect_in": "Weiterleitung in {seconds}s",
+    "email_confirmed": "E-Mail bestätigt, danke 😊",
+    "redirect_now": "Jetzt verlassen!",
+    "failure": "Fehler beim Bestätigen der E-Mail",
+    "invalid_code": "Diese E-Mail Adresse wurde bereits bestätigt. Bitte logge dich nun ein.",
+    "go_to_login": "Zum Login"
   },
   "join": {
-    "title": "{owner} wants you to join their household!",
-    "text": "If you want to join the their household <b>{name}</b> and start inventorying with <b>{owner}</b> accept below.",
-    "accept": "Accept invite",
-    "deny": "Inventory' alone!"
+    "title": "{owner} will, dass du dem Haushalt beitrittst!",
+    "text": "Wenn du deren Haushalt <b>{name}</b> beitreten willst und gemeinsam mit <b>{owner}</b> inventarisieren möchtest, nimm die Einladung unten an!",
+    "accept": "Einladung annehmen",
+    "deny": "Alleine inventarisieren!"
   },
   "invite": {
-    "title": "Invite your friend",
-    "copy_to_clipboard": "Copy the invite link into your clipboard...",
-    "or": "...or share it directly"
+    "title": "Lade deinen Freund ein",
+    "copy_to_clipboard": "Kopiere den Link in deine Zwischenablage",
+    "or": "...oder teile ihn direkt"
   },
   "toasts": {
     "titles": {
       "info": {
-        "no_households": "No households received",
-        "leave_household": "Leaving this household will soon be possible",
-        "edit_household": "Editing this household will soon be possible",
-        "confirm_email": "Confirmation email sent"
+        "no_households": "Keine Haushalte empfangen",
+        "leave_household": "Das Verlassen des Haushaltes wird bald möglich sein",
+        "edit_household": "Das Bearbeiten des Haushaltes wird bald möglich seind",
+        "confirm_email": "Bestätigungsemail versandt"
       },
       "error": {
-        "invalid_request": "Invalid request",
-        "unauthorized": "Unauthorized",
-        "not_found": "Requested resource not found",
-        "conflict": "Conflict",
-        "undefined_server_error": "Unknown Error occured",
-        "duplicate_household_name": "Duplicate Household",
-        "username_not_found": "Username not found",
-        "username_or_pw_invalid": "Invalid username or password",
-        "no_username": "No username supplied",
-        "no_password": "No password supplied",
-        "no_email": "No email supplied",
-        "username_in_use": "Username already in use",
-        "email_in_use": "Email already in use",
-        "invalid_household_name": "Household name is not valid",
-        "invite_not_possible": "Please specify a household",
-        "invite_code_invalid": "Invite code invalid",
-        "already_member": "You are already member of this household",
-        "create_product_already_exists": "A product with this name already exists",
-        "add_product_not_found": "Supplied product not found",
-        "create_product_invalid_data": "Invalid data posted",
-        "product_not_found": "Supplied product not found",
-        "update_product_error": "Error updating the product",
+        "invalid_request": "Ungültige Anfrage",
+        "unauthorized": "Nicht authorisiert",
+        "not_found": "Angefragte Ressource konnte nicht gefunden werden",
+        "conflict": "Konflikt",
+        "undefined_server_error": "Unbekannter Fehler aufgetreten",
+        "duplicate_household_name": "Haushalt doppelt",
+        "username_not_found": "Benutzer nicht gefunden",
+        "username_or_pw_invalid": "Passwort oder Username nicht korrekt",
+        "no_username": "Kein Username angegeben",
+        "no_password": "Kein Passwort angegeben",
+        "no_email": "Keine E-Mail angegeben",
+        "username_in_use": "Username wird bereits verwendet",
+        "email_in_use": "Email wird bereits verwendet",
+        "invalid_household_name": "Name des Haushaltes ist nicht gültig",
+        "invite_not_possible": "Bitte gib einen Haushalt an",
+        "invite_code_invalid": "Einladungscode nicht gültig",
+        "already_member": "Du bist bereits Mitglied dieses Haushaltes",
+        "create_product_already_exists": "Es gibt bereits ein Produkt mit diesem Namen",
+        "add_product_not_found": "Angegebenes Produkt nicht gefunden",
+        "create_product_invalid_data": "Ungültige Daten an Server gesendet",
+        "product_not_found": "@:toasts.titles.error.add_product_not_found",
+        "update_product_error": "Fehler beim Aktualisieren des Produktes",
         "update_product_no_data": "@:toasts.titles.error.update_product_error",
         "update_product_invalid_data": "@:toasts.titles.error.update_product_error",
-        "update_product_not_found_at_storage": "Product not found at given storage",
+        "update_product_not_found_at_storage": "Produkt im angegeben Lager nicht gefunden",
         "update_product_at_storage_invalid_data": "@:toasts.titles.error.update_product_error",
-        "box_not_found": "Box not found",
-        "location_not_found": "Location not found",
-        "storage_not_found": "Storage not found",
-        "storage_type_invalid": "Invalid storage type",
-        "no_storage_given": "Requested update of storage, but no storage was given",
-        "create_box_error": "Error creating box",
+        "box_not_found": "Box nicht gefunden",
+        "location_not_found": "Ort nicht gefunden",
+        "storage_not_found": "Lager nicht gefunden",
+        "storage_type_invalid": "Ungültiger Lagertyp",
+        "no_storage_given": "Kein Lager zum Aktualisieren gegeben",
+        "create_box_error": "Fehler beim Erstellen der Box",
         "create_box_invalid_name": "@:toasts.titles.error.create_box_error",
         "create_box_storage_not_found": "@:toasts.titles.error.create_box_error",
         "create_box_name_exists": "@:toasts.titles.error.create_box_error",
-        "create_location_error": "Error creating location",
+        "create_location_error": "Fehler beim Erstellen des Ortes",
         "create_location_invalid_name": "@:toasts.titles.error.create_location_error",
         "create_location_name_exists": "@:toasts.titles.error.create_location_error",
         "update_box_no_data": "@:toasts.titles.error.create_box_error",
         "location_no_update_data":"@:toasts.titles.error.create_location_error"
       },
       "success": {
-        "default_household_set": "Default household updated",
-        "register": "User {name} successfully created",
-        "deleted_detail": "Product successfully removed from storage",
-        "updated_detail": "Product successfully updated",
-        "updated_product": "Product successfully updated",
-        "deleted_product": "Product successfully deleted",
-        "deleted_box": "Box successfully deleted",
-        "updated_box": "Box successfully updated",
-        "deleted_location": "Location successfully deleted",
-        "updated_location": "Location successfully updated",
-        "add_product": "Successfully added {amount} instances of product {name}",
-        "add_box":"Successfully created box {name}",
-        "add_location":"Successfully created location {name}",
-        "copied_to_clipboard": "Copied to clipboard!"
+        "default_household_set": "Aktueller Haushalt geändert",
+        "register": "Benutzer {name} erfolgreich erstellt",
+        "deleted_detail": "Produkt erfolgreich aus Lager entfernt",
+        "updated_detail": "Produkt erfolgreich aktualisiert",
+        "updated_product": "@:toasts.titles.success.updated_detail",
+        "deleted_product": "Produkt erfolgreich gelöscht",
+        "deleted_box": "Box erfolgreich gelöscht",
+        "updated_box": "Box erfoglreich aktualisiert",
+        "deleted_location": "Ort erfolgreich gelöscht",
+        "updated_location": "Ort erfolgreich aktualisiert",
+        "add_product": "{amount} Einheiten von {name} erfolgreich hinzugefügt",
+        "add_box":"Box {name} erfolgreich erstellt",
+        "add_location":"Ort {name} erfolgreich erstellt",
+        "copied_to_clipboard": "In die Zwischenablage kopiert!"
       },
       "new-content": {
-        "new": "{user} updated your household"
+        "new": "{user} hat den Haushalt aktualisiert"
       }
     },
     "text": {
       "info": {
-        "no_households": "Please create a new household to get started with InventoryHero 😊",
-        "confirm_email": "Please confirm your email before proceeding! 😊"
+        "no_households": "Bitte erstelle einen Haushalt um mit InventoryHero zu starten😊",
+        "confirm_email": "Bitte bestätige deine E-Mail Adresse um fortzufahren! 😊"
       },
       "error": {
         "invalid_request": "",
         "unauthorized": "",
         "not_found": "",
         "conflict": "",
-        "undefined_server_error": "While fetching data from the server, an unknown error occurred. Please try again later.",
-        "duplicate_household_name": "A household with this name already exists",
-        "username_not_found": "The provided username does not exist, pleas sign up if you want to use InventoryHero.",
+        "undefined_server_error": "Beim Holen von Daten vom Server ist ein Fehler aufgetreten. Bitte versuche es später erneut",
+        "duplicate_household_name": "Ein Haushalt mit diesem Namen existiert bereits",
+        "username_not_found": "Der angegebene Benutzername konnte nicht gefunden werden. Bitte registriere dich um InventoryHero nutzen zu können",
         "username_or_pw_invalid": "",
         "no_username": "",
         "no_password": "",
         "no_email": "",
-        "username_in_use": "Please choose a different username, this one is already in use!",
-        "email_in_use": "Please use a different email address, this one is already in use!",
-        "invalid_household_name": "Please enter a different name for your household!",
-        "invite_not_possible": "Cannot invite an user to no household...",
-        "invite_code_invalid": "This invite has already been used",
+        "username_in_use": "Dieser Benutzername wird bereits verwendet, bitte wähle einen anderen",
+        "email_in_use": "Diese E-Mail Adresse wird bereits verwendet, hast du eventuell schon ein Konto?",
+        "invalid_household_name": "Bitte wähle einen anderen Namen für deinen Haushalt",
+        "invite_not_possible": "Einladung zu diesem Haushalt ist gerade nicht möglich...",
+        "invite_code_invalid": "Diese Einladung wurde bereits verwendet",
         "already_member": "",
         "create_product_already_exists": "",
         "add_product_not_found": "",
         "create_product_invalid_data": "",
         "product_not_found": "",
-        "update_product_no_data": "No data supplied",
-        "update_product_invalid_data": "Invalid data supplied",
+        "update_product_no_data": "Keine Daten angegeben",
+        "update_product_invalid_data": "Invalide Daten angegeben",
         "update_product_not_found_at_storage": "",
         "update_product_at_storage_invalid_data": "",
         "box_not_found": "",
         "location_not_found": "",
         "storage_not_found": "",
-        "storage_type_invalid": "Type can only be box or location",
+        "storage_type_invalid": "Typ kann nur Box oder Ort sein",
         "no_storage_given": "",
-        "create_box_invalid_name": "Supplied name is invalid",
-        "create_box_name_exists": "Supplied name already exists",
-        "create_box_storage_not_found": "Container for new box not found!",
-        "create_location_invalid_name": "Supplied name is invalid",
-        "create_location_name_exists": "Supplied name already exists",
-        "update_box_no_data": "No data supplied",
-        "location_no_update_data": "No data supplied"
+        "create_box_invalid_name": "Name ist nicht gültig",
+        "create_box_name_exists": "Name existiert bereits",
+        "create_box_storage_not_found": "Lager für neue Box nicht gefunden",
+        "create_location_invalid_name": "Name ist nicht gültig",
+        "create_location_name_exists": "Name existiert bereits",
+        "update_box_no_data": "Keine Daten angegeben",
+        "location_no_update_data": "Invalide Daten angegeben"
       },
       "success": {
         "default_household_set": "",
-        "register": "You can now login with your account! Happy Inventoring! 🤩",
+        "register": "Du kannst dich nun einloggen! Fröhliches Inventarisieren! 🤩",
         "deleted_detail": "",
         "updated_detail": "",
         "updated_product": "",
@@ -451,7 +451,7 @@
         "copied_to_clipboard": ""
       },
       "new-content": {
-        "new": "Some things in your household might have changed. Click here to load the most recent data!"
+        "new": "Dein Haushalt könnte sich verändert haben, klicke hier um zu aktualisieren!"
       }
     }
   }
