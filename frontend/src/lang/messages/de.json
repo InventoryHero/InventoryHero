@@ -2,19 +2,456 @@
   "app": {
     "title": "InventoryHero"
   },
+  "description": "Ein einfach zu bediendendes Heimanwender Inventarisierungssystem",
+  "cancel": "Abbrechen",
+  "delete": "Löschen",
+  "save": "Speichern",
   "settings": {
     "ui": {
       "title": "UI Einstellungen",
-      "preset": "Theme-Voreinstellung",
+      "preset": "Theme Voreinstellungen",
       "select_color": "Farbe wählen",
       "color": "Farbe",
       "reset": "Zurücksetzen",
-      "theme": "Nachtmodus",
-      "use_dock": "Dock",
+      "theme": "Dunkler modus",
+      "use_dock": "Mobiles Dock",
       "colors": {
         "r": "R",
         "g": "G",
         "b": "B"
+      }
+    },
+    "general": {
+      "title": "Einstellungen",
+      "language": "Sprache",
+      "languages": {
+        "default": "Browserstandard",
+        "en": "English",
+        "de": "Deutsch",
+        "it": "Italiano"
+      }
+    }
+  },
+  "nav": {
+    "home": "Home",
+    "products": "Produkt Übersicht",
+    "boxes": "Box Übersicht",
+    "location": "Ort Übersicht",
+    "create_new": "Erstellen",
+    "account": "Account",
+    "households": "Haushalte",
+    "settings": "Einstellungen",
+    "logout": "Ausloggen"
+  },
+  "storage": {
+    "select": {
+      "no_storage": "Keine Lagermöglichkeiten vorhanden"
+    }
+  },
+  "add": {
+    "product": {
+      "tab": "Produkt",
+      "title": "Neues Produkt",
+      "new_product": "Neues Produtk erstellen",
+      "start_typing": "Tippe um ein neues Produkt zu erstellen 😊",
+      "labels": {
+        "product": "Name",
+        "star": "Favorit",
+        "location": "Lager",
+        "amount": "Anzahl"
+      },
+      "hints": {
+        "combobox": "Erstelle entweder ein neues (einzigartiges) Produkt oder wähle ein bereits vorhandenes Produkt",
+        "locationSelect": "Wenn das Produkt in einer Box oder an einem Ort gelagert wird, gib den Lagerort hier an",
+        "amount": "Wie viele Einheiten des Produktes möchtest du lagern?",
+        "star": "Als Favorit markieren"
+      },
+      "rules": {
+        "need_product": "Ein Name muss angegeben werden",
+        "amount_nan": "Bitte gib eine valide (positive) Zahl an"
+      }
+    },
+    "box": {
+      "tab": "Box",
+      "title":"Neue Box",
+      "labels": {
+        "box": "Name",
+        "location": "Lagerort der Box"
+      },
+      "hints": {
+        "boxName": "Name der Box die du erstellen willst",
+        "locationSelect": "Wenn deine Box an einem Ort gelagert wird, gib den Ort hier an"
+      },
+      "rules": {
+        "name_needed": "Ein Name muss angegeben werden"
+      }
+    },
+    "location": {
+      "tab": "Ort",
+      "title": "Neuer Ort",
+      "labels": {
+        "location": "Name"
+      },
+      "hints": {
+        "locationName": "Name des Ortes den du erstellen möchtest"
+      },
+      "rules": {
+        "name_needed": "Ein Name muss angegeben werden"
+      }
+    },
+
+    "save": "Speichern",
+    "clear": "Eingaben löschen"
+  },
+  "product": "Produkt {name}",
+  "products": {
+    "confirm": {
+      "detail": {
+        "delete": {
+          "title": "Produkt löschen | Lösche Produkt gelagert in {storage}",
+          "body": "Das ist eine destruktive Operation und alle Instanzen des Produktes an diesem Lagerort werden gelöscht. Diese Aktion kann nicht rückgängig gemacht werden. Willst du fortfahren?"
+        },
+        "save": {
+          "title": "Produkt aktualisieren",
+          "body": "Dies wird die aktualisierten Daten des Produktes abspeichern. Willst du fortfahren?"
+        }
+      },
+      "product": {
+        "delete": {
+          "title": "Produkt löschen",
+          "body": "Alle Instanzen des Produktes (an allen Lagerorten) werden gelöscht. Diese Aktion kann nicht rückgängig gemacht werden. Willst du fortfahren?"
+        },
+        "save": {
+          "title": "Produkt aktualisieren",
+          "body": "Dies wird die aktualisierten Daten des Produktes abspeichern. Willst du fortfahren?"
+        }
+      }
+    },
+    "product": {
+      "created": "Erstellt am",
+      "amount": "Gelagert",
+      "last_used": "Zuletzt verwendet",
+      "no_container": "",
+      "updated": "Aktualisiert am"
+    },
+    "locations": {
+      "all_displayed": "Alle Lagerorte des Produktes wurden angezeigt"
+    },
+    "all_displayed": "Du hast das Ende erreicht, mehr Produkte sind nicht gelagert.",
+    "no_matches": "Keine Produkte passen zum aktuellen Filter",
+    "no_products": "Keine Produkte vorhanden"
+  },
+  "box": "Box {name}",
+  "boxes": {
+    "confirm": {
+      "delete": {
+        "title": "Box löschen",
+        "body": "Diese Aktion löscht die Box und verschiebt alle in ihr gelagerten Produkte in den Standardlagerort ('void'). Willst du fortfahren?"
+      },
+      "save": {
+        "title": "Box aktualisieren",
+        "body": "Alle veränderten Daten der Box werden gespeichert. Willst du fortfahren?"
+      }
+    },
+    "box": {
+      "created": "Erstellt am",
+      "product_amount": "Produkte in der Box",
+      "all_displayed": "Alle Produkte der Box wurden angezeigt"
+    },
+    "prefiltered": "Vorgefiltert von {box}",
+    "all_displayed": "Du hast das Ende erreicht, alle Boxen wurden angezeigt.",
+    "no_matches": "Keine Box passt zum aktuellen Filter",
+    "no_boxes": "Keine Boxen vorhanden"
+  },
+  "locations": {
+    "confirm": {
+      "delete": {
+        "title": "Ort löschen",
+        "body": "Diese Aktion löscht den Ort und verschiebt alle in ihr gelagerten Produkte in den Standardlagerort ('void'). Willst du fortfahren?"
+      },
+      "save": {
+        "title": "Ort aktualisieren",
+        "body": "Alle veränderten Daten des Ortes werden gespeichert. Willst du fortfahren?"
+      }
+    },
+    "location": {
+      "created": "Erstellt am",
+      "product_amount": "Produkte gelagert",
+      "boxes_amount": "Boxen gelagert",
+      "all_displayed": "Alle Boxen/Produkte wurden angezeigt."
+    },
+    "prefiltered": "Vorgefiltert von {prefilter}",
+    "all_displayed": "Du hast das Ende erreicht, alle Orte wurden angezeigt.",
+    "no_matches": "Keine Orte passen zum aktuellen Filter",
+    "no_locations": "Keine Orte vorhanden"
+  },
+  "households": {
+    "all_displayed": "All households have been displayed!",
+    "create_new": {
+      "title": "Create new household",
+      "labels": {
+        "name": "Household name"
+      },
+      "save": "Save household"
+    },
+    "rules": {
+      "name_required": "A name needs to be set!"
+    }
+  },
+  "account": {
+    "profile_card": {
+      "title": "You 😊",
+      "user_name": "Username",
+      "email": "email",
+      "change_pw": "Change password",
+      "save_changes": "Save"
+    },
+    "household_card": {
+      "title": "Current household",
+      "edit_households": "Edit households",
+      "save_changes": "Save"
+    }
+  },
+  "login": {
+    "login": {
+      "title": "Login",
+      "forgot_password_btn": "Password forgotten?",
+      "btn": "Login",
+      "username": "Username",
+      "password": "Password",
+      "username_needed": "An username needs to be supplied",
+      "password_needed": "A password needs to be supplied"
+    },
+    "register": {
+      "title": "Register",
+      "username": "Username",
+      "password": "password",
+      "email": "Email",
+      "repeat_password": "Repeat password",
+      "username_needed": "An username needs to be supplied",
+      "password_needed": "A password needs to be supplied",
+      "email_needed": "An email must be supplied",
+      "passwords_not_equal": "Passwords do not match",
+      "btn": "Sign up!"
+    }
+  },
+  "print": {
+    "select_ok": "Ok",
+    "print_selected": "Print",
+    "select_all": "Select all",
+    "select_storage": "Select Storage",
+    "deselect_all": "Deselect all",
+    "qr_code": "Print QR-Codes",
+    "qr_code_settings": {
+      "title": "QR Code Settings",
+      "show_qr_code_icon": "Display icon",
+      "show_border": "QR Code border",
+      "show_storage_type_icon": "Display storage type icon",
+      "show_title": "Display storage name",
+      "print_label": "Display storage label"
+    },
+    "page_settings": {
+      "margin_left": "Margin on the left",
+      "margin_right": "Margin on the right",
+      "margin_top": "Margin on the top",
+      "margin_bottom": "Margin on the bottom",
+      "items_per_row": "QR Codes per row",
+      "preview_scale": "Scale of the preview",
+      "title": "Print Settings"
+
+    },
+    "show_preview": "Show print preview",
+    "close_preview": "Close print preview",
+    "print": "Print",
+    "example_storage": "Example Storage"
+  },
+  "scan": {
+    "right_household": "Have you selected the correct household?",
+    "from": "scanned QR Code",
+    "qr_code": {
+      "title": "Scan Storage QR Code"
+    },
+    "go_to": {
+      "boxes": "Show box",
+      "locations": "Show Location"
+    },
+    "scanned_type": {
+      "boxes": "Box: ",
+      "locations": "Location: "
+    }
+  },
+  "confirm": {
+    "actions": {
+      "abort": "Abort",
+      "proceed": "Proceed"
+    },
+    "leave": {
+      "deny": "Stay",
+      "accept": "Leave",
+      "text": "You are about to leave this page. Any unsaved inputs will be lost!",
+      "title": "Leave...?"
+    }
+  },
+  "titles": {
+    "products": "Products - InventoryHero",
+    "boxes": "Boxes - InventoryHero",
+    "locations": "Locations - InventoryHero",
+    "account": "Account - InventoryHero",
+    "households": "Households - InventoryHero",
+    "settings": "Settings - InventoryHero",
+    "create": "Add new item - InventoryHero"
+  },
+  "confirmation": {
+    "redirect_in": "Redirect in {seconds}",
+    "email_confirmed": "Email verified, thank you 😊",
+    "redirect_now": "Go now!",
+    "failure": "Failure while verifying email",
+    "invalid_code": "This email address was already verified, try logging in please",
+    "go_to_login": "Go to login"
+  },
+  "join": {
+    "title": "{owner} wants you to join their household!",
+    "text": "If you want to join the their household <b>{name}</b> and start inventorying with <b>{owner}</b> accept below.",
+    "accept": "Accept invite",
+    "deny": "Inventory' alone!"
+  },
+  "invite": {
+    "title": "Invite your friend",
+    "copy_to_clipboard": "Copy the invite link into your clipboard...",
+    "or": "...or share it directly"
+  },
+  "toasts": {
+    "titles": {
+      "info": {
+        "no_households": "No households received",
+        "leave_household": "Leaving this household will soon be possible",
+        "edit_household": "Editing this household will soon be possible",
+        "confirm_email": "Confirmation email sent"
+      },
+      "error": {
+        "invalid_request": "Invalid request",
+        "unauthorized": "Unauthorized",
+        "not_found": "Requested resource not found",
+        "conflict": "Conflict",
+        "undefined_server_error": "Unknown Error occured",
+        "duplicate_household_name": "Duplicate Household",
+        "username_not_found": "Username not found",
+        "username_or_pw_invalid": "Invalid username or password",
+        "no_username": "No username supplied",
+        "no_password": "No password supplied",
+        "no_email": "No email supplied",
+        "username_in_use": "Username already in use",
+        "email_in_use": "Email already in use",
+        "invalid_household_name": "Household name is not valid",
+        "invite_not_possible": "Please specify a household",
+        "invite_code_invalid": "Invite code invalid",
+        "already_member": "You are already member of this household",
+        "create_product_already_exists": "A product with this name already exists",
+        "add_product_not_found": "Supplied product not found",
+        "create_product_invalid_data": "Invalid data posted",
+        "product_not_found": "Supplied product not found",
+        "update_product_error": "Error updating the product",
+        "update_product_no_data": "@:toasts.titles.error.update_product_error",
+        "update_product_invalid_data": "@:toasts.titles.error.update_product_error",
+        "update_product_not_found_at_storage": "Product not found at given storage",
+        "update_product_at_storage_invalid_data": "@:toasts.titles.error.update_product_error",
+        "box_not_found": "Box not found",
+        "location_not_found": "Location not found",
+        "storage_not_found": "Storage not found",
+        "storage_type_invalid": "Invalid storage type",
+        "no_storage_given": "Requested update of storage, but no storage was given",
+        "create_box_error": "Error creating box",
+        "create_box_invalid_name": "@:toasts.titles.error.create_box_error",
+        "create_box_storage_not_found": "@:toasts.titles.error.create_box_error",
+        "create_box_name_exists": "@:toasts.titles.error.create_box_error",
+        "create_location_error": "Error creating location",
+        "create_location_invalid_name": "@:toasts.titles.error.create_location_error",
+        "create_location_name_exists": "@:toasts.titles.error.create_location_error",
+        "update_box_no_data": "@:toasts.titles.error.create_box_error",
+        "location_no_update_data":"@:toasts.titles.error.create_location_error"
+      },
+      "success": {
+        "default_household_set": "Default household updated",
+        "register": "User {name} successfully created",
+        "deleted_detail": "Product successfully removed from storage",
+        "updated_detail": "Product successfully updated",
+        "updated_product": "Product successfully updated",
+        "deleted_product": "Product successfully deleted",
+        "deleted_box": "Box successfully deleted",
+        "updated_box": "Box successfully updated",
+        "deleted_location": "Location successfully deleted",
+        "updated_location": "Location successfully updated",
+        "add_product": "Successfully added {amount} instances of product {name}",
+        "add_box":"Successfully created box {name}",
+        "add_location":"Successfully created location {name}",
+        "copied_to_clipboard": "Copied to clipboard!"
+      },
+      "new-content": {
+        "new": "{user} updated your household"
+      }
+    },
+    "text": {
+      "info": {
+        "no_households": "Please create a new household to get started with InventoryHero 😊",
+        "confirm_email": "Please confirm your email before proceeding! 😊"
+      },
+      "error": {
+        "invalid_request": "",
+        "unauthorized": "",
+        "not_found": "",
+        "conflict": "",
+        "undefined_server_error": "While fetching data from the server, an unknown error occurred. Please try again later.",
+        "duplicate_household_name": "A household with this name already exists",
+        "username_not_found": "The provided username does not exist, pleas sign up if you want to use InventoryHero.",
+        "username_or_pw_invalid": "",
+        "no_username": "",
+        "no_password": "",
+        "no_email": "",
+        "username_in_use": "Please choose a different username, this one is already in use!",
+        "email_in_use": "Please use a different email address, this one is already in use!",
+        "invalid_household_name": "Please enter a different name for your household!",
+        "invite_not_possible": "Cannot invite an user to no household...",
+        "invite_code_invalid": "This invite has already been used",
+        "already_member": "",
+        "create_product_already_exists": "",
+        "add_product_not_found": "",
+        "create_product_invalid_data": "",
+        "product_not_found": "",
+        "update_product_no_data": "No data supplied",
+        "update_product_invalid_data": "Invalid data supplied",
+        "update_product_not_found_at_storage": "",
+        "update_product_at_storage_invalid_data": "",
+        "box_not_found": "",
+        "location_not_found": "",
+        "storage_not_found": "",
+        "storage_type_invalid": "Type can only be box or location",
+        "no_storage_given": "",
+        "create_box_invalid_name": "Supplied name is invalid",
+        "create_box_name_exists": "Supplied name already exists",
+        "create_box_storage_not_found": "Container for new box not found!",
+        "create_location_invalid_name": "Supplied name is invalid",
+        "create_location_name_exists": "Supplied name already exists",
+        "update_box_no_data": "No data supplied",
+        "location_no_update_data": "No data supplied"
+      },
+      "success": {
+        "default_household_set": "",
+        "register": "You can now login with your account! Happy Inventoring! 🤩",
+        "deleted_detail": "",
+        "updated_detail": "",
+        "updated_product": "",
+        "deleted_product": "",
+        "deleted_box": "",
+        "updated_box": "",
+        "deleted_location": "",
+        "updated_location": "",
+        "add_product": "",
+        "add_box": "",
+        "add_location": "",
+        "copied_to_clipboard": ""
+      },
+      "new-content": {
+        "new": "Some things in your household might have changed. Click here to load the most recent data!"
       }
     }
   }
