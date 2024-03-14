@@ -3,6 +3,14 @@ init(){
   flask db migrate
   flask db upgrade
   echo "Flask-Migrate migrations finished"
+
+  python3 /app/inventoryhero/backend/db/create_admin.py
+
+  exit_code=$?
+  if [ $exit_code -eq 1 ]; then
+      echo "The script ended with an error."
+      exit $exit_code
+  fi
 }
 
 

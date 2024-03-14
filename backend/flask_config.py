@@ -76,6 +76,10 @@ class Config(object):
 
     APP_URL = os.getenv("INVENTORYHERO_APP_URL", "http://localhost:8080")
 
+    REGISTRATION_ALLOWED = os.getenv("INVENTORYHERO_REGISTRATION_ALLOWED", "true").lower() in ('true', '1', 't')
+
+    
+
 
 class DebugConfig(Config):
     DEBUG = True

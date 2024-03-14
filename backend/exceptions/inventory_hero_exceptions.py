@@ -16,3 +16,7 @@ class InvalidAppUrl(InventoryHeroBaseException):
 
 class UnsupportedSmtpProtocol(InventoryHeroBaseException):
     pass
+
+
+class UserExistsButNoAdmin(InventoryHeroBaseException):
+    pass

@@ -179,7 +179,7 @@ class User(Blueprint):
         jti = token["jti"]
         ttype = token["type"]
         now = datetime.now(timezone.utc)
-        blacklisted = TokenBlacklist(jti=jti, type=ttype, created_at=now)
+        blacklisted = TokenBlacklist(jti=jti, type=ttype)
         self.db.session.add(blacklisted)
         self.db.session.commit()
 
