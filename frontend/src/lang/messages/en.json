@@ -15,6 +15,7 @@
       "reset": "Reset",
       "theme": "Dark mode",
       "use_dock": "Mobile Dock",
+      "transitions": "View transitions",
       "colors": {
         "r": "R",
         "g": "G",
@@ -25,6 +26,8 @@
       "title": "General Settings",
       "language": "Language",
       "languages": {
+        "default": "Browser default",
+        "default_short": "Browser",
         "en": "English",
         "de": "Deutsch",
         "it": "Italiano"

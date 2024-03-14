@@ -17,7 +17,8 @@ export const useConfigStore = defineStore('config', {
                     color: "#2196f3"
                 } as Theme,
                 useDock: true,
-                language: "default"
+                language: "default",
+                transitions: true
             })
         }
     },
@@ -45,6 +46,7 @@ export const useConfigStore = defineStore('config', {
                 color: "#2196f3"
             })
             this.config.useDock = true;
+            this.config.transitions = true;
         },
         languageChange(newLanguage: string){
             if(newLanguage === "default"){
@@ -60,13 +62,16 @@ export const useConfigStore = defineStore('config', {
         init(){
             this.themeChange(this.config.theme)
             this.languageChange(this.config.language)
-
+        },
+        toggleTransitions(){
+            this.config.transitions = !this.transitions
         }
     },
     getters: {
         theme: state => state.config.theme.dark,
         color: state => state.config.theme.color,
         dock: state => state.config.useDock,
-        language: state => state.config.language
+        language: state => state.config.language,
+        transitions: state => state.config.transitions
     }
 })

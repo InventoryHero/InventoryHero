@@ -1,12 +1,14 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
 import {RouteLocationNormalized, useRoute} from "vue-router";
+import {useConfigStore} from "@/store";
 
 export default defineComponent({
   name: "Create",
   setup(){
     const route = useRoute();
-    return {route}
+    const config = useConfigStore();
+    return {route, config}
   },
   data(){
     return {
@@ -33,6 +35,12 @@ export default defineComponent({
     },
     currentRoute(){
       return this.addRoutes.indexOf(this.route.fullPath)
+    },
+    transition(){
+      if(this.config.transitions){
+        return this.animationName
+      }
+      return ""
     }
   },
   methods:{
@@ -111,7 +119,7 @@ export default defineComponent({
         </v-btn>
       </app-confirm-modal>
       <router-view v-slot="{Component}">
-        <transition :name="animationName" mode="out-in">
+        <transition :name="transition" mode="out-in">
           <component :is="Component" />
         </transition>
       </router-view>

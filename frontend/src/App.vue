@@ -62,6 +62,12 @@ export default defineComponent({
     },
     isCreateRoute(){
       return this.route.path.includes("/create")
+    },
+    transition(){
+      if (this.config.transitions){
+        return "scale"
+      }
+      return ""
     }
   },
   methods:{
@@ -117,7 +123,7 @@ export default defineComponent({
       v-else
   >
     <app-bar
-      :nav="!this.config.dock"
+      :nav="!config.dock"
       @toggle-nav="navOpen = !navOpen"
     />
     <app-create-bar
@@ -142,7 +148,7 @@ export default defineComponent({
           }"
       >
         <router-view v-slot="{Component}">
-          <transition name="scale" mode="out-in" >
+          <transition :name="transition" mode="out-in" >
             <component :is="Component" />
           </transition>
         </router-view>

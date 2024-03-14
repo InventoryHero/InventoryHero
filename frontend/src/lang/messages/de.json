@@ -15,6 +15,7 @@
       "reset": "Zurücksetzen",
       "theme": "Dunkler modus",
       "use_dock": "Mobiles Dock",
+      "transitions": "Ansichtsübergänge",
       "colors": {
         "r": "R",
         "g": "G",
@@ -26,6 +27,7 @@
       "language": "Sprache",
       "languages": {
         "default": "Browserstandard",
+        "default_short": "Browser",
         "en": "English",
         "de": "Deutsch",
         "it": "Italiano"

@@ -2,6 +2,11 @@
 import {defineComponent} from "vue";
 import {useConfigStore} from "@/store";
 
+type Language = {
+  key: string,
+  title: string
+}
+
 export default defineComponent({
   name: "GeneralSettings",
   setup(){
@@ -16,11 +21,18 @@ export default defineComponent({
         return {
           key: value,
           title: this.$t(`settings.general.languages.${value}`)
-        }
+        } as Language
       });
     },
     currentLanguage:{
       get(){
+        if(this.configStore.language === "default"){
+          return {
+            key: "default",
+            title: this.$t(`settings.general.languages.default_short`)
+          }
+        }
+
         return this.configStore.language
       },
       set(value: string){
