@@ -52,7 +52,7 @@ export default defineComponent({
   },
   computed:{
     dockVisible(){
-      return this.config.dock && !this.isAddRoute
+      return this.config.dock && !this.isAddRoute && !this.isAdminRoute
     },
     isAddRoute(){
       return this.route.path === "/add"
@@ -68,6 +68,9 @@ export default defineComponent({
         return "scale"
       }
       return ""
+    },
+    isAdminRoute(){
+      return this.route.path.includes("/administration")
     }
   },
   methods:{
@@ -123,7 +126,7 @@ export default defineComponent({
       v-else
   >
     <app-bar
-      :nav="!config.dock"
+      :nav="!config.dock || isAdminRoute"
       @toggle-nav="navOpen = !navOpen"
     />
     <app-create-bar

@@ -3,7 +3,7 @@ import {defineComponent, PropType, ref} from 'vue'
 import {type Box, ProductLocations, ProductOnly, isInstanceOfStorage, Location, LocationContent} from "@/types";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import useUpdateStorage from "@/composables/useUpdateStorage";
-import useNewAxios from "@/composables/useNewAxios.ts";
+import useNewAxios from "@/composables/useAxios.ts";
 import {LocationEndpoint, ProductEndpoint} from "@/api/http";
 
 

@@ -3,7 +3,7 @@ import {defineComponent} from 'vue'
 import {isMobile} from "mobile-device-detect";
 import {Box, Location} from "@/types";
 import {useAuthStore} from "@/store";
-import useNewAxios from "@/composables/useNewAxios.ts";
+import useNewAxios from "@/composables/useAxios.ts";
 import {BoxEndpoint, LocationEndpoint} from "@/api/http";
 
 type Views = "product" | "box" | "location"

@@ -1,7 +1,7 @@
 <script lang="ts">
 import {defineComponent, PropType} from 'vue'
 import {Storage, StorageTypes} from "@/types";
-import useNewAxios from "@/composables/useNewAxios.ts";
+import useNewAxios from "@/composables/useAxios.ts";
 import {StorageEndpoint} from "@/api/http";
 
 export default defineComponent({

@@ -3,7 +3,7 @@ import {defineComponent, ref} from "vue";
 import {useAuthStore, useConfigStore} from "@/store";
 import {Location} from "@/types";
 import useUpdateStorage from "@/composables/useUpdateStorage";
-import useNewAxios from "@/composables/useNewAxios.ts";
+import useNewAxios from "@/composables/useAxios.ts";
 import {LocationEndpoint} from "@/api/http";
 
 export default defineComponent({

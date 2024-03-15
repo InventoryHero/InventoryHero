@@ -2,9 +2,10 @@ import {defineStore} from "pinia";
 import {Household, IRegisterRequest} from "@/types";
 import {isLoggedIn} from "axios-jwt";
 import {useLocalStorage} from "@vueuse/core";
-import useNewAxios from "@/composables/useNewAxios.ts";
+import useNewAxios from "@/composables/useAxios.ts";
 import {UserEndpoint} from "@/api/http";
 import {useSocketStore} from "@/store";
+import {Permissions} from "@/types/api.ts";
 
 
 
@@ -22,10 +23,16 @@ export const useAuthStore = defineStore('auth', {
                 },
             },
         ),
+        permissions: {} as Permissions,
         userEndpoint: useNewAxios("user") as {axios: UserEndpoint},
         returnUrl: null as (null|string),
     }),
     actions: {
+        reset() {
+            this.user = null;
+            this.permissions = {}
+            this.returnUrl = null
+        },
         async login(username: string, password: string)
         {
             let loginSuccess = await this.userEndpoint.axios.login({
@@ -45,13 +52,15 @@ export const useAuthStore = defineStore('auth', {
             {
                 this.user = {...userData, authorized: true}
             }
-
+            await this.fetchPermissions()
             if(this.returnUrl === null)
             {
 
                 await this.$router.push("/");
                 return;
             }
+
+
             await this.$router.push(this.returnUrl)
 
 
@@ -72,6 +81,7 @@ export const useAuthStore = defineStore('auth', {
             {
                 // TODO notify
             }
+            this.reset()
             this.$router.push("/login")
         },
         async changeHousehold(household: Household | undefined)
@@ -94,6 +104,7 @@ export const useAuthStore = defineStore('auth', {
             socketStore.leaveHousehold()
             this.user = null;
             await this.$router.push("/login")
+            this.reset()
         },
         async register(username: string, password: string, email: string, localized_error="")
         {
@@ -121,10 +132,21 @@ export const useAuthStore = defineStore('auth', {
             }
 
            await this.$router.push(returnUrl)
+        },
+        async fetchPermissions(){
+            if(!this.isAuthorized()){
+                return
+            }
+            this.permissions = await this.userEndpoint.axios.getPermissions()
+            console.log(this.permissions)
+        },
+        async init(){
+            await this.fetchPermissions()
         }
     },
     getters: {
         household: state => {return state.user?.household?.id ?? -1},
-        userSet: state => {return state.user !== null}
+        userSet: state => {return state.user !== null},
+        isAdmin: state => { return state.permissions.admin ?? false}
     }
 })

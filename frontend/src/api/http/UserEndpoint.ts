@@ -1,9 +1,9 @@
 import {Endpoint} from "./Endpoint.ts";
-import {Axios} from "axios";
 import {ILoginRequest, ILoginResponse, IRegisterRequest, IUser} from "@/types";
 import {clearAuthTokens, getRefreshToken, setAuthTokens} from "axios-jwt";
 import {notify} from "@kyvg/vue3-notification";
 import {i18n} from "@/lang";
+import {Permissions} from "@/types/api.ts";
 
 
 
@@ -14,7 +14,6 @@ export class UserEndpoint extends Endpoint{
     constructor(){
         super(false, "/user")
     }
-
 
     public async getUser():Promise<IUser|undefined> {
         const response = await this.internalAxios.get("");
@@ -96,6 +95,16 @@ export class UserEndpoint extends Endpoint{
             verified: false,
             status: response.data.status
         }
+    }
+
+    public async getPermissions(){
+        const response = await this.internalAxios.get("/permissions")
+        if(response.status === 200)
+        {
+            return response.data as Permissions
+        }
+        this.handleNonErrorNotifications(response)
+        return {} as Permissions
     }
 
 }

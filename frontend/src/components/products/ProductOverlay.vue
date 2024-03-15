@@ -5,7 +5,7 @@ import {defineComponent, PropType} from 'vue'
 import {type Product, ProductLocations, StorageTypes} from "@/types";
 import ProductDetailCard from "@/components/products/ProductDetailCard.vue";
 import AppConfirmModalActivatorBtn from "@/components/ui/AppModalActivatorBtn.vue";
-import useNewAxios from "@/composables/useNewAxios.ts";
+import useNewAxios from "@/composables/useAxios.ts";
 import {ProductEndpoint} from "@/api/http";
 
 export default defineComponent({

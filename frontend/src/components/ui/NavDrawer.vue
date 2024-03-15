@@ -3,10 +3,16 @@ import {defineComponent} from 'vue'
 import {isMobile} from "mobile-device-detect";
 import NavItem from "@/components/ui/NavItem.vue";
 import NavList from "@/components/common/NavList.vue";
+import {useRoute} from "vue-router";
+import AppNavListAdmin from "@/components/ui/AppNavListAdmin.vue";
 
 export default defineComponent({
   name: "NavDrawer",
-  components: {NavList, NavItem},
+  components: {AppNavListAdmin, NavList, NavItem},
+  setup(){
+    const route = useRoute()
+    return {route}
+  },
   watch:{
 
   },
@@ -25,6 +31,9 @@ export default defineComponent({
         this.$emit('update:modelValue', value)
       }
     },
+    admin(){
+      return this.route.path.includes("/administration")
+    },
     isMobile(){
       return isMobile
     }
@@ -35,14 +44,17 @@ export default defineComponent({
 <template>
 <v-navigation-drawer
   v-model="model"
-  :rail="isMobile"
   :temprary="true"
-
-
 >
   <v-list
   >
-    <nav-list :is-dock="false" />
+    <nav-list
+        v-if="!admin"
+        :is-dock="false"
+    />
+    <app-nav-list-admin
+        v-else
+    />
   </v-list>
 </v-navigation-drawer>
 </template>

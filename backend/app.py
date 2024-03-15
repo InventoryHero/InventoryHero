@@ -11,6 +11,7 @@ from backend.endpoints.HouseholdEndpoint import HouseholdEndpoint
 from backend.flask_config import app, socketio
 from backend.sockets.sockets import HouseholdSocket
 from backend.database import db, migrate
+from endpoints.AdminEndpoint import AdminEndpoint
 
 load_dotenv()
 
@@ -19,10 +20,12 @@ user = User('user', __name__, application=app, db=db, url_prefix="/api/v1")
 products = ProductEndpoint('product_endpoint', __name__, application=app, db=db, url_prefix=url_prefix)
 storage = StorageEndpoint('storage_endpoint', __name__, application=app, db=db, url_prefix=url_prefix)
 household = HouseholdEndpoint('household_endpoint', __name__, application=app, db=db, url_prefix="/api/v1")
+admin = AdminEndpoint('admin_endpoint', __name__, application=app, db=db, url_prefix="/api/v1")
 app.register_blueprint(user)
 app.register_blueprint(products)
 app.register_blueprint(storage)
 app.register_blueprint(household)
+app.register_blueprint(admin)
 
 socketio.on_namespace(HouseholdSocket("/household"))
 

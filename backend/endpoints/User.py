@@ -175,6 +175,13 @@ class User(Blueprint):
             self.db.session.commit()
             return jsonify(), 200
 
+        @self.route("/permissions", methods=["GET"])
+        @jwt_required()
+        def permissions():
+            return jsonify(
+                admin=current_user.is_admin
+            ), 200
+
     def blacklist_token(self, token):
         jti = token["jti"]
         ttype = token["type"]

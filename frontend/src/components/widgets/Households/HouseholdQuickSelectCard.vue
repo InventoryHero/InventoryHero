@@ -1,7 +1,7 @@
 <script lang="ts">
 import {defineComponent, PropType} from 'vue'
 import {useAuthStore} from "@/store";
-import useNewAxios from "@/composables/useNewAxios.ts";
+import useNewAxios from "@/composables/useAxios.ts";
 import {HouseholdEndpoint} from "@/api/http";
 import {Household} from "@/types";
 

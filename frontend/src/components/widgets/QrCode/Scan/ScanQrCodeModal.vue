@@ -3,7 +3,7 @@ import {defineComponent} from 'vue'
 import {StorageQrData, StorageTypes} from "@/types";
 import {Html5QrcodeResult} from "html5-qrcode";
 import {getName} from "@/api/storage";
-import useNewAxios from "@/composables/useNewAxios.ts";
+import useNewAxios from "@/composables/useAxios.ts";
 import {BoxEndpoint, LocationEndpoint} from "@/api/http";
 
 export default defineComponent({

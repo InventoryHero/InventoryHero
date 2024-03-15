@@ -15,6 +15,7 @@ declare module 'vue' {
     AppHelpIndicator: typeof import('./src/components/ui/AppHelpIndicator.vue')['default']
     AppIconBtn: typeof import('./src/components/ui/AppIconBtn.vue')['default']
     AppModalActivatorBtn: typeof import('./src/components/ui/AppModalActivatorBtn.vue')['default']
+    AppNavListAdmin: typeof import('./src/components/ui/AppNavListAdmin.vue')['default']
     AppOverlayTitle: typeof import('./src/components/ui/AppOverlayTitle.vue')['default']
     AppPasswordTextfield: typeof import('./src/components/ui/AppPasswordTextfield.vue')['default']
     AppPreselectionFilter: typeof import('./src/components/common/AppPreselectionFilter.vue')['default']
@@ -47,6 +48,7 @@ declare module 'vue' {
     NavDrawer: typeof import('./src/components/ui/NavDrawer.vue')['default']
     NavItem: typeof import('./src/components/ui/NavItem.vue')['default']
     NavList: typeof import('./src/components/common/NavList.vue')['default']
+    Overview: typeof import('./src/components/widgets/Administration/Overview.vue')['default']
     PrintQrModal: typeof import('./src/components/widgets/QrCode/Print/PrintQrModal.vue')['default']
     ProductCard: typeof import('./src/components/products/ProductCard.vue')['default']
     ProductDetailCard: typeof import('./src/components/products/ProductDetailCard.vue')['default']
@@ -61,5 +63,7 @@ declare module 'vue' {
     ScanQrCodeModal: typeof import('./src/components/widgets/QrCode/Scan/ScanQrCodeModal.vue')['default']
     TextFilter: typeof import('./src/components/common/TextFilter.vue')['default']
     UiSettings: typeof import('./src/components/settings/UiSettings.vue')['default']
+    UserCard: typeof import('./src/components/widgets/Administration/Users/UserCard.vue')['default']
+    Users: typeof import('./src/components/widgets/Administration/Users.vue')['default']
   }
 }

@@ -21,7 +21,7 @@ import {far} from "@fortawesome/free-regular-svg-icons";
 import {fab} from "@fortawesome/free-brands-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import VueVirtualScroller from "vue-virtual-scroller"
-import pinia, {useConfigStore} from "@/store";
+import pinia, {useAuthStore, useConfigStore} from "@/store";
 import FloatingVue from 'floating-vue'
 import Notifications from '@kyvg/vue3-notification'
 
@@ -75,7 +75,7 @@ app.component('SEmail', SEmail)
 app.use(VueVirtualScroller)
 app.use(FloatingVue)
 app.use(Notifications)
-app.use(router)
+
 app.use(pinia)
 
 
@@ -83,15 +83,19 @@ app.use(pinia)
 
 const configStore= useConfigStore()
 configStore.init()
+
 app.use(vuetify)
 let emitter = new TinyEmitter()
 app.config.globalProperties.$emitter = emitter
-
-
 
 
 app.use(i18n);
 app.use(VueSidebarMenu)
 app.use(Toast, toastOptions)
 
-app.mount('#app')
+// let auth store initialization finish before loading router
+const authStore = useAuthStore()
+authStore.init().then(() => {
+    app.use(router)
+    app.mount('#app')
+})

@@ -5,7 +5,7 @@ import {Household} from "@/types";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {useAuthStore} from "@/store";
 import HouseholdItem from "@/components/household/HouseholdItem.vue";
-import useNewAxios from "@/composables/useNewAxios.ts";
+import useNewAxios from "@/composables/useAxios.ts";
 import {HouseholdEndpoint} from "@/api/http";
 import {notify} from "@kyvg/vue3-notification";
 import {i18n} from "@/lang";

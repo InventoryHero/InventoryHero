@@ -4,7 +4,7 @@ import {Product, ProductLocations} from "@/types/index.ts";
 import {useAuthStore, useConfigStore} from "@/store";
 import {defineComponent} from "vue"
 import ProductDetailCard from "@/components/products/ProductDetailCard.vue"
-import useNewAxios from "@/composables/useNewAxios.ts";
+import useNewAxios from "@/composables/useAxios.ts";
 import {ProductEndpoint} from "@/api/http";
 
 export default defineComponent({

@@ -19,6 +19,9 @@ import {i18n} from "@/lang";
 import Confirmation from "@/views/Confirmation.vue";
 import Join from "@/views/Join.vue";
 import {notify} from "@kyvg/vue3-notification";
+import Administration from "@/views/Administration.vue";
+import Users from "@/components/widgets/Administration/Users.vue";
+import Overview from "@/components/widgets/Administration/Overview.vue";
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -191,6 +194,27 @@ export const router = createRouter({
       path: '/logout',
       name: "logout",
       component: Logout
+    },
+    {
+      path: "/administration",
+      children: [
+        {
+          path: "",
+          name: "AdministrationLanding",
+          component: Overview
+        },
+        {
+          path: "users",
+          name: "AdministrationUsers",
+          component: Users
+        }
+      ],
+      meta:{
+        requiresAuth: true,
+        fillHeight: true,
+        transition: 'slide',
+        title: i18n.global.t('titles.administration')
+      }
     },
     {
       path: '/:pathMatch(.*)*',

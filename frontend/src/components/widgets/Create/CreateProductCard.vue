@@ -2,7 +2,7 @@
 import {defineComponent} from 'vue'
 import {ProductLocations, ProductOnly, StorageTypes} from "@/types";
 import {useAuthStore} from "@/store";
-import useNewAxios from "@/composables/useNewAxios.ts";
+import useNewAxios from "@/composables/useAxios.ts";
 import {ProductEndpoint} from "@/api/http";
 
 type Views = "product" | "box" | "location"

@@ -81,7 +81,12 @@ export default{
 
     <!-- household card -->
     <household-quick-select-card />
-
+    <v-btn
+      @click="console.log(authData.permissions)"
+      class="mt-10"
+    >
+      print permissions
+    </v-btn>
   </v-col>
 </v-row>
 </template>

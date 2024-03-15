@@ -4,7 +4,7 @@ import {getAccessToken} from 'axios-jwt'
 import {useAuthStore} from "@/store";
 import {notify} from "@kyvg/vue3-notification";
 import {reactive} from "vue";
-import useNewAxios from "@/composables/useNewAxios.ts";
+import useNewAxios from "@/composables/useAxios.ts";
 import {UserEndpoint} from "@/api/http";
 import {i18n} from "@/lang";
 
