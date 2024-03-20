@@ -11,7 +11,7 @@ from backend.endpoints.HouseholdEndpoint import HouseholdEndpoint
 from backend.flask_config import app, socketio
 from backend.sockets.sockets import HouseholdSocket
 from backend.database import db, migrate
-from endpoints.AdminEndpoint import AdminEndpoint
+from backend.endpoints.AdminEndpoint import AdminEndpoint
 
 load_dotenv()
 

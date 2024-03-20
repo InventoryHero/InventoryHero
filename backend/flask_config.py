@@ -20,10 +20,11 @@ def parse_db_parameters(db_type, db_host, db_port, db_name, db_user, db_password
     if db_type == "sqlite":
         driver = "sqlite+pysqlite"
         file_path = ""
-        if os.path.exists("/app/inventoryhero/data"):
-            file_path = "//app/inventoryhero/data/inventoryhero.db"
+        logger.warning(os.getcwd())
+        if os.path.exists("../data"):
+            file_path = "/../data/inventoryhero.db"
         else:
-            logger.warning("/app/inventoryhero/inventoryhero.db not found, using memory based sqlite instance.")
+            logger.warning("../data/inventoryhero.db not found, using memory based sqlite instance.")
         db_uri = f"{driver}://{file_path}"
     elif db_type == "mysql":
         driver = "mysql+mysqldb"
