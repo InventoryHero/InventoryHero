@@ -29,4 +29,5 @@ class AdminEndpoint(Blueprint):
         @require_admin
         def get_users():
             users = User.query.all()
+            users = [user.serialize() for user in users]
             return jsonify(users=users), 200

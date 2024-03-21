@@ -211,7 +211,7 @@ export const router = createRouter({
       ],
       meta:{
         requiresAuth: true,
-        fillHeight: true,
+        fillHeight: false,
         transition: 'slide',
         title: i18n.global.t('titles.administration')
       }

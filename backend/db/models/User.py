@@ -26,6 +26,20 @@ class User(db.Model):
     def __repr__(self):
         return '<User %r>' % self.username
 
+    def serialize(self):
+        test = {
+            "id": self.id,
+            "username": self.username,
+            "email": self.email,
+            "is_admin": self.is_admin,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "registration_date": self.registration_date,
+            "email_confirmed": self.email_confirmed
+        }
+        print(test)
+        return test
+
 
 @dataclass
 class Household(db.Model):
