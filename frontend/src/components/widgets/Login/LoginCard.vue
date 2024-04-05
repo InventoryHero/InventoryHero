@@ -56,6 +56,8 @@ export default defineComponent({
           v-model="username"
       />
       <app-password-textfield
+        density="compact"
+        variant="outlined"
         :rules="[rules.passwordNeeded]"
         :label="$t('login.login.password')"
         v-model="password"

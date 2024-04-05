@@ -3,7 +3,7 @@ import {ILoginRequest, ILoginResponse, IRegisterRequest, IUser} from "@/types";
 import {clearAuthTokens, getRefreshToken, setAuthTokens} from "axios-jwt";
 import {notify} from "@kyvg/vue3-notification";
 import {i18n} from "@/lang";
-import {Permissions} from "@/types/api.ts";
+import {Permissions, User} from "@/types/api.ts";
 
 
 
@@ -107,4 +107,51 @@ export class UserEndpoint extends Endpoint{
         return {} as Permissions
     }
 
+    public async updateUser(updated: Partial<User>, user: Partial<User>){
+        if(user.id === undefined){
+            return {
+                success: false,
+                msg: undefined,
+                user: undefined
+            }
+        }
+        const response = await this.internalAxios.post(`/update/${user.id}`, updated)
+        if(response.status === 200){
+            return {
+                success: true,
+                msg: response.data.status,
+                user: response.data.user
+            }
+        }
+        this.handleNonErrorNotifications(response)
+        return {
+            success: false,
+            msg: undefined,
+            user: undefined
+        }
+    }
+
+    public async createUser(toCreate: Partial<User>){
+        const response = await this.internalAxios.post("/create", toCreate)
+        if(response.status === 200){
+            return {
+                success: true,
+                user: response.data.user
+            }
+        }
+        this.handleNonErrorNotifications(response)
+        return {
+            success: false,
+            user: undefined
+        }
+    }
+
+    public async deleteUser(toDelete: number){
+        const response = await this.internalAxios.delete(`/delete/${toDelete}`)
+        if(response.status === 200){
+            return true
+        }
+        this.handleNonErrorNotifications(response)
+        return false
+    }
 }

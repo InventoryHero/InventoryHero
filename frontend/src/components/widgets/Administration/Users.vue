@@ -4,15 +4,21 @@ import useAxios from "@/composables/useAxios.ts";
 import {AdministrationEndpoint} from "@/api/http/AdministrationEndpoint.ts";
 import {User} from "@/types/api.ts";
 import {useDisplay} from "vuetify";
+import UserEditModal from "@/components/widgets/Administration/Users/UserEditModal.vue";
+import {UserEndpoint} from "@/api/http";
 
 export default defineComponent({
   name: "Users",
+  components: {UserEditModal},
   setup(){
     const adminEndpoint = useAxios("administration")
+    const userEndpoint = useAxios("user")
     const {mobile} = useDisplay()
     return {
       mobile,
-      adminEndpoint: adminEndpoint.axios as AdministrationEndpoint
+      adminEndpoint: adminEndpoint.axios as AdministrationEndpoint,
+      userEndpoint: userEndpoint.axios as UserEndpoint
+
     }
   },
   computed:{
@@ -60,6 +66,21 @@ export default defineComponent({
     },
     usersSelected(){
       return this.selected.length > 1 || this.selected.length == this.users.length
+    },
+    userTOEdit: {
+      get(){
+        if(this.user === -1){
+          return undefined
+        }
+        return this.users[this.user]
+      },
+      set(value: (undefined|Partial<User>)){
+        if(value === undefined){
+          this.user = -1
+          return
+        }
+        this.users[this.user] = value
+      }
     }
   },
   data() {
@@ -68,26 +89,36 @@ export default defineComponent({
       users: [] as Array<Partial<User>>,
       search: '',
       searchShown: false,
-      selected: []
+      selected: [],
+      userToEdit: undefined as (undefined|Partial<User>),
+      user: -1,
+      createModalActive: false,
     }
   },
   methods:{
     resendEmail(userId: number){
       console.log("RESEND USER CONFIRMATION EMAIL")
     },
-    editUser(user: Partial<User>){
-      console.log("OPEN USER EDIT", user.id)
+    editUser(user: Partial<User>, index: number){
+      //console.log(index)
+      this.user = index
+      //this.userToEdit = user
     },
-    deleteUser(userId: number){
-      console.log("delete user", userId)
+    async deleteUser(userId: number){
+      const success = await this.userEndpoint.deleteUser(userId)
     },
     deleteSelectedUser(){
       console.log("delete selected user", this.selected);
+    },
+    createUser(){
+      this.createModalActive = true
+    },
+    userCreated(newUser: User){
+      this.users.push(newUser)
     }
   },
   mounted(){
     this.loading = true
-    console.log(this.mobile)
     this.adminEndpoint.loadUsers().then((users) => {
       this.users = users
       this.loading = false
@@ -104,106 +135,125 @@ export default defineComponent({
       lg="10"
       cols="12"
     >
+      <user-edit-modal
+        v-model="userTOEdit"
+      />
+      <user-create-modal
+        v-model="createModalActive"
+        @created:user="userCreated"
+      />
+
       <v-container :fluid="true" class="pl-0 pr-0">
-          <v-data-table
-              v-model="selected"
-              :headers="headers"
-              :items="users"
-              item-value="id"
-              :search="search"
-              :show-select="true"
+          <div
+            class="mb-4 d-flex justify-end"
           >
-            <template v-slot:top>
-              <v-toolbar
+            <v-btn
+              color="primary"
+              density="compact"
+              @click="createUser"
+            >
+              {{ $t('administration.users.create')}}
+            </v-btn>
+          </div>
+          <v-data-table
+            v-model="selected"
+            :headers="headers"
+            :items="users"
+            item-value="id"
+            :search="search"
+            :show-select="true"
+        >
+          <template v-slot:top>
+            <v-toolbar
                 :flat="true"
                 density="compact"
-              >
+            >
 
-                <template v-slot:title>
-                  <template
+              <template v-slot:title>
+                <template
                     v-if="usersSelected"
-                  >
-                    {{ $t('administration.users.selected', {count: selected.length})}}
-                  </template>
-                  <template
+                >
+                  {{ $t('administration.users.selected', {count: selected.length})}}
+                </template>
+                <template
                     v-else
-                  >
-                    {{ $t('administration.users.table') }}
-                  </template>
+                >
+                  {{ $t('administration.users.table') }}
                 </template>
-                <template
+              </template>
+              <template
                   v-if="!usersSelected"
+              >
+                <v-btn
+                    icon="mdi-magnify"
+                    @click="searchShown = true"
+                    v-if="!searchShown"
+                />
+                <v-text-field
+                    v-model="search"
+                    :label="$t('administration.users.search')"
+                    density="compact"
+                    color="grey darken-4"
+                    :hide-details="true"
+                    :single-line="true"
+                    v-else
                 >
-                  <v-btn
-                      icon="mdi-magnify"
-                      @click="searchShown = true"
-                      v-if="!searchShown"
-                  />
-                  <v-text-field
-                      v-model="search"
-                      :label="$t('administration.users.search')"
-                      density="compact"
-                      color="grey darken-4"
-                      :hide-details="true"
-                      :single-line="true"
-                      v-else
-                  >
-                    <template v-slot:prepend-inner>
-                      <v-btn
-                          icon="mdi-magnify"
-                          @click="searchShown = false"
-                      />
-                    </template>
-                  </v-text-field>
-                </template>
-                <template
+                  <template v-slot:prepend-inner>
+                    <v-btn
+                        icon="mdi-magnify"
+                        @click="searchShown = false"
+                    />
+                  </template>
+                </v-text-field>
+              </template>
+              <template
                   v-else
-                >
-                  <v-btn
-                      icon="mdi-delete"
-                      color="red"
-                      @click="deleteSelectedUser()"
-                  />
-                </template>
-              </v-toolbar>
-            </template>
-            <template v-slot:item.actions="{item}">
-              <app-icon-btn
+              >
+                <v-btn
+                    icon="mdi-delete"
+                    color="red"
+                    @click="deleteSelectedUser()"
+                />
+              </template>
+            </v-toolbar>
+          </template>
+          <template v-slot:item.actions="{item, index}">
+            <app-icon-btn
                 class="me-2"
                 icon="mdi-pencil"
                 color="primary"
                 size="large"
-                @click="editUser(item)"
-              />
-              <app-icon-btn
+                @click="editUser(item, index)"
+            />
+            <app-icon-btn
                 icon="mdi-delete"
                 color="red"
                 size="large"
                 @click="deleteUser(item.id)"
-              />
-            </template>
+            />
+          </template>
 
-            <template v-slot:item.is_admin="{item}">
-              <v-icon
+          <template v-slot:item.is_admin="{item}">
+            <v-icon
                 icon="mdi-check-circle-outline"
                 :color="item.is_admin ? 'green' : 'grey'"
-              />
-            </template>
-            <template v-slot:item.email_confirmed="{item}">
-              <v-icon
-                  v-if="item.email_confirmed"
-                  icon="mdi-check-circle-outline"
-                  color="green"
-              />
-              <app-icon-btn
-                  v-else
-                  icon="mdi-email-sync"
-                  color="primary"
-                  size="large"
-                  @click="resendEmail(item.id)"
-              />
-            </template>
-          </v-data-table>
+            />
+          </template>
+          <template v-slot:item.email_confirmed="{item}">
+            <v-icon
+                v-if="item.email_confirmed"
+                icon="mdi-check-circle-outline"
+                color="green"
+            />
+            <app-icon-btn
+                v-else
+                icon="mdi-email-sync"
+                color="primary"
+                size="large"
+                @click="resendEmail(item.id)"
+            />
+          </template>
+        </v-data-table>
       </v-container>
     </v-col>
   </v-row>

@@ -62,6 +62,8 @@ declare module 'vue' {
     TextFilter: typeof import('./src/components/common/TextFilter.vue')['default']
     UiSettings: typeof import('./src/components/settings/UiSettings.vue')['default']
     UserCard: typeof import('./src/components/widgets/Administration/Users/UserCard.vue')['default']
+    UserCreateModal: typeof import('./src/components/widgets/Administration/Users/UserCreateModal.vue')['default']
+    UserEditModal: typeof import('./src/components/widgets/Administration/Users/UserEditModal.vue')['default']
     Users: typeof import('./src/components/widgets/Administration/Users.vue')['default']
   }
 }

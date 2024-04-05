@@ -323,6 +323,19 @@
     "copy_to_clipboard": "Copy the invite link into your clipboard...",
     "or": "...or share it directly"
   },
+  "administration": {
+    "users": {
+      "create": "Create",
+      "edit": {
+        "resend_confirmation": "Resend Confirmation",
+        "delete_user": "Delete",
+        "save_user": "Save",
+        "title": "Edit user",
+        "reset": "Reset"
+
+      }
+    }
+  },
   "toasts": {
     "titles": {
       "info": {

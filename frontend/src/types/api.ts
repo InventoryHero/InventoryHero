@@ -108,5 +108,10 @@ export interface User {
     id: number,
     username: string,
     email: string,
-    is_admin: boolean
+    password: string|undefined,
+    is_admin: boolean,
+    first_name: string,
+    last_name: string,
+    registration_date: string,
+    email_confirmed: boolean
 }

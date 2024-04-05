@@ -71,6 +71,11 @@ def authorize_room(joined=True):
     return wrapper
 
 
+class UserSocket(namespace.Namespace):
+     pass
+
+
+
 class HouseholdSocket(namespace.Namespace):
     @socket_token()
     @authorize_room(joined=False)

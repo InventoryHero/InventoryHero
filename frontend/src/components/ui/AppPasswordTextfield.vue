@@ -24,14 +24,6 @@ export default defineComponent({
     password: {
       type: String,
       default: ''
-    },
-    rules:{
-      type: Array,
-      default: []
-    },
-    label:{
-      type: String,
-      default: ''
     }
   },
   data()
@@ -52,21 +44,18 @@ export default defineComponent({
 
 <template>
   <v-text-field
-      density="compact"
-      variant="outlined"
-      :label="label"
+      v-bind="$attrs"
       :type="visible ? 'text' : 'password'"
       v-model="model"
-      :rules="rules"
       hide-details="auto"
   >
     <template #append-inner>
-      <v-btn
+      <v-icon
           @click="showPassword()"
           v-if="visibilityIconShown"
           :icon="passwordVisible ? 'fa:fas fa-eye-slash' : 'fa:fas fa-eye'"
           size="x-small"
-      ></v-btn>
+      ></v-icon>
     </template>
   </v-text-field>
 </template>

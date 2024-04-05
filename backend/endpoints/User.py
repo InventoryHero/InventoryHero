@@ -12,6 +12,7 @@ from backend.db.models.User import User as ApplicationUser
 import bcrypt
 
 from backend.flask_config import jwt
+from decorators import admin_required
 
 
 @jwt.user_identity_loader
@@ -44,7 +45,7 @@ class User(Blueprint):
         super(User, self).__init__(name=name, import_name=import_name, url_prefix=url_prefix, *args)
 
         @self.route('/register', methods=["POST"])
-        def create_user():
+        def register():
             username = request.json.get("username", None)
             if username is None:
                 self.app.logger.error("No or invalid username provided")
@@ -64,11 +65,6 @@ class User(Blueprint):
             password = password.encode('utf-8')
             password = bcrypt.hashpw(password, salt)
 
-            self.app.logger.info({
-                "username": username,
-                "password": password,
-                "email": email
-            })
 
             if ApplicationUser.query.filter_by(username=username).count() >= 1:
                 return jsonify(status="username_in_use"), 409
@@ -174,6 +170,100 @@ class User(Blueprint):
             user.email_confirmed = True
             self.db.session.commit()
             return jsonify(), 200
+
+        @self.route("/update/<int:user_id>", methods=["POST"])
+        @self.route("/update", defaults={'user_id': None}, methods=["POST"])
+        @jwt_required()
+        @admin_required()
+        def update_user(user_id):
+            if user_id is None:
+                user_id = current_user.id
+            to_update = ApplicationUser.query.filter_by(id=user_id).first()
+            if to_update is None:
+                return jsonify(status="user_not_found"), 400
+
+            username = request.json.get("username", None)
+            firstname = request.json.get("first_name", None)
+            lastname = request.json.get("last_name", None)
+            email = request.json.get("email", None)
+            is_admin = request.json.get("is_admin", None)
+
+            existing = ApplicationUser.query.filter((ApplicationUser.username == username) | (ApplicationUser.email == email)).first()
+
+            if existing is not None:
+                return jsonify(status="username_or_email_already_exists"), 400
+            self.app.logger.info(firstname)
+            if username is not None:
+                to_update.username = username
+            if firstname is not None:
+                to_update.first_name = firstname
+            if lastname is not None:
+                to_update.last_name = lastname
+            if email is not None:
+                to_update.email = email
+
+            admins = len(ApplicationUser.query.filter_by(is_admin=True).all()) > 1
+            status = "updated_successfully"
+            if is_admin is not None:
+                # check if there is at least one admin left
+                if is_admin:
+                    to_update.admin = is_admin
+                elif admins:
+                    to_update.admin = is_admin
+                else:
+                    status = "update_successful_admin_remains"
+            self.db.session.commit()
+            return jsonify(status=status, user=to_update.serialize()), 200
+
+        @self.route("/create", methods=["POST"])
+        @jwt_required()
+        @admin_required()
+        def create_user():
+            username = request.json.get("username", None)
+            password = request.json.get("password", None)
+            email = request.json.get("email", None)
+            lastname = request.json.get("lastname", None)
+            firstname = request.json.get("firstname", None)
+            is_admin = request.json.get("is_admin", False)
+            if username is None:
+                return jsonify(status="no_username"), 422
+            if password is None:
+                return jsonify(status="no_password"), 422
+            if email is None:
+                return jsonify(status="no_email"), 422
+
+            salt = bcrypt.gensalt()
+            password = password.encode('utf-8')
+            password = bcrypt.hashpw(password, salt)
+
+            confirmation_code = None
+            if self.app.config["CONFIRMATION_NEEDED"]:
+                confirmation_code = uuid.uuid4()
+
+            user = ApplicationUser(username=username,
+                                   password=password.decode("utf-8"),
+                                   last_name=lastname,
+                                   first_name=firstname,
+                                   is_admin=is_admin,
+                                   email_confirmed=False,
+                                   email=email,
+                                   registration_date=datetime.utcnow(),
+                                   confirmation_code=confirmation_code)
+
+            self.db.session.add(user)
+            self.db.session.commit()
+
+            return jsonify(status="success", user=user.serialize()), 200
+
+        @self.route("/delete/<int:user_id>", methods=["DELETE"])
+        @jwt_required()
+        @admin_required()
+        def delete_user(user_id):
+            # TODO DELETE USER AND HOUSEHOLDS AND SO ON ...
+            # IF HOUSEHOLD HAS MEMBER, MAKE ANY MEMBER OWNER
+            # IF ONLY ONE ADMIN LEFT: DON'T DELETE
+            self.app.logger.info(user_id)
+            return jsonify(status="success"), 200
 
         @self.route("/permissions", methods=["GET"])
         @jwt_required()

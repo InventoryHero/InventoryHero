@@ -84,11 +84,15 @@ export default defineComponent({
           v-model="password"
           :label="$t('login.register.password')"
           :rules="[rules.passwordNeeded]"
+          density="compact"
+          variant="outlined"
       />
       <app-password-textfield
           :label="$t('login.register.repeat_password')"
           v-model="password_repeat"
           :rules="[rules.repeatNotEqual]"
+          density="compact"
+          variant="outlined"
       />
 
     </v-form>

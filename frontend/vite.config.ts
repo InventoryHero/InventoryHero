@@ -7,11 +7,13 @@ import {fileURLToPath, URL} from "node:url";
 import Components from 'unplugin-vue-components/vite'
 import {i18n} from './src/lang';
 import basicSsl from '@vitejs/plugin-basic-ssl'
+import vuetify from "vite-plugin-vuetify";
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     vue(),
+    vuetify(),
     VitePWA({
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
@@ -51,6 +53,7 @@ export default defineConfig({
         enabled: true
       }
     }),
+
     Components({
 
     }),

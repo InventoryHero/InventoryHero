@@ -39,3 +39,14 @@ def emit_update():
         return decorator
     return wrapper
 
+
+def admin_required():
+    def wrapper(fn):
+        @wraps(fn)
+        def decorator(*args, **kwargs):
+            if current_user.is_admin:
+                return fn(*args, **kwargs)
+            return jsonify(status="admin_role_required"), 403
+        return decorator
+    return wrapper
+
