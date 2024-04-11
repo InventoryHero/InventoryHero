@@ -22,6 +22,9 @@ export default defineComponent({
     }
   },
   computed:{
+    deleteModalActive(){
+      return this.usersToDelete.length > 0
+    },
     headers() {
       let headers: Array<Object> = [
         {
@@ -81,6 +84,18 @@ export default defineComponent({
         }
         this.users[this.user] = value
       }
+    },
+    deleteConfirmationTitle(){
+      if(this.usersToDelete.length === 1){
+        return this.$t('administration.users.delete_confirm_title')
+      }
+      return ""
+    },
+    deleteConfirmationBody(){
+      if(this.usersToDelete.length === 1){
+        return this.$t('administration.users.delete_confirm_body')
+      }
+      return ""
     }
   },
   data() {
@@ -93,6 +108,7 @@ export default defineComponent({
       userToEdit: undefined as (undefined|Partial<User>),
       user: -1,
       createModalActive: false,
+      usersToDelete: [] as Array<number>
     }
   },
   methods:{
@@ -104,8 +120,26 @@ export default defineComponent({
       this.user = index
       //this.userToEdit = user
     },
-    async deleteUser(userId: number){
-      const success = await this.userEndpoint.deleteUser(userId)
+    requestDeletion(id: number){
+      this.usersToDelete.push(id)
+    },
+    async deleteUser(){
+      // TODO BLOCK USER ROUTES IF USER IS DELETED
+      const success = await this.userEndpoint.deleteUser(this.usersToDelete[0])
+      if(success){
+
+        this.users = this.users.filter((user) => user.id !== this.usersToDelete[0])
+
+        this.$notify({
+          title: this.$t('toasts.titles.success.deleted'),
+          text: this.$t('toasts.text.success.deleted'),
+          type: 'success'
+        })
+      }
+      this.usersToDelete = []
+    },
+    abortDeletion(){
+      this.usersToDelete = []
     },
     deleteSelectedUser(){
       console.log("delete selected user", this.selected);
@@ -141,6 +175,13 @@ export default defineComponent({
       <user-create-modal
         v-model="createModalActive"
         @created:user="userCreated"
+      />
+      <app-confirm-modal
+        :title="deleteConfirmationTitle"
+        :body="deleteConfirmationBody"
+        :dialog="deleteModalActive"
+        @accept="deleteUser"
+        @deny="abortDeletion"
       />
 
       <v-container :fluid="true" class="pl-0 pr-0">
@@ -229,7 +270,7 @@ export default defineComponent({
                 icon="mdi-delete"
                 color="red"
                 size="large"
-                @click="deleteUser(item.id)"
+                @click="requestDeletion(item.id)"
             />
           </template>
 

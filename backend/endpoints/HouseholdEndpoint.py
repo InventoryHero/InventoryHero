@@ -94,7 +94,7 @@ class HouseholdEndpoint(Blueprint):
             if member is None or member.joined:
                 return jsonify(status="invite_code_invalid"), 403
 
-            user = HouseholdMembers.query.filter_by(member_id=current_user.id).first()
+            user = HouseholdMembers.query.filter_by(household_id=member.household_id, member_id=current_user.id).first()
             if user is not None and user.id == current_user.id:
                 return jsonify(status="already_member"), 400
 

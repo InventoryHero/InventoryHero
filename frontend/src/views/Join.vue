@@ -62,7 +62,9 @@ export default defineComponent({
 </script>
 
 <template>
-<v-row>
+<v-row
+  justify="center"
+>
   <v-col
     cols="12"
     lg="6"

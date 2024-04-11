@@ -8,7 +8,7 @@ from flask_jwt_extended import create_access_token, jwt_required, current_user, 
 
 from backend.mail.Mail import Mail
 from backend.db.models.TokenBlacklist import TokenBlacklist
-from backend.db.models.User import User as ApplicationUser
+from backend.db.models.User import User as ApplicationUser, HouseholdMembers, Household
 import bcrypt
 
 from backend.flask_config import jwt
@@ -98,7 +98,6 @@ class User(Blueprint):
                 user=username,
                 confirmation=not self.app.config["CONFIRMATION_NEEDED"]
             ), 200
-
 
         @self.route("/login", methods=["POST"])
         def login():
@@ -237,15 +236,19 @@ class User(Blueprint):
             password = bcrypt.hashpw(password, salt)
 
             confirmation_code = None
+            email_confirmed = True
             if self.app.config["CONFIRMATION_NEEDED"]:
                 confirmation_code = uuid.uuid4()
+                email_confirmed = False
+
+
 
             user = ApplicationUser(username=username,
                                    password=password.decode("utf-8"),
                                    last_name=lastname,
                                    first_name=firstname,
                                    is_admin=is_admin,
-                                   email_confirmed=False,
+                                   email_confirmed=email_confirmed,
                                    email=email,
                                    registration_date=datetime.utcnow(),
                                    confirmation_code=confirmation_code)
@@ -262,7 +265,29 @@ class User(Blueprint):
             # TODO DELETE USER AND HOUSEHOLDS AND SO ON ...
             # IF HOUSEHOLD HAS MEMBER, MAKE ANY MEMBER OWNER
             # IF ONLY ONE ADMIN LEFT: DON'T DELETE
-            self.app.logger.info(user_id)
+            user = ApplicationUser.query.filter_by(id=user_id).first()
+
+            if user is None:
+                return jsonify(status="user_not_found"), 422
+
+            admins = len(ApplicationUser.query.filter_by(is_admin=True).all()) > 1
+            if user.is_admin and not admins:
+                return jsonify(status="delete_not_possible_last_admin"), 422
+
+            households = HouseholdMembers.query.filter_by(member_id=user_id).all()
+            for household in households:
+                db.session.delete(household)
+            households = Household.query.filter_by(creator=user_id).all()
+
+            for household in households:
+                other_members = HouseholdMembers.query.filter_by(household_id=household.id).all()
+                if len(other_members) != 0:
+                    household.creator = other_members[0].member_id
+                    continue
+                self.db.session.delete(household)
+
+            self.db.session.delete(user)
+            self.db.session.commit()
             return jsonify(status="success"), 200
 
         @self.route("/permissions", methods=["GET"])
