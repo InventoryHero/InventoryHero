@@ -4,7 +4,7 @@ import {isLoggedIn} from "axios-jwt";
 import {useLocalStorage} from "@vueuse/core";
 import useNewAxios from "@/composables/useAxios.ts";
 import {UserEndpoint} from "@/api/http";
-import {useSocketStore} from "@/store";
+import {useHouseholdSocket} from "@/store";
 import {Permissions} from "@/types/api.ts";
 
 
@@ -71,7 +71,7 @@ export const useAuthStore = defineStore('auth', {
             this.returnUrl = null;
             this.user.authorized = false
             await this.$router.push("/logout")
-            const socketStore = useSocketStore()
+            const socketStore = useHouseholdSocket()
             socketStore.leaveHousehold()
 
 
@@ -92,7 +92,7 @@ export const useAuthStore = defineStore('auth', {
                 return;
             }
 
-            const socketStore = useSocketStore()
+            const socketStore = useHouseholdSocket()
             socketStore.leaveHousehold()
             this.user.household  = {
                 id: household.id,
@@ -101,7 +101,7 @@ export const useAuthStore = defineStore('auth', {
             socketStore.joinHousehold()
         },
         async destroy(){
-            const socketStore = useSocketStore()
+            const socketStore = useHouseholdSocket()
             socketStore.leaveHousehold()
             this.user = null;
             await this.$router.push("/login")

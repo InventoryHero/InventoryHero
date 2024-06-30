@@ -5,13 +5,15 @@ import {useAuthStore} from "@/store";
 import useNewAxios from "@/composables/useAxios.ts";
 import {UserEndpoint} from "@/api/http";
 
+type DefaultCallback = () => void
+type TakenCallback = (is_taken: boolean) => void
 
+type Callback = DefaultCallback | TakenCallback;
 
 
 export const useGeneralSocketStore =  defineStore("generalSocket", {
     state: () => ({
         authStore: useAuthStore(),
-        errorCallback: undefined as (undefined | (() => void))
     }),
     actions:{
         bindActions(){
@@ -34,36 +36,40 @@ export const useGeneralSocketStore =  defineStore("generalSocket", {
                 }
             )
         },
-        isUserNameFree(username: string, errorCallback: (isTaken:boolean) => void){
+        isUserNameFree(username: string, errorCallback: TakenCallback){
           generalSocket.emit(
               'username',
               {
                 "username": username
               },
-              (data: string) => {
-                  let response: SocketResponse = JSON.parse(data)
-                  this.socketErrorHandler(response, errorCallback)
+              (data: SocketResponse) => {
+                  switch(data.status){
+                      case "username_free":
+                          errorCallback(false)
+                          return;
+                      case "username_taken":
+                          errorCallback(true)
+                          return;
+                      default:
+                          this.socketErrorHandler(data, errorCallback)
+                  }
               }
           )
         },
 
-        updateHeaders(){
+        updateHeaders(callback: DefaultCallback){
             getAccessToken().then((token) => {
                 generalSocket.io.opts.extraHeaders = {
                     Authorization: `Bearer ${token}`
                 }
                 generalSocket.disconnect()
                 generalSocket.connect()
-
-                if(this.errorCallback !== undefined){
-                    this.errorCallback()
-                    this.errorCallback = undefined
-                }
+                callback()
             })
 
         },
 
-        socketErrorHandler(data: SocketResponse, callback: () => void){
+        socketErrorHandler(data: SocketResponse, callback: Callback){
             const userEndpoint = useNewAxios("user")
             let endpoint: UserEndpoint = userEndpoint.axios as UserEndpoint
             console.log(data)
@@ -71,18 +77,13 @@ export const useGeneralSocketStore =  defineStore("generalSocket", {
                 case "token_revoked":
                 case "expired_signature":
                     // DUMMY REQUEST TO REFRESH TOKEN
-                    this.errorCallback = callback
                     endpoint.getUser().then(() => {
-                        this.updateHeaders()
+                        this.updateHeaders(callback as DefaultCallback)
                     })
                     return
                 case "ok":
                     console.log("SUCCESS", data.content)
                     break
-                case "username_taken":
-                    console.log("USERNAME IS TAKEN");
-                    callback()
-                    return
             }
         },
     }

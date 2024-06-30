@@ -1,5 +1,4 @@
 import {defineStore} from "pinia";
-import {io, Socket} from "socket.io-client";
 import {householdSocket} from '@/plugins/connections'
 import {getAccessToken} from 'axios-jwt'
 import {useAuthStore} from "@/store";
@@ -8,22 +7,13 @@ import {UserEndpoint} from "@/api/http";
 import {i18n} from "@/lang";
 import {notify} from "@kyvg/vue3-notification";
 
-export const useSocketStore =  defineStore("socket", {
+export const useHouseholdSocket =  defineStore("socket", {
     state: () => ({
-        connected: false,
-        socket: null as null|Socket,
         authStore: useAuthStore(),
         errorCallback: undefined as (undefined | (() => void))
     }),
     actions: {
         bindActions(){
-            householdSocket.on("connect", () => {
-                this.connected = true;
-            });
-
-            householdSocket.on("disconnect", () => {
-                this.connected = false;
-            });
             householdSocket.on("hi", (msg) => {
                 notify({
                     title: "SOCKET",
@@ -48,7 +38,6 @@ export const useSocketStore =  defineStore("socket", {
 
         },
         updateHeaders(){
-
             getAccessToken().then((token) => {
                 householdSocket.io.opts.extraHeaders = {
                     Authorization: `Bearer ${token}`
@@ -77,10 +66,13 @@ export const useSocketStore =  defineStore("socket", {
         sayHi(){
             householdSocket.emit('hi', {
                 household: this.authStore.household
-            }, (data: Object) => {this.socketErrorHandler(data, this.sayHi)} )
+            }, (data: string) => {
+                let response: SocketResponse = JSON.parse(data)
+                this.socketErrorHandler(response, this.sayHi)
+            } )
         },
-        socketErrorHandler(data: Object, callback: () => void){
-            const socketStore = useSocketStore()
+        socketErrorHandler(data: SocketResponse, callback: () => void){
+            const socketStore = useHouseholdSocket()
             const userEndpoint = useNewAxios("user")
             let endpoint: UserEndpoint = userEndpoint.axios as UserEndpoint
             switch(data.status){

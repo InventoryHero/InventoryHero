@@ -2,17 +2,27 @@
 import {defineComponent, PropType} from "vue";
 import {User} from "@/types/api.ts";
 import {useDisplay} from "vuetify";
-import {useGeneralSocketStore, useSocketStore} from "@/store";
+import {useGeneralSocketStore, useHouseholdSocket} from "@/store";
 import useAxios from "@/composables/useAxios.ts";
 import {UserEndpoint} from "@/api/http";
+
+
+// flags for required data types
+const USERNAME_SET = 1
+const PASSWORD_SET = 2
+const EMAIL_SET = 4
+
+
 
 export default defineComponent({
   name: "UserCard",
   setup(){
     const {mobile} = useDisplay()
-    const sockets = useSocketStore()
+    const sockets = useHouseholdSocket()
     const generalSocket = useGeneralSocketStore()
     const {axios} = useAxios("user")
+
+
     return {
       mobile,
       sockets,
@@ -41,13 +51,6 @@ export default defineComponent({
       },
       set(newName: string){
         this.updatedUserData.username = newName
-
-        let callback = (isTaken: boolean) => {
-          this.usernameFree = !isTaken
-        }
-
-
-        this.generalSocket.isUserNameFree(this.updatedUserData.username, callback)
       }
     },
     firstname: {
@@ -113,7 +116,8 @@ export default defineComponent({
         class: "mb-4",
         disabled: this.loading
       }
-    }
+    },
+
   },
   props: {
     modelValue: {
@@ -132,6 +136,7 @@ export default defineComponent({
   data(){
     return {
       edited: false,
+      correct: 0,
       updatedUserData: {} as Partial<User>,
       usernameFree: true,
       rules: {
@@ -147,7 +152,7 @@ export default defineComponent({
       }
       this.updatedUserData = {}
       if(!this.edit){
-        this.$refs.form.reset()
+        (this.$refs.form as HTMLFormElement).reset()
       }
       this.edited = false
     },
@@ -155,11 +160,29 @@ export default defineComponent({
       if(!this.edited){
         return
       }
-      const {valid} = await this.$refs.form.validate()
+      const {valid} = await (this.$refs.form as HTMLFormElement).validate()
       if(!valid){
         return
       }
       this.$emit('click:save', this.updatedUserData)
+    },
+    usernameFieldDefocused(focused: boolean){
+      if(focused ){
+        return;
+      }
+      let callback = (isTaken: boolean) => {
+        this.usernameFree = !isTaken
+
+        //@ts-expect-error
+        this.$refs?.usernameField?.validate()?.then((obj: Proxy<Array>) => {
+          // no errors in the verification array
+          this.correct &= ~USERNAME_SET;
+          if(obj.length === 0){
+            this.correct |= USERNAME_SET;
+          }
+        })
+      }
+      this.generalSocket.isUserNameFree(this.updatedUserData.username ?? '', callback)
     },
     close(){
       if(this.loading){
@@ -171,6 +194,11 @@ export default defineComponent({
   unmounted() {
     this.updatedUserData = {}
     this.edited = false
+  },
+  beforeMount(){
+    if(this.edit){
+      this.correct |= (PASSWORD_SET|USERNAME_SET|EMAIL_SET);
+    }
   }
 })
 </script>
@@ -213,11 +241,13 @@ export default defineComponent({
 
       >
         <v-text-field
+            ref="usernameField"
             v-bind="textFieldStyle"
             :label="$t('administration.users.edit.username')"
             v-model="username"
             :rules="[rules.required, rules.username_free]"
             @update:model-value="edited = true"
+            @update:focused="usernameFieldDefocused"
         />
         <v-row
             :dense="true"
@@ -291,7 +321,7 @@ export default defineComponent({
           variant="elevated"
           color="primary"
           @click="saveUser()"
-          :disabled="!edited"
+          :disabled="!edited || correct < 1"
           :loading="loading"
       >
         {{ $t('administration.users.edit.save_user') }}

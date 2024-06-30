@@ -117,7 +117,16 @@ export default defineComponent({
   },
   methods:{
     resendEmail(userId: number){
-      this.adminEndpoint.resendConfirmationEmail(userId);
+      this.adminEndpoint.resendConfirmationEmail(userId).then((success: boolean) => {
+        if(success){
+          this.$notify({
+            title: this.$t('toasts.titles.success.resent_confirmation'),
+            text: this.$t('toasts.text.success.resent_confirmation'),
+            type: "success"
+          })
+        }
+      })
+
     },
     editUser(user: Partial<User>, index: number){
       this.user = index

@@ -6,7 +6,7 @@ from flask_jwt_extended.exceptions import NoAuthorizationError, RevokedTokenErro
 from flask_socketio import namespace, join_room, emit, leave_room, rooms
 from jwt import ExpiredSignatureError
 
-from backend.db.models.User import HouseholdMembers
+from backend.db.models.User import HouseholdMembers, User
 
 from backend.flask_config import app
 
@@ -120,4 +120,7 @@ class GeneralSocket(namespace.Namespace):
     @socket_token()
     def on_username(self, data):
         app.logger.info(data)
-        return json.dumps({"status": "username_taken"})
+        result = User.query.filter_by(username=data["username"]).first()
+        if result is None:
+            return {"status": "username_free"}
+        return {"status": "username_taken"}

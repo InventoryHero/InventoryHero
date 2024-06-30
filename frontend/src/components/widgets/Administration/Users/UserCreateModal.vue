@@ -20,6 +20,9 @@ export default defineComponent({
   emits:{
     'created:user'(_: User){
       return true
+    },
+    'update:modelValue'(value: boolean){
+      return true
     }
   },
   computed:{
@@ -42,7 +45,7 @@ export default defineComponent({
   props: {
     modelValue: {
       type: Boolean,
-      default: undefined
+      default: false
     }
   },
   data(){

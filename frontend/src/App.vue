@@ -1,5 +1,5 @@
 <script lang="ts">
-import {useAuthStore, useConfigStore, useGeneralSocketStore, useSocketStore} from "@/store"
+import {useAuthStore, useConfigStore, useGeneralSocketStore, useHouseholdSocket} from "@/store"
 import AppBarBottom from "@/components/ui/AppBarBottom.vue";
 import AppBar from "@/components/ui/AppBar.vue";
 import {Notifications} from "@kyvg/vue3-notification";
@@ -21,19 +21,19 @@ export default defineComponent({
   {
     const config = useConfigStore()
     const authStore = useAuthStore()
-    const socketStore = useSocketStore()
+    const householdSocket = useHouseholdSocket()
     const route = useRoute()
     const generalSocket = useGeneralSocketStore()
 
     if(authStore.isAuthorized())
     {
       console.log("AUTHORIZE")
-      socketStore.bindActions()
-      socketStore.joinHousehold()
-      generalSocket.bindActions()
+      householdSocket.bindActions()
+      householdSocket.joinHousehold()
+      //generalSocket.bindActions()
     }
 
-    return {config, route, authStore, socketStore, generalSocket};
+    return {config, route, authStore, socketStore: householdSocket, generalSocket};
   },
   data(){
     return {
@@ -43,9 +43,8 @@ export default defineComponent({
   watch: {
     authorized(){
       if(this.authorized){
-        this.socketStore.bindActions().then(() => {
-          this.socketStore.joinHousehold()
-        })
+        this.socketStore.bindActions()
+        this.socketStore.joinHousehold()
       }
       else {
         this.socketStore.disconnect()

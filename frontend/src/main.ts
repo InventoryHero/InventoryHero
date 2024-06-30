@@ -5,10 +5,6 @@ import "vue-toastification/dist/index.css";
 import 'vuetify/styles'
 import '@mdi/font/css/materialdesignicons.css' // Ensure you are using css-loader
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
-import {applyStorage} from "axios-jwt/src/applyStorage.ts";
-import {getAccessToken, getBrowserLocalStorage} from "axios-jwt";
-
-applyStorage(getBrowserLocalStorage())
 import {createApp, markRaw} from 'vue'
 
 import App from './App.vue'
@@ -36,6 +32,7 @@ import vuetify from "@/plugins/vuetify.ts";
 import {TinyEmitter} from "tiny-emitter";
 
 import QrcodeVue from "qrcode.vue";
+
 import vueQr from 'vue-qr/src/packages/vue-qr.vue'
 import VueCountdown from '@chenfengyuan/vue-countdown';
 import { SWhatsApp, STelegram, SEmail} from 'vue-socials';

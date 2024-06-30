@@ -1,6 +1,5 @@
-import {getAccessToken, getBrowserLocalStorage} from "axios-jwt";
+import {getAccessToken, getBrowserLocalStorage, applyStorage} from "axios-jwt";
 import {io} from "socket.io-client";
-import {applyStorage} from 'axios-jwt/dist/src/applyStorage'
 
 
 export const getStorage = getBrowserLocalStorage;

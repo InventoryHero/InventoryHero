@@ -29,6 +29,7 @@ declare module 'vue' {
     AppStorageQrCode: typeof import('./src/components/ui/AppStorageQrCode.vue')['default']
     AppStorageSelect: typeof import('./src/components/ui/AppStorageSelect.vue')['default']
     AppStorageTitle: typeof import('./src/components/ui/AppStorageTitle.vue')['default']
+    AppTextField: typeof import('./src/components/ui/AppTextField.vue')['default']
     AppThemeColorPicker: typeof import('./src/components/ui/AppThemeColorPicker.vue')['default']
     BoxCard: typeof import('./src/components/storage/box/BoxCard.vue')['default']
     BoxOverlay: typeof import('./src/components/storage/box/BoxOverlay.vue')['default']
