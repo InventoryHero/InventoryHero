@@ -1,8 +1,9 @@
 import axios, {AxiosInstance, AxiosResponse} from "axios";
 import {useAuthStore} from "@/store";
 import {i18n} from "@/lang";
-import {applyAuthTokenInterceptor, IAuthTokens} from "axios-jwt";
+import {applyAuthTokenInterceptor, getBrowserLocalStorage, IAuthTokens} from "axios-jwt";
 import {notify} from "@kyvg/vue3-notification";
+import {getStorage} from '@/plugins/connections'
 
 async function requestRefresh(refreshToken: string): Promise<IAuthTokens | string>{
     const response = await axios.post(`${baseURL}user/refresh_token`, {}, {
@@ -13,14 +14,13 @@ async function requestRefresh(refreshToken: string): Promise<IAuthTokens | strin
     )
     return response.data.access_token
 }
-
-
 const baseURL = '/api/v1/'
 export class Endpoint {
     protected internalAxios: AxiosInstance
     protected prependHousehold: boolean = true
     protected endpoint: string = ""
     protected readonly authStore
+
 
     constructor(household: boolean = true, endpoint: string = ""){
         this.authStore = useAuthStore();
@@ -94,7 +94,7 @@ export class Endpoint {
             cfg.url = this.endpoint + cfg.url
             return cfg
         })
-        applyAuthTokenInterceptor(this.internalAxios, { requestRefresh })
+        applyAuthTokenInterceptor(this.internalAxios, { requestRefresh, getStorage })
     }
 
     protected handleNonErrorNotifications(response: AxiosResponse){

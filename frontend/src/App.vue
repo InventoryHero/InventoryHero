@@ -1,5 +1,5 @@
 <script lang="ts">
-import {useAuthStore, useConfigStore, useSocketStore} from "@/store"
+import {useAuthStore, useConfigStore, useGeneralSocketStore, useSocketStore} from "@/store"
 import AppBarBottom from "@/components/ui/AppBarBottom.vue";
 import AppBar from "@/components/ui/AppBar.vue";
 import {Notifications} from "@kyvg/vue3-notification";
@@ -23,15 +23,17 @@ export default defineComponent({
     const authStore = useAuthStore()
     const socketStore = useSocketStore()
     const route = useRoute()
+    const generalSocket = useGeneralSocketStore()
 
     if(authStore.isAuthorized())
     {
-      socketStore.bindActions().then(() => {
-        socketStore.joinHousehold()
-      })
+      console.log("AUTHORIZE")
+      socketStore.bindActions()
+      socketStore.joinHousehold()
+      generalSocket.bindActions()
     }
 
-    return {config, route, authStore, socketStore};
+    return {config, route, authStore, socketStore, generalSocket};
   },
   data(){
     return {
@@ -76,12 +78,17 @@ export default defineComponent({
   methods:{
     reloadContent(){
       this.$router.go()
+    },
+    sayHi(){
+      this.generalSocket.hi();
     }
   }
 })
 </script>
 
 <template>
+
+
   <notifications
     position="top right"
     classes="vue-notification mt-2 me-8"
@@ -156,6 +163,7 @@ export default defineComponent({
           </transition>
         </router-view>
       </v-container>
+      <v-btn @click="sayHi">HALLO :)</v-btn>
     </v-main>
   </v-app>
 </template>

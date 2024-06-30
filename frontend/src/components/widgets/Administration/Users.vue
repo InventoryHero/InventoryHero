@@ -7,6 +7,9 @@ import {useDisplay} from "vuetify";
 import UserEditModal from "@/components/widgets/Administration/Users/UserEditModal.vue";
 import {UserEndpoint} from "@/api/http";
 
+
+//TODO RESEND EMAIL VERIFICATION
+
 export default defineComponent({
   name: "Users",
   components: {UserEditModal},
@@ -23,7 +26,7 @@ export default defineComponent({
   },
   computed:{
     deleteModalActive(){
-      return this.usersToDelete.length > 0
+      return this.usersToDelete.length > 0 && !this.deleting
     },
     headers() {
       let headers: Array<Object> = [
@@ -89,13 +92,13 @@ export default defineComponent({
       if(this.usersToDelete.length === 1){
         return this.$t('administration.users.delete_confirm_title')
       }
-      return ""
+      return "delete selected users?"
     },
     deleteConfirmationBody(){
       if(this.usersToDelete.length === 1){
         return this.$t('administration.users.delete_confirm_body')
       }
-      return ""
+      return "really?"
     }
   },
   data() {
@@ -104,45 +107,53 @@ export default defineComponent({
       users: [] as Array<Partial<User>>,
       search: '',
       searchShown: false,
-      selected: [],
+      selected: [] as Array<number>,
       userToEdit: undefined as (undefined|Partial<User>),
       user: -1,
       createModalActive: false,
-      usersToDelete: [] as Array<number>
+      usersToDelete: [] as Array<number>,
+      deleting: false
     }
   },
   methods:{
     resendEmail(userId: number){
-      console.log("RESEND USER CONFIRMATION EMAIL")
+      this.adminEndpoint.resendConfirmationEmail(userId);
     },
     editUser(user: Partial<User>, index: number){
-      //console.log(index)
       this.user = index
-      //this.userToEdit = user
     },
     requestDeletion(id: number){
       this.usersToDelete.push(id)
     },
     async deleteUser(){
-      // TODO BLOCK USER ROUTES IF USER IS DELETED
-      const success = await this.userEndpoint.deleteUser(this.usersToDelete[0])
-      if(success){
-
-        this.users = this.users.filter((user) => user.id !== this.usersToDelete[0])
-
-        this.$notify({
-          title: this.$t('toasts.titles.success.deleted'),
-          text: this.$t('toasts.text.success.deleted'),
-          type: 'success'
-        })
+      this.deleting = true;
+      let multiple = this.users.length > 1
+      let allSuccessful = true;
+      for(const user of this.usersToDelete){
+        const success = await this.userEndpoint.deleteUser(user)
+        allSuccessful = allSuccessful && success;
+        if(success){
+          this.users = this.users.filter((u) => {
+            return u.id !== user
+          })
+        }
       }
+      this.deleting = false;
+
+      let type = allSuccessful ? "success" : "error";
+      this.$notify({
+        title: this.$t(`toasts.titles.${type}.deleted${multiple ? '_multiple' : ''}`),
+        text: this.$t(`toasts.text.${type}.deleted${multiple ? '_multiple' : ''}`),
+        type: 'success'
+      })
       this.usersToDelete = []
+      this.selected = []
     },
     abortDeletion(){
       this.usersToDelete = []
     },
     deleteSelectedUser(){
-      console.log("delete selected user", this.selected);
+      this.usersToDelete = this.selected;
     },
     createUser(){
       this.createModalActive = true
@@ -169,6 +180,17 @@ export default defineComponent({
       lg="10"
       cols="12"
     >
+
+      <v-dialog
+        v-model="deleting"
+        :persistent="true"
+      >
+        <app-progress-circular
+            :width="10"
+            :size="128"
+            :message="$t('administration.users.deleting')"
+        />
+      </v-dialog>
       <user-edit-modal
         v-model="userTOEdit"
       />
@@ -301,5 +323,10 @@ export default defineComponent({
 </template>
 
 <style scoped lang="scss">
-
+:deep(.v-overlay__content) {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
 </style>

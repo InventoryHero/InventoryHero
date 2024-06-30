@@ -46,6 +46,7 @@ export const useAuthStore = defineStore('auth', {
                 return;
             }
 
+
            let userData =  await this.userEndpoint.axios.getUser()
 
             if(userData !== undefined && userData !== null)

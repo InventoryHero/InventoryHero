@@ -1,7 +1,7 @@
 import json
 from functools import wraps
 
-from flask_jwt_extended import verify_jwt_in_request, current_user
+from flask_jwt_extended import verify_jwt_in_request, current_user, jwt_required
 from flask_jwt_extended.exceptions import NoAuthorizationError, RevokedTokenError, JWTDecodeError
 from flask_socketio import namespace, join_room, emit, leave_room, rooms
 from jwt import ExpiredSignatureError
@@ -38,6 +38,7 @@ def socket_token():
             except Exception as e:
                 app.logger.info(e)
                 return "error fml", 500
+
         return decorator
     return wrapper
 
@@ -75,7 +76,6 @@ class UserSocket(namespace.Namespace):
      pass
 
 
-
 class HouseholdSocket(namespace.Namespace):
     @socket_token()
     @authorize_room(joined=False)
@@ -84,7 +84,7 @@ class HouseholdSocket(namespace.Namespace):
         if room is None:
             return 403, json.dumps({"status": "error"})
         username = current_user.username
-        app.logger.warning(rooms())
+        app.logger.info("HALLO HERE I AM")
         join_room(room)
         return True, json.dumps({"status": "success"})
 
@@ -105,5 +105,19 @@ class HouseholdSocket(namespace.Namespace):
         room = data.pop("household", None)
         if room is None:
             return 400, json.dumps({"status": "error"})
+        app.logger.info("SAYS HI")
         emit("hi", f"{username} says hi", to=room, include_self=False)
         return "ok"
+
+
+class GeneralSocket(namespace.Namespace):
+    @socket_token()
+    def on_hi(self, data):
+        username = current_user.username
+        app.logger.info(f"{username} says hi")
+        return json.dumps({"content": f"Hallo, {username}!", "status": "ok"})
+
+    @socket_token()
+    def on_username(self, data):
+        app.logger.info(data)
+        return json.dumps({"status": "username_taken"})

@@ -1,3 +1,4 @@
+import json
 import uuid
 from functools import wraps
 
@@ -19,6 +20,7 @@ def auth(f):
         if not in_household:
             return jsonify(status="user_not_in_household"), 401
         return f(*args, **kwargs)
+
     return decorator
 
 
@@ -31,12 +33,17 @@ def emit_update():
 
             # emit if success
             if 200 <= response[1] <= 299:
-                socketio.emit("new-content", {
-                    "user": current_user.username
-                }, to=household, namespace='/household')
+                socketio.emit("new-content", json.dumps({
+                    "status": "ok",
+                    "content": {
+                        "user": current_user.username
+                    }
+                }), to=household, namespace='/household')
 
             return response
+
         return decorator
+
     return wrapper
 
 
@@ -47,6 +54,7 @@ def admin_required():
             if current_user.is_admin:
                 return fn(*args, **kwargs)
             return jsonify(status="admin_role_required"), 403
-        return decorator
-    return wrapper
 
+        return decorator
+
+    return wrapper

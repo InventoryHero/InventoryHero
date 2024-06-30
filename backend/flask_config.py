@@ -52,6 +52,7 @@ class Config(object):
 
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=60)
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
+    JWT_TOKEN_LOCATION = ["headers"]
 
     SMTP = {
         "server": os.getenv("INVENTORYHERO_SMTP_SERVER", None),

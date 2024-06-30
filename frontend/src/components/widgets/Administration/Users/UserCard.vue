@@ -2,7 +2,7 @@
 import {defineComponent, PropType} from "vue";
 import {User} from "@/types/api.ts";
 import {useDisplay} from "vuetify";
-import {useSocketStore} from "@/store";
+import {useGeneralSocketStore, useSocketStore} from "@/store";
 import useAxios from "@/composables/useAxios.ts";
 import {UserEndpoint} from "@/api/http";
 
@@ -11,11 +11,13 @@ export default defineComponent({
   setup(){
     const {mobile} = useDisplay()
     const sockets = useSocketStore()
+    const generalSocket = useGeneralSocketStore()
     const {axios} = useAxios("user")
     return {
       mobile,
       sockets,
-      userEndpoint: axios as UserEndpoint
+      userEndpoint: axios as UserEndpoint,
+      generalSocket
     }
   },
   emits:{
@@ -39,6 +41,13 @@ export default defineComponent({
       },
       set(newName: string){
         this.updatedUserData.username = newName
+
+        let callback = (isTaken: boolean) => {
+          this.usernameFree = !isTaken
+        }
+
+
+        this.generalSocket.isUserNameFree(this.updatedUserData.username, callback)
       }
     },
     firstname: {
@@ -101,7 +110,8 @@ export default defineComponent({
         clearable: true,
         persistentClear: true,
         hideDetails: "auto",
-        class: "mb-4"
+        class: "mb-4",
+        disabled: this.loading
       }
     }
   },
@@ -123,15 +133,22 @@ export default defineComponent({
     return {
       edited: false,
       updatedUserData: {} as Partial<User>,
+      usernameFree: true,
       rules: {
-        required: (value: string) => !!value || this.$t('administration.users.edit.rules.field_required')
+        required: (value: string) => !!value || this.$t('administration.users.edit.rules.field_required'),
+        username_free: () => this.usernameFree || this.$t('administration.users.edit.rules.username_taken')
       }
     }
   },
   methods:{
     reset(){
+      if(this.loading){
+        return
+      }
       this.updatedUserData = {}
-      this.$refs.form.reset()
+      if(!this.edit){
+        this.$refs.form.reset()
+      }
       this.edited = false
     },
     async saveUser(){
@@ -143,6 +160,12 @@ export default defineComponent({
         return
       }
       this.$emit('click:save', this.updatedUserData)
+    },
+    close(){
+      if(this.loading){
+        return
+      }
+      this.$emit('close')
     }
   },
   unmounted() {
@@ -171,6 +194,7 @@ export default defineComponent({
             density="comfortable"
             prepend-icon="mdi-lock-reset"
             variant="tonal"
+            :disabled="loading"
             @click="reset()"
         >
           {{ $t('administration.users.edit.reset') }}
@@ -178,7 +202,7 @@ export default defineComponent({
       </v-fade-transition>
       <app-icon-btn
         icon="mdi-close"
-        @click="$emit('close')"
+        @click="close()"
       />
     </v-card-title>
     <v-card-text
@@ -192,7 +216,7 @@ export default defineComponent({
             v-bind="textFieldStyle"
             :label="$t('administration.users.edit.username')"
             v-model="username"
-            :rules="[rules.required]"
+            :rules="[rules.required, rules.username_free]"
             @update:model-value="edited = true"
         />
         <v-row
@@ -241,7 +265,6 @@ export default defineComponent({
             @update:model-value="edited = true"
             class="mb-4"
         />
-
 
         <v-divider
             class="border-opacity-25 mb-4"

@@ -14,4 +14,13 @@ export class AdministrationEndpoint extends Endpoint {
         this.handleNonErrorNotifications(response)
         return [] as Array<User>
     }
+
+    public async resendConfirmationEmail(user: number){
+        const response = await this.internalAxios.get(`/resend/${user}`)
+        if(response.status === 200){
+            return true;
+        }
+        this.handleNonErrorNotifications(response)
+        return false
+    }
 }

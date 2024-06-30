@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 import sqlalchemy.exc
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token, jwt_required, current_user, create_refresh_token, get_jwt, \
-    decode_token
+    decode_token, set_access_cookies
 
 from backend.mail.Mail import Mail
 from backend.db.models.TokenBlacklist import TokenBlacklist
@@ -122,7 +122,6 @@ class User(Blueprint):
             pw_valid = bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8'))
             if not pw_valid:
                 return {"status": "username_or_pw_invalid"}, 401
-
             access_token = create_access_token(identity=user)
             refresh_token = create_refresh_token(identity=user)
             return jsonify(access_token=access_token, refresh_token=refresh_token)
@@ -265,6 +264,8 @@ class User(Blueprint):
             # TODO DELETE USER AND HOUSEHOLDS AND SO ON ...
             # IF HOUSEHOLD HAS MEMBER, MAKE ANY MEMBER OWNER
             # IF ONLY ONE ADMIN LEFT: DON'T DELETE
+            # TODO ONLY REQUIRE ADMIN IF IT IS NOT OWN USER
+
             user = ApplicationUser.query.filter_by(id=user_id).first()
 
             if user is None:
@@ -296,6 +297,8 @@ class User(Blueprint):
             return jsonify(
                 admin=current_user.is_admin
             ), 200
+
+
 
     def blacklist_token(self, token):
         jti = token["jti"]

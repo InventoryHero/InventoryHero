@@ -21,6 +21,7 @@ declare module 'vue' {
     AppPreselectionFilter: typeof import('./src/components/common/AppPreselectionFilter.vue')['default']
     AppPrintPreview: typeof import('./src/components/ui/AppPrintPreview.vue')['default']
     AppPrintQrCode: typeof import('./src/components/widgets/QrCode/Print/AppPrintQrCode.vue')['default']
+    AppProgressCircular: typeof import('./src/components/ui/AppProgressCircular.vue')['default']
     AppQrCodeScanner: typeof import('./src/components/ui/AppQrCodeScanner.vue')['default']
     AppScrollToTopBtn: typeof import('./src/components/ui/AppScrollToTopBtn.vue')['default']
     AppSetting: typeof import('./src/components/ui/AppSetting.vue')['default']

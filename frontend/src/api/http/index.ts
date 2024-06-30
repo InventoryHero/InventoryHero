@@ -3,6 +3,7 @@ import {Endpoint} from "./Endpoint";
 import {HouseholdEndpoint} from "./HouseholdEndpoint";
 import {LocationEndpoint, StorageEndpoint, BoxEndpoint} from "./StorageEndpoint.ts";
 import {ProductEndpoint} from "./ProductEndpoint.ts";
+import {AdministrationEndpoint} from "@/api/http/AdministrationEndpoint.ts";
 
 export {
     UserEndpoint,
@@ -11,5 +12,6 @@ export {
     LocationEndpoint,
     StorageEndpoint,
     BoxEndpoint,
-    ProductEndpoint
+    ProductEndpoint,
+    AdministrationEndpoint
 }

@@ -95,6 +95,7 @@ export default defineComponent({
             :loading="loading"
             @close="active=false"
             @click:save="saveUpdatedUser"
+            :edit="true"
         >
         </user-card>
       </v-col>

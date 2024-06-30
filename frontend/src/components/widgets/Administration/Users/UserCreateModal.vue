@@ -4,12 +4,14 @@ import {useDisplay} from "vuetify";
 import {User} from "@/types/api.ts";
 import useAxios from "@/composables/useAxios.ts";
 import {UserEndpoint} from "@/api/http";
+import {useGeneralSocketStore} from "@/store";
 
 export default defineComponent({
   name: "UserCreateModal",
   setup(){
     const {mobile} = useDisplay()
     const {axios} = useAxios("user")
+
     return {
       mobile,
       userEndpoint: axios as UserEndpoint

@@ -5,19 +5,16 @@ import {
     LocationEndpoint,
     StorageEndpoint,
     BoxEndpoint,
-    ProductEndpoint
+    ProductEndpoint,
+    AdministrationEndpoint
 } from "@/api/http";
-import {StorageTypes} from "@/types";
-import Administration from "@/views/Administration.vue";
-import {AdministrationEndpoint} from "@/api/http/AdministrationEndpoint.ts";
+
 import {useAuthStore} from "@/store";
 
 
 export type AxiosContext = {
     axios: Endpoint
 }
-
-
 
 export default (endpoint = "") : AxiosContext => {
     const authStore = useAuthStore()
