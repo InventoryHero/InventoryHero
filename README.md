@@ -54,9 +54,9 @@ The following environment variables are available to configure InventoryHero to 
 ## Credits
 Thanks to: 
 * My Mobile Application course colleagues and co-creator of InventoryHero: 
-    * Sebastian
+    * [Sebastian](https://github.com/Sebastian-debug)
     * [Christian](https://github.com/p4s3r0) - special thanks for creating the InventoryHero icon
-    * Hans-Jürgen
+    * [Hans-Jürgen](https://github.com/hkleeberger)
 
 * Other OpenSource Projects where I could turn to for implementation (as well as design) guidance:
     * [Fluidd Core](https://github.com/fluidd-core/fluidd)
