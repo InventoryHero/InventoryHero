@@ -139,7 +139,6 @@ export const useAuthStore = defineStore('auth', {
                 return
             }
             this.permissions = await this.userEndpoint.axios.getPermissions()
-            console.log(this.permissions)
         },
         async init(){
             await this.fetchPermissions()
@@ -148,6 +147,9 @@ export const useAuthStore = defineStore('auth', {
     getters: {
         household: state => {return state.user?.household?.id ?? -1},
         userSet: state => {return state.user !== null},
-        isAdmin: state => { return state.permissions.admin ?? false}
+        isAdmin: state => {
+
+            return state.permissions.admin ?? false
+        }
     }
 })

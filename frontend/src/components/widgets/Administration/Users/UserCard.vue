@@ -115,8 +115,11 @@ export default defineComponent({
         hideDetails: "auto",
         class: "mb-4",
         disabled: this.loading
-      }
+      } as Partial<{}>
     },
+    userCorrect(){
+      return (PASSWORD_SET|USERNAME_SET|EMAIL_SET)
+    }
 
   },
   props: {
@@ -131,6 +134,10 @@ export default defineComponent({
     loading:{
       type: Boolean,
       default: false
+    },
+    title: {
+      type: String,
+      default: ''
     }
   },
   data(){
@@ -139,9 +146,11 @@ export default defineComponent({
       correct: 0,
       updatedUserData: {} as Partial<User>,
       usernameFree: true,
+      emailFree: true,
       rules: {
-        required: (value: string) => !!value || this.$t('administration.users.edit.rules.field_required'),
-        username_free: () => this.usernameFree || this.$t('administration.users.edit.rules.username_taken')
+        required: (value: string) => !!value || this.$t('administration.users.rules.field_required'),
+        username_free: (_: string) => this.usernameFree || this.$t('administration.users.rules.username_taken'),
+        email_free: (_: string) => this.emailFree || this.$t('administration.users.rules.email_taken')
       }
     }
   },
@@ -166,10 +175,8 @@ export default defineComponent({
       }
       this.$emit('click:save', this.updatedUserData)
     },
-    usernameFieldDefocused(focused: boolean){
-      if(focused ){
-        return;
-      }
+    checkUserName(){
+      this.edited = true;
       let callback = (isTaken: boolean) => {
         this.usernameFree = !isTaken
 
@@ -183,6 +190,25 @@ export default defineComponent({
         })
       }
       this.generalSocket.isUserNameFree(this.updatedUserData.username ?? '', callback)
+    },
+    checkEmail(){
+      this.edited = true;
+      let callback = (isTaken: boolean) => {
+        this.emailFree = !isTaken
+        //@ts-expect-error
+        this.$refs?.emailField?.validate()?.then((obj: Proxy<Array>) => {
+          // no errors in the verification array
+          this.correct &= ~EMAIL_SET;
+          if(obj.length === 0){
+            this.correct |= EMAIL_SET;
+          }
+        })
+      }
+      this.generalSocket.isEmailFree(this.updatedUserData.email ?? '', callback)
+    },
+    setPasswordEdited(){
+      this.edited = true;
+      this.correct |= PASSWORD_SET;
     },
     close(){
       if(this.loading){
@@ -206,14 +232,14 @@ export default defineComponent({
 <template>
   <v-card
     v-bind="$attrs"
-    min-height="60vh"
-    :max-height="mobile ? '100vh' : '90vh' "
+    :min-height="mobile ? '100vh' : '80vh'"
+    :max-height="mobile ? '100vh' : '80vh' "
     class="d-flex flex-column"
   >
     <v-card-title
       class="d-flex align-center shadowed flex-0-0"
     >
-      {{ $t('administration.users.edit.title') }}
+      {{ title }}
       <v-spacer />
       <v-fade-transition>
         <v-btn
@@ -225,7 +251,7 @@ export default defineComponent({
             :disabled="loading"
             @click="reset()"
         >
-          {{ $t('administration.users.edit.reset') }}
+          {{ $t('administration.users.reset') }}
         </v-btn>
       </v-fade-transition>
       <app-icon-btn
@@ -243,11 +269,10 @@ export default defineComponent({
         <v-text-field
             ref="usernameField"
             v-bind="textFieldStyle"
-            :label="$t('administration.users.edit.username')"
+            :label="$t('administration.users.username')"
             v-model="username"
             :rules="[rules.required, rules.username_free]"
-            @update:model-value="edited = true"
-            @update:focused="usernameFieldDefocused"
+            @update:model-value="checkUserName()"
         />
         <v-row
             :dense="true"
@@ -259,7 +284,7 @@ export default defineComponent({
           >
             <v-text-field
                 v-bind="textFieldStyle"
-                :label="$t('administration.users.edit.firstname')"
+                :label="$t('administration.users.first_name')"
                 v-model="firstname"
                 @update:model-value="edited = true"
                 @click:clear="firstname = ''"
@@ -271,7 +296,7 @@ export default defineComponent({
           >
             <v-text-field
                 v-bind="textFieldStyle"
-                :label="$t('administration.users.edit.lastname')"
+                :label="$t('administration.users.last_name')"
                 v-model="lastname"
                 @update:model-value="edited = true"
                 @click:clear="lastname = ''"
@@ -279,20 +304,21 @@ export default defineComponent({
           </v-col>
         </v-row>
         <v-text-field
+            ref="emailField"
             v-bind="textFieldStyle"
-            :label="$t('administration.users.edit.email')"
+            :label="$t('administration.users.email')"
             v-model="email"
-            :rules="[rules.required]"
-            @update:model-value="edited = true"
+            :rules="[rules.required, rules.email_free]"
+            @update:model-value="checkEmail()"
         />
 
         <app-password-textfield
             v-if="!edit"
             v-bind="textFieldStyle"
-            :label="$t('administration.users.edit.password')"
+            :label="$t('administration.users.password')"
             v-model="password"
             :rules="[rules.required]"
-            @update:model-value="edited = true"
+            @update:model-value="setPasswordEdited()"
             class="mb-4"
         />
 
@@ -302,10 +328,10 @@ export default defineComponent({
             :thickness="2"
         />
         <p class="text-h5">
-          {{ $t('administration.users.edit.roles')}}
+          {{ $t('administration.users.roles')}}
         </p>
         <v-checkbox
-          :label="$t('administration.users.edit.admin')"
+          :label="$t('administration.users.admin')"
           color="primary"
           v-model="admin"
           @update:model-value="edited = true"
@@ -321,10 +347,10 @@ export default defineComponent({
           variant="elevated"
           color="primary"
           @click="saveUser()"
-          :disabled="!edited || correct < 1"
+          :disabled="!edited || correct != userCorrect"
           :loading="loading"
       >
-        {{ $t('administration.users.edit.save_user') }}
+        {{ $t('administration.users.save_user') }}
       </v-btn>
     </v-card-actions>
   </v-card>

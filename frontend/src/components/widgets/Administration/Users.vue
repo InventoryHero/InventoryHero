@@ -5,8 +5,12 @@ import {AdministrationEndpoint} from "@/api/http/AdministrationEndpoint.ts";
 import {User} from "@/types/api.ts";
 import {useDisplay} from "vuetify";
 import UserEditModal from "@/components/widgets/Administration/Users/UserEditModal.vue";
-import {UserEndpoint} from "@/api/http";
+import {GeneralEndpoint, UserEndpoint} from "@/api/http";
 
+type UserSelection = {
+  id: number,
+  name: string
+}
 
 //TODO RESEND EMAIL VERIFICATION
 
@@ -16,12 +20,13 @@ export default defineComponent({
   setup(){
     const adminEndpoint = useAxios("administration")
     const userEndpoint = useAxios("user")
+    const generalEndpoint = useAxios("general")
     const {mobile} = useDisplay()
     return {
       mobile,
       adminEndpoint: adminEndpoint.axios as AdministrationEndpoint,
-      userEndpoint: userEndpoint.axios as UserEndpoint
-
+      userEndpoint: userEndpoint.axios as UserEndpoint,
+      generalEndpoint: generalEndpoint.axios as GeneralEndpoint
     }
   },
   computed:{
@@ -31,11 +36,11 @@ export default defineComponent({
     headers() {
       let headers: Array<Object> = [
         {
-          title: "Username",
+          title: this.$t("administration.users.table.headers.username"),
           value: "username"
         },
         {
-          title: "E-Mail",
+          title: this.$t("administration.users.table.headers.email"),
           value: "email"
         }
       ]
@@ -43,29 +48,35 @@ export default defineComponent({
       if(!this.mobile) {
         headers = headers.concat([
           {
-            title: "First Name",
+            title: this.$t("administration.users.table.headers.first_name"),
             value: "first_name"
           },
           {
-            title: "Last Name",
+            title: this.$t("administration.users.table.headers.last_name"),
             value: "last_name"
           },
           {
-            title: "Admin",
+            title: this.$t("administration.users.table.headers.admin"),
             value: "is_admin",
           },
           {
-            title: "Registered",
+            title: this.$t("administration.users.table.headers.registered"),
             value: "registration_date"
           }
         ])
       }
+      if(this.smtpEnabled){
+        headers.push({
+          title: this.$t("administration.users.reset_password"),
+          value: "reset_password"
+        })
+      }
       headers.push({
-        title: "Email confirmed",
+        title: this.$t("administration.users.table.headers.account_confirmed"),
         value: "email_confirmed"
       })
     headers.push({
-        title: "Actions",
+        title: this.$t("administration.users.table.headers.actions"),
         value: "actions"
       })
       return headers
@@ -90,15 +101,16 @@ export default defineComponent({
     },
     deleteConfirmationTitle(){
       if(this.usersToDelete.length === 1){
-        return this.$t('administration.users.delete_confirm_title')
+        return this.$t('administration.users.delete_confirm_title_single')
       }
-      return "delete selected users?"
+      return this.$t('administration.users.delete_confirm_title_multiple')
     },
     deleteConfirmationBody(){
       if(this.usersToDelete.length === 1){
-        return this.$t('administration.users.delete_confirm_body')
+        return this.$t('administration.users.delete_confirm_body_single', {name: this.usersToDelete[0].username ?? ''})
       }
-      return "really?"
+      return this.$t('administration.users.delete_confirm_body_multiple', {count: this.usersToDelete.length})
+
     }
   },
   data() {
@@ -107,12 +119,14 @@ export default defineComponent({
       users: [] as Array<Partial<User>>,
       search: '',
       searchShown: false,
-      selected: [] as Array<number>,
+      selected: [] as Array<Partial<User>>,
       userToEdit: undefined as (undefined|Partial<User>),
       user: -1,
       createModalActive: false,
-      usersToDelete: [] as Array<number>,
-      deleting: false
+      usersToDelete: [] as Array<Partial<User>>,
+      deleting: false,
+      smtpEnabled: false,
+      passwordResetModalActive: false
     }
   },
   methods:{
@@ -128,33 +142,57 @@ export default defineComponent({
       })
 
     },
+    resetPassword(userId: number){
+      this.userEndpoint.resetPasswordRequest(userId).then(result => {
+        if(result.success){
+          this.$notify({
+            title: this.$t(`toasts.titles.success.${result.message}`),
+            text: this.$t(`toasts.text.success.${result.message}`),
+            type: "success"
+          })
+          return;
+        }
+        if(result.message === "email_not_configured"){
+          this.passwordResetModalActive = true;
+        }
+      })
+    },
     editUser(user: Partial<User>, index: number){
       this.user = index
     },
-    requestDeletion(id: number){
-      this.usersToDelete.push(id)
+    requestDeletion(user: Partial<User>){
+      this.usersToDelete.push(user)
     },
     async deleteUser(){
       this.deleting = true;
       let multiple = this.users.length > 1
       let allSuccessful = true;
+      let someSuccessful = false;
+      let userIds = []
       for(const user of this.usersToDelete){
-        const success = await this.userEndpoint.deleteUser(user)
+        const success = await this.userEndpoint.deleteUser(user.id!)
         allSuccessful = allSuccessful && success;
+        someSuccessful = someSuccessful || success;
         if(success){
-          this.users = this.users.filter((u) => {
-            return u.id !== user
-          })
+          userIds.push(user.id!)
         }
       }
+      this.users = this.users.filter(u => !userIds.includes(u.id!))
       this.deleting = false;
-
-      let type = allSuccessful ? "success" : "error";
-      this.$notify({
-        title: this.$t(`toasts.titles.${type}.deleted${multiple ? '_multiple' : ''}`),
-        text: this.$t(`toasts.text.${type}.deleted${multiple ? '_multiple' : ''}`),
-        type: 'success'
-      })
+      if(allSuccessful){
+        this.$notify({
+          title: this.$t(`toasts.titles.success.deleted${multiple ? '_multiple' : ''}`, {count: userIds.length}),
+          text: this.$t(`toasts.text.success.deleted${multiple ? '_multiple' : ''}`),
+          type: 'success'
+        })
+      }
+      else if(someSuccessful){
+        this.$notify({
+          title: this.$t(`toasts.titles.info.some_deleted`),
+          text: this.$t(`toasts.text.info.some_deleted`),
+          type: 'info'
+        })
+      }
       this.usersToDelete = []
       this.selected = []
     },
@@ -162,21 +200,25 @@ export default defineComponent({
       this.usersToDelete = []
     },
     deleteSelectedUser(){
-      this.usersToDelete = this.selected;
+      this.usersToDelete = [...this.selected];
     },
     createUser(){
       this.createModalActive = true
     },
     userCreated(newUser: User){
       this.users.push(newUser)
-    }
+    },
   },
-  mounted(){
+  beforeMount(){
     this.loading = true
-    this.adminEndpoint.loadUsers().then((users) => {
-      this.users = users
-      this.loading = false
+    this.generalEndpoint.checkSmtp().then((enabled: boolean) => {
+      this.smtpEnabled = enabled;
+      this.adminEndpoint.loadUsers().then((users) => {
+        this.users = users
+        this.loading = false
+      })
     })
+
   }
 })
 </script>
@@ -189,7 +231,6 @@ export default defineComponent({
       lg="10"
       cols="12"
     >
-
       <v-dialog
         v-model="deleting"
         :persistent="true"
@@ -214,6 +255,9 @@ export default defineComponent({
         @accept="deleteUser"
         @deny="abortDeletion"
       />
+      <password-reset-modal
+        v-model="passwordResetModalActive"
+      />
 
       <v-container :fluid="true" class="pl-0 pr-0">
           <div
@@ -229,12 +273,30 @@ export default defineComponent({
           </div>
           <v-data-table
             v-model="selected"
+            ref="userTable"
+            :loading="loading"
             :headers="headers"
             :items="users"
-            item-value="id"
             :search="search"
             :show-select="true"
+            :return-object="true"
         >
+          <template v-slot:header.data-table-select="{ allSelected, selectAll, someSelected }">
+            <v-checkbox-btn
+                :indeterminate="someSelected && !allSelected"
+                :model-value="allSelected"
+                color="primary"
+                @update:model-value="selectAll(!allSelected)"
+            ></v-checkbox-btn>
+          </template>
+
+          <template v-slot:item.data-table-select="{ internalItem, isSelected, toggleSelect }">
+            <v-checkbox-btn
+                :model-value="isSelected(internalItem)"
+                color="primary"
+                @update:model-value="toggleSelect(internalItem)"
+            ></v-checkbox-btn>
+          </template>
           <template v-slot:top>
             <v-toolbar
                 :flat="true"
@@ -250,7 +312,7 @@ export default defineComponent({
                 <template
                     v-else
                 >
-                  {{ $t('administration.users.table') }}
+                  {{ $t('administration.users.table.title') }}
                 </template>
               </template>
               <template
@@ -291,6 +353,13 @@ export default defineComponent({
           </template>
           <template v-slot:item.actions="{item, index}">
             <app-icon-btn
+              class="me-2"
+              icon="mdi-lock-reset"
+              color="primary"
+              size="large"
+              @click="resetPassword(item.id!)"
+            />
+            <app-icon-btn
                 class="me-2"
                 icon="mdi-pencil"
                 color="primary"
@@ -301,7 +370,7 @@ export default defineComponent({
                 icon="mdi-delete"
                 color="red"
                 size="large"
-                @click="requestDeletion(item.id)"
+                @click="requestDeletion(item)"
             />
           </template>
 
@@ -322,8 +391,19 @@ export default defineComponent({
                 icon="mdi-email-sync"
                 color="primary"
                 size="large"
-                @click="resendEmail(item.id)"
+                @click="resendEmail(item.id!)"
             />
+          </template>
+          <template
+              v-slot:item.reset_password="{item}"
+              v-if="smtpEnabled"
+          >
+              <app-icon-btn
+                icon="mdi-restore-alert"
+                color="red-darken-1"
+                size="large"
+                @click="resetPassword(item.id!)"
+              />
           </template>
         </v-data-table>
       </v-container>

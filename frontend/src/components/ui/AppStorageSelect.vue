@@ -12,7 +12,6 @@ export default defineComponent({
   },
   emits:{
     'update:modelValue'(payload: Storage){
-      console.log(payload)
       return true
     }
   },

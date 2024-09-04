@@ -7,6 +7,7 @@ from flask_cors import CORS
 from backend.database import db, migrate
 from datetime import timedelta
 
+
 from backend.exceptions.inventory_hero_exceptions import UnknownDatabaseType, MissingSmtpConfig, InvalidAppUrl, \
     UnsupportedSmtpProtocol
 
@@ -25,6 +26,7 @@ def parse_db_parameters(db_type, db_host, db_port, db_name, db_user, db_password
             file_path = "/../data/inventoryhero.db"
         else:
             logger.warning("../data/inventoryhero.db not found, using memory based sqlite instance.")
+
         db_uri = f"{driver}://{file_path}"
     elif db_type == "mysql":
         driver = "mysql+mysqldb"
@@ -114,6 +116,7 @@ app.logger.handlers.extend(gunicorn_logger.handlers)
 app.logger.setLevel(logging.INFO)
 CORS(app, origins=app.config["ALLOWED_ORIGINS"])
 
+from backend.db.models import PasswordResetRequests
 db.init_app(app)
 migrate.init_app(app, db, render_as_batch=True)
 

@@ -124,3 +124,12 @@ class GeneralSocket(namespace.Namespace):
         if result is None:
             return {"status": "username_free"}
         return {"status": "username_taken"}
+
+    @socket_token()
+    def on_email(self, data):
+        app.logger.info(data)
+        result = User.query.filter_by(email=data["email"]).first()
+        app.logger.info(result)
+        if result is None:
+            return {"status": "email_free"}
+        return {"status": "email_taken"}

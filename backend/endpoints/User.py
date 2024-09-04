@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 
 import sqlalchemy.exc
 from flask import Blueprint, request, jsonify
@@ -9,10 +9,13 @@ from flask_jwt_extended import create_access_token, jwt_required, current_user, 
 from backend.mail.Mail import Mail
 from backend.db.models.TokenBlacklist import TokenBlacklist
 from backend.db.models.User import User as ApplicationUser, HouseholdMembers, Household
+from backend.db.models.PasswordResetRequests import PasswordResetRequests as PasswordResetRequest
 import bcrypt
 
 from backend.flask_config import jwt
-from decorators import admin_required
+from backend.decorators import admin_required
+
+from hashlib import sha256
 
 
 @jwt.user_identity_loader
@@ -65,7 +68,6 @@ class User(Blueprint):
             password = password.encode('utf-8')
             password = bcrypt.hashpw(password, salt)
 
-
             if ApplicationUser.query.filter_by(username=username).count() >= 1:
                 return jsonify(status="username_in_use"), 409
             if ApplicationUser.query.filter_by(email=email).count() >= 1:
@@ -82,7 +84,7 @@ class User(Blueprint):
                 email_confirmed=not self.app.config["CONFIRMATION_NEEDED"],
                 confirmation_code=confirmation_code
             )
-            self.app.logger.info(confirmation_code)
+
             if self.app.config["CONFIRMATION_NEEDED"]:
                 mail = Mail(self.app.config["SMTP"], self.app.config["APP_URL"])
                 mail.send_registration_confirmation(email, confirmation_code)
@@ -240,7 +242,12 @@ class User(Blueprint):
                 confirmation_code = uuid.uuid4()
                 email_confirmed = False
 
-
+            user = ApplicationUser.query.filter_by(username=username).first()
+            if user is not None:
+                return jsonify(status="username_taken"), 422
+            user = ApplicationUser.query.filter_by(email=email).first()
+            if user is not None:
+                return jsonify(status="email_taken"), 422
 
             user = ApplicationUser(username=username,
                                    password=password.decode("utf-8"),
@@ -297,6 +304,57 @@ class User(Blueprint):
             return jsonify(
                 admin=current_user.is_admin
             ), 200
+
+        @self.route("/reset-password/<int:user_id>", defaults={'email': None}, methods=["GET"])
+        @self.route("/reset-password/<string:email>", defaults={'user_id': None}, methods=["GET"])
+        def reset_password_request(user_id, email):
+            #TODO THIS THEN NEEDS EMAIL SENDING
+            #TODO MAYBE MAKE A EMAIL CONFIG SECTION AS WELL
+            #TODO THIS COULD ALSO BE USED TO VERIFY CONFIGURATION/UPDATE IT IF NEEDED
+
+            if not self.app.config["SMTP"]["in_use"]:
+                return jsonify(status="email_not_configured"), 503
+
+            user = None
+            if user_id is not None:
+                user = ApplicationUser.query.filter_by(id=user_id).first()
+            elif email is not None:
+                user = ApplicationUser.query.filter_by(email=email).first()
+
+            if user is None:
+                return jsonify(), 400
+
+            reset_id = uuid.uuid4().hex
+            # TODO ABORT IF NO EMAIL CONFIGURED AND NOTIFY USER
+            mail = Mail(self.app.config["SMTP"], self.app.config["APP_URL"])
+            to = {
+                "email": user.email,
+                "username": user.username,
+                "first_name": user.first_name
+            }
+            mail.send_reset_password(to, reset_id)
+            reset_hash = sha256(reset_id.encode('utf-8')).hexdigest()
+            reset_request = PasswordResetRequest(
+                user_id=user.id,
+                password_reset_hash=reset_hash,
+                password_reset_time=datetime.utcnow()
+            )
+            self.db.session.add(reset_request)
+            self.db.session.commit()
+            self.app.logger.info(reset_id)
+
+            return jsonify(status="success_24h_time"), 200
+
+        @self.route("/reset-password/<string:code>", methods=["POST"])
+        def reset_password_preflight(code):
+            self.app.logger.info(code)
+            reset_hash = sha256(code.encode('utf-8')).hexdigest()
+            reset_request = PasswordResetRequest.query.filter_by(password_reset_hash=reset_hash).first()
+            if reset_request is None:
+                return {}, 400
+            if reset_request.password_reset_time + timedelta(hours=24) < datetime.utcnow():
+                return jsonify(status="expired"), 400
+            return {}, 200
 
 
 

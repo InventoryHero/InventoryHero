@@ -22,7 +22,6 @@ class User(db.Model):
     first_name: str = db.Column(db.String(80), nullable=False, server_default="")
     last_name: str = db.Column(db.String(80), nullable=False, server_default="")
     registration_date: datetime = db.Column(db.DateTime(timezone=True), default=lambda: datetime.datetime.now(datetime.UTC), nullable=False)
-
     def __repr__(self):
         return '<User %r>' % self.username
 

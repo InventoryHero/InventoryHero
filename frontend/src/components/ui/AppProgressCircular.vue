@@ -50,9 +50,7 @@ export default defineComponent({
       :width="width"
       :color="spinnerColor"
       :indeterminate="indeterminate"
-  >
-
-  </v-progress-circular>
+  />
   <p
       class="test text-wrap"
   >

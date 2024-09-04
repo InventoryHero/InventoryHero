@@ -26,7 +26,9 @@ export class Endpoint {
         this.authStore = useAuthStore();
 
         this.prependHousehold = household
-        this.endpoint = "/" + endpoint.replace("/", "")
+        if(endpoint !== ""){
+            this.endpoint = "/" + endpoint.replace("/", "")
+        }
         this.internalAxios = axios.create({
             baseURL: baseURL
         })
@@ -71,6 +73,24 @@ export class Endpoint {
                     notify({
                         title: i18n.global.t(`toasts.titles.error.${error.response.data.status ?? 'conflict'}`),
                         text: i18n.global.t(`toasts.text.error.${error.response.data.status ?? 'conflict'}`),
+                        type: 'error'
+                    })
+                    break
+                case 422:
+                    notify({
+                        title: i18n.global.t(`toasts.titles.error.${error.response.data.status}`),
+                        text: i18n.global.t(`toasts.titles.error.${error.response.data.status}`),
+                        type: 'error'
+                    })
+                    break
+                case 503:
+                    if(error.response.data.status === "email_not_configured")
+                    {
+                        break
+                    }
+                    notify({
+                        title: i18n.global.t('toasts.titles.error.service_not_available'),
+                        text: i18n.global.t('toasts.titles.error.service_not_available'),
                         type: 'error'
                     })
                     break

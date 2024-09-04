@@ -212,7 +212,6 @@ export class BoxEndpoint extends StorageEndpoint{
         super(StorageTypes.Box)
     }
     public async getBoxes(params:Partial<GetStorageParams>){
-        console.log(params)
         let data = await this.getStorageType(params)
         return data as Array<Box>
     }

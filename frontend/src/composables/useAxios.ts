@@ -6,10 +6,11 @@ import {
     StorageEndpoint,
     BoxEndpoint,
     ProductEndpoint,
-    AdministrationEndpoint
+    AdministrationEndpoint, GeneralEndpoint
 } from "@/api/http";
 
 import {useAuthStore} from "@/store";
+import GeneralSettings from "@/components/settings/GeneralSettings.vue";
 
 
 export type AxiosContext = {
@@ -56,6 +57,11 @@ export default (endpoint = "") : AxiosContext => {
                 }
             }
             break
+        }
+        case "general": {
+            return {
+                axios: new GeneralEndpoint()
+            }
         }
         default:
             console.error("INVALID ENDPOINT")

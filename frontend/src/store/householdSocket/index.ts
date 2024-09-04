@@ -32,7 +32,7 @@ export const useHouseholdSocket =  defineStore("socket", {
                     text: i18n.global.t('toasts.text.new-content.new', {user: content.user}),
                     group: 'newContent',
                     type: 'new-content',
-                    data: () => {console.log('i am so great')}
+                    data: () => {}
                 })
             })
 
@@ -77,7 +77,6 @@ export const useHouseholdSocket =  defineStore("socket", {
             let endpoint: UserEndpoint = userEndpoint.axios as UserEndpoint
             switch(data.status){
                 case "join_first":
-                    console.log("NEED TO JOIN HOUSEHOLD BEFORE INTERACTION POSSIBLE")
                     socketStore.joinHousehold()
                     callback()
                     return

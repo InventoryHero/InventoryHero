@@ -5,7 +5,7 @@ from flask import Blueprint, jsonify
 from flask_jwt_extended import jwt_required, current_user
 
 from backend.db.models.User import User
-from mail.Mail import Mail
+from backend.mail.Mail import Mail
 
 
 def require_admin(f):
@@ -52,3 +52,9 @@ class AdminEndpoint(Blueprint):
                 mail.send_registration_confirmation(user.email, confirmation_code)
             self.db.session.commit()
             return jsonify(status="success"), 200
+
+        @self.route("/reset-password/<int:user_id>", methods=["POST"])
+        @jwt_required()
+        @require_admin
+        def reset_password(user_id):
+            return jsonify(status=user_id), 422

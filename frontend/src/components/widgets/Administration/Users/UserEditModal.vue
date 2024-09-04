@@ -33,7 +33,6 @@ export default defineComponent({
       return this.modelValue
     },
     fullscreen(){
-      console.log("mobile", this.mobile)
       return this.mobile
     }
   },
@@ -65,6 +64,7 @@ export default defineComponent({
         type: "success"
       })
       this.$emit('update:modelValue', user)
+      this.active = false;
     }
   }
 })
@@ -93,9 +93,10 @@ export default defineComponent({
             height="100%"
             v-model="user"
             :loading="loading"
+            :edit="true"
+            :title="$t('administration.users.edit_title', {user: user?.username ?? ''})"
             @close="active=false"
             @click:save="saveUpdatedUser"
-            :edit="true"
         >
         </user-card>
       </v-col>

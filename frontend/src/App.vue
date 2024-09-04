@@ -27,7 +27,6 @@ export default defineComponent({
 
     if(authStore.isAuthorized())
     {
-      console.log("AUTHORIZE")
       householdSocket.bindActions()
       householdSocket.joinHousehold()
       //generalSocket.bindActions()
@@ -78,9 +77,6 @@ export default defineComponent({
     reloadContent(){
       this.$router.go()
     },
-    sayHi(){
-      this.generalSocket.hi();
-    }
   }
 })
 </script>
@@ -162,7 +158,6 @@ export default defineComponent({
           </transition>
         </router-view>
       </v-container>
-      <v-btn @click="sayHi">HALLO :)</v-btn>
     </v-main>
   </v-app>
 </template>

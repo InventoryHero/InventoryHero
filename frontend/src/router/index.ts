@@ -19,9 +19,11 @@ import {i18n} from "@/lang";
 import Confirmation from "@/views/Confirmation.vue";
 import Join from "@/views/Join.vue";
 import {notify} from "@kyvg/vue3-notification";
-import Administration from "@/views/Administration.vue";
 import Users from "@/components/widgets/Administration/Users.vue";
 import Overview from "@/components/widgets/Administration/Overview.vue";
+
+import passwordReset from "./routes/passwordReset.ts";
+
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -108,7 +110,6 @@ export const router = createRouter({
         title: i18n.global.t('titles.boxes')
       },
     },
-
     {
       path: "/storage/locations",
       children:[
@@ -211,11 +212,13 @@ export const router = createRouter({
       ],
       meta:{
         requiresAuth: true,
+        requiresAdmin: true,
         fillHeight: false,
         transition: 'slide',
         title: i18n.global.t('titles.administration')
       }
     },
+    passwordReset,
     {
       path: '/:pathMatch(.*)*',
       name: '404',
@@ -236,20 +239,13 @@ router.beforeEach(async (to, from) => {
 
   if(to.path === "/logout")
     return;
-
-
   const authStore = useAuthStore();
-
-  const loggedIn = authStore.isAuthorized()
-
+  const loggedIn = await authStore.isAuthorized()
   if(!loggedIn){
     if(to.path === "/login") {
       return
     }
-    if(to.path.startsWith("/confirmation")){
-      return
-    }
-    if(to.path === "/settings"){
+    if(!(to.meta.requiresAuth ?? true)){
       return
     }
     authStore.setReturnUrl(to.fullPath)
@@ -264,6 +260,15 @@ router.beforeEach(async (to, from) => {
   if(to.meta.requiresHousehold && (authStore.household === -1)){
     authStore.setReturnUrl(to.fullPath)
     return "/households"
+  }
+
+  if((to.meta.requiresAdmin ?? false) && !authStore.isAdmin){
+    notify({
+      title: i18n.global.t('toasts.titles.info.insufficient_permissions'),
+      text:  i18n.global.t('toasts.text.info.insufficient_permissions'),
+      type: 'info'
+    })
+    return "/"
   }
 })
 

@@ -155,5 +155,42 @@ export class UserEndpoint extends Endpoint{
         return false
     }
 
+    public async resetPasswordRequest(userId: number)
+    {
+        // TODO IF SENDING_EMAIL IS DISABLED HIDE RESET BUTTON
+        const response = await this.internalAxios.get(`/reset-password/${userId}`)
+        if(response.status === 200){
+            return {
+                success: true,
+                message: response.data.status
+            }
+        }
+        this.handleNonErrorNotifications(response)
+        return {
+            success: false,
+            // @ts-expect-error
+            message: response.response.data.status
+        }
+    }
+
+    public async resetPasswordPreflight(code: string){
+        const response = await this.internalAxios.post(`/reset-password/${code}`)
+        if(response.status === 200){
+            return true;
+        }
+        this.handleNonErrorNotifications(response)
+        return false;
+    }
+
+    public async resetPassword(password: string){
+        const response = await this.internalAxios.post(`/reset-password`, {
+            password
+        })
+        if(response.status === 200){
+            return true;
+        }
+        this.handleNonErrorNotifications(response);
+        return false;
+    }
 
 }

@@ -30,7 +30,6 @@ export const useGeneralSocketStore =  defineStore("generalSocket", {
                 'hi',
                 {},
                 (data: string) => {
-                    console.log(data)
                     let response: SocketResponse = JSON.parse(data)
                     this.socketErrorHandler(response, () => {})
                 }
@@ -56,7 +55,26 @@ export const useGeneralSocketStore =  defineStore("generalSocket", {
               }
           )
         },
-
+        isEmailFree(email: string, errorCallback: TakenCallback){
+            generalSocket.emit(
+                'email',
+                {
+                    "email": email
+                },
+                (data: SocketResponse) => {
+                    switch(data.status){
+                        case "email_free":
+                            errorCallback(false)
+                            return;
+                        case "email_taken":
+                            errorCallback(true)
+                            return;
+                        default:
+                            this.socketErrorHandler(data, errorCallback)
+                    }
+                }
+            )
+        },
         updateHeaders(callback: DefaultCallback){
             getAccessToken().then((token) => {
                 generalSocket.io.opts.extraHeaders = {
@@ -72,7 +90,6 @@ export const useGeneralSocketStore =  defineStore("generalSocket", {
         socketErrorHandler(data: SocketResponse, callback: Callback){
             const userEndpoint = useNewAxios("user")
             let endpoint: UserEndpoint = userEndpoint.axios as UserEndpoint
-            console.log(data)
             switch(data.status){
                 case "token_revoked":
                 case "expired_signature":
@@ -82,7 +99,6 @@ export const useGeneralSocketStore =  defineStore("generalSocket", {
                     })
                     return
                 case "ok":
-                    console.log("SUCCESS", data.content)
                     break
             }
         },

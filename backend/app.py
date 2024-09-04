@@ -2,6 +2,7 @@ import os
 
 from dotenv import load_dotenv
 import flask_migrate
+from flask import jsonify
 
 from backend.endpoints.User import User
 from backend.endpoints.ProductEndpoint import ProductEndpoint
@@ -12,6 +13,7 @@ from backend.flask_config import app, socketio
 from backend.sockets.sockets import HouseholdSocket, UserSocket, GeneralSocket
 from backend.database import db, migrate
 from backend.endpoints.AdminEndpoint import AdminEndpoint
+
 
 load_dotenv()
 
@@ -30,8 +32,12 @@ app.register_blueprint(admin)
 socketio.on_namespace(HouseholdSocket("/household"))
 socketio.on_namespace(GeneralSocket("/general"))
 
-#with app.app_context():
-#    db.create_all()
+
+@app.route("/api/v1/smtp-enabled")
+def check_smtp():
+    app.logger.info(app.config['SMTP'].values())
+    smtp_configured = all(app.config['SMTP'].values())
+    return jsonify({'smtp_configured': smtp_configured}), 200
 
 
 if __name__ == "__main__":

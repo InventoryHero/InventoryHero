@@ -9,7 +9,7 @@ export default defineComponent({
 <template>
 <v-row>
   <v-col>
-    hi
+    Something awesome will be here soon!
   </v-col>
 </v-row>
 </template>

@@ -20,7 +20,6 @@ export default defineComponent({
         text: i18n.global.t('toasts.text.error.no_access'),
         type: "error"
       })
-      console.log("HALLO")
       return "/"
     }
   },

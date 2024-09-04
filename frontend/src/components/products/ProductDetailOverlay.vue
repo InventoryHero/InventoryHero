@@ -45,7 +45,6 @@ export default defineComponent({
       }
     },
     containerTitle(){
-      console.log(this.modelValue)
       return useStorageTitle(ref(this.modelValue?.storage))
     },
     amount:{

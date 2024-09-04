@@ -3,13 +3,19 @@
 import {useAuthStore} from "@/store";
 import {defineComponent} from "vue";
 import AppPasswordTextfield from "@/components/ui/AppPasswordTextfield.vue";
+import useAxios from "@/composables/useAxios.ts";
+import {GeneralEndpoint} from "@/api/http";
 
 export default defineComponent({
   name: "LoginCard",
   components: {AppPasswordTextfield},
   setup(){
     const authStore = useAuthStore();
-    return {authStore}
+    const {axios} = useAxios("general")
+    return {
+      authStore,
+      generalEndpoint: axios as GeneralEndpoint
+    }
   },
   computed: {
 
@@ -23,6 +29,7 @@ export default defineComponent({
         usernameNeeded: (value: string) => value !== '' || this.$t('login.login.username_needed'),
         passwordNeeded: (value: string) => value !== '' || this.$t('login.login.password_needed')
       },
+      smtpEnabled: false,
 
     }
   },
@@ -37,6 +44,11 @@ export default defineComponent({
         this.loading = false;
       }
     }
+  },
+  beforeMount(){
+    this.generalEndpoint.checkSmtp().then((enabled: boolean) => {
+      this.smtpEnabled = enabled
+    })
   }
 })
 </script>
@@ -65,8 +77,13 @@ export default defineComponent({
     </v-form>
   </v-card-text>
   <v-divider/>
-  <v-card-actions class="justify-space-between">
+  <v-card-actions :class="{
+      'justify-space-between': smtpEnabled,
+      'justify-end': !smtpEnabled
+    }"
+  >
     <v-btn
+        v-if="smtpEnabled"
         variant="text"
         class="justify-space-between"
     >
