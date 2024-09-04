@@ -5,14 +5,12 @@ import "vue-toastification/dist/index.css";
 import 'vuetify/styles'
 import '@mdi/font/css/materialdesignicons.css' // Ensure you are using css-loader
 import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
-
-
 import {createApp, markRaw} from 'vue'
+
 import App from './App.vue'
-
 import VueSidebarMenu from 'vue-sidebar-menu'
-import {router} from "./router";
 
+import {router} from "./router";
 import {i18n} from "./lang";
 import Toast, {POSITION} from "vue-toastification";
 import {library} from "@fortawesome/fontawesome-svg-core";
@@ -21,7 +19,11 @@ import {far} from "@fortawesome/free-regular-svg-icons";
 import {fab} from "@fortawesome/free-brands-svg-icons";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import VueVirtualScroller from "vue-virtual-scroller"
-import pinia, {useConfigStore} from "@/store";
+
+
+
+
+import pinia, {useAuthStore, useConfigStore, useGeneralSocketStore} from "@/store";
 import FloatingVue from 'floating-vue'
 import Notifications from '@kyvg/vue3-notification'
 
@@ -30,9 +32,11 @@ import vuetify from "@/plugins/vuetify.ts";
 import {TinyEmitter} from "tiny-emitter";
 
 import QrcodeVue from "qrcode.vue";
+
 import vueQr from 'vue-qr/src/packages/vue-qr.vue'
 import VueCountdown from '@chenfengyuan/vue-countdown';
 import { SWhatsApp, STelegram, SEmail} from 'vue-socials';
+
 
 // TODO OPTION TO DISABLE REGISTER AND INVITE USERS
 // TODO ADMINISTRATION ROUTE
@@ -75,23 +79,30 @@ app.component('SEmail', SEmail)
 app.use(VueVirtualScroller)
 app.use(FloatingVue)
 app.use(Notifications)
-app.use(router)
+
 app.use(pinia)
 
-
-
+// TODO THE PROBLEM WITH AWAIT GETACCESSTOKEN IS THE REGISTRATION OF THE AXIOS INSTANCE ... IT WOULD BE BEST TO HAVE A GLOBAL AXIOS INSTANCE
+// THATS CREATED AT STARTUP AND THE use... ENDPOINTS ONLY USE THIS GLOBAL INSTANCE INTERNALLY 
+const authStore = useAuthStore()
 
 const configStore= useConfigStore()
 configStore.init()
+
+
+
 app.use(vuetify)
 let emitter = new TinyEmitter()
 app.config.globalProperties.$emitter = emitter
-
-
 
 
 app.use(i18n);
 app.use(VueSidebarMenu)
 app.use(Toast, toastOptions)
 
-app.mount('#app')
+// let auth store initialization finish before loading router
+
+authStore.init().then(() => {
+    app.use(router)
+    app.mount('#app')
+})

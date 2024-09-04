@@ -98,3 +98,20 @@ export type LocationContent = {
     content: Box | ProductOnly & ProductLocations
 
 }
+
+
+export type Permissions = {
+    admin?: boolean
+}
+
+export interface User {
+    id: number,
+    username: string,
+    email: string,
+    password: string|undefined,
+    is_admin: boolean,
+    first_name: string,
+    last_name: string,
+    registration_date: string,
+    email_confirmed: boolean
+}

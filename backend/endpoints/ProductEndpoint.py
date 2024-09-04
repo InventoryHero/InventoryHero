@@ -1,4 +1,5 @@
 import datetime
+import json
 
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, current_user
@@ -192,10 +193,6 @@ class ProductEndpoint(Blueprint):
 
             self.db.session.delete(product)
             self.db.session.commit()
-            self.app.logger.info(f"DELETED PRODUCT {product.name}")
-            socketio.emit("new-content", {
-                "user": current_user.username
-            }, to=household, namespace='/household')
             return {}, 204
 
         @self.route("/update/<int:product_id>", methods=["POST"])

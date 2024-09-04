@@ -301,7 +301,8 @@
     "account": "Account - InventoryHero",
     "households": "Haushalte - InventoryHero",
     "settings": "Einstellungen - InventoryHero",
-    "create": "Hinzufügen - InventoryHero"
+    "create": "Hinzufügen - InventoryHero",
+    "administration": "Administration"
   },
   "confirmation": {
     "redirect_in": "Weiterleitung in {seconds}s",
@@ -370,7 +371,8 @@
         "create_location_invalid_name": "@:toasts.titles.error.create_location_error",
         "create_location_name_exists": "@:toasts.titles.error.create_location_error",
         "update_box_no_data": "@:toasts.titles.error.create_box_error",
-        "location_no_update_data":"@:toasts.titles.error.create_location_error"
+        "location_no_update_data":"@:toasts.titles.error.create_location_error",
+        "no_access": "Fehlende Berechtigung"
       },
       "success": {
         "default_household_set": "Aktueller Haushalt geändert",
@@ -434,7 +436,8 @@
         "create_location_invalid_name": "Name ist nicht gültig",
         "create_location_name_exists": "Name existiert bereits",
         "update_box_no_data": "Keine Daten angegeben",
-        "location_no_update_data": "Invalide Daten angegeben"
+        "location_no_update_data": "Invalide Daten angegeben",
+        "no_access": ""
       },
       "success": {
         "default_household_set": "",

@@ -22,9 +22,22 @@ class User(db.Model):
     first_name: str = db.Column(db.String(80), nullable=False, server_default="")
     last_name: str = db.Column(db.String(80), nullable=False, server_default="")
     registration_date: datetime = db.Column(db.DateTime(timezone=True), default=lambda: datetime.datetime.now(datetime.UTC), nullable=False)
-
     def __repr__(self):
         return '<User %r>' % self.username
+
+    def serialize(self):
+        test = {
+            "id": self.id,
+            "username": self.username,
+            "email": self.email,
+            "is_admin": self.is_admin,
+            "first_name": self.first_name,
+            "last_name": self.last_name,
+            "registration_date": self.registration_date,
+            "email_confirmed": self.email_confirmed
+        }
+        print(test)
+        return test
 
 
 @dataclass
@@ -35,6 +48,10 @@ class Household(db.Model):
     creator: int = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     members = db.relationship("HouseholdMembers", back_populates="household", cascade="all, delete-orphan")
     creation_date: datetime = db.Column(db.DateTime, default=datetime.datetime.now(datetime.UTC))
+    products = db.relationship("Product", cascade="all, delete-orphan")
+    boxes = db.relationship("Box", cascade="all, delete-orphan")
+    locations = db.relationship("Location", cascade="all, delete-orphan")
+
 
     def to_dict(self):
         return {

@@ -1,12 +1,12 @@
 import json
 from functools import wraps
 
-from flask_jwt_extended import verify_jwt_in_request, current_user
+from flask_jwt_extended import verify_jwt_in_request, current_user, jwt_required
 from flask_jwt_extended.exceptions import NoAuthorizationError, RevokedTokenError, JWTDecodeError
 from flask_socketio import namespace, join_room, emit, leave_room, rooms
 from jwt import ExpiredSignatureError
 
-from backend.db.models.User import HouseholdMembers
+from backend.db.models.User import HouseholdMembers, User
 
 from backend.flask_config import app
 
@@ -38,6 +38,7 @@ def socket_token():
             except Exception as e:
                 app.logger.info(e)
                 return "error fml", 500
+
         return decorator
     return wrapper
 
@@ -71,6 +72,10 @@ def authorize_room(joined=True):
     return wrapper
 
 
+class UserSocket(namespace.Namespace):
+     pass
+
+
 class HouseholdSocket(namespace.Namespace):
     @socket_token()
     @authorize_room(joined=False)
@@ -79,7 +84,7 @@ class HouseholdSocket(namespace.Namespace):
         if room is None:
             return 403, json.dumps({"status": "error"})
         username = current_user.username
-        app.logger.warning(rooms())
+        app.logger.info("HALLO HERE I AM")
         join_room(room)
         return True, json.dumps({"status": "success"})
 
@@ -100,5 +105,31 @@ class HouseholdSocket(namespace.Namespace):
         room = data.pop("household", None)
         if room is None:
             return 400, json.dumps({"status": "error"})
+        app.logger.info("SAYS HI")
         emit("hi", f"{username} says hi", to=room, include_self=False)
         return "ok"
+
+
+class GeneralSocket(namespace.Namespace):
+    @socket_token()
+    def on_hi(self, data):
+        username = current_user.username
+        app.logger.info(f"{username} says hi")
+        return json.dumps({"content": f"Hallo, {username}!", "status": "ok"})
+
+    @socket_token()
+    def on_username(self, data):
+        app.logger.info(data)
+        result = User.query.filter_by(username=data["username"]).first()
+        if result is None:
+            return {"status": "username_free"}
+        return {"status": "username_taken"}
+
+    @socket_token()
+    def on_email(self, data):
+        app.logger.info(data)
+        result = User.query.filter_by(email=data["email"]).first()
+        app.logger.info(result)
+        if result is None:
+            return {"status": "email_free"}
+        return {"status": "email_taken"}

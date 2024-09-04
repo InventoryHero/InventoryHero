@@ -8,6 +8,11 @@ export default defineComponent({
     const auth = useAuthStore();
     return {auth}
   },
+  computed:{
+    isAdmin(){
+      return this.auth.isAdmin
+    }
+  },
   methods:{
     async logout() {
       this.loggingOut=true
@@ -62,9 +67,16 @@ export default defineComponent({
             :title="$t('nav.settings')"
             size="small"
         />
+
+
+        <nav-item
+            v-if="isAdmin"
+            route="/administration"
+            icon="fa:fas fa-user-shield"
+            :title="$t('nav.administration')"
+            size="small"
+        />
         <v-divider color="primary" class="border-opacity-50"/>
-
-
         <v-list-item
             @click="logout()"
         >

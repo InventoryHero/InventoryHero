@@ -5,18 +5,20 @@ import {
     LocationEndpoint,
     StorageEndpoint,
     BoxEndpoint,
-    ProductEndpoint
+    ProductEndpoint,
+    AdministrationEndpoint, GeneralEndpoint
 } from "@/api/http";
-import {StorageTypes} from "@/types";
+
+import {useAuthStore} from "@/store";
+import GeneralSettings from "@/components/settings/GeneralSettings.vue";
 
 
 export type AxiosContext = {
     axios: Endpoint
 }
 
-
-
 export default (endpoint = "") : AxiosContext => {
+    const authStore = useAuthStore()
 
     switch(endpoint){
         case "user":
@@ -46,6 +48,19 @@ export default (endpoint = "") : AxiosContext => {
         case "product":{
             return {
                 axios: new ProductEndpoint()
+            }
+        }
+        case "administration": {
+            if(authStore.isAdmin){
+                return {
+                    axios: new AdministrationEndpoint()
+                }
+            }
+            break
+        }
+        case "general": {
+            return {
+                axios: new GeneralEndpoint()
             }
         }
         default:

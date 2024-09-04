@@ -1,6 +1,6 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
-import useNewAxios from "@/composables/useNewAxios.ts";
+import useNewAxios from "@/composables/useAxios.ts";
 import {HouseholdEndpoint} from "@/api/http";
 import {useAuthStore} from "@/store";
 
@@ -62,7 +62,9 @@ export default defineComponent({
 </script>
 
 <template>
-<v-row>
+<v-row
+  justify="center"
+>
   <v-col
     cols="12"
     lg="6"

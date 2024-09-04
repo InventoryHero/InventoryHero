@@ -53,7 +53,8 @@
     <v-hover>
       <template v-slot:default="{isHovering, props}">
         <v-icon
-            v-bind="props"
+            v-bind="{...$attrs, ...props}"
+
             :icon="icon"
             :size="size"
             :color="color"

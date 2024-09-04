@@ -43,7 +43,12 @@
     "account": "Account",
     "households": "Households",
     "settings": "Settings",
-    "logout": "Logout"
+    "logout": "Logout",
+    "administration": "Administration",
+    "admin": {
+      "overview": "Overview",
+      "users": "Users"
+    }
   },
   "storage": {
     "select": {
@@ -211,7 +216,8 @@
     "household_card": {
       "title": "Current household",
       "edit_households": "Edit households",
-      "save_changes": "Save"
+      "save_changes": "Save",
+      "select_household": "Select a household"
     }
   },
   "login": {
@@ -301,7 +307,8 @@
     "account": "Account - InventoryHero",
     "households": "Households - InventoryHero",
     "settings": "Settings - InventoryHero",
-    "create": "Add new item - InventoryHero"
+    "create": "Add new item - InventoryHero",
+    "administration": "Administration"
   },
   "confirmation": {
     "redirect_in": "Redirect in {seconds}",
@@ -322,13 +329,70 @@
     "copy_to_clipboard": "Copy the invite link into your clipboard...",
     "or": "...or share it directly"
   },
+  "administration": {
+    "users": {
+      "create": "Create",
+      "create_title": "New User",
+      "edit_title": "Edit User {user}",
+      "username": "Username",
+      "email":  "E-Mail",
+      "last_name": "Surname",
+      "first_name": "First name",
+      "admin": "Administrator",
+      "password": "Password",
+      "roles": "Roles",
+      "save_user": "Save User",
+      "delete_confirm_title_single": "Delete User",
+      "delete_confirm_body_single": "Are you sure you want to delete the user {name}?",
+      "delete_confirm_title_multiple": "Delete Users",
+      "delete_confirm_body_multiple": "{count} users will be deleted. Are you sure?",
+      "deleting": "Deleting ...",
+      "selected": "{count} User(s) selected",
+      "reset": "Reset",
+      "table": {
+        "title": "Users",
+        "headers": {
+          "username": "@:administration.users.username",
+          "email": "@:administration.users.email",
+          "account_confirmed": "Confirmed",
+          "actions": "Actions",
+          "first_name": "@:administration.users.first_name",
+          "last_name": "@:administration.users.last_name",
+          "admin": "@:administration.users.admin",
+          "registered": "Registered on"
+        }
+      },
+      "rules": {
+        "username_taken": "This username is already in use",
+        "email_taken": "This email is already in use"
+      },
+      "edit": {
+        "resend_confirmation": "Resend Confirmation",
+        "delete_user": "Delete",
+        "save_user": "Save",
+        "title": "Edit user",
+        "reset": "Reset"
+      },
+      "password_reset": {
+        "title": "Reset password of {username}",
+        "password_needed": "A new password must be supplied",
+        "passwords_not_equal": "The passwords do not match",
+        "email_disabled": "Your app configuration disabled email support, so you need to tell your user the resetted password manually",
+        "password": "@:administration.users.password",
+        "password_repeat": "@:login.register.repeat_password",
+        "cancel": "@:cancel",
+        "save": "@:save"
+      }
+    }
+  },
   "toasts": {
     "titles": {
       "info": {
         "no_households": "No households received",
         "leave_household": "Leaving this household will soon be possible",
         "edit_household": "Editing this household will soon be possible",
-        "confirm_email": "Confirmation email sent"
+        "confirm_email": "Confirmation email sent",
+        "some_deleted": "Not all users could be deleted properly"
       },
       "error": {
         "invalid_request": "Invalid request",
@@ -370,7 +434,10 @@
         "create_location_invalid_name": "@:toasts.titles.error.create_location_error",
         "create_location_name_exists": "@:toasts.titles.error.create_location_error",
         "update_box_no_data": "@:toasts.titles.error.create_box_error",
-        "location_no_update_data":"@:toasts.titles.error.create_location_error"
+        "location_no_update_data":"@:toasts.titles.error.create_location_error",
+        "no_access": "Insufficient access rights",
+        "delete_not_possible_last_admin": "The deletion is not possible, this is the only admin account.",
+        "service_not_available": "This service is currently not available."
       },
       "success": {
         "default_household_set": "Default household updated",
@@ -386,7 +453,10 @@
         "add_product": "Successfully added {amount} instances of product {name}",
         "add_box":"Successfully created box {name}",
         "add_location":"Successfully created location {name}",
-        "copied_to_clipboard": "Copied to clipboard!"
+        "copied_to_clipboard": "Copied to clipboard!",
+        "user_created": "User {username} successfully created",
+        "deleted_multiple": "{count} users successfully deleted",
+        "password_reset": "Password successfully reset"
       },
       "new-content": {
         "new": "{user} updated your household"
@@ -395,7 +465,8 @@
     "text": {
       "info": {
         "no_households": "Please create a new household to get started with InventoryHero 😊",
-        "confirm_email": "Please confirm your email before proceeding! 😊"
+        "confirm_email": "Please confirm your email before proceeding! 😊",
+        "some_deleted": ""
       },
       "error": {
         "invalid_request": "",
@@ -434,7 +505,10 @@
         "create_location_invalid_name": "Supplied name is invalid",
         "create_location_name_exists": "Supplied name already exists",
         "update_box_no_data": "No data supplied",
-        "location_no_update_data": "No data supplied"
+        "location_no_update_data": "No data supplied",
+        "no_access": "",
+        "delete_not_possible_last_admin": "",
+        "service_not_available": "Please try again later"
       },
       "success": {
         "default_household_set": "",
@@ -450,7 +524,10 @@
         "add_product": "",
         "add_box": "",
         "add_location": "",
-        "copied_to_clipboard": ""
+        "copied_to_clipboard": "",
+        "user_created": "",
+        "deleted_multiple": "",
+        "password_reset": "Notify your user immediately"
       },
       "new-content": {
         "new": "Some things in your household might have changed. Click here to load the most recent data!"

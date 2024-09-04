@@ -7,6 +7,7 @@ from flask_cors import CORS
 from backend.database import db, migrate
 from datetime import timedelta
 
+
 from backend.exceptions.inventory_hero_exceptions import UnknownDatabaseType, MissingSmtpConfig, InvalidAppUrl, \
     UnsupportedSmtpProtocol
 
@@ -20,10 +21,12 @@ def parse_db_parameters(db_type, db_host, db_port, db_name, db_user, db_password
     if db_type == "sqlite":
         driver = "sqlite+pysqlite"
         file_path = ""
-        if os.path.exists("/app/inventoryhero/data"):
-            file_path = "//app/inventoryhero/data/inventoryhero.db"
+        logger.warning(os.getcwd())
+        if os.path.exists("../data"):
+            file_path = "/../data/inventoryhero.db"
         else:
-            logger.warning("/app/inventoryhero/inventoryhero.db not found, using memory based sqlite instance.")
+            logger.warning("../data/inventoryhero.db not found, using memory based sqlite instance.")
+
         db_uri = f"{driver}://{file_path}"
     elif db_type == "mysql":
         driver = "mysql+mysqldb"
@@ -51,6 +54,7 @@ class Config(object):
 
     JWT_ACCESS_TOKEN_EXPIRES = timedelta(minutes=60)
     JWT_REFRESH_TOKEN_EXPIRES = timedelta(days=30)
+    JWT_TOKEN_LOCATION = ["headers"]
 
     SMTP = {
         "server": os.getenv("INVENTORYHERO_SMTP_SERVER", None),
@@ -75,6 +79,8 @@ class Config(object):
         raise MissingSmtpConfig("ENTER SMTP CONFIG OR DISABLE CONFIRMATION")
 
     APP_URL = os.getenv("INVENTORYHERO_APP_URL", "http://localhost:8080")
+
+    REGISTRATION_ALLOWED = os.getenv("INVENTORYHERO_REGISTRATION_ALLOWED", "true").lower() in ('true', '1', 't')
 
 
 class DebugConfig(Config):
@@ -108,6 +114,7 @@ app.logger.handlers.extend(gunicorn_logger.handlers)
 app.logger.setLevel(logging.INFO)
 CORS(app, origins=app.config["ALLOWED_ORIGINS"])
 
+from backend.db.models import PasswordResetRequests
 db.init_app(app)
 migrate.init_app(app, db, render_as_batch=True)
 

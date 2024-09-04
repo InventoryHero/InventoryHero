@@ -5,7 +5,7 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import AppStorageSelect from "@/components/ui/AppStorageSelect.vue";
 import AppPrintQrCode from "@/components/widgets/QrCode/Print/AppPrintQrCode.vue";
 import useStorageTitle from "@/composables/useStorageTitle.ts";
-import useNewAxios from "@/composables/useNewAxios.ts";
+import useNewAxios from "@/composables/useAxios.ts";
 import {BoxEndpoint, ProductEndpoint} from "@/api/http";
 
 export default defineComponent({

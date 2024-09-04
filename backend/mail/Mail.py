@@ -15,17 +15,46 @@ class Mail:
         self.sender_email = smtp_config['from_email']
         self.sender_name = smtp_config['from_name']
         self.app_url = app_url
-
+        self.support_email = smtp_config.get('support_email', self.sender_email)
     def send_registration_confirmation(self, to, confirmation_code):
         message = MIMEMultipart('alternative')
         message['From'] = f"{self.sender_name} <{self.sender_email}>"
         message['To'] = to
-        message['Subject'] = "Please confirm your email address"
+        message['Subject'] = "Activate your InventoryHero account"
         url = f"{self.app_url}/confirmation/{confirmation_code}"
 
-        html = render_template("/mail/register.html", url=url)
+        # TODO USERINFO
+        user_info = {
+        }
+        html = render_template(
+            "/mail/account-activation.html",
+            url=url,
+            support_email=self.support_email,
+            **user_info
+        )
+
         message.attach(MIMEText(html, "html"))
-        self.send_email(message, to)
+        self.send_email(message, message['To'])
+
+    def send_reset_password(self, to, reset_id):
+        message = MIMEMultipart('alternative')
+        message['From'] = f"{self.sender_name} <{self.sender_email}>"
+        message['To'] = to["email"] # this needs to be present
+        message['Subject'] = "Reset your InventoryHero password"
+        url = f"{self.app_url}/password-reset/{reset_id}"
+        user_info = {
+            'first_name': to.get("first_name", None),
+            'username': to.get("username", None)
+        }
+        html = render_template(
+            "/mail/reset-password.html",
+            url=url,
+            support_email=self.support_email,
+            **user_info
+        )
+        message.attach(MIMEText(html, "html"))
+        self.send_email(message, message['To'])
+
 
     def send_email(self, message, to):
         context = ssl.create_default_context()

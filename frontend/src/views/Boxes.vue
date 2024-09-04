@@ -6,7 +6,7 @@ import {useAuthStore, useConfigStore} from "@/store";
 import { Box } from "@/types";
 import useUpdateStorage from "@/composables/useUpdateStorage";
 import AppScrollToTopBtn from "@/components/ui/AppScrollToTopBtn.vue";
-import useNewAxios from "@/composables/useNewAxios.ts";
+import useNewAxios from "@/composables/useAxios.ts";
 import {BoxEndpoint} from "@/api/http";
 
 export default defineComponent({

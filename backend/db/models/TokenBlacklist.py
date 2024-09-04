@@ -8,7 +8,7 @@ class TokenBlacklist(db.Model):
     jti: str = db.Column(db.String(36), nullable=False, index=True)
     type: str = db.Column(db.String(16), nullable=False)
     user_id = db.Column(
-        db.ForeignKey('user.id'),
+        db.ForeignKey('user.id', ondelete="CASCADE"),
         default=lambda: get_current_user().id,
         nullable=False,
     )

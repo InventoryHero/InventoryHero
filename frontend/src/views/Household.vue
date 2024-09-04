@@ -5,7 +5,7 @@ import {Household} from "@/types";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {useAuthStore} from "@/store";
 import HouseholdItem from "@/components/household/HouseholdItem.vue";
-import useNewAxios from "@/composables/useNewAxios.ts";
+import useNewAxios from "@/composables/useAxios.ts";
 import {HouseholdEndpoint} from "@/api/http";
 import {notify} from "@kyvg/vue3-notification";
 import {i18n} from "@/lang";
@@ -16,7 +16,6 @@ export default defineComponent({
   name: "Household",
   computed: {
     joinedHouseholds(){
-      console.log(this.authStore.user.id)
       return this.households.filter((household) => household.creator !== this.authStore.user.id)
     }
   },
@@ -49,7 +48,6 @@ export default defineComponent({
     async fetchHouseholds(){
       this.loadingHouseholds = true;
       this.households = await this.axios.getHouseholds()
-      console.log(this.households)
       if(this.authStore.user.household === null && this.households.length >= 1)
       {
         this.setDefaultHousehold(this.households[0].id)
@@ -92,7 +90,6 @@ export default defineComponent({
       this.inviteModal = true
     },
     isJoinedHousehold(id: number){
-      console.log(this.joinedHouseholds)
       for(let i = 0; i < this.joinedHouseholds.length; i++)
       {
         if(this.joinedHouseholds[i].id === id) {

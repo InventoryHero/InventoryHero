@@ -32,6 +32,7 @@ export const useConfigStore = defineStore('config', {
             const primary = new TinyColor(this.config.theme.color);
             vuetify.theme.themes.value[theme].colors.primary = this.config.theme.color
             vuetify.theme.themes.value[theme].colors.secondary = primary.desaturate(5).darken(10).toHexString()
+            vuetify.theme.themes.value[theme].colors.accent = primary.desaturate(0).lighten(20).toHexString()
             vuetify.theme.global.name.value = theme
             document?.querySelector('meta[name="theme-color"]')?.setAttribute("content", this.config.theme.color);
         },

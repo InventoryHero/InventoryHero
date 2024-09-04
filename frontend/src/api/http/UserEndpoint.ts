@@ -1,9 +1,9 @@
 import {Endpoint} from "./Endpoint.ts";
-import {Axios} from "axios";
 import {ILoginRequest, ILoginResponse, IRegisterRequest, IUser} from "@/types";
 import {clearAuthTokens, getRefreshToken, setAuthTokens} from "axios-jwt";
 import {notify} from "@kyvg/vue3-notification";
 import {i18n} from "@/lang";
+import {Permissions, User} from "@/types/api.ts";
 
 
 
@@ -14,7 +14,6 @@ export class UserEndpoint extends Endpoint{
     constructor(){
         super(false, "/user")
     }
-
 
     public async getUser():Promise<IUser|undefined> {
         const response = await this.internalAxios.get("");
@@ -96,6 +95,102 @@ export class UserEndpoint extends Endpoint{
             verified: false,
             status: response.data.status
         }
+    }
+
+    public async getPermissions(){
+        const response = await this.internalAxios.get("/permissions")
+        if(response.status === 200)
+        {
+            return response.data as Permissions
+        }
+        this.handleNonErrorNotifications(response)
+        return {} as Permissions
+    }
+
+    public async updateUser(updated: Partial<User>, user: Partial<User>){
+        if(user.id === undefined){
+            return {
+                success: false,
+                msg: undefined,
+                user: undefined
+            }
+        }
+        const response = await this.internalAxios.post(`/update/${user.id}`, updated)
+        if(response.status === 200){
+            return {
+                success: true,
+                msg: response.data.status,
+                user: response.data.user
+            }
+        }
+        this.handleNonErrorNotifications(response)
+        return {
+            success: false,
+            msg: undefined,
+            user: undefined
+        }
+    }
+
+    public async createUser(toCreate: Partial<User>){
+        const response = await this.internalAxios.post("/create", toCreate)
+        if(response.status === 200){
+            return {
+                success: true,
+                user: response.data.user
+            }
+        }
+        this.handleNonErrorNotifications(response)
+        return {
+            success: false,
+            user: undefined
+        }
+    }
+
+    public async deleteUser(toDelete: number){
+        const response = await this.internalAxios.delete(`/delete/${toDelete}`)
+        if(response.status === 200){
+            return true
+        }
+        this.handleNonErrorNotifications(response)
+        return false
+    }
+
+    public async resetPasswordRequest(userId: number)
+    {
+        // TODO IF SENDING_EMAIL IS DISABLED HIDE RESET BUTTON
+        const response = await this.internalAxios.get(`/reset-password/${userId}`)
+        if(response.status === 200){
+            return {
+                success: true,
+                message: response.data.status
+            }
+        }
+        this.handleNonErrorNotifications(response)
+        return {
+            success: false,
+            // @ts-expect-error
+            message: response.response.data.status
+        }
+    }
+
+    public async resetPasswordPreflight(code: string){
+        const response = await this.internalAxios.post(`/reset-password/${code}`)
+        if(response.status === 200){
+            return true;
+        }
+        this.handleNonErrorNotifications(response)
+        return false;
+    }
+
+    public async resetPassword(password: string){
+        const response = await this.internalAxios.post(`/reset-password`, {
+            password
+        })
+        if(response.status === 200){
+            return true;
+        }
+        this.handleNonErrorNotifications(response);
+        return false;
     }
 
 }

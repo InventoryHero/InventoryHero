@@ -1,5 +1,5 @@
 <script lang="ts">
-import {useAuthStore, useSocketStore} from "@/store";
+import {useAuthStore, useHouseholdSocket} from "@/store";
 import {defineComponent} from "vue";
 
 import {getAccessToken} from "axios-jwt";
@@ -8,7 +8,7 @@ export default defineComponent({
   name: "Dashboard",
   setup(){
     const authStore = useAuthStore();
-    const socketStore = useSocketStore();
+    const socketStore = useHouseholdSocket();
     return {authStore, socketStore}
   },
   computed: {

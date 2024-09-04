@@ -1,7 +1,7 @@
 <script lang="ts">
 import {defineComponent, PropType} from 'vue'
 import {useAuthStore} from "@/store";
-import useNewAxios from "@/composables/useNewAxios.ts";
+import useNewAxios from "@/composables/useAxios.ts";
 import {HouseholdEndpoint} from "@/api/http";
 import {Household} from "@/types";
 
@@ -50,20 +50,19 @@ export default defineComponent({
           break
         }
       }
-      if(i !== this.userHouseholds.length)
-      {
-        let tmp = this.userHouseholds[i]
-        this.userHouseholds.splice(i, 1)
-        this.userHouseholds.unshift(tmp)
-      }
+      return i
     }
   },
   async mounted() {
     this.userHouseholds = (await this.axios.getHouseholds()) as Array<Household>
     if(this.userHouseholds.length > 0)
     {
-      this.sortUserHouseholds()
-      this.selectedHousehold = this.userHouseholds[0];
+      //let selected = this.sortUserHouseholds()
+      let selected = this.userHouseholds.map(e => e.id).indexOf(this.authData.user?.household?.id)
+      if(selected < this.userHouseholds.length)
+      {
+        this.selectedHousehold = this.userHouseholds[selected]
+      }
 
     }
     this.loadingUserHouseholds = false;
@@ -102,12 +101,13 @@ export default defineComponent({
           class="mt-4"
       >
         <v-select
-            v-if="selectedHousehold !== undefined || loadingUserHouseholds"
             :items="userHouseholds"
             :chips="true"
             item-title="name"
             hide-details="auto"
             :single-line="true"
+            :placeholder="$t('account.household_card.select_household')"
+            :no-data-text="$t('account.household_card.create_new_household')"
             return-object
             v-model="selectedHousehold"
             density="compact"
@@ -120,10 +120,6 @@ export default defineComponent({
             />
           </template>
         </v-select>
-        <div
-            v-else>
-          Please create new household
-        </div>
 
 
       </v-card-text>

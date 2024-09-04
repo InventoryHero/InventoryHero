@@ -1,0 +1,17 @@
+<!-- templates/mail/account-activation.html -->
+{% extends "/mail/base.html" %}
+
+{% block title %}Activate Your Account{% endblock %}
+
+{% block content %}
+<p>Hi {{ first_name if first_name else (username if username else '') }},</p>
+<p>Welcome to InventoryHero! We're excited to have you on board.</p>
+<p>To get started, please click the link below to activate your account:</p>
+<p><a href="{{ url }}">Activate Your Account</a></p>
+<p>If the button above doesn't work, copy and paste the following URL into your browser:</p>
+<p><a href="{{ url }}">{{ url }}</a></p>
+<p>Thank you for joining us, and we look forward to helping you manage your inventory more efficiently!</p>
+<p>Best regards,</p>
+<p>The InventoryHero Team</p>
+<p><strong>Note:</strong> This email was sent from a no-reply address. Please do not reply to this email. If you need assistance, contact our support team at <a href="mailto:{{ support_email }}">{{ support_email }}</a>.</p>
+{% endblock %}
