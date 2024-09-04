@@ -23,4 +23,20 @@ export class AdministrationEndpoint extends Endpoint {
         this.handleNonErrorNotifications(response)
         return false
     }
+
+    public async resetPassword(user: number, password: string){
+        const response = await this.internalAxios.post(`/reset-password/${user}`, {
+            password: password
+        })
+        if(response.status === 200){
+            return {
+                success: true
+            }
+        }
+        this.handleNonErrorNotifications(response)
+        return {
+            success: false,
+
+        }
+    }
 }

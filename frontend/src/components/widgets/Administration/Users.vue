@@ -7,11 +7,6 @@ import {useDisplay} from "vuetify";
 import UserEditModal from "@/components/widgets/Administration/Users/UserEditModal.vue";
 import {GeneralEndpoint, UserEndpoint} from "@/api/http";
 
-type UserSelection = {
-  id: number,
-  name: string
-}
-
 //TODO RESEND EMAIL VERIFICATION
 
 export default defineComponent({
@@ -126,7 +121,10 @@ export default defineComponent({
       usersToDelete: [] as Array<Partial<User>>,
       deleting: false,
       smtpEnabled: false,
-      passwordResetModalActive: false
+      passwordResetModalActive: false,
+      userIdForPwReset: undefined as (number|undefined),
+      userNameForPwReset: undefined as (string|undefined),
+      resettingPassword: false
     }
   },
   methods:{
@@ -142,8 +140,10 @@ export default defineComponent({
       })
 
     },
-    resetPassword(userId: number){
+    resetPassword(userId: number, userName: string){
+      this.resettingPassword = true
       this.userEndpoint.resetPasswordRequest(userId).then(result => {
+        this.resettingPassword = false
         if(result.success){
           this.$notify({
             title: this.$t(`toasts.titles.success.${result.message}`),
@@ -153,7 +153,8 @@ export default defineComponent({
           return;
         }
         if(result.message === "email_not_configured"){
-          this.passwordResetModalActive = true;
+          this.userIdForPwReset = userId
+          this.userNameForPwReset = userName
         }
       })
     },
@@ -241,6 +242,18 @@ export default defineComponent({
             :message="$t('administration.users.deleting')"
         />
       </v-dialog>
+
+      <v-dialog
+        v-model="resettingPassword"
+        :persistent="true"
+      >
+        <app-progress-circular
+            :width="10"
+            :size="128"
+            :message="$t('administration.users.resetting_password')"
+        />
+      </v-dialog>
+
       <user-edit-modal
         v-model="userTOEdit"
       />
@@ -256,7 +269,9 @@ export default defineComponent({
         @deny="abortDeletion"
       />
       <password-reset-modal
-        v-model="passwordResetModalActive"
+        v-model="userIdForPwReset"
+        :user-name="userNameForPwReset"
+        @update:model-value="userNameForPwReset=undefined"
       />
 
       <v-container :fluid="true" class="pl-0 pr-0">
@@ -353,16 +368,16 @@ export default defineComponent({
           </template>
           <template v-slot:item.actions="{item, index}">
             <app-icon-btn
-              class="me-2"
-              icon="mdi-lock-reset"
-              color="primary"
-              size="large"
-              @click="resetPassword(item.id!)"
+                class="me-2"
+                icon="mdi-lock-reset"
+                color="primary"
+                size="large"
+                @click="resetPassword(item.id!, item.username!)"
             />
             <app-icon-btn
                 class="me-2"
                 icon="mdi-pencil"
-                color="primary"
+                color="yellow-darken-1"
                 size="large"
                 @click="editUser(item, index)"
             />
@@ -394,17 +409,7 @@ export default defineComponent({
                 @click="resendEmail(item.id!)"
             />
           </template>
-          <template
-              v-slot:item.reset_password="{item}"
-              v-if="smtpEnabled"
-          >
-              <app-icon-btn
-                icon="mdi-restore-alert"
-                color="red-darken-1"
-                size="large"
-                @click="resetPassword(item.id!)"
-              />
-          </template>
+
         </v-data-table>
       </v-container>
     </v-col>

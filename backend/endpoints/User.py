@@ -58,13 +58,13 @@ class User(Blueprint):
             if password is None:
                 self.app.logger.error("No password provided")
                 return {"status": "no_password"}, 400
-            salt = bcrypt.gensalt()
 
             email = request.json.get("email", None)
             if email is None:
                 self.app.logger.error("No or invalid email provided")
                 return {"status": "no_email"}, 400
 
+            salt = bcrypt.gensalt()
             password = password.encode('utf-8')
             password = bcrypt.hashpw(password, salt)
 

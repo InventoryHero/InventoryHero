@@ -1,7 +1,8 @@
 import uuid
 from functools import wraps
 
-from flask import Blueprint, jsonify
+import bcrypt
+from flask import Blueprint, jsonify, request
 from flask_jwt_extended import jwt_required, current_user
 
 from backend.db.models.User import User
@@ -57,4 +58,14 @@ class AdminEndpoint(Blueprint):
         @jwt_required()
         @require_admin
         def reset_password(user_id):
-            return jsonify(status=user_id), 422
+            password = request.json.get('password', None)
+            self.app.logger.info(f"Resetting password for user {user_id}: {password}")
+            salt = bcrypt.gensalt()
+            password = password.encode('utf-8')
+            password = bcrypt.hashpw(password, salt)
+            user = User.query.filter_by(id=user_id).first()
+            if user is None:
+                return jsonify(status="user_not_found"), 422
+            user.password = password.decode("utf-8")
+            self.db.session.commit()
+            return jsonify(), 200

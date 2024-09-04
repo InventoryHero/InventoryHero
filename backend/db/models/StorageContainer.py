@@ -94,4 +94,3 @@ class Box(db.Model):
             products.append(curr_product)
 
         return products
-
