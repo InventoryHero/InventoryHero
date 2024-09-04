@@ -50,15 +50,12 @@ export default defineComponent({
       else
       {
         this.overlayBox = undefined
-        this.content = []
+        this.locationContent = []
       }
 
     }
   },
   computed:{
-    locationContent() {
-      return this.content
-    },
     location(){
       return this.modelValue
     },
@@ -99,7 +96,7 @@ export default defineComponent({
   data(){
     return {
       contentLoading: false,
-      content: [] as Array<LocationContent>,
+      locationContent: [] as Array<LocationContent>,
       overlayBox: undefined as Box|undefined,
       deleting: false,
       saving: false,
@@ -120,26 +117,12 @@ export default defineComponent({
     },
     async loadContent(){
       this.contentLoading = true
-      const {boxes, products} = await this.axios.getContent(this.location?.id ?? '')
-
-      this.content = []
-      boxes.forEach((box) => {
-        this.content.push({
-          content: box,
-          type: "box",
-          id: `box${box.id}`
-        })
-      })
-      products.forEach((product) => {
-        this.content.push({
-          content: product,
-          type: "product",
-          id: `product${product.id}`
-        })
-      })
+      const {content} = await this.axios.getContent(this.location?.id ?? -1)
+      this.locationContent = content
+      console.log(content)
       this.contentLoading = false
     },
-    isBox(item: LocationContent) {
+    isProduct(item: LocationContent) {
       return item.type === "product"
     },
     updateBox(toUpdate: Box){
@@ -156,17 +139,17 @@ export default defineComponent({
         this.overlayBox = toUpdate
       }
       let i = 0;
-      for(; i < this.content.length; i++)
+      for(; i < this.locationContent.length; i++)
       {
-        if(this.content[i].id === `box${toUpdate.id}`){
-          this.content[i].content.name = toUpdate.name
-          let current: Box = this.content[i].content as Box
+        if(this.locationContent[i].id === `box${toUpdate.id}`){
+          this.locationContent[i].content.name = toUpdate.name
+          let current: Box = this.locationContent[i].content as Box
           current.location = toUpdate.location
         }
       }
     },
     deleteBox(){
-      this.content = this.content.filter((item) => item.id !== `box${this.overlayBox?.id}`)
+      this.locationContent = this.locationContent.filter((item) => item.id !== `box${this.overlayBox?.id}`)
       this.overlayBox = undefined
       this.$emit("boxDeleted")
     },
@@ -321,9 +304,9 @@ export default defineComponent({
         :item-size="110"
     >
 
-      <template #default="{item}">
+      <template v-slot="{item}">
         <product-card
-            v-if="isBox(item)"
+            v-if="isProduct(item)"
             :id="item.content.id"
             :name="item.content.name"
             :totalAmount="item.content.amount"
@@ -331,7 +314,7 @@ export default defineComponent({
             :is-updated-date="true"
             @expand="overlayProduct = {
               ...item.content,
-              storage: location
+              selected: location
             }"
         />
         <box-card
@@ -339,6 +322,7 @@ export default defineComponent({
           :id="item.content.id"
           :name="item.content.name"
           :creation-date="item.content.creation_date"
+          :product-amount="item.content.products"
           @show-overlay="() => {overlayBox = item.content}"
         />
 

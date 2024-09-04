@@ -112,7 +112,6 @@ export default defineComponent({
       contained: false
     });
     this.locationsLoading = false
-
   }
 })
 </script>
@@ -167,6 +166,7 @@ export default defineComponent({
         >
           <app-storage-select
               v-model="location"
+              :storage="locations"
               density="comfortable"
               :label="$t('add.box.labels.location')"
               :persistent-hint="locationSelectHint.active"

@@ -107,7 +107,15 @@ export default defineComponent({
       this.$refs.scroller.scrollToItem(0)
     },
     boxContentChanged(currentBox: number, newBox: number|undefined){
-      this.loadBoxes()
+      const oldBox = this.boxes.find(b => b.id === currentBox)
+      const newStorage = this.boxes.find(b => b.id === (newBox ?? -1))
+      if(oldBox?.products !== undefined){
+        oldBox.products--;
+      }
+      if(newStorage?.products !== undefined){
+        newStorage.products++;
+      }
+
     }
   },
   async mounted(){

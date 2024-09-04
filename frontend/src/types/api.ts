@@ -26,11 +26,10 @@ export type Product = ProductOnly & {
 export type ProductLocations = {
     id: number
     amount: number,
-    box: number,
-    location: number,
+    name: string,
     product_id: number,
     updated_at: string,
-    storage: Storage|null,
+    storage: Storage|undefined,
     storage_type: number
 }
 

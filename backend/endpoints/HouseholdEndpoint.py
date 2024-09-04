@@ -44,7 +44,6 @@ class HouseholdEndpoint(Blueprint):
         @jwt_required()
         def get_households():
             households = HouseholdMembers.query.filter_by(member_id=current_user.id).all()
-            self.app.logger.info(households)
             if households is None or len(households) == 0:
                 return {"status": "no_households"}, 204
             households = [household.household.serialize() for household in households]

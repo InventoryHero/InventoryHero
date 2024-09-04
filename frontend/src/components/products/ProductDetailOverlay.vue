@@ -3,9 +3,17 @@ import {defineComponent, PropType, ref} from 'vue'
 import {ProductLocations, Storage} from "@/types";
 import useCompareStorage from "@/composables/useCompareStorage.ts";
 import useStorageTitle from "@/composables/useStorageTitle.ts";
+import useAxios from "@/composables/useAxios.ts";
+import {StorageEndpoint} from "@/api/http";
 
 export default defineComponent({
   name: "ProductDetailOverlay",
+  setup(){
+    const {axios} = useAxios("storage")
+    return {
+      storageEndpoint: axios as StorageEndpoint
+    }
+  },
   emits:{
     'update:modelValue'(payload: ProductLocations|undefined){
       return true;
@@ -14,7 +22,7 @@ export default defineComponent({
     {
       return true
     },
-    "product-mapping:update"(mapping: ProductLocations|undefined, update: Partial<ProductLocations>, callback: () => void){
+    "product-mapping:update"(mapping: number, update: Partial<ProductLocations>, callback: () => void){
       return true
     },
     "product-mapping:delete"(mappingId: number, productId: number, callback: () => void){
@@ -24,28 +32,25 @@ export default defineComponent({
   computed:{
     visible:{
       get():boolean{
-        return this.modelValue !== undefined
+        return this.modelValue
       },
       set(value: boolean){
         this.$emit('update:modelValue', undefined)
       }
-    },
-    mapping(){
-      return this.modelValue
     },
     container:{
       get(): Storage|null{
         if(this.newContainer !== undefined){
           return this.newContainer
         }
-        return this.mapping?.storage ?? null
+        return this.product?.storage ?? null
       },
       set(value: Storage|null){
         this.newContainer = value
       }
     },
     containerTitle(){
-      return useStorageTitle(ref(this.modelValue?.storage))
+      return useStorageTitle(ref(this.product?.storage))
     },
     amount:{
       get(): number{
@@ -53,7 +58,7 @@ export default defineComponent({
         {
           return this.newAmount
         }
-        return this.mapping?.amount ?? 0
+        return this.product?.amount ?? 0
       },
       set(value: number){
         this.newAmount = value
@@ -61,13 +66,13 @@ export default defineComponent({
     }
   },
   props:{
-    modelValue: {
-      type: Object as PropType<ProductLocations>,
-      default: undefined
+    modelValue:{
+      type: Boolean,
+      required: true
     },
-    productName:{
-      type: String,
-      default: "",
+    product: {
+      type: Object as PropType<ProductLocations>,
+      required: true
     },
     disableStorageTitle: {
       type: Boolean,
@@ -76,6 +81,8 @@ export default defineComponent({
   },
   data() {
     return {
+      storage: [] as Array<Storage>,
+      loadingStorage: false,
       requestInProgress: false,
       edit: false,
       newAmount: undefined as number|undefined,
@@ -83,12 +90,13 @@ export default defineComponent({
       deleting: false,
       newContainer: undefined as Storage|null|undefined,
       deleteClicked: false,
-      saveClicked: false
+      saveClicked: false,
+      test: 1
     }
   },
   methods:{
     redirect(){
-      this.$emit('redirectToStorage', this.mapping?.storage ?? undefined,  this.$t('product', {name: this.productName}))
+      this.$emit('redirectToStorage', this.product?.storage ?? undefined,  this.$t('product', {name: this.product?.name}))
     },
     adjustAmount(increment: number){
       this.amount += increment
@@ -97,7 +105,7 @@ export default defineComponent({
         return
       }
       this.requestInProgress = true
-      this.$emit('product-mapping:update', this.mapping , {
+      this.$emit('product-mapping:update', this.product?.id , {
         amount: this.amount
       }, this.callback)
     },
@@ -107,19 +115,18 @@ export default defineComponent({
       }
       // FIX THIS HERE SHOULD ONLY BE UPDATED VALUES POSTED!!
       let update = {} as Partial<ProductLocations>
-      const {same} = useCompareStorage(ref(this.mapping?.storage), ref(this.container))
+      const {same} = useCompareStorage(ref(this.product?.storage), ref(this.container))
       if(this.newAmount !== undefined)
       {
         update.amount = this.newAmount
       }
       if(!same)
       {
-        update.storage = this.newContainer
+        update.storage = this.newContainer ?? undefined
         update.storage_type = this.newContainer?.type ?? 0
       }
       this.saving=true
-      this.$emit('product-mapping:update', this.mapping , update, () => {
-        this.callback()
+      this.$emit('product-mapping:update', this.product!.id , update, () => {
         callback()
         this.saving = false
       })
@@ -131,8 +138,7 @@ export default defineComponent({
       }
 
       this.deleting=true
-      this.$emit('product-mapping:delete', this.mapping?.id ?? -1, this.mapping?.product_id ?? -1, () => {
-        this.callback()
+      this.$emit('product-mapping:delete', this.product?.id ?? -1, this.product?.product_id ?? -1, () => {
         callback()
         this.deleting = false
       })
@@ -157,6 +163,7 @@ export default defineComponent({
       this.newContainer = null
     },
     toggleEdit(event: boolean){
+      console.log(this.product)
       if(!event)
       {
         this.newAmount = undefined
@@ -164,6 +171,13 @@ export default defineComponent({
       }
       this.edit = event
     }
+  },
+  beforeMount(){
+    this.loadingStorage = true
+    this.storageEndpoint.getStorageType({contained: false}).then((storage) => {
+      this.storage = storage
+      this.loadingStorage = false
+    })
   }
 })
 </script>
@@ -175,10 +189,11 @@ export default defineComponent({
       @deny="(event: 'save'|'delete', callback: () => void) => eventHandler('deny', event, callback)"
       @accept="(event: 'save'|'delete', callback: () => void) => eventHandler('accept', event, callback)"
       :loading="requestInProgress"
+
   >
     <template #title>
       <app-overlay-title
-          v-model="productName"
+          v-model="product.name"
       />
     </template>
     <template #subTitle>
@@ -192,8 +207,9 @@ export default defineComponent({
       />
       <app-storage-select
           class="mt-1"
-          content-type="product"
           v-model="container"
+          :storage="storage"
+          :storage-loading="loadingStorage"
           v-else
       />
 
@@ -208,6 +224,7 @@ export default defineComponent({
       >
         <template #amount>
           <v-text-field
+              :key="test"
               v-model.number="amount"
               density="compact"
               :disabled="!edit"

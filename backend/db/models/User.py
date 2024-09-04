@@ -49,9 +49,7 @@ class Household(db.Model):
     members = db.relationship("HouseholdMembers", back_populates="household", cascade="all, delete-orphan")
     creation_date: datetime = db.Column(db.DateTime, default=datetime.datetime.now(datetime.UTC))
     products = db.relationship("Product", cascade="all, delete-orphan")
-    boxes = db.relationship("Box", cascade="all, delete-orphan")
-    locations = db.relationship("Location", cascade="all, delete-orphan")
-
+    storage = db.relationship("Storage", cascade="all, delete-orphan")
 
     def to_dict(self):
         return {

@@ -1,12 +1,12 @@
 <script lang="ts">
-import {defineComponent, PropType, ref} from 'vue'
-import {type Box, ProductLocations, ProductOnly, Location} from "@/types";
+import {defineComponent, PropType, ref, reactive} from 'vue'
+import {type Box, ProductLocations, ProductOnly, Location, Storage} from "@/types";
 import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import AppStorageSelect from "@/components/ui/AppStorageSelect.vue";
 import AppPrintQrCode from "@/components/widgets/QrCode/Print/AppPrintQrCode.vue";
 import useStorageTitle from "@/composables/useStorageTitle.ts";
 import useNewAxios from "@/composables/useAxios.ts";
-import {BoxEndpoint, ProductEndpoint} from "@/api/http";
+import {BoxEndpoint, ProductEndpoint, LocationEndpoint} from "@/api/http";
 
 export default defineComponent({
   name: "BoxOverlay",
@@ -15,9 +15,11 @@ export default defineComponent({
 
     const {axios} = useNewAxios('box')
     const productEndpoint = useNewAxios('product')
+    const locationEndpoint = useNewAxios("location")
     return {
       axios: axios as BoxEndpoint,
-      productEndpoint: productEndpoint.axios as ProductEndpoint
+      productEndpoint: productEndpoint.axios as ProductEndpoint,
+      locationEndpoint: locationEndpoint.axios as LocationEndpoint
     }
   },
   emits:{
@@ -43,12 +45,14 @@ export default defineComponent({
       {
         this.loadProducts()
       }
+    },
+    product(newVal: ProductLocations|undefined){
+      if(newVal === undefined){
+        this.productDetailOverlayVisible = false
+      }
     }
   },
   computed:{
-    boxProducts() {
-      return this.products ?? []
-    },
     boxContainer:{
       get(): Location|null{
         if(this.container !== undefined){
@@ -95,12 +99,14 @@ export default defineComponent({
     modelValue: {
       type: Object as PropType<Box> | undefined,
       default: undefined
-    }
+    },
   },
   data(){
     return {
       productsLoading: false,
-      products: []as Array<ProductOnly & ProductLocations>,
+      products: [] as Array<ProductOnly & ProductLocations>,
+      locations: [] as Array<Storage>,
+      loadingLocations: false,
       deleting: false,
       saving: false,
       newName: undefined as (string|undefined),
@@ -111,7 +117,8 @@ export default defineComponent({
       edit: false,
       saveClicked: false,
       deleteClicked: false,
-      product: undefined as undefined|ProductLocations
+      product: undefined as undefined|ProductLocations,
+      productDetailOverlayVisible: false,
     }
   },
   methods: {
@@ -119,7 +126,11 @@ export default defineComponent({
       this.productsLoading = true
 
       const {products} = await this.axios.getContent(this.box?.id ?? null)
-      this.products = products
+      this.products = []
+      for(let i = 0; i < products.length; i++){
+        console.log("HO")
+        this.products.push(products[i])
+      }
       this.productsLoading = false
     },
     reset() {
@@ -128,8 +139,6 @@ export default defineComponent({
     redirectToContainer() {
       if (!this.box?.location?.id)
         return;
-
-
       this.$router.push("/storage/locations/" + this.box!.location!.id + "/" + this.$t('box', {name: this.box!.name ?? ''}))
     },
     toggleEdit(event: boolean) {
@@ -210,45 +219,72 @@ export default defineComponent({
       callback()
       this.product = undefined
     },
-    async updateProduct(mapping: ProductLocations, update: Partial<ProductLocations>, callback: () => void) {
-      const {success, updated, deleted} = await this.productEndpoint.updateProductAt(mapping.id, update)
+    async updateProduct(mapping: number, update: Partial<ProductLocations>, callback: () => void) {
+      const {success, updated, deleted} = await this.productEndpoint.updateProductAt(mapping, update)
+
       if(!success)
       {
         callback()
         return false;
       }
 
+      const product = this.products.find(p => p.id === mapping)
+
+      if (product) {
+        product.amount = updated?.amount ?? product.amount
+        product.storage = {...(updated?.storage ?? product.storage)} as (Storage|undefined)
+      }
+
       callback()
-      this.products = []
-      this.loadProducts()
+
       this.$notify({
         title: this.$t('toasts.titles.success.updated_detail'),
         text: this.$t('toasts.text.success.updated_detail'),
         type: "success"
       })
-      if(
-          deleted !== undefined ||
-          updated!.id !== this.product?.id ||
-          updated!.storage?.id !== this.box?.id
-      )
-      {
-        this.$emit('contentChanged', this.box?.id, updated?.storage?.id)
-        this.product = undefined
+
+      if(updated?.storage?.id !== this.box?.id){
+        // keep product screen open if box changed
+        this.product = {
+          ...product
+        } as ProductLocations
+        this.products =  [...this.products.filter(p => p.id !== mapping)]
+        this.$emit('contentChanged', this.box?.id!, updated?.storage?.id)
       }
 
+      if(deleted !== undefined || updated!.id !== this.product?.id)
+      {
+        this.products = [...this.products.filter(p => p.id !== (deleted?.id))]
+        this.$emit('contentChanged', this.box?.id!, updated?.storage?.id)
+        this.productDetailOverlayVisible = false
+      }
+
+    },
+    showDetail(item: ProductLocations){
+      this.product=item
+      this.productDetailOverlayVisible=true
     }
+  },
+  beforeMount(){
+    this.loadingLocations = true
+    this.locationEndpoint.getLocations({
+      contained: false
+    }).then((locations) => {
+      this.locations = locations
+      this.loadingLocations = false
+    })
   }
 })
 </script>
 
 <template>
   <product-detail-overlay
-      v-model="product"
-      :product-name="productName"
+      v-if="product !== undefined"
+      v-model="productDetailOverlayVisible"
+      v-bind:product="product!"
       :disable-storage-title="true"
       @product-mapping:delete="deleteProduct"
       @product-mapping:update="updateProduct"
-
   />
 
 
@@ -278,27 +314,28 @@ export default defineComponent({
       <app-storage-select
           class="mt-1"
           v-model="boxContainer"
+          :storage="locations"
           v-else-if="edit"
       />
     </template>
-    <RecycleScroller
-        :items="boxProducts"
-        :item-size="90"
-    >
 
-      <template #default="{item}">
+    <RecycleScroller
+        :items="products"
+        :item-size="90"
+        key-field="id"
+    >
+      <template v-slot="{ item }">
         <product-card
-          :id="item.id"
-          :name="item.name"
-          :totalAmount="item.amount"
-          :creation-date="item.updated_at"
-          :is-updated-date="true"
-          @expand="product={
-            ...item,
-            storage: box
-          }"
-        />
+            v-if="!(item?.hidden ?? false)"
+            :id="item.id"
+            :name="item.name"
+            :total-amount="item.amount"
+            :creation-date="item.updated_at"
+            :is-updated-date="true"
+            @expand="showDetail(item)"
+        ></product-card>
       </template>
+
       <template #after>
         <v-row
             :no-gutters="true"

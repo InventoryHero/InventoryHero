@@ -7,8 +7,7 @@ import {StorageEndpoint} from "@/api/http";
 export default defineComponent({
   name: "AppStorageSelect",
   setup(){
-    const {axios} = useNewAxios("storage")
-    return {axios: axios as StorageEndpoint}
+
   },
   emits:{
     'update:modelValue'(payload: Storage){
@@ -16,7 +15,7 @@ export default defineComponent({
     }
   },
   computed:{
-    storage: {
+    selected: {
       get(): Storage|null{
         return this.modelValue ?? null
       },
@@ -26,7 +25,7 @@ export default defineComponent({
       }
     },
     type(){
-      switch(this.storage?.type){
+      switch(this.selected?.type){
         case StorageTypes.Box:
           return StorageTypes.Box
         case StorageTypes.Location:
@@ -36,21 +35,16 @@ export default defineComponent({
       }
     },
     container(){
-      if(this.contentType === "product")
-      {
-        return this.allStorage
-      }
-
-      return this.allStorage.filter((item) => item.type === StorageTypes.Location)
+      return this.selected
     }
   },
   props:{
     modelValue: {
       type: Object as PropType<Storage> | null
     },
-    contentType:{
-      type: String as PropType<"box"|"product">,
-      default: "box"
+    storage: {
+      type: Array<Storage>,
+      default: []
     },
     density: {
       type: String,
@@ -59,12 +53,15 @@ export default defineComponent({
     hideDetails: {
       type: Boolean,
       default: false
+    },
+    storageLoading: {
+      type: Boolean,
+      default: false
     }
   },
   data(){
     return{
       allStorage: [] as Array<Storage>,
-      storageLoading: false,
     }
   },
   methods:{
@@ -79,28 +76,22 @@ export default defineComponent({
       }
     },
     getActive(item: Storage): boolean{
-      return item.id === this.storage?.id && item.type === this.storage?.type
+      return item.id === this.selected?.id && item.type === this.selected?.type
     }
   },
-  async mounted(){
-    this.storageLoading = true
-    let storage = (await this.axios.getStorageType({contained: false})) as Array<Storage>
-    this.storageLoading = false
-    this.allStorage = storage
-  }
 })
 </script>
 
 <template>
   <v-select
       v-bind="$attrs"
-      v-model="storage"
+      v-model="selected"
       :density="density"
       :single-line="true"
       :hide-details="hideDetails"
       color="primary"
       variant="filled"
-      :items="container"
+      :items="storage"
       item-title="name"
       :chips="true"
       :clearable="true"

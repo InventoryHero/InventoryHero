@@ -7,21 +7,20 @@ from werkzeug.datastructures import auth
 
 from backend.flask_config import socketio
 from backend.db.models.Product import Product, ProductContainerMapping
-from backend.db.models.StorageContainer import Location, Box, ContainerTypes
+from backend.db.models.StorageContainer import Storage, ContainerTypes
 from backend.decorators import auth, emit_update
 from typing import Optional
 
 
 def get_storage(storage_type, storage, household):
-    query = None
-    if storage_type == ContainerTypes.Box:
-        query = Box
-    elif storage_type == ContainerTypes.Location:
-        query = Location
-    else:
+    if storage_type == ContainerTypes.All:
         return None, None
 
-    result = query.query.filter_by(id=storage, household_id=household).first()
+    result = Storage.query.filter_by(
+        id=storage,
+        household_id=household,
+        type=storage_type
+    ).first()
     if result is None:
         return None, None
     return result, result.id

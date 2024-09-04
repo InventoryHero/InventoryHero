@@ -4,8 +4,7 @@ from dataclasses import dataclass
 from sqlalchemy.orm import Mapped
 
 
-from backend.db.models.StorageContainer import Box, Location, box_product_conditions, location_product_conditions, ContainerTypes
-
+from backend.db.models.StorageContainer import Storage
 
 
 @dataclass
@@ -35,23 +34,17 @@ class ProductContainerMapping(db.Model):
     __tablename__ = "product_container_mapping"
     id: int = db.Column(db.Integer, primary_key=True, autoincrement=True)
     product_id: int = db.Column(db.Integer, db.ForeignKey("products.id"), nullable=False)
-
-    storage_id: int = db.Column(db.Integer, nullable=True, default=None)
-    storage_type: int = db.Column(db.Integer, nullable=False, default=0)
-
+    storage_id: int = db.Column(db.Integer, db.ForeignKey("storage.id", ondelete="SET NULL"), nullable=True)
     amount: int = db.Column(db.Integer, nullable=False, default=0)
     updated_at: datetime = db.Column(db.DateTime, default=datetime.utcnow())
-
-    product = db.relationship("Product", back_populates="mappings")
-    box: Mapped[Box] = db.relationship("Box", back_populates="product_mappings", **box_product_conditions)
-    location: Mapped[Location] = db.relationship("Location", back_populates="product_mappings", **location_product_conditions)
+    product: Mapped[Product] = db.relationship("Product", back_populates="mappings")
+    storage: Mapped[Storage] = db.relationship("Storage", back_populates="product_mappings")
 
     def serialize(self):
         return {
             "id": self.id,
-            "product_id": self.product_id,
-            "storage": self.box if self.storage_type == int(ContainerTypes.Box) else self.location,
-            "storage_type": self.storage_type,
+            "product": self.product,
+            "storage": self.storage,
             "amount": self.amount,
             "updated_at": self.updated_at,
         }

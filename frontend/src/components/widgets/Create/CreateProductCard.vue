@@ -1,9 +1,9 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
-import {ProductLocations, ProductOnly, StorageTypes} from "@/types";
+import {ProductLocations, ProductOnly, Storage, StorageTypes} from "@/types";
 import {useAuthStore} from "@/store";
 import useNewAxios from "@/composables/useAxios.ts";
-import {ProductEndpoint} from "@/api/http";
+import {StorageEndpoint, ProductEndpoint} from "@/api/http";
 
 type Views = "product" | "box" | "location"
 type Clear = {
@@ -14,10 +14,12 @@ export default defineComponent({
   name: "CreateProductCard",
   setup(){
     const productEndpoint = useNewAxios("product")
+    const storageEndpoint = useNewAxios("storage")
     const user = useAuthStore();
     return {
       user,
-      productEndpoint: productEndpoint.axios as ProductEndpoint
+      productEndpoint: productEndpoint.axios as ProductEndpoint,
+      storageEndpoint: storageEndpoint.axios as StorageEndpoint,
     }
   },
   computed:{
@@ -51,9 +53,11 @@ export default defineComponent({
     return {
       postingProduct: false,
       productsLoading: false,
+      storageLoading: false,
       products: [] as Array<ProductOnly>,
+      storage: [] as Array<Storage>,
       product: null as (string | ProductOnly | null),
-      location: null as (null|Storage),
+      location: undefined as (undefined|Storage),
       amount: null as (null|number),
       starred: false,
       hints: {
@@ -98,9 +102,11 @@ export default defineComponent({
       this.starred = this.product.starred
     },
     clear(){
+      //@ts-expect-error
       this.$refs["add-form"].reset()
     },
     async save(){
+      //@ts-expect-error
       const validation = await this.$refs["add-form"].validate()
 
       if(!validation.valid){
@@ -129,11 +135,11 @@ export default defineComponent({
 
       if(!success)
         return
-
+      //@ts-expect-error
       this.$refs["add-form"].reset()
       this.$notify({
         title: this.$t('toasts.titles.success.add_product', {
-          name: data.name || this.product?.name,
+          name: data.name || ((this.product ?? {}) as (Partial<ProductOnly>)).name,
           amount: data.amount
         }),
         text: this.$t('toasts.text.success.add_product'),
@@ -158,10 +164,20 @@ export default defineComponent({
   },
   async mounted(){
     this.productsLoading=true
-    this.products = await this.productEndpoint.getProducts({
+    this.productEndpoint.getProducts({
       getStoredAt: false
+    }).then((products) => {
+      this.products = products
+      this.productsLoading = false
     })
-    this.productsLoading = false
+
+    this.storageLoading = true
+    this.storageEndpoint.getStorageType({
+      contained: false
+    }).then((storage) => {
+      this.storage = storage;
+      this.storageLoading = false
+    })
   }
 })
 </script>
@@ -203,6 +219,7 @@ export default defineComponent({
               @update:model-value="updateStarred()"
               :disabled="productsLoading"
               @keydown.enter="() => {
+                //@ts-expect-error
                 $refs.combobox.blur()
               }"
 
@@ -248,6 +265,7 @@ export default defineComponent({
         >
           <app-storage-select
             v-model="location"
+            :storage="storage"
             density="comfortable"
             :label="$t('add.product.labels.location')"
             :persistent-hint="locationSelectHint.active"

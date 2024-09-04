@@ -1,5 +1,5 @@
 import {Endpoint} from "./Endpoint";
-import {Box, Location, ProductLocations, ProductOnly, Storage, StorageTypes} from "@/types";
+import {Box, Location, LocationContent, ProductLocations, ProductOnly, Storage, StorageTypes} from "@/types";
 
 
 type GetStorageParams = {
@@ -49,6 +49,7 @@ export class StorageEndpoint extends Endpoint{
         let response = await this.internalAxios.get(url, params)
         if(response.status === 200)
         {
+            console.log(response.data, url)
             return response.data
         }
         this.handleNonErrorNotifications(response);
@@ -155,11 +156,10 @@ export class LocationEndpoint extends StorageEndpoint{
         return data as Array<Location>
     }
 
-    public async getContent(id: string){
-        let data = await this.getStorageContent(id)
+    public async getContent(id: number){
+        let data = await this.getStorageContent(id.toString())
         return {
-            boxes: (data?.boxes ?? []) as Array<Box>,
-            products: (data?.products ?? []) as Array<(ProductOnly & ProductLocations)>
+            content: data as Array<LocationContent>
         }
     }
 
