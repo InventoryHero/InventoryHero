@@ -1,8 +1,7 @@
-from ...database import db
+from backend.database import db
 from datetime import datetime
 from dataclasses import dataclass
 from sqlalchemy.orm import Mapped
-
 
 from backend.db.models.StorageContainer import Storage
 
@@ -17,17 +16,27 @@ class Product(db.Model):
     creation_date: datetime = db.Column(db.DateTime, default=datetime.utcnow())
     mappings = db.relationship("ProductContainerMapping", back_populates="product", cascade="all, delete-orphan")
 
+    @property
     def serialize(self):
         return {
             "id": self.id,
             "name": self.name,
-            "household_id": self.household_id,
+            "householdId": self.household_id,
             "starred": self.starred,
-            "creation_date": self.creation_date
+            "creationDate": self.creation_date,
+            "totalAmount": sum(mapping.amount for mapping in self.mappings)
         }
+
+
+    def serialize_with_mappings(self):
+        product = self.serialize
+        product["storage_locations"] = self.mappings
+        product["total_amount"] = sum([mapping.amount for mapping in self.mappings])
+        return product
 
     def __hash__(self):
         return hash(self.id)
+
 
 @dataclass
 class ProductContainerMapping(db.Model):
@@ -37,14 +46,15 @@ class ProductContainerMapping(db.Model):
     storage_id: int = db.Column(db.Integer, db.ForeignKey("storage.id", ondelete="SET NULL"), nullable=True)
     amount: int = db.Column(db.Integer, nullable=False, default=0)
     updated_at: datetime = db.Column(db.DateTime, default=datetime.utcnow())
-    product: Mapped[Product] = db.relationship("Product", back_populates="mappings")
     storage: Mapped[Storage] = db.relationship("Storage", back_populates="product_mappings")
+    product = db.relationship("Product", back_populates="mappings")
 
+    @property
     def serialize(self):
         return {
             "id": self.id,
-            "product": self.product,
+            "productId": self.product_id,
             "storage": self.storage,
             "amount": self.amount,
-            "updated_at": self.updated_at,
+            "updatedAt": self.updated_at,
         }

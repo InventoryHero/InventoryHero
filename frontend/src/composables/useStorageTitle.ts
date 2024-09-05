@@ -1,24 +1,24 @@
 import {Storage, StorageTypes} from "@/types";
-import { Ref, toValue} from 'vue';
+import {computed, Ref, toValue} from 'vue';
 
 export default (storage: Ref<Storage|undefined|null>) => {
-    const s = toValue(storage)
 
-    let icon = ""
-    switch(s?.type ?? -1)
-    {
-        case StorageTypes.Location:
-            icon = 'fa:fas fa-location-dot'
-            break
-        case StorageTypes.Box:
-            icon =  'fa:fas fa-boxes'
-            break
-        default:
-            icon = 'fa:fas fa-ban'
-    }
+
+    const icon = computed(() => {
+        switch (storage.value?.type ?? -1) {
+            case StorageTypes.Location:
+                return 'fa:fas fa-location-dot';
+            case StorageTypes.Box:
+                return 'fa:fas fa-boxes';
+            default:
+                return 'fa:fas fa-ban';
+        }
+    });
+
+    const name = computed(() => storage.value?.name ?? '');
 
     return {
-        name: s?.name ?? '',
-        icon: icon
+        name,
+        icon
     }
 }

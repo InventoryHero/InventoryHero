@@ -5,6 +5,7 @@ import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import AppStorageTitle from "@/components/ui/AppStorageTitle.vue";
 import QuickActions from "@/components/products/QuickActions.vue";
 import useStorageTitle from "@/composables/useStorageTitle.ts";
+import {ProductStorageMapping} from "@/types/api.ts";
 
 
 export default defineComponent({
@@ -17,7 +18,7 @@ export default defineComponent({
     "product-mapping:delete"(mappingId: number, productId: number, callback: () => void){
       return true
     },
-    showMappingOverlay(mapping: ProductLocations)
+    showMappingOverlay(mapping: number)
     {
       return true;
     },
@@ -28,7 +29,7 @@ export default defineComponent({
   },
   props: {
     item: {
-      type: Object as PropType<ProductLocations>,
+      type: Object as PropType<ProductStorageMapping>,
       required: true
     },
     productName: {
@@ -47,7 +48,7 @@ export default defineComponent({
   data(){
     return{
       requestInProgress: false,
-      overlayItem: undefined as undefined|ProductLocations
+      overlayItem: undefined as undefined|ProductStorageMapping
     }
   },
   methods:{
@@ -131,7 +132,7 @@ export default defineComponent({
       :request-in-progress="requestInProgress"
       @delete-me="deleteMe()"
       @update-amount="adjustAmount($event)"
-      @show-details="$emit('showMappingOverlay', item)"
+      @show-details="$emit('showMappingOverlay', item.id)"
   />
 
   <v-divider class="border-opacity-75"/>

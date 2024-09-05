@@ -1,164 +1,88 @@
-<script lang="ts">
-import {Product, ProductLocations} from "@/types/index.ts";
+<script setup lang="ts">
 
-import {useAuthStore, useConfigStore} from "@/store";
-import {defineComponent} from "vue"
-import ProductDetailCard from "@/components/products/ProductDetailCard.vue"
-import useNewAxios from "@/composables/useAxios.ts";
+
+import {computed, onMounted, ref} from "vue";
+import {ApiProduct} from "@/types/api.ts";
+import useAxios from "@/composables/useAxios.ts";
 import {ProductEndpoint} from "@/api/http";
+import {useProducts} from "@/store";
+import ProductOverlay from "@/components/products/ProductOverlay.vue";
+import useDialogConfig from "@/composables/useDialogConfig.ts";
+import {useI18n} from "vue-i18n";
 
-export default defineComponent({
-  components: {
-    ProductDetailCard
-  },
-  setup(){
-    const authData = useAuthStore()
-    const config = useConfigStore()
-    const {axios} = useNewAxios("product")
-    return {authData, config, axios: axios as ProductEndpoint}
-  },
-  computed: {
-    filteredItems() {
-      if (this.search === "") {
-        return this.products
-      }
-      return this.products.filter(product => product.name.toLowerCase().includes(this.search.toLowerCase()))
-    },
-    overlayStorageLocations(){
-      return this.overlayProduct?.storage_locations ?? []
-    },
-    scrolledDown(){
-      return this.visibleStartIdx !== 0
-    }
-  },
-  watch:{
-    async preselectedProduct(){
-      if(this.preselectedProduct === undefined)
-      {
-        this.products = []
-        await this.loadProducts()
-      }
-    },
-  },
-  props:{
-    preselectedProduct:{
-      type: String,
-      default: undefined
-    },
-    filteredFrom:{
-      type: String,
-      default: undefined
-    }
-  },
-  methods: {
-    async loadProducts(){
-      this.productsLoading = true;
-      this.products = await this.axios.getProducts({
-        id: this.preselectedProduct,
-        getStoredAt: true
-      })
-      this.productsLoading = false
-    },
-    updateFilter(filterValue: string)
-    {
-      this.search = filterValue
-    },
-    displayProductOverlay(item: Product)
-    {
-      this.overlayProduct = item
-    },
-    async deleteProduct(product: number|undefined)
-    {
-      await this.loadProducts()
-    },
-    async updateProduct(product: Product)
-    {
-      for(let i = 0; i < this.products.length; i++)
-      {
-        if(this.products.at(i)?.id === product.id)
-        {
-            this.products[i].name = product.name
-            break
-        }
-      }
-      this.overlayProduct = product
-    },
-    updateMapping(mapping: ProductLocations, callback: () => void){
-      let i = 0;
-      for(; i < this.products.length; i++)
-      {
-        if(this.products.at(i)?.id === mapping?.product_id){
-          break
-        }
-      }
-      let product = this.products.at(i)
-      if(i >= this.products.length || product === undefined){
-        this.overlayProduct = undefined
-        this.loadProducts()
-        return
-      }
+const {t: $t} = useI18n();
 
-      let m = 0;
+// "setup"
+const productStore = useProducts()
+const {axios: productEndpoint} = useAxios<ProductEndpoint>('product')
+const { isVisible: productDetailOverlayVisible, openDialog, closeDialog, dialogProps } = useDialogConfig()
 
-      let mappings = product.storage_locations.length ?? 0
-      for(; m < mappings; m++)
-      {
-          if(product.storage_locations.at(m)?.id === mapping.id)
-          {
-            break
-          }
-      }
+// props
+const props = defineProps<{
+  preselectedProduct?: string,
+  filteredFrom?: string
+}>()
 
-      if(m >= mappings){
-        this.overlayProduct = undefined
-        this.loadProducts()
-        return
-      }
+//computed
+const productPreselected = computed(() => {
+  return props.preselectedProduct ?? false
+})
 
-      if(this.products[i].storage_locations[m].amount !== mapping.amount){
-        this.products[i].total_amount -=  this.products[i].storage_locations[m].amount;
-        this.products[i].storage_locations[m].amount = mapping.amount
-        this.products[i].total_amount += this.products[i].storage_locations[m].amount
-      }
-      this.products[i].storage_locations[m].storage = mapping.storage
-      this.products[i].storage_locations[m].storage_type = mapping.storage_type
-
-      if(this.overlayProduct?.id === this.products[i].id)
-      {
-        this.overlayProduct = this.products[i]
-        this.overlayStorageLocations = this.products[i].storage_locations
-        callback()
-      }
-
-    },
-    async deleteMapping(id: number, callback: () => void){
-      await this.loadProducts()
-      if(this.overlayProduct?.id === id)
-      {
-        this.overlayProduct = this.products.find((item) => item.id === id)
-
-        callback()
-      }
-    },
-    onUpdate (viewStartIndex: number, viewEndIndex: number, visibleStartIndex: number, visibleEndIndex: number) {
-      this.visibleStartIdx = visibleStartIndex
-    },
-    scrollToTop(){
-      this.$refs.scroller.scrollToItem(0)
-    }
-  },
-  data(){
-    return {
-      products: [] as Array<Product>,
-      productsLoading: true,
-      overlayProduct: undefined as Product|undefined,
-      search: "",
-      visibleStartIdx: 0,
-    }
-  },
-  async mounted(){
-    await this.loadProducts()
+const filteredProducts = computed(() => {
+  if(search.value === "")
+  {
+    return productStore.products
   }
+  return productStore.products.filter(product => product.name.toLowerCase().includes(search.value.toLowerCase()))
+})
+
+const allDisplayed = computed(() => {
+  return productStore.size !== 0 && filteredProducts.value.length !== 0
+})
+
+const filterEmpty = computed(() => {
+  return productStore.size !== 0 && filteredProducts.value.length === 0
+})
+
+
+
+// data
+const productsLoading = ref(false)
+const search = ref<string>("")
+
+
+function loadProducts(){
+  productsLoading.value = true;
+  productEndpoint.getProducts({
+    id: props.preselectedProduct,
+  }).then((response: Array<ApiProduct>) => {
+    productStore.storeProducts(response)
+    productsLoading.value = false
+  })
+}
+
+function updateFilter(filterValue: string)
+{
+  search.value = filterValue
+}
+
+function displayProductOverlay(item: ApiProduct){
+  console.log(item)
+  productStore.selectProduct(item)
+  openDialog()
+}
+function closeDetailOverlay(){
+  closeDialog()
+  productStore.deselectProduct()
+}
+
+function deleteProduct(id: number){
+  closeDialog()
+  productStore.deleteProduct(id)
+}
+
+onMounted(() => {
+  loadProducts();
 })
 </script>
 
@@ -173,20 +97,23 @@ export default defineComponent({
         lg="6"
         class="position-relative d-flex flex-column fill-height"
     >
-      <product-overlay
-          v-model="overlayProduct"
-          :storage-locations="overlayStorageLocations"
-          @deleted="deleteProduct($event)"
-          @updated="updateProduct($event)"
-          @updateMapping="updateMapping"
-          @delete-mapping="deleteMapping"
-      />
+      <v-dialog
+        v-model="productDetailOverlayVisible"
+        v-bind="dialogProps"
+
+      >
+        <product-overlay
+            @close="closeDetailOverlay()"
+            @deleted="deleteProduct"
+        />
+      </v-dialog>
+
 
       <div class="flex-0-1">
         <text-filter
             @update-filter="updateFilter"
             :filter="search"
-            v-if="preselectedProduct === undefined"
+            v-if="!productPreselected"
         />
         <app-preselection-filter
             v-else
@@ -194,32 +121,22 @@ export default defineComponent({
             :title="$t('products.prefiltered', {box: filteredFrom})"
         />
       </div>
+
       <v-card
           ref="wrapper"
           class="mt-4 flex-1-1"
       >
-        <v-progress-linear
-            :indeterminate="true"
-            :active="productsLoading"
-            color="primary"
-        />
         <v-card-text
             class="pt-1 pl-0 pr-0 pb-0"
         >
-          <app-scroll-to-top-btn
-              v-model="scrolledDown"
-              @click="scrollToTop()"
-          />
           <RecycleScroller
+              class="scroller"
               :item-size="90"
-              :items="filteredItems"
-              ref="scroller"
-              style="height: 100%;"
+              :items="filteredProducts"
               :buffer="0"
               :emit-update="true"
-              @update="onUpdate"
           >
-            <template #default="{item}">
+            <template v-slot="{ item }">
               <v-row
                   :no-gutters="true"
                   justify="center"
@@ -228,11 +145,10 @@ export default defineComponent({
                     cols="11"
                 >
                   <product-card
+                      :total-amount="item.totalAmount"
                       :id="item.id"
+                      :creation-date="item.creationDate"
                       :name="item.name"
-                      :creationDate="item.creation_date"
-                      :starred="item.starred"
-                      :totalAmount="item.total_amount"
                       @expand="displayProductOverlay(item)"
                   />
                 </v-col>
@@ -249,13 +165,13 @@ export default defineComponent({
                   <v-card-title class="text-wrap text-center">
                     <p
                         class="pb-1 "
-                        v-if="products.length !== 0 && filteredItems.length !== 0"
+                        v-if="allDisplayed"
                     >
                       {{ $t('products.all_displayed') }}
                     </p>
                     <p
                         class="pb-1"
-                        v-else-if="products.length !== 0 && filteredItems.length === 0"
+                        v-else-if="filterEmpty"
                     >
                       {{ $t('products.no_matches')}}
                     </p>
@@ -272,11 +188,15 @@ export default defineComponent({
           </RecycleScroller>
         </v-card-text>
       </v-card>
+
     </v-col>
   </v-row>
 </template>
 
 <style scoped lang="scss">
+.scroller {
+  height: 100%;
+}
 .v-card-text {
   overflow: hidden;
   position: absolute;

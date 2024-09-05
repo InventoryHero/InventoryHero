@@ -41,7 +41,17 @@ class Storage(db.Model):
     product_mappings = db.relationship("ProductContainerMapping", back_populates="storage")
     storage = db.relationship("Storage", remote_side=[id], backref=backref("children"))
 
+    @property
     def serialize(self):
+        return {
+            "id": self.id,
+            "name": self.name,
+            "householdId": self.household_id,
+            "creationDate": self.creation_date.isoformat(),
+            "type": self.type
+        }
+
+    def serialize_man(self):
         data = {
             "id": self.id,
             "name": self.name,
@@ -51,7 +61,7 @@ class Storage(db.Model):
             "type": self.type
         }
         if self.type == ContainerTypes.Box and self.storage is not None:
-            data["location"] = self.storage.serialize()
+            data["location"] = self.storage.serialize_man()
         return data
 
     def serialize_location(self):
@@ -64,7 +74,7 @@ class Storage(db.Model):
             })
 
         for box in self.children:
-            curr_box = box.serialize()
+            curr_box = box.serialize_man()
             location_content.append({
                 "type": "box",
                 "id": f"box{box.id}",
@@ -75,8 +85,8 @@ class Storage(db.Model):
     def serialize_box(self):
         products = []
         for product in self.product_mappings:
-            curr_product = product.product.serialize()
-            curr_mapping = product.serialize()
+            curr_product = product.product.serialize_man()
+            curr_mapping = product.serialize_man()
             curr_product.update(curr_mapping)
             products.append(curr_product)
 

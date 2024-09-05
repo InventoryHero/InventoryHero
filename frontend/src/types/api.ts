@@ -114,3 +114,29 @@ export interface User {
     registration_date: string,
     email_confirmed: boolean
 }
+
+export interface ApiStorage{
+    id: number,
+    name: string,
+    household_id: string,
+    creation_date: string,
+    type: StorageTypes
+}
+
+export interface ApiProduct {
+    id: number,
+    name: string,
+    householdId: number,
+    starred: boolean,
+    creationDate: string,
+    totalAmount: number,
+}
+
+export interface ProductStorageMapping {
+    id: number,
+    productId: number,
+    storageId: number|null,
+    amount: number,
+    updatedAt: string,
+    storage?: ApiStorage
+}

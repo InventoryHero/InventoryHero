@@ -1,12 +1,12 @@
 import os, logging
 from flask_socketio import SocketIO
 from flask import Flask
+from flask.json.provider import DefaultJSONProvider
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
-
+import json
 from backend.database import db, migrate
-from datetime import timedelta
-
+from datetime import timedelta, datetime
 
 from backend.exceptions.inventory_hero_exceptions import UnknownDatabaseType, MissingSmtpConfig, InvalidAppUrl, \
     UnsupportedSmtpProtocol
@@ -102,11 +102,21 @@ def get_config():
     return ProdConfig
 
 
+class CamelCaseJSONEncoder(DefaultJSONProvider):
+    def __init__(self, flask_app):
+        super().__init__(flask_app)
+
+    def default(self, obj):
+        if hasattr(obj, 'serialize'):
+            return obj.serialize
+        return super().default(obj)
+
+
 app = Flask(__name__)
+app.json = CamelCaseJSONEncoder(app)
 app.config.from_object(get_config())
 app.logger.error(app.config)
 jwt = JWTManager(app)
-
 
 socketio = SocketIO(app, cors_allowed_origins=app.config["ALLOWED_ORIGINS"])
 gunicorn_logger = logging.getLogger('gunicorn.error')
@@ -114,8 +124,5 @@ app.logger.handlers.extend(gunicorn_logger.handlers)
 app.logger.setLevel(logging.INFO)
 CORS(app, origins=app.config["ALLOWED_ORIGINS"])
 
-from backend.db.models import PasswordResetRequests
 db.init_app(app)
 migrate.init_app(app, db, render_as_batch=True)
-
-

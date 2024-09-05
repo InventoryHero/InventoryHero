@@ -33,10 +33,6 @@ export default defineComponent({
       type: Boolean,
       default: false
     },
-    rules: {
-      type: Array<Rule>,
-      default: []
-    }
   }
 })
 </script>
@@ -47,8 +43,8 @@ export default defineComponent({
       v-if="edit"
       hide-details="auto"
       :label="label"
-      :rules="rules"
       v-model="value"
+      v-bind="$attrs"
   >
 
   </v-text-field>

@@ -44,46 +44,41 @@ def parse_storage_params(id, type, household):
     return True, {"id": storage.id, "type": storage_type}, 200
 
 
-def check_storage_for_update(storage_type, storage, entry, household, all_entries):
-    if storage_type is None:
-        return {}
+def check_storage_for_update(storage, entry, household, all_entries):
 
-    storage_type = ContainerTypes(int(storage_type))
-    storage, storage_id = get_storage(storage_type, storage, household)
+    storage_id = None
+    storage_type = None
+    if storage is not None:
+        storage = Storage.query.filter_by(
+            id=storage,
+            household_id=household
+        ).first()
 
-    if storage_type != ContainerTypes.NoContainer and storage is None:
-        return {
-            "error": (jsonify(status="storage_not_found"), 400)
-        }
-
-    if int(storage_type) == entry.storage_type and storage_id == entry.storage_id:
-        return {}
-
-    for e in [e for e in all_entries if e.id != entry.id and e.storage_type != entry.storage_type]:
-        if e.storage_id == storage_id:
+        if storage is None:
             return {
-                "merge_with": e,
+                "error": (jsonify(status="storage_not_found"), 400)
+            }
+
+        storage_id = storage.id
+        storage_type = storage.type
+
+    curr_storage = entry.storage_id
+
+    if storage_id == curr_storage:
+        return {}
+    for entry in all_entries:
+        if entry.storage_id == storage_id:
+            return {
+                "merge_with": entry,
                 "update": True,
             }
 
     return {
         "update": True,
         "storage_id": storage_id,
-        "storage_type": int(storage_type)
+        "storage_type": storage_type
     }
 
-
-def serialize_product(product):
-    mappings = product.mappings
-    serialized = product.serialize()
-    serialized["storage_locations"] = []
-    serialized["total_amount"] = 0
-
-    for mapping in mappings:
-        serialized["storage_locations"].append(mapping.serialize())
-        serialized["total_amount"] += mapping.amount
-
-    return serialized
 
 
 class ProductEndpoint(Blueprint):
@@ -159,8 +154,6 @@ class ProductEndpoint(Blueprint):
         @auth
         def get_products(household, product_id):
             get_starred = request.args.get("starred", None)
-            locations = request.args.get("storedAt", None)
-            self.app.logger.warning(locations is None)
 
             products = Product.query.filter_by(household_id=household)
             if get_starred is not None:
@@ -172,14 +165,18 @@ class ProductEndpoint(Blueprint):
             if product_id is None and products is None:
                 return {"status": "product_not_found"}, 400
 
-            if locations is None:
-                return jsonify(products), 200
+            return jsonify(products), 200
 
-            result = []
-            self.app.logger.info(products)
-            for product in products:
-                result.append(serialize_product(product))
-            return jsonify(result), 200
+        @self.route("/stored/<int:product_id>", methods=["GET"])
+        @jwt_required()
+        @auth
+        def get_product_stored_at(household, product_id):
+            product = Product.query.filter_by(id=product_id, household_id=household).first()
+
+            if product is None:
+                return {"status": "product_not_found"}, 400
+
+            return jsonify(product.mappings), 200
 
         @self.route("/<int:product_id>", methods=["DELETE"])
         @jwt_required()
@@ -212,7 +209,7 @@ class ProductEndpoint(Blueprint):
 
             self.db.session.commit()
             self.app.logger.info(f"UPDATED PRODUCT {product.name}")
-            return jsonify(updated=serialize_product(product)), 200
+            return jsonify(updated=product), 200
 
         @self.route("/stored/<int:mapping_id>", methods=["POST"])
         @jwt_required()
@@ -220,8 +217,8 @@ class ProductEndpoint(Blueprint):
         @emit_update()
         def update_product_mapping(mapping_id, household):
             new_amount = request.json.get("amount", None)
-            storage_type = request.json.get("storage_type", None)
             storage = request.json.get("storage", None)
+            self.app.logger.info(storage)
             mapping = ProductContainerMapping.query.filter_by(id=mapping_id).first()
             product_id = (mapping.product_id if mapping is not None else None)
             product = Product.query.filter_by(id=product_id, household_id=household).first()
@@ -236,7 +233,7 @@ class ProductEndpoint(Blueprint):
                 mapping.amount = new_amount
                 update = True
 
-            storage_check = check_storage_for_update(storage_type, storage, mapping, household, product.mappings)
+            storage_check = check_storage_for_update(storage, mapping, household, product.mappings)
 
             storage_error = storage_check.get('error', None)
             if storage_error is not None:
@@ -245,22 +242,21 @@ class ProductEndpoint(Blueprint):
             storage_merge_with: Optional[ProductContainerMapping] = storage_check.get('merge_with', None)
             deleted = None
             if storage_merge_with is not None:
+                self.app.logger.info(storage_merge_with)
+                self.app.logger.info(mapping)
                 update |= True
-                storage_merge_with.amount += mapping.amount
-                deleted = mapping
-                self.db.session.delete(mapping)
-                mapping = storage_merge_with
+                mapping.amount += storage_merge_with.amount
+                mapping.storage_id = storage_merge_with.storage_id
+                deleted = storage_merge_with
+                self.db.session.delete(deleted)
             elif storage_check.get('update', False):
                 update |= True
                 mapping.storage_id = storage_check.get('storage_id', None)
-                mapping.storage_type = storage_check.get('storage_type')
-
             if update:
-                if deleted is not None:
-                    deleted = deleted.serialize()
                 mapping.updated_at = datetime.datetime.now(datetime.UTC)
                 self.db.session.commit()
-                return jsonify(updated=mapping.serialize(), deleted=deleted), 200
+                mapping = ProductContainerMapping.query.filter_by(id=mapping.id).first()
+                return jsonify(updated=mapping, deleted=deleted), 200
             return jsonify(), 200
 
         @self.route("/stored/<int:mapping_id>", methods=["DELETE"])

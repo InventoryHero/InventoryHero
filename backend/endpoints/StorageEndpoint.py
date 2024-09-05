@@ -1,8 +1,10 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
+from sqlalchemy.orm import aliased, contains_eager
 
 from backend.db.models.StorageContainer import ContainerTypes, Storage
 from backend.decorators import auth, emit_update
+from backend.db.models.Product import Product, ProductContainerMapping
 
 
 def get_storage_helper(storage_type, household, storage_id=None):
@@ -55,7 +57,7 @@ class StorageEndpoint(Blueprint):
             self.app.logger.info("get contained amount")
             storage_container = []
             for container in result:
-                serialized = container.serialize()
+                serialized = container.serialize_man()
                 if get_contained_amount is not None:
                     serialized["products"] = len(container.product_mappings)
                 storage_container.append(serialized)
@@ -73,7 +75,7 @@ class StorageEndpoint(Blueprint):
             get_contained_amount = request.args.get('contained', None)
             storage_container = []
             for container in result:
-                serialized = container.serialize()
+                serialized = container.serialize_man()
 
                 if get_contained_amount is not None:
                     serialized["products"] = len(container.product_mappings)
@@ -223,8 +225,8 @@ class StorageEndpoint(Blueprint):
                 box.storage_id = new_location
 
             self.db.session.commit()
-            self.app.logger.warning(box.serialize())
-            return jsonify(updated=box.serialize()), 200
+            self.app.logger.warning(box.serialize_man())
+            return jsonify(updated=box.serialize_man()), 200
 
         @self.route("/location/<int:location_id>", methods=["DELETE"])
         @jwt_required()
@@ -267,8 +269,8 @@ class StorageEndpoint(Blueprint):
                 location.name = new_name
 
             self.db.session.commit()
-            self.app.logger.warning(location.serialize())
-            return jsonify(updated=location.serialize()), 200
+            self.app.logger.warning(location.serialize_man())
+            return jsonify(updated=location.serialize_man()), 200
 
         @self.route("/box/<int:box_id>/name", methods=["GET"])
         @jwt_required()
@@ -297,3 +299,17 @@ class StorageEndpoint(Blueprint):
                 return jsonify(status="location_not_found"), 400
 
             return jsonify(name=location.name), 200
+
+        @self.route("/test", methods=["GET"])
+        def test(household):
+
+            filtered_products = (
+                self.db.session.query(Product)
+                .join(ProductContainerMapping, Product.mappings)
+                .filter(ProductContainerMapping.storage_id == 4)
+                .options(contains_eager(Product.mappings))
+                .all()
+            )
+
+            return jsonify(filtered_products), 200
+

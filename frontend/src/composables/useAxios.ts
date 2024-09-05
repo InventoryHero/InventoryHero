@@ -12,64 +12,54 @@ import {
 import {useAuthStore} from "@/store";
 import GeneralSettings from "@/components/settings/GeneralSettings.vue";
 
+type SpecificEndpoint = UserEndpoint | HouseholdEndpoint | LocationEndpoint | StorageEndpoint | BoxEndpoint | ProductEndpoint | AdministrationEndpoint | GeneralEndpoint;
 
-export type AxiosContext = {
-    axios: Endpoint
-}
+export type AxiosContext<T extends Endpoint> = {
+    axios: T
+};
 
-export default (endpoint = "") : AxiosContext => {
+export default function useAxios<T extends SpecificEndpoint>(endpoint: string): AxiosContext<T> {
     const authStore = useAuthStore()
-
+    let axios = null;
     switch(endpoint){
         case "user":
-            return {
-                axios: new UserEndpoint()
-            }
-        case "household": {
-            return {
-                axios: new HouseholdEndpoint()
-            }
-        }
-        case "storage": {
-            return {
-                axios: new StorageEndpoint()
-            }
-        }
-        case "location":{
-            return {
-                axios: new LocationEndpoint()
-            }
-        }
-        case "box": {
-            return {
-                axios: new BoxEndpoint()
-            }
-        }
-        case "product":{
-            return {
-                axios: new ProductEndpoint()
-            }
-        }
-        case "administration": {
+            axios = new UserEndpoint() as T
+            break
+        case "household":
+            axios = new HouseholdEndpoint() as T
+            break;
+        case "storage":
+            axios = new StorageEndpoint() as T
+            break
+        case "location":
+            axios = new LocationEndpoint() as T
+            break
+        case "box":
+            axios = new BoxEndpoint() as T
+            break
+        case "product":
+            axios = new ProductEndpoint() as T
+            break
+        case "administration":
             if(authStore.isAdmin){
-                return {
-                    axios: new AdministrationEndpoint()
-                }
+                axios = new AdministrationEndpoint() as T
             }
             break
-        }
-        case "general": {
-            return {
-                axios: new GeneralEndpoint()
-            }
-        }
+        case "general":
+            axios = new GeneralEndpoint() as T
+            break
+
         default:
             console.error("INVALID ENDPOINT")
 
     }
 
+    if(axios === null){
+        axios = new Endpoint() as T
+    }
+
     return {
-        axios: new Endpoint(),
+        axios: axios ,
     }
 
 }

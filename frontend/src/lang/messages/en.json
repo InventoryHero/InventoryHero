@@ -112,6 +112,7 @@
   },
   "product": "product {name}",
   "products": {
+    "prefiltered": "Prefiltered from {box}",
     "confirm": {
       "detail": {
         "delete": {

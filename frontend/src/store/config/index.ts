@@ -52,11 +52,14 @@ export const useConfigStore = defineStore('config', {
         languageChange(newLanguage: string){
             if(newLanguage === "default"){
                 this.config.language = "default"
+                //@ts-expect-error
                 i18n.global.locale = (navigator.language || navigator.userLanguage)
                 return
             }
+            //@ts-expect-error
             if(i18n.global.availableLocales.includes(newLanguage)){
                 this.config.language = newLanguage
+                //@ts-expect-error
                 i18n.global.locale = this.config.language
             }
         },

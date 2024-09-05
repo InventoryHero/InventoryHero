@@ -58,6 +58,7 @@
             :icon="icon"
             :size="size"
             :color="color"
+            :disabled="disabled"
             fixed-width
             class="app-font-awesome-btn"
             :class="{
