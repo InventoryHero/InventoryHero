@@ -4,6 +4,7 @@ import vuetify from "@/plugins/vuetify.ts";
 import {TinyColor} from "@ctrl/tinycolor";
 import {i18n} from "@/lang";
 import {Locale} from 'vue-i18n'
+import {useDisplay} from "vuetify";
 
 
 export const useConfigStore = defineStore('config', {

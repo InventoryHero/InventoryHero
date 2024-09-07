@@ -1,85 +1,119 @@
-<script lang="ts">
-import {defineComponent} from 'vue'
-import {RouteLocationNormalized, useRoute} from "vue-router";
-import {useConfigStore} from "@/store";
+<script setup lang="ts">
+import {computed, defineComponent, onMounted, provide, ref} from 'vue'
+import {onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter} from "vue-router";
+import {useConfigStore, useProducts, useStorage} from "@/store";
+import {BoxEndpoint, LocationEndpoint, ProductEndpoint} from "@/api/http";
+import useAxios from "@/composables/useAxios.ts";
 
-export default defineComponent({
-  name: "Create",
-  setup(){
-    const route = useRoute();
-    const config = useConfigStore();
-    return {route, config}
-  },
-  data(){
-    return {
-      confirm: false,
-      forceLeave: false,
-      to: '/',
-      animationName: "slide-left"
-    }
-  },
-  beforeRouteUpdate(to, from){
-    let direction = this.addRoutes.indexOf(to.fullPath) - this.addRoutes.indexOf(from.fullPath)
-    if (direction == -1 || direction == (this.addRoutes.length - 1)){
-      this.animationName = "slide-right"
-    }
-    else{
-      this.animationName = "slide-left"
-    }
+const config = useConfigStore()
+const route = useRoute()
+const router = useRouter();
+const productStore = useProducts();
+const storageStore = useStorage();
+const {axios: productEndpoint} = useAxios<ProductEndpoint>("product")
+const {axios: boxEndpoint} = useAxios<BoxEndpoint>("box")
+const {axios: locationEndpoint} = useAxios<LocationEndpoint>("location")
 
-  },
-  computed: {
-    addRoutes(){
-      // child routes of create in order to allow swipe navigation
-      return ["/create/product", "/create/box", "/create/location"]
-    },
-    currentRoute(){
-      return this.addRoutes.indexOf(this.route.fullPath)
-    },
-    transition(){
-      if(this.config.transitions){
-        return this.animationName
-      }
-      return ""
-    }
-  },
-  methods:{
-    leave(){
-      this.confirm = false
-      this.forceLeave = true
-      this.$router.push(this.to)
-    },
-    stay(){
-      this.confirm = false
-      this.to = "/"
-    },
-    swipe (direction: "Right"|"Left"|"Up"|"Down") {
-      let dir = 0
-      switch(direction){
-        case "Right":
-          dir = -1
-          break
-        case "Left":
-          dir = +1
-          break
-      }
+const confirm = ref(false)
+const forceLeave = ref(false)
+const dst = ref("/")
+const animationName = ref("slide-left")
 
-      let newRoute = (((this.currentRoute+dir) % (this.addRoutes.length)) + this.addRoutes.length) % this.addRoutes.length
+const loadingProducts = ref(false)
+const loadingBoxes = ref(false)
+const loadingLocations = ref(false)
 
-      this.$router.push(this.addRoutes[newRoute])
-    }
-
-  },
-  beforeRouteLeave (to, from) {
-    if(this.forceLeave)
-    {
-      this.forceLeave = false
-      return true
-    }
-    this.to = to.fullPath
-    this.confirm = true
-    return false
+const loading = computed(() => {
+  return {
+    loadingProducts: loadingProducts.value,
+    loadingBoxes: loadingBoxes.value,
+    loadingLocations: loadingLocations.value
   }
+})
+provide('loading', loading)
+
+const addRoutes = computed(()=> {
+    // child routes of create in order to allow swipe navigation
+    return ["/create/product", "/create/box", "/create/location"]
+})
+const currentRoute = computed(() => {
+  return addRoutes.value.indexOf(route.fullPath)
+})
+const transition = computed(() => {
+  if(config.transitions){
+    return animationName.value
+  }
+  return ""
+})
+
+function leave(){
+  confirm.value = false
+  forceLeave.value = true
+  productStore.reset()
+  storageStore.reset()
+  router.push(dst.value)
+}
+
+function stay(){
+  confirm.value = false
+  dst.value = "/"
+}
+
+function swipe (direction: "Right"|"Left"|"Up"|"Down") {
+  let dir = 0
+  switch(direction){
+    case "Right":
+      dir = -1
+      break
+    case "Left":
+      dir = +1
+      break
+  }
+  let newRoute = (((currentRoute.value+dir) % (addRoutes.value.length)) + addRoutes.value.length) % addRoutes.value.length
+  router.push(addRoutes.value[newRoute])
+}
+
+onBeforeRouteLeave((to, from) => {
+  if(forceLeave.value)
+  {
+    forceLeave.value = false
+    return true
+  }
+  dst.value = to.fullPath
+  confirm.value = true
+  return false
+})
+
+onBeforeRouteUpdate((to, from) => {
+  let direction = addRoutes.value.indexOf(to.fullPath) - addRoutes.value.indexOf(from.fullPath)
+  if (direction == -1 || direction == (addRoutes.value.length - 1)){
+    animationName.value = "slide-right"
+  }
+  else{
+    animationName.value = "slide-left"
+  }
+
+})
+
+onMounted(()=> {
+  loadingProducts.value = true
+  productEndpoint.getProducts().then((products) => {
+    productStore.storeProducts(products)
+    loadingProducts.value = false
+  })
+
+  loadingBoxes.value = true
+  boxEndpoint.getBoxes().then((boxes) =>{
+    storageStore.storeBoxes(boxes)
+    loadingBoxes.value = false
+  })
+
+  loadingLocations.value = true
+  locationEndpoint.getLocations().then((locations) =>{
+    storageStore.storeLocations(locations)
+    loadingLocations.value = false
+  })
+
 })
 </script>
 

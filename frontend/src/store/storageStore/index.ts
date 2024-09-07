@@ -88,6 +88,13 @@ export default defineStore("storage", {
             }
             return false
         },
+        _addStorage(storage: ApiStorage, type: string){
+            if(this._storage[type]){
+                this._storage[type].push(storage)
+            } else{
+                this._addStorage([storage], type)
+            }
+        },
 
 
         selectBox(box: ApiStorage){
@@ -102,8 +109,6 @@ export default defineStore("storage", {
         updateBox(updatedBox: ApiStorage){
             //const box =
             this._updateStorage(updatedBox, "box")
-
-            console.log(updatedBox)
         },
         deleteBox(id: number){
             this._deleteStorage(id, "box")
@@ -119,6 +124,9 @@ export default defineStore("storage", {
         },
         removeProductfromBox(id: number){
             this._removeProductFromStorage(id, "box")
+        },
+        addBox(newBox: ApiStorage){
+          this._addStorage(newBox, "box")
         },
 
 
@@ -144,6 +152,9 @@ export default defineStore("storage", {
             if(this._selectedStorage["location"].id === locationId){
                 this._storage["box"] = this._storage["box"].filter(s => s.id !== locationId)
             }
+        },
+        addLocation(newLocation: ApiStorage){
+          this._addStorage(newLocation, "location")
         },
 
 

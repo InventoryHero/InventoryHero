@@ -1,16 +1,22 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
-import {useAuthStore} from "@/store";
+import {useAuthStore, useStorage} from "@/store";
 import useNewAxios from "@/composables/useAxios.ts";
 import {LocationEndpoint} from "@/api/http";
+import useAxios from "@/composables/useAxios.ts";
 
 
 export default defineComponent({
   name: "CreateLocationCard",
   setup(){
-    const {axios} = useNewAxios("location")
+    const {axios} = useAxios<LocationEndpoint>("location")
     const user = useAuthStore();
-    return {axios: axios as LocationEndpoint, user}
+    const storageStore = useStorage()
+    return {
+      axios,
+      user,
+      storageStore
+    }
   },
   computed: {
     locationNameHint(){
@@ -64,6 +70,7 @@ export default defineComponent({
 
       this.postingLocation = false
       if(success){
+        this.storageStore.addLocation(newLocation)
         this.$notify({
           title: this.$t('toasts.titles.success.add_location', {
             name: this.location
@@ -89,7 +96,7 @@ export default defineComponent({
       :title="$t(`add.location.title`)"
       @save="save()"
       @clear="clear()"
-      :loading="postingLocation"
+      :request-in-progress="postingLocation"
   >
     <v-form
         @submit.prevent

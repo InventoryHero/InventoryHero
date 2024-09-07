@@ -2,10 +2,9 @@ import datetime
 import json
 
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required, current_user
+from flask_jwt_extended import jwt_required
 from werkzeug.datastructures import auth
 
-from backend.flask_config import socketio
 from backend.db.models.Product import Product, ProductContainerMapping
 from backend.db.models.StorageContainer import Storage, ContainerTypes
 from backend.decorators import auth, emit_update
@@ -91,62 +90,85 @@ class ProductEndpoint(Blueprint):
         super(ProductEndpoint, self).__init__(name=name, import_name=import_name, url_prefix=url_prefix, *args)
 
         @self.route("/create/<int:product_id>", methods=["POST"])
-        @self.route("/create", defaults={'product_id': None}, methods=["POST"])
         @jwt_required()
         @auth
         @emit_update()
-        def create_product(household, product_id):
-            product_name = request.json.get("name", None)
-            if product_name is not None:
-                product = Product.query.filter_by(name=product_name, household_id=household).first()
-                if product is not None:
-                    return jsonify(status="create_product_already_exists"), 400
-            elif product_id is not None:
-                product = Product.query.filter_by(id=product_id, household_id=household).first()
-                if product is None:
-                    return jsonify(status="add_product_not_found"), 400
-            else:
+        def add_existing_product(household, product_id):
+            self.app.logger.info(request.json)
+            amount = request.json.get("amount", None)
+            storage_id = request.json.get("storageId", None)
+            starred = request.json.get("starred", None)
+
+            if amount is None:
                 return jsonify(status="create_product_invalid_data"), 400
 
-            starred = request.json.get("starred", False)
-            creation_date = datetime.datetime.now(datetime.UTC)
-            storage_id = request.json.get("storage_id", None)
-            storage_type = request.json.get("storage_type", 0)
-            storage_valid, ret, code = parse_storage_params(storage_id, storage_type, household)
-            if not storage_valid:
-                return ret, code
+            product = Product.query.filter_by(household_id=household, id=product_id).first()
+            if product is None:
+                return jsonify(status="add_product_not_found"), 400
+
+            if starred is not None:
+                product.starred = starred
+
+            storage = Storage.query.filter_by(household_id=household, id=storage_id).first()
+            if storage_id is not None and storage is None:
+                return jsonify(status="storage_not_found"), 400
+
+            mapping = ProductContainerMapping.query.filter_by(product_id=product.id, storage_id=storage_id).first()
+            if mapping is None:
+                mapping = ProductContainerMapping(product_id=product.id,  amount=amount)
+                self.db.session.add(mapping)
             else:
-                storage_type = ret["type"]
-                storage_id = ret["id"]
+                mapping.amount += amount
+            self.db.session.commit()
+            return jsonify(status="success"), 200
+
+
+
+        @self.route("/create", methods=["POST"])
+        @jwt_required()
+        @auth
+        @emit_update()
+        def create_product(household):
+            product_name = request.json.get("name", None)
+            self.app.logger.info(request.json)
+            if product_name is None:
+                return jsonify(status="create_product_invalid_data"), 400
+            product = Product.query.filter_by(name=product_name, household_id=household).first()
+            if product is not None:
+                return jsonify(status="create_product_already_exists"), 400
+
+            starred = request.json.get("starred", False)
+            storage_id = request.json.get("storageId", None)
+            creation_date = datetime.datetime.now(datetime.UTC)
+            storage = Storage.query.filter_by(household_id=household, id=storage_id).first()
+            if storage_id is not None and storage is None:
+                return jsonify(status="storage_not_found"), 400
 
             amount = request.json.get("amount", 0)
             updated_at = creation_date
 
-            added_to_existing = False
-
-            if product_id is not None:
-                existing_mapping = ProductContainerMapping.query.filter_by(product_id=product.id, storage_id=storage_id,
-                                                                           storage_type=int(storage_type)).first()
-                if existing_mapping is not None:
-                    existing_mapping.amount += amount
-                    added_to_existing = True
-            else:
-                product = Product(name=product_name, household_id=household, starred=starred,
-                                  creation_date=creation_date)
-                self.db.session.add(product)
-                self.db.session.flush()
-            if not added_to_existing:
-                production_at_container = ProductContainerMapping(product_id=product.id, amount=amount,
-                                                                  storage_id=storage_id, storage_type=int(storage_type),
-                                                                  updated_at=updated_at)
-                self.db.session.add(production_at_container)
-
+            product = Product(household_id=household, name=product_name, creation_date=creation_date, starred=starred)
+            self.db.session.add(product)
             self.db.session.commit()
-            self.app.logger.info(f"Product: {product_name} with amount: {amount} successfully created, "
-                                 f"at sttorage: {storage_id} storage_type: {storage_type}")
-            self.app.logger.info(household)
 
-            return jsonify(product.serialize()), 200
+            if storage_id is None:
+                mapping = ProductContainerMapping(
+                    product_id=product.id,
+                    amount=amount,
+                    updated_at=updated_at
+                )
+            else:
+                mapping = ProductContainerMapping(
+                    product_id=product.id,
+                    storage_id=storage.id,
+                    amount=amount,
+                    updated_at=updated_at
+                )
+
+            self.db.session.add(mapping)
+            self.db.session.commit()
+            self.app.logger.info(product)
+            return jsonify(product), 200
 
         @self.route("/<int:product_id>", methods=["GET"])
         @self.route("", defaults={'product_id': None}, methods=["GET"])

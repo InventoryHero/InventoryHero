@@ -2,25 +2,30 @@
 import {defineComponent} from 'vue'
 import {HouseholdEndpoint} from "@/api/http";
 import useNewAxios from "@/composables/useAxios.ts";
+import {useAuthStore} from "@/store";
+import useAxios from "@/composables/useAxios.ts";
 
 export default defineComponent({
   name: "InviteModal",
   setup(){
-    const householdEndpoint = useNewAxios("household")
+    const {axios: endpoint} = useAxios<HouseholdEndpoint>("household")
+    const userStore = useAuthStore()
     return {
-      endpoint: householdEndpoint.axios as HouseholdEndpoint
+      endpoint,
+      userStore
     }
   },
   watch: {
     modelValue(){
       if(this.modelValue){
+        this.loading=true;
         this.endpoint.createInviteCode(this.householdId).then((data) => {
+
           if(data.success)
           {
             this.code = data.code
-            return
           }
-
+          this.loading = false
         })
       }
     }
@@ -42,6 +47,10 @@ export default defineComponent({
     invite(){
       return `${window.location.origin}/join/${this.code}`
     },
+    householdName(){
+      // TODO
+      return this.userStore.household.name
+    },
     webShareApiSupported(){
       return navigator.share
     },
@@ -52,7 +61,7 @@ export default defineComponent({
     },
     emailShare(){
       return {
-        subject: this.$t('invite.email.subject'),
+        subject: this.$t('invite.email.subject', {household: this.householdName}),
         body: this.invite,
         mail: ""
       }
@@ -71,6 +80,7 @@ export default defineComponent({
     return {
       code: "",
       copiedConfirm: false,
+      loading: false,
     }
   },
   methods: {
@@ -139,9 +149,11 @@ export default defineComponent({
               density="compact"
               :auto-grow="true"
               rows="1"
+              :loading="loading"
           >
             <template v-slot:append>
               <v-icon
+                  :disabled="loading"
                   icon="fa:fas fa-clipboard"
                   @click="copyToClipboard()"
               />
@@ -165,9 +177,11 @@ export default defineComponent({
         <v-card-actions
             v-else
             class="justify-space-evenly"
+            v-if="!loading"
         >
           <s-email
               :share-options="emailShare"
+
           >
             <v-btn
                 icon="fa:fas fa-envelope"
@@ -178,7 +192,6 @@ export default defineComponent({
 
           <s-whats-app
               :share-options="whatsAppShare"
-
           >
             <v-btn
                 icon="fa:fab fa-whatsapp"

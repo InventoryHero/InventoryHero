@@ -48,7 +48,6 @@ export class StorageEndpoint extends Endpoint{
         contained = true
     } = {}){
         let url = this.subroute
-        console.log(url)
         if(id !== undefined){
             url += `/${id}`
         }
@@ -61,7 +60,6 @@ export class StorageEndpoint extends Endpoint{
         let response = await this.internalAxios.get(url, params)
         if(response.status === 200)
         {
-            console.log(response.data, url)
             return response.data
         }
         this.handleNonErrorNotifications(response);
@@ -170,7 +168,6 @@ export class LocationEndpoint extends StorageEndpoint{
 
     public async getContent(id: number){
         let data = await this.getStorageContent(id.toString())
-        console.log(data)
         return {
             boxes: data.boxes,
             products: data.products

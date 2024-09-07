@@ -112,6 +112,7 @@
   },
   "product": "product {name}",
   "products": {
+    "loading": "Loading your products...",
     "prefiltered": "Prefiltered from {box}",
     "confirm": {
       "detail": {
@@ -151,6 +152,7 @@
   },
   "box": "box {name}",
   "boxes": {
+    "loading": "Loading your boxes...",
     "confirm": {
       "delete": {
         "title": "Delete box",
@@ -172,6 +174,7 @@
     "no_boxes": "Nothing there..."
   },
   "locations": {
+    "loading": "Loading your locations...",
     "confirm": {
       "delete": {
         "title": "Delete location",
@@ -195,6 +198,7 @@
   },
   "households": {
     "all_displayed": "All households have been displayed!",
+    "loading_households": "Loading your households...",
     "create_new": {
       "title": "Create new household",
       "labels": {
@@ -209,7 +213,7 @@
   "account": {
     "profile_card": {
       "title": "You 😊",
-      "user_name": "Username",
+      "username": "Username",
       "email": "email",
       "change_pw": "Change password",
       "save_changes": "Save"
@@ -218,7 +222,9 @@
       "title": "Current household",
       "edit_households": "Edit households",
       "save_changes": "Save",
-      "select_household": "Select a household"
+      "select_household": "Select a household",
+      "create_new_household": "Create a new household",
+      "loading_households": "@:households.loading_households"
     }
   },
   "login": {
@@ -328,7 +334,10 @@
   "invite": {
     "title": "Invite your friend",
     "copy_to_clipboard": "Copy the invite link into your clipboard...",
-    "or": "...or share it directly"
+    "or": "...or share it directly",
+    "email": {
+      "subject": "Join my household {household}"
+    }
   },
   "administration": {
     "users": {
@@ -365,7 +374,8 @@
       },
       "rules": {
         "username_taken": "This username is already in use",
-        "email_taken": "This email is already in use"
+        "email_taken": "This email is already in use",
+        "field_required": "This field is required"
       },
       "edit": {
         "resend_confirmation": "Resend Confirmation",

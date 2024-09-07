@@ -57,48 +57,7 @@ class Storage(db.Model):
             storage["boxAmount"] = len(self.children)
         return storage
 
-    def serialize_man(self):
-        data = {
-            "id": self.id,
-            "name": self.name,
-            "household_id": self.household_id,
-            "creation_date": self.creation_date,
-            "productAmount": len(self.product_mappings),
-            "type": self.type
-        }
 
-        return data
 
-    def serialize_location(self):
-        location_content = []
-        for product in self.product_mappings:
-            location_content.append({
-                "type": "product",
-                "id": f"product{product.id}",
-                "content": product
-            })
 
-        for box in self.children:
-            curr_box = box.serialize_man()
-            location_content.append({
-                "type": "box",
-                "id": f"box{box.id}",
-                "content": curr_box
-            })
-        return location_content
 
-    def serialize_box(self):
-        products = []
-        for product in self.product_mappings:
-            curr_product = product.product.serialize_man()
-            curr_mapping = product.serialize_man()
-            curr_product.update(curr_mapping)
-            products.append(curr_product)
-
-        return products
-
-    def serialize_content(self):
-        if self.type == ContainerTypes.Box:
-            return self.serialize_box()
-        if self.type == ContainerTypes.Location:
-            return self.serialize_location()

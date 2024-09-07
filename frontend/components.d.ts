@@ -38,6 +38,7 @@ declare module 'vue' {
     CreateCard: typeof import('./src/components/widgets/Create/CreateCard.vue')['default']
     CreateLocationCard: typeof import('./src/components/widgets/Create/CreateLocationCard.vue')['default']
     CreateProductCard: typeof import('./src/components/widgets/Create/CreateProductCard.vue')['default']
+    CreateProductCardOld: typeof import('./src/components/widgets/Create/CreateProductCardOld.vue')['default']
     DetailOverlay: typeof import('./src/components/common/DetailOverlay.vue')['default']
     GeneralSettings: typeof import('./src/components/settings/GeneralSettings.vue')['default']
     HouseholdItem: typeof import('./src/components/household/HouseholdItem.vue')['default']

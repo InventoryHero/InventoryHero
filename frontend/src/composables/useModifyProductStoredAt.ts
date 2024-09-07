@@ -22,7 +22,7 @@ export default () => {
         if (!success) {
             return success
         }
-        console.log(deleted, updated)
+
         if(deleted){
             productStore.deleteProductAt(deleted.id, deleted.amount)
         }

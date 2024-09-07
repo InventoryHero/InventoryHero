@@ -131,20 +131,34 @@ export class ProductEndpoint extends Endpoint{
         }
     }
 
-    public async createProduct(data: Partial<ProductOnly & ProductLocations>){
-        let url = "/create"
-        if(data.id !== undefined && data.id !== null)
-        {
-            url += `/${data.id}`
-        }
-        let response = await this.internalAxios.post(url, {
+    public async addExistingProduct(data: Partial<ProductStorageMapping>, updateStarred: boolean, starred?: boolean){
+        let url = `/create/${data.productId}`
+        const response = await this.internalAxios.post(url, {
             ...data,
-            id: undefined
+            productId: undefined,
+            starred: updateStarred ? starred : undefined
+        })
+        if(response.status === 200){
+            return {
+                success: true
+            }
+        }
+        this.handleNonErrorNotifications(response)
+        return {
+            success: false
+        }
+    }
+
+
+    public async createProduct(name: string, amount: number, starred: boolean, storageId?: number){
+        let url = "/create"
+        let response = await this.internalAxios.post(url, {
+            name, amount, starred, storageId
         })
         if(response.status === 200){
             return {
                 success: true,
-                product: response.data as Product
+                product: response.data as ApiProduct
             }
         }
         this.handleNonErrorNotifications(response)

@@ -44,7 +44,7 @@ export default defineComponent({
 <template>
 <v-navigation-drawer
   v-model="model"
-  :temprary="true"
+  :temporary="true"
 >
   <v-list
   >

@@ -141,5 +141,6 @@ export interface ProductStorageMapping {
     productId: number,
     amount: number,
     updatedAt: string,
-    storage?: ApiStorage
+    storage?: ApiStorage,
+    storageId?: number
 }

@@ -1,193 +1,165 @@
-<script lang="ts">
-import {defineComponent} from 'vue'
-import {ProductLocations, ProductOnly, Storage, StorageTypes} from "@/types";
-import {useAuthStore} from "@/store";
-import useNewAxios from "@/composables/useAxios.ts";
-import {StorageEndpoint, ProductEndpoint} from "@/api/http";
+<script setup lang="ts">
+import {computed, inject, ref, useTemplateRef, watch} from "vue";
+import {useProducts, useStorage} from "@/store";
+import {ApiProduct, ApiStorage, ProductOnly, ProductStorageMapping} from "@/types";
+import {useI18n} from "vue-i18n";
+import useAxios from "@/composables/useAxios.ts";
+import {ProductEndpoint} from "@/api/http";
+import {useNotification} from "@kyvg/vue3-notification";
+import useHint from "@/composables/useHint.ts";
 
-type Views = "product" | "box" | "location"
-type Clear = {
-  [K in Views]: boolean
-}
+const storageStore = useStorage()
+const productStore = useProducts()
+const {axios: productEndpoint} = useAxios<ProductEndpoint>('product')
 
-export default defineComponent({
-  name: "CreateProductCard",
-  setup(){
-    const productEndpoint = useNewAxios("product")
-    const storageEndpoint = useNewAxios("storage")
-    const user = useAuthStore();
-    return {
-      user,
-      productEndpoint: productEndpoint.axios as ProductEndpoint,
-      storageEndpoint: storageEndpoint.axios as StorageEndpoint,
+const {t} = useI18n()
+const {notify} = useNotification()
+
+const resourcesLoading = inject('loading')
+const addForm = useTemplateRef('add-form')
+const combobox = useTemplateRef('combobox')
+const postingProduct = ref(false)
+
+const newProduct = ref<ApiProduct|string|null>(null)
+const amount = ref(0)
+const newStarred = ref<boolean|undefined>(undefined)
+const selectedStorage = ref<ApiStorage|undefined>(undefined)
+
+const products = computed(() => {
+  return productStore.products
+})
+const storage = computed(() => {
+  return [
+      ...storageStore.locations,
+      ...storageStore.boxes
+  ]
+})
+const starred = computed({
+  get(){
+    if(newStarred.value === undefined){
+      return newProduct.value?.starred ?? false
     }
+    return newStarred.value
   },
-  computed:{
-    comboboxHint() {
-      return {
-        active: this.hints.combobox !== '',
-        hint: this.hints.combobox
-      }
-    },
-    locationSelectHint(){
-      return {
-        active: this.hints.locationSelect !== '',
-        hint: this.hints.locationSelect
-      }
-    },
-    amountHint(){
-      return {
-        active: this.hints.amount !== '',
-        hint: this.hints.amount
-      }
-    },
-    starHint(){
-      return {
-        active: this.hints.star !== '',
-        hint: this.hints.star
-
-      }
-    }
-  },
-  data(){
-    return {
-      postingProduct: false,
-      productsLoading: false,
-      storageLoading: false,
-      products: [] as Array<ProductOnly>,
-      storage: [] as Array<Storage>,
-      product: null as (string | ProductOnly | null),
-      location: undefined as (undefined|Storage),
-      amount: null as (null|number),
-      starred: false,
-      hints: {
-        locationSelect: '',
-        combobox: '',
-        amount: '',
-        star: ''
-      },
-      rules: {
-        isNumber: (value: any) => !isNaN(parseInt(value)) || this.$t('add.product.rules.amount_nan'),
-        positive: (value: number) => value >= 0 || this.$t('add.product.rules.amount_negative'),
-        needProduct: (value: any) => value !== null && value !== undefined && value !== '' || this.$t('add.product.rules.need_product')
-      }
-    }
-  },
-  methods: {
-    enableHint(hint: keyof typeof this.hints)
-    {
-      this.$refs["add-form"].resetValidation();
-      Object.keys(this.hints).forEach(v => this.hints[v as keyof typeof this.hints] = '')
-      if(this.hints[hint] === '') {
-        this.hints[hint] = this.$t(`add.product.hints.${hint}`)
-      }
-      else {
-        this.hints[hint] = ''
-      }
-    },
-    disableHint(hint: keyof typeof this.hints)
-    {
-      this.hints[hint] = ''
-    },
-    updateStarred(){
-      if(typeof this.product === "string"){
-        this.starred = false
-        return
-      }
-      if(this.product === null)
-      {
-        this.starred = false
-        return
-      }
-      this.starred = this.product.starred
-    },
-    clear(){
-      //@ts-expect-error
-      this.$refs["add-form"].reset()
-    },
-    async save(){
-      //@ts-expect-error
-      const validation = await this.$refs["add-form"].validate()
-
-      if(!validation.valid){
-        return
-      }
-      let data = {
-        amount: this.amount!,
-        starred: this.starred,
-        storage_id: this.location?.id,
-        storage_type: this.location?.type ?? 0
-      } as Partial<ProductOnly & ProductLocations>
-
-      let addToList = false
-      if(typeof this.product === "string")
-      {
-        // case new product
-        data.name = this.product
-        addToList = true
-      }
-      else {
-        data.id = this.product?.id
-      }
-      this.postingProduct = true
-      const {success, product} = await this.productEndpoint.createProduct(data)
-      this.postingProduct = false
-
-      if(!success)
-        return
-      //@ts-expect-error
-      this.$refs["add-form"].reset()
-      this.$notify({
-        title: this.$t('toasts.titles.success.add_product', {
-          name: data.name || ((this.product ?? {}) as (Partial<ProductOnly>)).name,
-          amount: data.amount
-        }),
-        text: this.$t('toasts.text.success.add_product'),
-        type: "success"
-      })
-
-      if (addToList) {
-        this.products.push(product!)
-      }
-    },
-    getIcon(type: StorageTypes){
-      switch(type){
-        case StorageTypes.Location:
-          return "fa:fas fa-building"
-        case StorageTypes.Box:
-          return "fa:fas fa-boxes"
-        default:
-          return ""
-      }
-    },
-
-  },
-  async mounted(){
-    this.productsLoading=true
-    this.productEndpoint.getProducts({
-      getStoredAt: false
-    }).then((products) => {
-      this.products = products
-      this.productsLoading = false
-    })
-
-    this.storageLoading = true
-    this.storageEndpoint.getStorageType({
-      contained: false
-    }).then((storage) => {
-      this.storage = storage;
-      this.storageLoading = false
-    })
+  set(value: boolean){
+    newStarred.value = value
   }
 })
+
+const {hintActive: comboboxHintActive, message: comboboxHint } = useHint(t(`add.product.hints.combobox`))
+const {hintActive: locationSelectHintActive, message: locationSelectHint } = useHint(t(`add.product.hints.locationSelect`))
+const {hintActive: amountHintActive, message: amountHint } = useHint(t(`add.product.hints.amount`))
+const {hintActive: starHintActive, message: starHint } = useHint(t(`add.product.hints.star`))
+
+const productsLoading = computed(() =>{
+  return resourcesLoading.loadingProducts ?? false
+})
+
+const storageLoading = computed(() =>{
+  return (resourcesLoading.loadingLocations ?? false) || (resourcesLoading.loadingBoxes ?? false)
+})
+
+const rules = {
+  isNumber: (value: any) => !isNaN(parseInt(value)) || t('add.product.rules.amount_nan'),
+  positive: (value: number) => value >= 0 || t('add.product.rules.amount_negative'),
+  needProduct: (value: any) => value !== null && value !== undefined && value !== '' || t('add.product.rules.need_product')
+}
+
+
+
+function notifySuccess(name, amount){
+  notify({
+    title: t('toasts.titles.success.add_product', {
+      name: name,
+      amount: amount
+    }),
+    text: t('toasts.text.success.add_product'),
+    type: "success"
+  })
+}
+
+function addExisting(){
+  let product = newProduct.value!
+  let data = {
+    productId: product.id,
+    amount: amount.value,
+    storageId: selectedStorage.value?.id
+  } as Partial<ProductStorageMapping>
+
+  let request = undefined
+  if(starred.value !== product.starred){
+    request = productEndpoint.addExistingProduct(data, true, starred.value)
+  } else{
+    request = productEndpoint.addExistingProduct(data, false)
+  }
+  request.then(({success}) => {
+    postingProduct.value = false
+    if(!success){
+      return
+    }
+    notifySuccess(product.name, amount.value)
+    if(starred.value !== product.starred){
+      productStore.updateStarred(product.id)
+    }
+
+    clear()
+  })
+
+}
+
+function addNew(){
+  postingProduct.value = true
+  productEndpoint.createProduct(
+      newProduct.value,
+      amount.value,
+      starred.value,
+      selectedStorage.value?.id
+  ).then(({success, product}) => {
+    postingProduct.value = false
+    if(!success){
+      return;
+    }
+    notifySuccess(product.name, amount.value)
+    productStore.addProduct(product)
+    clear()
+  })
+
+}
+
+async function save(){
+  const {valid} = await addForm.value.validate()
+  if(!valid){
+    return
+  }
+  postingProduct.value = true
+  if(newProduct.value.hasOwnProperty('id')){
+    addExisting()
+  } else{
+    addNew()
+  }
+
+}
+
+function clear(){
+  addForm.value.reset()
+  newStarred.value = undefined
+}
+
+function disableHint(hint: any){
+  // TODO
+}
+function enableHint(hint: any){
+  // TODO
+}
+
 </script>
 
 <template>
   <create-card
-      :title="$t(`add.product.title`)"
+      :title="t(`add.product.title`)"
       @save="save()"
       @clear="clear()"
-      :loading="postingProduct"
+      :request-in-progress="postingProduct"
   >
     <v-form
         @submit.prevent
@@ -209,19 +181,16 @@ export default defineComponent({
               :hide-no-data="false"
               density="comfortable"
               auto-select-first="exact"
-              v-model="product"
-              :label="$t('add.product.labels.product')"
+              v-model="newProduct"
+              :label="t('add.product.labels.product')"
               :items="products"
               item-title="name"
-              :persistent-hint="comboboxHint.active"
-              :hint="comboboxHint.hint"
               :rules="[rules.needProduct]"
-              @update:model-value="updateStarred()"
               :disabled="productsLoading"
               @keydown.enter="() => {
-                //@ts-expect-error
-                $refs.combobox.blur()
+                combobox.blur()
               }"
+              :messages="comboboxHint"
 
           >
             <template #loader>
@@ -234,25 +203,25 @@ export default defineComponent({
             <template #no-data>
               <v-list-item>
                 <v-list-item-title
-                    v-if="product !== null && product !== ''"
+                    v-if="newProduct !== null && newProduct !== '' && !newProduct.hasOwnProperty('id')"
                 >
-                   {{ $t('add.product.new_product')}}
-                    <p class="text-primary font-weight-bold d-inline">{{product}}</p>
+                  {{ t('add.product.new_product')}}
+                  <p class="text-primary font-weight-bold d-inline">{{newProduct}}</p>
                 </v-list-item-title>
                 <v-list-item-title
-                  v-else
+                    v-else
                 >
-                  {{ $t('add.product.start_typing')}}
+                  {{ t('add.product.start_typing')}}
                 </v-list-item-title>
 
               </v-list-item>
             </template>
             <template #append>
               <app-help-indicator
-                  @click:outside="disableHint('combobox')"
-                  @click="enableHint('combobox')"
+                  v-model="comboboxHintActive"
               />
             </template>
+
           </v-combobox>
         </v-col>
       </v-row>
@@ -264,19 +233,18 @@ export default defineComponent({
             cols="12"
         >
           <app-storage-select
-            v-model="location"
-            :storage="storage"
-            density="comfortable"
-            :label="$t('add.product.labels.location')"
-            :persistent-hint="locationSelectHint.active"
-            :hint="locationSelectHint.hint"
-            :hide-details="false"
-            content-type="product"
+              :storage-loading="storageLoading"
+              v-model="selectedStorage"
+              :storage="storage"
+              density="comfortable"
+              :label="t('add.product.labels.location')"
+              :hide-details="false"
+              content-type="product"
+              :messages="locationSelectHint"
           >
             <template #hint>
               <app-help-indicator
-                  @click:outside="disableHint('locationSelect')"
-                  @click="enableHint('locationSelect')"
+                  v-model="locationSelectHintActive"
               />
             </template>
           </app-storage-select>
@@ -290,54 +258,39 @@ export default defineComponent({
             cols="7"
         >
           <v-text-field
-              :hint="amountHint.hint"
-              :persistent-hint="amountHint.active"
+              :messages="amountHint"
               type="number"
               density="comfortable"
-              :label="$t('add.product.labels.amount')"
+              :label="t('add.product.labels.amount')"
               v-model.number="amount"
               :rules="[rules.isNumber, rules.positive]"
               class="num-input"
           >
             <template #append>
               <app-help-indicator
-                  @click:outside="disableHint('amount')"
-                  @click="enableHint('amount')"
+                  v-model="amountHintActive"
               />
             </template>
           </v-text-field>
         </v-col>
         <v-col
-            class="d-flex flex-column justify-center"
+
             cols="4"
         >
-          <v-label
-              class="floating"
-              style="margin: 0 !important;padding: 0 !important;"
-          >
-            {{ $t('add.product.labels.star') }}
-          </v-label>
           <v-switch
-              class="starred-switch"
-              density="compact"
+              density="comfortable"
               v-model="starred"
               color="primary"
-              style="margin: 0 !important;padding: 0 !important;"
-              :hide-details="true"
+              :messages="starHint"
+              :label="t('add.product.labels.star')"
           >
-
             <template #append>
               <app-help-indicator
-                  @click:outside="disableHint('star')"
-                  @click="enableHint('star')"
+                  v-model="starHintActive"
               />
             </template>
           </v-switch>
-          <p
-              class="v-messages v-messages__message"
-          >
-            {{starHint.hint}}
-          </p>
+
         </v-col>
       </v-row>
 
@@ -345,35 +298,8 @@ export default defineComponent({
   </create-card>
 
 
-
 </template>
 
 <style scoped lang="scss">
-:deep(.v-selection-control-group ){
-  justify-content: space-evenly;
-}
-
-.num-input {
-  :deep(.v-field__field){
-    input {
-      text-align: right;
-    }
-    label{
-      text-align: right;
-    }
-  }
-}
-
-.starred-switch {
-  :deep(.v-selection-control) {
-    min-height: 0 !important;
-  }
-}
-
-.floating{
-  text-align: left;
-  font-size: 0.9em;
-}
-
 
 </style>

@@ -24,6 +24,20 @@ export default defineComponent({
         return 'fa:fas fa-caret-up'
       }
       return 'fa:fas fa-caret-down'
+    },
+    noDataText(){
+      if(this.loadingUserHouseholds){
+        return this.$t('account.household_card.loading_households')
+      }
+      return this.$t('account.household_card.create_new_household')
+    },
+    placeholderText(){
+      if(this.loadingUserHouseholds){
+        return this.$t('account.household_card.loading_households')
+      } else if(this.userHouseholds.length === 0){
+        return this.$t('account.household_card.create_new_household')
+      }
+      return this.$t('account.household_card.select_household')
     }
   },
   data(){
@@ -106,8 +120,8 @@ export default defineComponent({
             item-title="name"
             hide-details="auto"
             :single-line="true"
-            :placeholder="$t('account.household_card.select_household')"
-            :no-data-text="$t('account.household_card.create_new_household')"
+            :placeholder="placeholderText"
+            :no-data-text="noDataText"
             return-object
             v-model="selectedHousehold"
             density="compact"

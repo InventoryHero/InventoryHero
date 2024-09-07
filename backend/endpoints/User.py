@@ -213,7 +213,7 @@ class User(Blueprint):
                 else:
                     status = "update_successful_admin_remains"
             self.db.session.commit()
-            return jsonify(status=status, user=to_update.serialize()), 200
+            return jsonify(status=status, user=to_update), 200
 
         @self.route("/create", methods=["POST"])
         @jwt_required()
@@ -262,7 +262,7 @@ class User(Blueprint):
             self.db.session.add(user)
             self.db.session.commit()
 
-            return jsonify(status="success", user=user.serialize()), 200
+            return jsonify(status="success", user=user), 200
 
         @self.route("/delete/<int:user_id>", methods=["DELETE"])
         @jwt_required()

@@ -27,13 +27,6 @@ class Product(db.Model):
             "totalAmount": sum(mapping.amount for mapping in self.mappings)
         }
 
-
-    def serialize_with_mappings(self):
-        product = self.serialize
-        product["storage_locations"] = self.mappings
-        product["total_amount"] = sum([mapping.amount for mapping in self.mappings])
-        return product
-
     def __hash__(self):
         return hash(self.id)
 

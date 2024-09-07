@@ -58,7 +58,7 @@ export default defineStore("products", {
             }
 
             if(this._fromStorage !== undefined && this._fromStorage === storage.storage?.id){
-                console.log("HALLO", storage)
+
                 const storageStore = useStorage()
 
                 storageStore.removeProductfromBox(storage.storage.id)
@@ -96,6 +96,15 @@ export default defineStore("products", {
         },
         setStorage(id: number){
             this._fromStorage = id
+        },
+        updateStarred(id: number){
+          const product = this._products.find(p => p.id === id)
+          if(product){
+              product.starred = !product.starred
+          }
+        },
+        addProduct(product: ApiProduct){
+            this._products.push(product)
         },
         reset(){
             this._products = []

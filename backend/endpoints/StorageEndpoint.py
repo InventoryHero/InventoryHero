@@ -280,7 +280,6 @@ class StorageEndpoint(Blueprint):
                 location.name = new_name
 
             self.db.session.commit()
-            self.app.logger.warning(location.serialize_man())
             return jsonify(updated=location), 200
 
         @self.route("/box/<int:box_id>/name", methods=["GET"])

@@ -2,9 +2,10 @@
 import {defineComponent} from 'vue'
 import {isMobile} from "mobile-device-detect";
 import {Box, Location} from "@/types";
-import {useAuthStore} from "@/store";
+import {useAuthStore, useStorage} from "@/store";
 import useNewAxios from "@/composables/useAxios.ts";
 import {BoxEndpoint, LocationEndpoint} from "@/api/http";
+import useAxios from "@/composables/useAxios.ts";
 
 type Views = "product" | "box" | "location"
 type Clear = {
@@ -14,24 +15,23 @@ type Clear = {
 export default defineComponent({
   name: "CreateBoxCard",
   components: {},
+  inject: ['loading'],
   setup(){
-    const {axios} = useNewAxios("box")
-    const locationEndpoint = useNewAxios("location")
+    const {axios} = useAxios<BoxEndpoint>("box")
+    const storageStore = useStorage()
     const user = useAuthStore();
     return {
-      axios: axios as BoxEndpoint,
-      locationEndpoint: locationEndpoint.axios as LocationEndpoint,
-      user
+      axios,
+      user,
+      storageStore
     }
   },
   data(){
     return {
       postingBox: false,
-      locationsLoading: false,
       box: "",
       boxes: [] as Array<Box>,
       location: null as null|Location,
-      locations: [] as Array<Location>,
       hints: {
         boxName: '',
         locationSelect: ''
@@ -89,11 +89,12 @@ export default defineComponent({
         name: this.box,
         location_id: this.location?.id ?? undefined
       })
+
       this.postingBox = false
 
       if(success){
 
-
+        this.storageStore.addBox(newBox)
         this.$notify({
           title: this.$t('toasts.titles.success.add_box', {
             name: this.box
@@ -106,13 +107,6 @@ export default defineComponent({
 
     }
   },
-  async beforeMount(){
-    this.locationsLoading = true
-    this.locations = await this.locationEndpoint.getLocations({
-      contained: false
-    });
-    this.locationsLoading = false
-  }
 })
 </script>
 
@@ -121,14 +115,13 @@ export default defineComponent({
       :title="$t(`add.box.title`)"
       @save="save()"
       @clear="clear()"
-      :loading="postingBox"
+      :request-in-progress="postingBox"
   >
     <v-form
         @submit.prevent
         ref="add-form"
         :disabled="postingBox"
     >
-
       <v-row
           :no-gutters="true"
           class="mb-2"
@@ -165,8 +158,9 @@ export default defineComponent({
             cols="12"
         >
           <app-storage-select
+              :storage-loading="loading?.loadingLocations ?? false"
               v-model="location"
-              :storage="locations"
+              :storage="storageStore.locations"
               density="comfortable"
               :label="$t('add.box.labels.location')"
               :persistent-hint="locationSelectHint.active"
@@ -181,8 +175,6 @@ export default defineComponent({
               />
             </template>
           </app-storage-select>
-
-
         </v-col>
       </v-row>
     </v-form>

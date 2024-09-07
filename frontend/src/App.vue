@@ -8,6 +8,7 @@ import {useRoute} from "vue-router";
 import {isLoggedIn} from "axios-jwt";
 import AppCreateBar from "@/components/ui/AppCreateBar.vue";
 import {defineComponent} from "vue";
+import {useDisplay} from "vuetify";
 
 export default defineComponent({
   components: {
@@ -25,6 +26,8 @@ export default defineComponent({
     const route = useRoute()
     const generalSocket = useGeneralSocketStore()
 
+    const {mobile} = useDisplay()
+
     if(authStore.isAuthorized())
     {
       householdSocket.bindActions()
@@ -32,7 +35,7 @@ export default defineComponent({
       //generalSocket.bindActions()
     }
 
-    return {config, route, authStore, socketStore: householdSocket, generalSocket};
+    return {config, route, authStore, socketStore: householdSocket, generalSocket, mobile};
   },
   data(){
     return {
@@ -52,10 +55,22 @@ export default defineComponent({
   },
   computed:{
     dockVisible(){
-      return this.config.dock && !this.isAddRoute && !this.isAdminRoute
+      if(!this.mobile){
+        return false
+      }
+
+      if(this.isAdminRoute){
+        return false
+      }
+
+      if(this.isAddRoute){
+        return false
+      }
+
+      return this.config.dock
     },
     isAddRoute(){
-      return this.route.path === "/add"
+      return this.route.path.startsWith("/create")
     },
     authorized(){
       return this.authStore.isAuthorized()
@@ -106,7 +121,7 @@ export default defineComponent({
 
   <v-app v-if="!authorized">
     <app-bar
-        :nav="!config.dock"
+        :nav="!dockVisible && !isAddRoute"
         @toggle-nav="navOpen = !navOpen"
     />
     <v-main >
@@ -128,7 +143,7 @@ export default defineComponent({
       v-else
   >
     <app-bar
-      :nav="!config.dock || isAdminRoute"
+      :nav="(!dockVisible && !isAddRoute) || isAdminRoute"
       @toggle-nav="navOpen = !navOpen"
     />
     <app-create-bar
