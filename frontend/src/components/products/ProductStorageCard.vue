@@ -53,7 +53,8 @@ function deleteMe(){
 
 function adjustAmount(increment: number){
   updateStoredAt(productStorage.value, {
-    amount: productStorage.value.amount+increment
+    amount: productStorage.value.amount+increment,
+    storage: productStorage.value.storage
   })
 }
 

@@ -1,38 +1,41 @@
-<script lang="ts">
-import {defineComponent} from 'vue'
+<script setup lang="ts">
 
-export default defineComponent({
-  name: "AppScrollToTopBtn",
-  props: {
-    modelValue: {
-      type: Boolean,
-      required: true
-    }
-  }
+defineOptions({
+  inheritAttrs: false
 })
+
+const {scrolledDown=false} = defineProps<{
+  scrolledDown: boolean
+}>()
+
+
 </script>
 
 <template>
-  <v-fade-transition>
-    <v-btn
-        icon="mdi-chevron-double-up"
-        variant="elevated"
-        :elevation="10"
-        v-if="modelValue"
-        class="caret-up"
-        size="x-small"
-    >
-      <v-icon size="x-large" color="primary" />
-    </v-btn>
-  </v-fade-transition>
+  <v-fab
+      :active="scrolledDown"
+      icon="mdi-chevron-double-up"
+      density="comfortable"
+      location="bottom end"
+      variant="elevated"
+      border="md"
+      size="large"
+      absolute
+      v-bind="$attrs"
+  >
+    <template v-slot:default>
+      <v-icon
+          color="primary"
+          size="large"
+      />
+    </template>
+
+  </v-fab>
 </template>
 
 <style scoped lang="scss">
-.caret-up{
-  position: absolute;
-  right: 10px;
-  z-index: 10;
-  bottom: 10px;
-  border: 1px solid rgba(var(--v-theme-primary), 0.5)
+.v-fab{
+  margin-top: -5px;
+  margin-right: 5px;
 }
 </style>

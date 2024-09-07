@@ -157,6 +157,7 @@ export default defineComponent({
             <component :is="Component" />
           </transition>
         </router-view>
+
       </v-container>
     </v-main>
   </v-app>

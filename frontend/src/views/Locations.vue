@@ -1,227 +1,239 @@
-<script lang="ts">
-import {defineComponent, ref} from "vue";
-import {useAuthStore, useConfigStore} from "@/store";
-import {Location} from "@/types";
-import useUpdateStorage from "@/composables/useUpdateStorage";
-import useNewAxios from "@/composables/useAxios.ts";
-import {LocationEndpoint} from "@/api/http";
+<script setup lang="ts">
 
-export default defineComponent({
-  name:"Locations",
-  components: {},
-  setup(){
-    const authData = useAuthStore()
-    const config = useConfigStore()
-    const {axios} = useNewAxios("location")
-    return {authData, config, axios: axios as LocationEndpoint}
-  },
-  watch: {
-    async preselectedLocation() {
-      this.overlayLocation = undefined
-      this.locations = []
-      await this.loadLocations()
-    }
-  },
-  props:{
-    preselectedLocation:{
-      type: String,
-      default: undefined
-    },
-    filteredFrom:{
-      type: String,
-      default: undefined
-    }
-  },
-  data(){
-    return {
-      loadingLocations: false,
-      search: "",
-      locations: [] as Array<Location>,
-      overlayLocation: undefined as Location | undefined,
-      visibleStartIdx: 0
-    }
-  },
-  computed: {
-    filteredItems() {
-      if (this.search === "") {
-        return this.locations
-      }
-      return this.locations.filter(box => box.name.toLowerCase().includes(this.search.toLowerCase()))
-    },
-    scrolledDown(){
-      return this.visibleStartIdx !== 0
-    }
-  },
-  methods:{
-    async loadLocations(){
-      this.loadingLocations = true
-      this.locations = await this.axios.getLocations({
-        id: this.preselectedLocation,
-        contained: true
-      })
-      this.loadingLocations = false
-    },
-    updateFilter(filter: string)
-    {
-      this.search = filter
-    },
-    updateOverlayLocation(item: Location, event: boolean)
-    {
-      if(event)
-      {
-        this.overlayLocation = item
-      }
-      else
-      {
-        this.overlayLocation = undefined
-      }
-    },
-    updateLocation(toUpdate: Location){
-      const {storage, index} = useUpdateStorage(ref(this.locations), toUpdate, ref(this.overlayLocation))
-      if(storage === undefined)
-      {
-        // load all boxes new
-        this.$notify({
-          'title': "error",
-          "text": "An error occured, need to reload"
-        })
-        setTimeout(() => {
-          this.overlayLocation = undefined
-          this.loadLocations()
-        }, 2000)
-        return
-      }
-    },
-    onUpdate (viewStartIndex: number, viewEndIndex: number, visibleStartIndex: number, visibleEndIndex: number) {
-      this.visibleStartIdx = visibleStartIndex
-    },
-    scrollToTop(){
-      this.$refs.scroller.scrollToItem(0)
-    },
-    contentChanged(id: number, newId: number|undefined){
-      this.loadLocations()
-    }
-  },
-  async mounted(){
-    await this.loadLocations()
+import {computed, onMounted, ref, watch} from "vue";
+import {ApiStorage, StorageTypes} from "@/types/api.ts";
+import {useProducts, useStorage} from "@/store";
+import useAxios from "@/composables/useAxios.ts";
+import {LocationEndpoint} from "@/api/http";
+import useScrollToTop from "@/composables/useScrollToTop.ts";
+import useDialogConfig from "@/composables/useDialogConfig.ts";
+import {onBeforeRouteLeave} from "vue-router";
+
+const storageStore = useStorage()
+const {axios: locationEndpoint} = useAxios<LocationEndpoint>("location")
+
+const {scrolledDown, scrollToTop, hasScrolled} = useScrollToTop('scroller')
+const { isVisible: boxOverlayVisible, openDialog, closeDialog, dialogProps } = useDialogConfig()
+
+const filteredLocations = computed(() => {
+  if(search.value === "")
+  {
+    return storageStore.locations
   }
+  return storageStore.locations.filter(l => l.name.toLowerCase().includes(search.value.toLowerCase()))
+})
+
+const allLocations = computed(() => {
+  return storageStore.locations
+})
+
+const {preselectedLocation=undefined, filteredFrom=undefined} = defineProps<{
+  preselectedLocation?: string,
+  filteredFrom?: string,
+}>()
+
+const loadingLocations = ref(false)
+const search = ref("")
+
+function showLocationContent(item: ApiStorage){
+  storageStore.selectLocation(item)
+  openDialog()
+}
+
+function closeLocationOverlay(){
+  closeDialog()
+  storageStore.deselectLocation()
+}
+
+function deleteLocation(id: number){
+  closeDialog()
+  storageStore.deleteLocation(id)
+}
+
+function loadLocations(){
+  loadingLocations.value = true;
+  locationEndpoint.getLocations({
+    id: preselectedLocation,
+    contained: true
+  }).then((locations: Array<ApiStorage>) => {
+    loadingLocations.value = false;
+    storageStore.storeLocations(locations)
+  })
+}
+
+watch(() => preselectedLocation, (_: string|undefined, __: string|undefined) =>{
+  loadLocations()
+});
+
+
+onMounted(() => {
+  loadLocations()
+})
+
+onBeforeRouteLeave(() => {
+  const productStore = useProducts()
+  productStore.reset()
+  storageStore.reset()
 })
 </script>
 
 <template>
-<v-row
-  :no-gutters="true"
-  justify="center"
-  class="fill-height"
-
->
-  <v-col
-    cols="12"
-    lg="8"
-    class="position-relative d-flex flex-column fill-height"
+  <v-row
+      :no-gutters="true"
+      justify="center"
+      class="fill-height"
   >
-    <location-overlay
-        v-model="overlayLocation"
-        @box-moved="loadLocations()"
-        @box-deleted="loadLocations()"
-        @deleted="loadLocations()"
-        @updated="updateLocation($event)"
-        @content-changed="contentChanged"
-    />
-
-    <qr-code-filter
-        class="flex-0-1"
-        :pre-selected="preselectedLocation !== undefined"
-        :search="search"
-        pre-selection-close-action="/storage/boxes"
-        :pre-selection-title="$t('locations.prefiltered', {prefilter: filteredFrom})"
-        @update-filter="updateFilter"
-        :storage="locations"
-    />
-    <v-card
-        ref="wrapper"
-        class="mt-4 flex-1-1"
+    <v-col
+        cols="12"
+        lg="6"
+        class="position-relative"
     >
-      <v-progress-linear
-          :indeterminate="true"
-          :active="loadingLocations"
-          color="primary"
-      />
-      <v-card-text
-          class="pt-1 pl-0 pr-0 pb-0"
-      >
-        <app-scroll-to-top-btn
-            v-model="scrolledDown"
-            @click="scrollToTop()"
-        />
-        <RecycleScroller
-            ref="scroller"
-            :item-size="110"
-            :buffer="0"
-            :items="filteredItems"
-            style="height: 100%;"
-            :emit-update="true"
-            @update="onUpdate"
-        >
-          <template #default="{item}">
-            <location-card
-                :id="item.id"
-                :name="item.name"
-                :creation-date="item.creation_date"
-                :product-amount="item.products ?? 0"
-                :boxes-amount="item.boxes ?? 0"
-                @show-overlay="updateOverlayLocation(item, true)"
-            >
-            </location-card>
-          </template>
-          <template #after>
-            <v-row
-                :no-gutters="true"
-                justify="center"
-            >
+      <v-dialog
+          v-model="boxOverlayVisible"
+          v-bind="dialogProps"
 
-              <v-card
-                  :elevation="0"
-              >
-                <v-card-title
-                    class="text-center text-wrap"
+      >
+        <location-overlay
+            @deleted="deleteLocation"
+            @close="closeLocationOverlay"
+        />
+      </v-dialog>
+      <v-card
+          class="d-flex flex-column fill-height"
+      >
+        <template v-slot:loader>
+          <v-progress-linear
+              :indeterminate="true"
+              :active="loadingLocations"
+              color="primary"
+          />
+        </template>
+        <v-card-title
+            class="flex-0-1"
+        >
+          <qr-code-filter
+              :pre-selected="preselectedLocation !== undefined"
+              v-model:search="search"
+              pre-selection-close-action="/storage/locations"
+              :pre-selection-title="$t('locations.prefiltered', {prefilter: filteredFrom})"
+              :storage="allLocations"
+          />
+        </v-card-title>
+        <v-card-text
+            class="d-flex position-relative flex-1-1"
+        >
+          <div class="scroller-wrapper">
+            <recycle-scroller
+                ref="scroller"
+                class="scroller"
+                :buffer="0"
+                :item-size="110"
+                :items="filteredLocations"
+                :emit-update="true"
+                @update="hasScrolled"
+            >
+              <template v-slot="{item}">
+
+                <v-row
+                    :no-gutters="true"
+                    justify="center"
                 >
-                  <p
-                      class="pb-1"
-                      v-if="locations.length !== 0 && filteredItems.length !== 0"
+                  <v-col
+                      cols="11"
                   >
-                    {{ $t('locations.all_displayed') }}
-                  </p>
-                  <p
-                      class="pb-1"
-                      v-else-if="locations.length !== 0 && filteredItems.length === 0"
+                    <storage-card
+                        v-bind:storage="item"
+                        :type="StorageTypes.Location"
+                        @click.stop="showLocationContent(item)"
+                    >
+                    </storage-card>
+                  </v-col>
+                </v-row>
+
+              </template>
+              <template #after v-if="preselectedLocation === undefined">
+                <v-row
+                    :no-gutters="true"
+                    justify="center"
+                >
+
+                  <v-col
+                      cols="11"
                   >
-                    {{ $t('locations.no_matches')}}
-                  </p>
-                  <p
-                      class="pb-1"
-                      v-else
+                    <v-card
+                        :elevation="0"
+                    >
+                      <v-card-title
+                          class="text-center text-wrap"
+                      >
+                        <p
+                            class="pb-1"
+                            v-if="loadingLocations"
+                        >
+                          {{ $t('locations.loading') }}
+                        </p>
+                        <p
+                            class="pb-1"
+                            v-else-if="allLocations.length !== 0 && filteredLocations.length !== 0"
+                        >
+                          {{ $t('locations.all_displayed') }}
+                        </p>
+                        <p
+                            class="pb-1"
+                            v-else-if="allLocations.length !== 0 && filteredLocations.length === 0"
+                        >
+                          {{ $t('locations.no_matches')}}
+                        </p>
+                        <p
+                            class="pb-1"
+                            v-else
+                        >
+                          {{ $t('locations.no_locations')}}
+                        </p>
+                      </v-card-title>
+                    </v-card>
+                  </v-col>
+                </v-row>
+              </template>
+              <template #after v-else>
+                <v-row
+                    :no-gutters="true"
+                    justify="center"
+                >
+
+                  <v-col
+                      cols="11"
                   >
-                    {{ $t('locations.no_locations')}}
-                  </p>
-                </v-card-title>
-              </v-card>
-            </v-row>
-          </template>
-        </RecycleScroller>
-      </v-card-text>
-    </v-card>
-  </v-col>
-</v-row>
+                    <v-card
+                        :elevation="0"
+                    >
+                      <v-card-title
+                          class="text-center text-wrap"
+                      >
+                        <p
+                            class="pb-1"
+                            v-if="allLocations.length === 0 && !loadingLocations"
+                        >
+                          {{ $t('locations.no_matches') }}
+                        </p>
+                      </v-card-title>
+                    </v-card>
+                  </v-col>
+                </v-row>
+              </template>
+            </recycle-scroller>
+
+          </div>
+        </v-card-text>
+      </v-card>
+      <app-scroll-to-top-btn
+          :scrolled-down="scrolledDown"
+          @click.stop="scrollToTop"
+      />
+    </v-col>
+  </v-row>
 </template>
 
 <style scoped lang="scss">
-.v-card-text {
-  overflow: hidden;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-}
+
 </style>

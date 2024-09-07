@@ -1,7 +1,7 @@
-import {Storage, StorageTypes} from "@/types";
+import {ApiStorage, StorageTypes} from "@/types";
 import {computed, Ref, toValue} from 'vue';
 
-export default (storage: Ref<Storage|undefined|null>) => {
+export default (storage: Ref<ApiStorage|undefined|null>) => {
 
 
     const icon = computed(() => {

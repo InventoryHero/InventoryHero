@@ -1,10 +1,12 @@
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required
+from sqlalchemy import desc
 from sqlalchemy.orm import aliased, contains_eager
 
 from backend.db.models.StorageContainer import ContainerTypes, Storage
 from backend.decorators import auth, emit_update
 from backend.db.models.Product import Product, ProductContainerMapping
+
 
 
 def get_storage_helper(storage_type, household, storage_id=None):
@@ -21,7 +23,7 @@ def get_storage_helper(storage_type, household, storage_id=None):
     if storage_id is not None:
         storage_container = storage_container.filter_by(id=storage_id)
 
-    storage_container = storage_container.all()
+    storage_container = storage_container.order_by(desc(Storage.type)).all()
     return storage_container, 200
 
 
@@ -38,6 +40,7 @@ class StorageEndpoint(Blueprint):
         @jwt_required()
         @auth
         def get_all(household):
+            self.app.logger.info("motherfucker")
             storage_container, code = get_storage_helper(ContainerTypes.All, household)
             return jsonify(storage_container), code
 
@@ -52,17 +55,7 @@ class StorageEndpoint(Blueprint):
             self.app.logger.warn(result)
             if code != 200:
                 return result, code
-
-            get_contained_amount = request.args.get('contained', None)
-            self.app.logger.info("get contained amount")
-            storage_container = []
-            for container in result:
-                serialized = container.serialize_man()
-                if get_contained_amount is not None:
-                    serialized["products"] = len(container.product_mappings)
-                storage_container.append(serialized)
-
-            return jsonify(storage_container), 200
+            return jsonify(result), 200
 
         @self.route("/location/<int:location_id>", methods=["GET"])
         @self.route("/location", defaults={'location_id': None} ,methods=["GET"])
@@ -72,18 +65,8 @@ class StorageEndpoint(Blueprint):
             result, code = get_storage_helper(ContainerTypes.Location, household, location_id)
             if code != 200:
                 return result, code
-            get_contained_amount = request.args.get('contained', None)
-            storage_container = []
-            for container in result:
-                serialized = container.serialize_man()
-
-                if get_contained_amount is not None:
-                    serialized["products"] = len(container.product_mappings)
-                    serialized["boxes"] = len(container.children)
-
-                storage_container.append(serialized)
-
-            return jsonify(storage_container), 200
+            self.app.logger.info(result)
+            return jsonify(result), 200
 
         @self.route("/box/content/<int:id>", methods=["GET"])
         @jwt_required()
@@ -96,10 +79,16 @@ class StorageEndpoint(Blueprint):
             ).first()
             if storage is None:
                 return jsonify(status="box_not_found"), 400
-            content = {
-                "products": storage.serialize_content()
-            }
-            return jsonify(content=content), 200
+            filtered_products = (
+                self.db.session.query(Product)
+                .join(ProductContainerMapping, Product.mappings)
+                .filter(ProductContainerMapping.storage_id == storage.id, Product.household_id == household)
+                .options(contains_eager(Product.mappings))
+                .all()
+            )
+            return jsonify(content={
+                "products": filtered_products
+            }), 200
 
         @self.route("/location/content/<int:id>", methods=["GET"])
         @jwt_required()
@@ -112,11 +101,23 @@ class StorageEndpoint(Blueprint):
             ).first()
             if storage is None:
                 return {"status": "location_not_found"}, 400
-            content = {
-                "content": storage.serialize_content()
-            }
-            self.app.logger.info(content)
-            return jsonify(content), 200
+            filtered_products = (
+                self.db.session.query(Product)
+                .join(ProductContainerMapping, Product.mappings)
+                .filter(ProductContainerMapping.storage_id == storage.id, Product.household_id == household)
+                .options(contains_eager(Product.mappings))
+                .all()
+            )
+            filtered_boxes = (
+                self.db.session.query(Storage)
+                .filter(Storage.storage_id == storage.id, Storage.household_id == household)
+                .options(contains_eager(Storage.children))  # Eager load the children relationship
+                .all()
+            )
+            return jsonify(content={
+                "boxes": filtered_boxes,
+                "products": filtered_products
+            }), 200
 
         @self.route("/box/add", methods=["POST"])
         @jwt_required()
@@ -215,18 +216,25 @@ class StorageEndpoint(Blueprint):
                 return jsonify(status="update_box_no_data"), 400
 
             new_name = to_update.get("name", box.name)
-            new_location = to_update.get("location_id", None)
+            new_storage = to_update.get("storageId", None)
 
             if new_name != box.name:
                 box.name = new_name
 
-            # TODO CHECK IF THIS NEW ID EXISTS
-            if new_location != box.storage_id:
-                box.storage_id = new_location
+            location = Storage.query.filter_by(
+                household_id=household,
+                id=new_storage,
+                type=ContainerTypes.Location
+            ).first()
+            if location is None and new_storage is not None:
+                new_storage = box.storage_id
+            if new_storage != box.storage_id:
+                box.storage_id = new_storage
 
             self.db.session.commit()
-            self.app.logger.warning(box.serialize_man())
-            return jsonify(updated=box.serialize_man()), 200
+            self.app.logger.warning(box)
+            box = Storage.query.filter_by(id=box.id).first()
+            return jsonify(updated=box), 200
 
         @self.route("/location/<int:location_id>", methods=["DELETE"])
         @jwt_required()
@@ -265,12 +273,15 @@ class StorageEndpoint(Blueprint):
 
             new_name = to_update.get("name", location.name)
 
+            if new_name == "":
+                return jsonify(status="invalid_update_data"), 400
+
             if new_name != location.name:
                 location.name = new_name
 
             self.db.session.commit()
             self.app.logger.warning(location.serialize_man())
-            return jsonify(updated=location.serialize_man()), 200
+            return jsonify(updated=location), 200
 
         @self.route("/box/<int:box_id>/name", methods=["GET"])
         @jwt_required()

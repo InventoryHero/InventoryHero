@@ -1,8 +1,7 @@
 <script lang="ts">
 import {defineComponent, PropType} from 'vue'
-import {Storage, StorageTypes} from "@/types";
-import useNewAxios from "@/composables/useAxios.ts";
-import {StorageEndpoint} from "@/api/http";
+import {ApiStorage, StorageTypes} from "@/types";
+
 
 export default defineComponent({
   name: "AppStorageSelect",
@@ -10,16 +9,16 @@ export default defineComponent({
 
   },
   emits:{
-    'update:modelValue'(payload: Storage){
+    'update:modelValue'(payload: ApiStorage){
       return true
     }
   },
   computed:{
     selected: {
-      get(): Storage|null{
+      get(): ApiStorage|null{
         return this.modelValue ?? null
       },
-      set(value: Storage)
+      set(value: ApiStorage)
       {
         this.$emit('update:modelValue', value)
       }
@@ -40,10 +39,10 @@ export default defineComponent({
   },
   props:{
     modelValue: {
-      type: Object as PropType<Storage> | null
+      type: Object as PropType<ApiStorage> | null
     },
     storage: {
-      type: Array<Storage>,
+      type: Array<ApiStorage>,
       default: []
     },
     density: {
@@ -61,7 +60,7 @@ export default defineComponent({
   },
   data(){
     return{
-      allStorage: [] as Array<Storage>,
+      allStorage: [] as Array<ApiStorage>,
     }
   },
   methods:{
@@ -75,7 +74,7 @@ export default defineComponent({
           return ""
       }
     },
-    getActive(item: Storage): boolean{
+    getActive(item: ApiStorage): boolean{
       return item.id === this.selected?.id && item.type === this.selected?.type
     }
   },

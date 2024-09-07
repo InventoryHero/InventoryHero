@@ -118,8 +118,12 @@ export interface User {
 export interface ApiStorage{
     id: number,
     name: string,
-    household_id: string,
-    creation_date: string,
+    householdId: string,
+    creationDate: string,
+    productAmount: number,
+    boxAmount?: number,
+    storageId: number|undefined,
+    storage?: ApiStorage,
     type: StorageTypes
 }
 
@@ -135,7 +139,6 @@ export interface ApiProduct {
 export interface ProductStorageMapping {
     id: number,
     productId: number,
-    storageId: number|null,
     amount: number,
     updatedAt: string,
     storage?: ApiStorage

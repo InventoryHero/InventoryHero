@@ -1,5 +1,16 @@
 import {Endpoint} from "./Endpoint";
-import {Box, Location, LocationContent, ProductLocations, ProductOnly, Storage, StorageTypes} from "@/types";
+import {
+    ApiProduct,
+    Box,
+    Location,
+    LocationContent,
+    ProductLocations,
+    ProductOnly,
+    Storage,
+    StorageTypes
+} from "@/types";
+import {ApiStorage} from "@/types/api.ts";
+import {Api} from "@vitejs/plugin-vue";
 
 
 type GetStorageParams = {
@@ -37,6 +48,7 @@ export class StorageEndpoint extends Endpoint{
         contained = true
     } = {}){
         let url = this.subroute
+        console.log(url)
         if(id !== undefined){
             url += `/${id}`
         }
@@ -82,7 +94,7 @@ export class StorageEndpoint extends Endpoint{
         {
             // TODO NOTIFY
             console.error("DELETING NULL")
-            return;
+            return false;
         }
         let url = `${this.subroute}/${id}`
         let response = await this.internalAxios.delete(url)
@@ -153,13 +165,15 @@ export class LocationEndpoint extends StorageEndpoint{
         contained: true
     }){
         let data = await this.getStorageType(params)
-        return data as Array<Location>
+        return data as Array<ApiStorage>
     }
 
     public async getContent(id: number){
         let data = await this.getStorageContent(id.toString())
+        console.log(data)
         return {
-            content: data as Array<LocationContent>
+            boxes: data.boxes,
+            products: data.products
         }
     }
 
@@ -168,7 +182,9 @@ export class LocationEndpoint extends StorageEndpoint{
         if(id === null)
         {
             // TODO NOTIFY
-            return
+            return {
+                updated: undefined
+            }
         }
 
         let data = {
@@ -180,11 +196,13 @@ export class LocationEndpoint extends StorageEndpoint{
         if(response.status === 200)
         {
             return {
-                updated: (response.data.updated ?? undefined) as (Location|undefined)
+                updated: response.data.updated as ApiStorage
             }
         }
         this.handleNonErrorNotifications(response)
-        return undefined
+        return {
+            updated: undefined
+        }
     }
 
     public async createLocation(data: Partial<Location>){
@@ -213,30 +231,30 @@ export class BoxEndpoint extends StorageEndpoint{
     }
     public async getBoxes(params:Partial<GetStorageParams>){
         let data = await this.getStorageType(params)
-        return data as Array<Box>
+        return data as Array<ApiStorage>
     }
 
     public async getContent(id: number|null){
         if(id === null){
             console.error("TRYING TO GET NULL CONTENT")
             return {
-                products: [] as Array<(ProductOnly & ProductLocations)>
+                products: [] as Array<ApiProduct>
             }
         }
 
         let data = await this.getStorageContent(id.toString())
         return {
-            products: (data?.products ?? []) as Array<(ProductOnly & ProductLocations)>
+            products: (data?.products ?? []) as Array<ApiProduct>
         }
     }
 
-    public async updateBox(id: number|null, updatedData: Partial<Box>)
+    public async updateBox(id: number|null, updatedData: Partial<ApiStorage>): Promise<{updated: ApiStorage|undefined}>
     {
         if(id === null)
         {
             // TODO NOTIFY
             return {
-                updated: undefined as (Box|undefined)
+                updated: undefined
             }
         }
 
@@ -249,12 +267,12 @@ export class BoxEndpoint extends StorageEndpoint{
         if(response.status === 200)
         {
             return {
-                updated: (response.data.updated ?? undefined) as (Box|undefined)
+                updated: response.data.updated as ApiStorage
             }
         }
         this.handleNonErrorNotifications(response)
         return {
-            updated: undefined as (Box|undefined)
+            updated: undefined
         }
     }
 

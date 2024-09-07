@@ -7,12 +7,14 @@ import {StorageEndpoint} from "@/api/http";
 import {ApiStorage} from "@/types/api.ts";
 import useUpdateProductStoredAt from "@/composables/useModifyProductStoredAt.ts";
 import useRedirectToStorage from "@/composables/useRedirectToStorage.ts";
+import useEditBtnStyle from "@/composables/useEditBtnStyle.ts";
 
 
 const productStore = useProducts()
 const {axios: storageEndpoint} = useAxios<StorageEndpoint>("storage")
 const {saving, deleting, updateStoredAt, deleteStoredAt} = useUpdateProductStoredAt()
 const {redirect} = useRedirectToStorage()
+const {editClicked, editBtnStyle} = useEditBtnStyle()
 
 const emit = defineEmits<{
   (e: 'close'): void,
@@ -20,7 +22,6 @@ const emit = defineEmits<{
 }>()
 
 
-const editClicked = ref(false)
 const loading = ref(false)
 const loadingStorage = ref(false)
 const allStorage = ref<Array<ApiStorage>>([])
@@ -52,19 +53,9 @@ const storage = computed({
   set(value: ApiStorage|undefined){
     newStorage.value = value
   }
-
 })
 
-const editBtnStyle = computed(() => {
-  if(editClicked.value){
-    return {
-      color: "primary"
-    }
-  }
-  return {
-    color: ''
-  }
-})
+
 
 const {name, icon} = useStorageTitle(storage)
 

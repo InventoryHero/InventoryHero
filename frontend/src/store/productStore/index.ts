@@ -1,13 +1,15 @@
 import {defineStore} from "pinia";
 import {ApiProduct, ApiStorage, Product, ProductStorageMapping} from "@/types/api.ts";
+import {useStorage} from "@/store";
 
-export const useProducts =  defineStore("products", {
+export default defineStore("products", {
     state: () => {
         return {
             _products: [] as Array<ApiProduct>,
             _storage: [] as Array<ProductStorageMapping>,
             _selectedProduct: undefined as ApiProduct | undefined,
-            _selectedProductStorage: undefined as ProductStorageMapping | undefined
+            _selectedProductStorage: undefined as ProductStorageMapping | undefined,
+            _fromStorage: undefined as number|undefined
         }
     },
     actions: {
@@ -50,8 +52,16 @@ export const useProducts =  defineStore("products", {
             if(!storage){
                 return
             }
+
             if(this._selectedProduct?.id === storage.productId){
                 this._selectedProduct.totalAmount -= amount
+            }
+
+            if(this._fromStorage !== undefined && this._fromStorage === storage.storage?.id){
+                console.log("HALLO", storage)
+                const storageStore = useStorage()
+
+                storageStore.removeProductfromBox(storage.storage.id)
             }
             this._storage = this._storage.filter(productStorage => productStorage.id !== productStorageId)
 
@@ -66,24 +76,42 @@ export const useProducts =  defineStore("products", {
                 this._selectedProduct.totalAmount -= storage.amount
                 this._selectedProduct.totalAmount += updated.amount
             }
-            console.log(storage.amount)
             storage.amount = updated.amount
+
+            if(storage.storage?.id !== updated.storage?.id && this._fromStorage !== undefined){
+                const storageStore = useStorage()
+                storageStore.moveProduct(storage.storage?.id, updated.storage?.id)
+                this._products = this._products.filter(p => p.id !== storage.productId)
+            }
+
             storage.storage = undefined
             if(updated.storage){
                 storage.storage = {
                     ...updated.storage
                 } as ApiStorage
             }
-            storage.storageId = updated.storageId
+
+
             this._selectedProductStorage = storage
         },
+        setStorage(id: number){
+            this._fromStorage = id
+        },
+        reset(){
+            this._products = []
+            this._selectedProduct = undefined
+            this._fromStorage = undefined
+            this._selectedProductStorage = undefined
+            this._storage = []
+        }
     },
     getters: {
         products: state => state._products,
         size: state => state._products.length,
         productStorage: state => state._storage,
         selectedProduct: state => state._selectedProduct,
-        selectedProductStorage: state => state._selectedProductStorage
-
+        selectedProductStorage: state => state._selectedProductStorage,
+        calledFromStorage: state => state._fromStorage !== undefined,
+        storedAt: state => state._fromStorage
     }
 })

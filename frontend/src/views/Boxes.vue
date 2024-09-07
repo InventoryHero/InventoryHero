@@ -1,128 +1,81 @@
-<script lang="ts">
-import {defineComponent, ref} from 'vue'
-import BoxCard from "@/components/storage/box/BoxCard.vue";
-import {useAuthStore, useConfigStore} from "@/store";
+<script setup lang="ts">
 
-import { Box } from "@/types";
-import useUpdateStorage from "@/composables/useUpdateStorage";
-import AppScrollToTopBtn from "@/components/ui/AppScrollToTopBtn.vue";
-import useNewAxios from "@/composables/useAxios.ts";
+import {computed, onMounted, ref, watch} from "vue";
+import {ApiStorage, StorageTypes} from "@/types/api.ts";
+import {useProducts, useStorage} from "@/store";
+import useAxios from "@/composables/useAxios.ts";
 import {BoxEndpoint} from "@/api/http";
+import useScrollToTop from "@/composables/useScrollToTop.ts";
+import useDialogConfig from "@/composables/useDialogConfig.ts";
+import BoxOverlay from "@/components/storage/BoxOverlay.vue";
+import {onBeforeRouteLeave} from "vue-router";
 
-export default defineComponent({
-  name: "Boxes",
-  components: {
-    AppScrollToTopBtn,
-    BoxCard
-  },
-  setup(){
-    const authData = useAuthStore()
-    const config = useConfigStore()
-    const {axios} = useNewAxios("box")
-    return {authData, config, axios: axios as BoxEndpoint}
-  },
-  watch:{
-    async preselectedBox(){
-      this.boxes = []
-      await this.loadBoxes()
-    },
-  },
-  props:{
-    preselectedBox:{
-      type: String,
-      default: undefined
-    },
-    filteredFrom:{
-      type: String,
-      default: undefined
-    }
-  },
-  data(){
-    return {
-      loadingBoxes: true,
-      boxes: [] as Array<Box>,
-      search: '',
-      overlayBox: undefined as Box|undefined,
-      selectForQrCodePrinting: false,
-      visibleStartIdx: 0
-    }
-  },
-  computed: {
-    filteredItems() {
-      if (this.search === "") {
-        return this.boxes
-      }
-      return this.boxes.filter(box => box.name.toLowerCase().includes(this.search.toLowerCase()))
-    },
-    scrolledDown(){
-      return this.visibleStartIdx !== 0
-    }
-  },
-  methods:{
-    async loadBoxes(){
-      this.loadingBoxes = true;
-      let data = await this.axios.getBoxes({
-        id: this.preselectedBox,
-        contained: true
-      }) as Array<Box>
-      this.loadingBoxes = false
-      this.boxes = data
+const storageStore = useStorage()
+const {axios: boxEndpoint} = useAxios<BoxEndpoint>("box")
 
+const {scrolledDown, scrollToTop, hasScrolled} = useScrollToTop('scroller')
+const { isVisible: boxOverlayVisible, openDialog, closeDialog, dialogProps } = useDialogConfig()
 
-    },
-    updateFilter(filter: string)
-    {
-      this.search = filter
-    },
-    updateOverlayProduct(item: Box)
-    {
-      this.overlayBox = item
-    },
-    async deleteBox(id: number){
-      await this.loadBoxes()
-    },
-    async updateBox(toUpdate: Box)
-    {
-
-      const {storage, index} = useUpdateStorage(ref(this.boxes), toUpdate, ref(this.overlayBox))
-      if(storage === undefined)
-      {
-        // load all boxes new
-        this.$notify({
-          'title': "error",
-          "text": "An error occured, need to reload"
-        })
-        setTimeout(() => {
-          this.overlayBox = undefined
-          this.loadBoxes()
-        }, 2000)
-        return
-      }
-
-    },
-    onUpdate (viewStartIndex: number, viewEndIndex: number, visibleStartIndex: number, visibleEndIndex: number) {
-      this.visibleStartIdx = visibleStartIndex
-    },
-    scrollToTop(){
-      this.$refs.scroller.scrollToItem(0)
-    },
-    boxContentChanged(currentBox: number, newBox: number|undefined){
-      const oldBox = this.boxes.find(b => b.id === currentBox)
-      const newStorage = this.boxes.find(b => b.id === (newBox ?? -1))
-      if(oldBox?.products !== undefined){
-        oldBox.products--;
-      }
-      if(newStorage?.products !== undefined){
-        newStorage.products++;
-      }
-
-    }
-  },
-  async mounted(){
-    await this.loadBoxes()
+const filteredBoxes = computed(() => {
+  if(search.value === "")
+  {
+    return storageStore.boxes
   }
+  return storageStore.boxes.filter(box => box.name.toLowerCase().includes(search.value.toLowerCase()))
 })
 
+const allBoxes = computed(() => {
+  return storageStore.boxes
+})
+
+const {preselectedBox=undefined, filteredFrom=undefined} = defineProps<{
+  preselectedBox?: string,
+  filteredFrom?: string,
+}>()
+
+const loadingBoxes = ref(false)
+const search = ref("")
+
+function showBoxContent(item: ApiStorage){
+  storageStore.selectBox(item)
+  openDialog()
+}
+
+function closeBoxOverlay(){
+  closeDialog()
+  storageStore.deselectBox()
+}
+
+function deleteBox(id: number){
+  closeDialog()
+  storageStore.deleteBox(id)
+}
+
+function loadBoxes(){
+  loadingBoxes.value = true;
+  boxEndpoint.getBoxes({
+    id: preselectedBox,
+    contained: true
+  }).then((boxes: Array<ApiStorage>) => {
+    loadingBoxes.value = false;
+    storageStore.storeBoxes(boxes)
+  })
+}
+
+watch(() => preselectedBox, (_: string|undefined, __: string|undefined) =>{
+  loadBoxes()
+});
+
+
+onMounted(() => {
+  loadBoxes()
+})
+
+onBeforeRouteLeave(() => {
+  const productStore = useProducts()
+  productStore.reset()
+  storageStore.reset()
+})
 </script>
 
 <template>
@@ -134,151 +87,154 @@ export default defineComponent({
     <v-col
         cols="12"
         lg="6"
-        class="position-relative d-flex flex-column fill-height"
+        class="position-relative"
     >
-      <box-overlay
-        v-model="overlayBox"
-        @deleted="deleteBox()"
-        @updated="updateBox($event)"
-        @content-changed="boxContentChanged"
-      />
+      <v-dialog
+          v-model="boxOverlayVisible"
+          v-bind="dialogProps"
 
-      <qr-code-filter
-          class="flex-0-1"
-          :pre-selected="preselectedBox !== undefined"
-          :search="search"
-          pre-selection-close-action="/storage/boxes"
-          :pre-selection-title="$t('boxes.prefiltered', {box: filteredFrom})"
-          @update-filter="updateFilter"
-          :storage="boxes"
-      />
-      <v-card
-          ref="wrapper"
-          class="mt-4 flex-1-1"
       >
-        <v-progress-linear
-            :indeterminate="true"
-            :active="loadingBoxes"
-            color="primary"
+        <box-overlay
+            @deleted="deleteBox"
+            @close="closeBoxOverlay"
         />
-        <v-card-text
-          class="pt-1 pl-0 pr-0 pb-0"
-        >
-          <app-scroll-to-top-btn
-              v-model="scrolledDown"
-              @click="scrollToTop()"
+      </v-dialog>
+      <v-card
+          class="d-flex flex-column fill-height"
+      >
+        <template v-slot:loader>
+          <v-progress-linear
+              :indeterminate="true"
+              :active="loadingBoxes"
+              color="primary"
           />
-          <recycle-scroller
-              ref="scroller"
-              :item-size="90"
-              :buffer="0"
-              :items="filteredItems"
-              style="height: 100%;"
-              :emit-update="true"
-              @update="onUpdate"
-          >
-            <template #default="{item}">
+        </template>
+        <v-card-title
+            class="flex-0-1"
+        >
+          <qr-code-filter
+              :pre-selected="preselectedBox !== undefined"
+              v-model:search="search"
+              pre-selection-close-action="/storage/boxes"
+              :pre-selection-title="$t('boxes.prefiltered', {box: filteredFrom})"
+              :storage="allBoxes"
+          />
+        </v-card-title>
+        <v-card-text
+            class="d-flex position-relative flex-1-1"
+        >
+          <div class="scroller-wrapper">
+            <recycle-scroller
+                ref="scroller"
+                class="scroller"
+                :buffer="0"
+                :item-size="90"
+                :items="filteredBoxes"
+                :emit-update="true"
+                @update="hasScrolled"
+            >
+              <template v-slot="{item}">
 
-              <v-row
-                  :no-gutters="true"
-                  justify="center"
-              >
-                <v-col
-                    cols="11"
+                <v-row
+                    :no-gutters="true"
+                    justify="center"
                 >
-                  <box-card
-                      @show-overlay="updateOverlayProduct(item)"
-                      :id="item.id"
-                      :name="item.name"
-                      :creation-date="item.creation_date"
-                      :product-amount="item.products ?? 0"
+                  <v-col
+                      cols="11"
                   >
-                  </box-card>
-                </v-col>
-              </v-row>
-
-            </template>
-            <template #after v-if="preselectedBox === undefined">
-              <v-row
-                  :no-gutters="true"
-                  justify="center"
-              >
-
-                <v-col
-                  cols="11"
-                >
-                  <v-card
-                      :elevation="0"
-                  >
-                    <v-card-title
-                        class="text-center text-wrap"
+                    <storage-card
+                        v-bind:storage="item"
+                        :type="StorageTypes.Box"
+                        @click.stop="showBoxContent(item)"
                     >
-                      <p
-                          class="pb-1"
-                          v-if="boxes.length !== 0 && filteredItems.length !== 0"
-                      >
-                        {{ $t('boxes.all_displayed') }}
-                      </p>
-                      <p
-                          class="pb-1"
-                          v-else-if="boxes.length !== 0 && filteredItems.length === 0"
-                      >
-                        {{ $t('boxes.no_matches')}}
-                      </p>
-                      <p
-                          class="pb-1"
-                          v-else
-                      >
-                        {{ $t('boxes.no_boxes')}}
-                      </p>
-                    </v-card-title>
-                  </v-card>
-                </v-col>
-              </v-row>
-            </template>
-            <template #after v-else>
-              <v-row
-                  :no-gutters="true"
-                  justify="center"
-              >
+                    </storage-card>
+                  </v-col>
+                </v-row>
 
-                <v-col
-                  cols="11"
+              </template>
+              <template #after v-if="preselectedBox === undefined">
+                <v-row
+                    :no-gutters="true"
+                    justify="center"
                 >
-                  <v-card
-                      :elevation="0"
+
+                  <v-col
+                      cols="11"
                   >
-                    <v-card-title
-                        class="text-center text-wrap"
+                    <v-card
+                        :elevation="0"
                     >
-                      <p
-                          class="pb-1"
-                          v-if="boxes.length === 0 && !loadingBoxes"
+                      <v-card-title
+                          class="text-center text-wrap"
                       >
-                        {{ $t('boxes.no_matches') }}
-                      </p>
-                    </v-card-title>
-                  </v-card>
-                </v-col>
-              </v-row>
-            </template>
-          </recycle-scroller>
+                        <p
+                          class="pb-1"
+                          v-if="loadingBoxes"
+                        >
+                          {{ $t('boxes.loading') }}
+                        </p>
+                        <p
+                            class="pb-1"
+                            v-else-if="allBoxes.length !== 0 && filteredBoxes.length !== 0"
+                        >
+                          {{ $t('boxes.all_displayed') }}
+                        </p>
+                        <p
+                            class="pb-1"
+                            v-else-if="allBoxes.length !== 0 && filteredBoxes.length === 0"
+                        >
+                          {{ $t('boxes.no_matches')}}
+                        </p>
+                        <p
+                            class="pb-1"
+                            v-else
+                        >
+                          {{ $t('boxes.no_boxes')}}
+                        </p>
+                      </v-card-title>
+                    </v-card>
+                  </v-col>
+                </v-row>
+              </template>
+              <template #after v-else>
+                <v-row
+                    :no-gutters="true"
+                    justify="center"
+                >
+
+                  <v-col
+                      cols="11"
+                  >
+                    <v-card
+                        :elevation="0"
+                    >
+                      <v-card-title
+                          class="text-center text-wrap"
+                      >
+                        <p
+                            class="pb-1"
+                            v-if="allBoxes.length === 0 && !loadingBoxes"
+                        >
+                          {{ $t('boxes.no_matches') }}
+                        </p>
+                      </v-card-title>
+                    </v-card>
+                  </v-col>
+                </v-row>
+              </template>
+            </recycle-scroller>
+
+          </div>
         </v-card-text>
       </v-card>
+      <app-scroll-to-top-btn
+        :scrolled-down="scrolledDown"
+        @click.stop="scrollToTop"
+      />
     </v-col>
   </v-row>
 </template>
 
 <style scoped lang="scss">
-
-
-.v-card-text {
-  overflow: hidden;
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-}
 
 </style>

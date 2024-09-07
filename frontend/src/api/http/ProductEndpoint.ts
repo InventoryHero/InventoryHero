@@ -25,10 +25,15 @@ export class ProductEndpoint extends Endpoint{
         return [] as Array<ApiProduct>
     }
 
-    public async getProductStorage(product_id: number): Promise<Array<ProductStorageMapping>> {
+    public async getProductStorage(product_id: number, container: number|undefined = undefined): Promise<Array<ProductStorageMapping>> {
         let url = `/stored/${product_id}`
 
-        let response = await this.internalAxios.get(url)
+
+        let response = await this.internalAxios.get(url, {
+            params: {
+                storage: container
+            }
+        })
 
         if(response.status === 200){
             return response.data as Array<ProductStorageMapping>

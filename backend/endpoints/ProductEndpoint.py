@@ -171,12 +171,18 @@ class ProductEndpoint(Blueprint):
         @jwt_required()
         @auth
         def get_product_stored_at(household, product_id):
+
             product = Product.query.filter_by(id=product_id, household_id=household).first()
 
             if product is None:
                 return {"status": "product_not_found"}, 400
+            stored_at = request.args.get("storage", None)
+            if stored_at is None:
+                return jsonify(product.mappings), 200
+            mappings = ProductContainerMapping.query.filter_by(product_id=product.id, storage_id=stored_at).all()
+            self.app.logger.warning(f"LOOKING FOR PRODUCTS IN {stored_at}, {mappings}")
 
-            return jsonify(product.mappings), 200
+            return jsonify(mappings), 200
 
         @self.route("/<int:product_id>", methods=["DELETE"])
         @jwt_required()

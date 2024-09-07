@@ -16,7 +16,6 @@ class ContainerTypes(int, Enum):
         return self.value
 
 
-
 class ContainerType(TypeDecorator):
     impl = Integer
 
@@ -27,6 +26,7 @@ class ContainerType(TypeDecorator):
 
     def process_result_value(self, value, dialect):
         return ContainerTypes(value)
+
 
 
 @dataclass
@@ -43,13 +43,19 @@ class Storage(db.Model):
 
     @property
     def serialize(self):
-        return {
+        storage = {
             "id": self.id,
             "name": self.name,
+            "storageId": self.storage_id,
             "householdId": self.household_id,
-            "creationDate": self.creation_date.isoformat(),
+            "creationDate": self.creation_date,
+            "storage": self.storage if self.storage else None,
+            "productAmount": len(self.product_mappings),
             "type": self.type
         }
+        if self.type == ContainerTypes.Location:
+            storage["boxAmount"] = len(self.children)
+        return storage
 
     def serialize_man(self):
         data = {
@@ -57,11 +63,10 @@ class Storage(db.Model):
             "name": self.name,
             "household_id": self.household_id,
             "creation_date": self.creation_date,
-            "products": len(self.product_mappings),
+            "productAmount": len(self.product_mappings),
             "type": self.type
         }
-        if self.type == ContainerTypes.Box and self.storage is not None:
-            data["location"] = self.storage.serialize_man()
+
         return data
 
     def serialize_location(self):

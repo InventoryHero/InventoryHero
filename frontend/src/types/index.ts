@@ -14,7 +14,10 @@ import {
     ILoginResponse,
     IRegisterRequest,
     IReqisterResponse,
-    LocationContent
+    LocationContent,
+    ApiStorage,
+    ProductStorageMapping,
+    ApiProduct
 
 } from "./api"
 
@@ -42,7 +45,11 @@ export type {
     MappingUpdateData,
     IRegisterRequest,
     IReqisterResponse,
-    LocationContent
+    LocationContent,
+    ApiStorage,
+    ProductStorageMapping,
+    ApiProduct
+
 }
 
 

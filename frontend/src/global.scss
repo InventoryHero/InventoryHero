@@ -1,5 +1,6 @@
 
 @import 'vuetify/lib/styles/main';
+
 @import "scss/card";
 @import "scss/misc";
 
@@ -14,7 +15,8 @@
     --filter-card-height: 80px;
     --filter-card-margin-bottom: 16px;
     --header-height: 40px;
-    --dock-height: 48px;
+    //--dock-height: 48px;
+    --dock-height: 40px;
 }
 html{
     ;
@@ -48,5 +50,18 @@ input[type=number] {
         background-color: grey;
         border-left-color: rgba(var(--v-theme-primary));
 
+    }
+}
+
+
+.scroller-wrapper {
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    .scroller{
+        height: 100%;
     }
 }

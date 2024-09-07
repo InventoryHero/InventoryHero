@@ -61,6 +61,7 @@ const editClicked = ref(false)
 const newName = ref<string|undefined>(undefined)
 const nameRequiredRule = (value: string) => value !== '' || i18n.t('products.product.rules.new_name_empty')
 const saving = ref(false)
+const deleting = ref(false)
 
 function close(){
   emit('close')
@@ -79,7 +80,6 @@ async function saveChanges(){
   }
   if(newName.value === '')
   {
-
     return false
   }
   saving.value = true
@@ -110,7 +110,9 @@ function closeDetail(){
   productStore.deselectProductStoredAt()
 }
 function deleteProduct(){
+  deleting.value = true
   productEndpoint.deleteProduct(product.value.id).then((success) => {
+    deleting.value = false
     if(!success){
       return
     }
@@ -133,7 +135,7 @@ function deleteSelected(id: number, amount: number){
 
 onMounted(() => {
   loading.value = true;
-  productEndpoint.getProductStorage(product.value.id).then((response: Array<ProductStorageMapping>) => {
+  productEndpoint.getProductStorage(product.value.id, productStore.storedAt).then((response: Array<ProductStorageMapping>) => {
     productStore.storeProductStorage(response)
     loading.value = false
   })
@@ -174,7 +176,7 @@ onMounted(() => {
             v-model="name"
             :rules="[nameRequiredRule]"
             :edit="editClicked"
-            :disabled="saving"
+            :disabled="saving||deleting"
         />
       </div>
 
@@ -184,14 +186,14 @@ onMounted(() => {
             variant="flat"
             class="me-2"
             v-bind="editBtnStyle"
-            :disabled="saving"
+            :disabled="saving||deleting"
             @click="editClicked = true"
 
         />
         <app-icon-btn
             icon="mdi-window-minimize"
             variant="flat"
-            :disabled="saving"
+            :disabled="saving||deleting"
             @click="close()"
         />
       </div>
@@ -231,7 +233,7 @@ onMounted(() => {
           prepend-icon="mdi-cancel"
           @click="cancelEdit"
           :text="$t('cancel')"
-          :disabled="saving"
+          :disabled="saving||deleting"
       />
       <div>
         <app-confirm-button
@@ -245,6 +247,7 @@ onMounted(() => {
             color="red"
             class="me-2"
             :disabled="saving"
+            :loading="deleting"
             @consent="deleteProduct"
 
         />
@@ -258,6 +261,7 @@ onMounted(() => {
             color="primary"
             variant="elevated"
             :loading="saving"
+            :disabled="deleting"
             @consent="saveChanges"
         />
       </div>
