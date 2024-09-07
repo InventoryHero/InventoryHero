@@ -16,6 +16,7 @@ class Product(db.Model):
     creation_date: datetime = db.Column(db.DateTime, default=datetime.utcnow())
     mappings = db.relationship("ProductContainerMapping", back_populates="product", cascade="all, delete-orphan")
 
+    household = db.relationship("Household", back_populates="products")
     @property
     def serialize(self):
         return {

@@ -50,8 +50,6 @@ declare module 'vue' {
     LocationOverlayNew: typeof import('@/components/storage/location/LocationOverlay.vue')['default']
     LoginCard: typeof import('./src/components/widgets/Login/LoginCard.vue')['default']
     NavDrawer: typeof import('./src/components/ui/NavDrawer.vue')['default']
-    NavItem: typeof import('./src/components/ui/NavItem.vue')['default']
-    NavList: typeof import('./src/components/common/NavList.vue')['default']
     Overview: typeof import('./src/components/widgets/Administration/Overview.vue')['default']
     PasswordResetModal: typeof import('./src/components/widgets/Administration/Users/PasswordResetModal.vue')['default']
     PrintQrModal: typeof import('./src/components/widgets/QrCode/Print/PrintQrModal.vue')['default']

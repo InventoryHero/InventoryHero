@@ -48,6 +48,7 @@ export default defineComponent({
     }
   },
   methods:{
+    // TODO ADMIN PERMISSION NOT SET
     async saveUpdatedUser(toUpdate: Partial<User>){
       this.loading = true;
       if(this.user === undefined){

@@ -202,14 +202,16 @@ class User(Blueprint):
             if email is not None:
                 to_update.email = email
 
+
+            # TODO REFACTOR
             admins = len(ApplicationUser.query.filter_by(is_admin=True).all()) > 1
             status = "updated_successfully"
             if is_admin is not None:
                 # check if there is at least one admin left
                 if is_admin:
-                    to_update.admin = is_admin
+                    to_update.is_admin = is_admin
                 elif admins:
-                    to_update.admin = is_admin
+                    to_update.is_admin = is_admin
                 else:
                     status = "update_successful_admin_remains"
             self.db.session.commit()

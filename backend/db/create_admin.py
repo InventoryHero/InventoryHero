@@ -32,6 +32,8 @@ def create_admin():
             db.session.add(user)
             db.session.commit()
             db.close_all_sessions()
+            return
+        print("User already exists and is properly admin")
 
 
 if __name__ == "__main__":

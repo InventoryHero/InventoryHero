@@ -93,11 +93,11 @@ export const useAuthStore = defineStore('auth', {
             }
 
             const socketStore = useHouseholdSocket()
-            socketStore.leaveHousehold()
+            //socketStore.leaveHousehold("dufotze")
             this.user.household  = {
                 id: household.id,
                 name: household.name
-            }
+            } as Household
             socketStore.joinHousehold()
         },
         async destroy(){
@@ -146,6 +146,7 @@ export const useAuthStore = defineStore('auth', {
     },
     getters: {
         household: state => {return state.user?.household?.id ?? -1},
+        householdName: state => state.user?.household?.name ?? '',
         userSet: state => {return state.user !== null},
         isAdmin: state => {
 

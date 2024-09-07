@@ -93,7 +93,7 @@ export default defineComponent({
   methods: {
     vueToPrint(){
       const { handlePrint } = useVueToPrint({
-        locationContent: () => this.$refs.componentRef,
+        content: this.$refs.componentRef,
         removeAfterPrint: true
       });
       handlePrint()

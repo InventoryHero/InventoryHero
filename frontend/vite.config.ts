@@ -53,6 +53,11 @@ export default defineConfig({
           }
         ]
       },
+      workbox: {
+        clientsClaim: true,
+        skipWaiting: true,
+        maximumFileSizeToCacheInBytes: 8000000
+      },
       devOptions: {
         enabled: true
       }

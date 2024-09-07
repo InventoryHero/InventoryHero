@@ -155,6 +155,7 @@ function enableHint(hint: any){
 </script>
 
 <template>
+
   <create-card
       :title="t(`add.product.title`)"
       @save="save()"
@@ -188,8 +189,8 @@ function enableHint(hint: any){
               :rules="[rules.needProduct]"
               :disabled="productsLoading"
               @keydown.enter="() => {
-                combobox.blur()
-              }"
+              combobox.blur()
+            }"
               :messages="comboboxHint"
 
           >
@@ -296,6 +297,7 @@ function enableHint(hint: any){
 
     </v-form>
   </create-card>
+
 
 
 </template>

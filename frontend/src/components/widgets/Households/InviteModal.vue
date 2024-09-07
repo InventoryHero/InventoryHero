@@ -85,6 +85,7 @@ export default defineComponent({
   },
   methods: {
     share(){
+      // TODO NICE TEXT HERE
       navigator.share({
         title: 'HALLO',
         text: 'HALLO',

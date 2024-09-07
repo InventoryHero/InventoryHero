@@ -1,14 +1,9 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
-import {isMobile} from "mobile-device-detect";
-import NavItem from "@/components/ui/NavItem.vue";
-import NavList from "@/components/common/NavList.vue";
 import {useRoute} from "vue-router";
-import AppNavListAdmin from "@/components/ui/AppNavListAdmin.vue";
 
 export default defineComponent({
   name: "NavDrawer",
-  components: {AppNavListAdmin, NavList, NavItem},
   setup(){
     const route = useRoute()
     return {route}
@@ -34,9 +29,6 @@ export default defineComponent({
     admin(){
       return this.route.path.includes("/administration")
     },
-    isMobile(){
-      return isMobile
-    }
   }
 })
 </script>
@@ -47,15 +39,60 @@ export default defineComponent({
   :temporary="true"
 >
   <v-list
+      density="compact"
+      nav
   >
-    <nav-list
-        v-if="!admin"
-        :is-dock="false"
+    <v-list-item
+        to="/"
+        prepend-icon="mdi-home"
+        :title="$t('nav.home')"
+        color="primary"
     />
-    <app-nav-list-admin
-        v-else
-    />
+    <template v-if="!admin">
+      <v-list-item
+          to="/products"
+          prepend-icon="mdi-cart"
+          :title="$t('nav.products')"
+          color="primary"
+      />
+      <v-list-item
+          to="/storage/boxes"
+          prepend-icon="mdi-package-variant"
+          :title="$t('nav.boxes')"
+          color="primary"
+      />
+      <v-list-item
+          to="/storage/locations"
+          prepend-icon="mdi-archive-marker"
+          :title="$t('nav.location')"
+          color="primary"
+      />
+      <v-list-item
+          to="/create"
+          prepend-icon="mdi-plus-box"
+          :title="$t('nav.create')"
+          color="primary"
+      />
+    </template>
+    <template v-else>
+      <v-list-item
+          to="/administration"
+          prepend-icon="mdi-view-dashboard"
+          :title="$t('nav.admin.overview')"
+          color="primary"
+          :exact="true"
+      />
+      <v-list-item
+          to="/administration/users"
+          prepend-icon="mdi-account-group"
+          :title="$t('nav.admin.overview')"
+          color="primary"
+          :exact="true"
+      />
+    </template>
   </v-list>
+
+
 </v-navigation-drawer>
 </template>
 

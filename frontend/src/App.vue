@@ -1,98 +1,91 @@
-<script lang="ts">
+<script setup lang="ts">
 import {useAuthStore, useConfigStore, useGeneralSocketStore, useHouseholdSocket} from "@/store"
 import AppBarBottom from "@/components/ui/AppBarBottom.vue";
 import AppBar from "@/components/ui/AppBar.vue";
 import {Notifications} from "@kyvg/vue3-notification";
 import NavDrawer from "@/components/ui/NavDrawer.vue";
-import {useRoute} from "vue-router";
-import {isLoggedIn} from "axios-jwt";
+import {useRoute, useRouter} from "vue-router";
 import AppCreateBar from "@/components/ui/AppCreateBar.vue";
-import {defineComponent} from "vue";
+import {computed, defineComponent, onMounted, onUpdated, ref, watch} from "vue";
 import {useDisplay} from "vuetify";
+import {applyStorage, getBrowserLocalStorage} from "axios-jwt";
 
-export default defineComponent({
-  components: {
-    AppCreateBar,
-    NavDrawer,
-    Notifications,
-    AppBarBottom,
-    AppBar
-  },
-  setup()
-  {
-    const config = useConfigStore()
-    const authStore = useAuthStore()
-    const householdSocket = useHouseholdSocket()
-    const route = useRoute()
-    const generalSocket = useGeneralSocketStore()
+const config = useConfigStore()
+const authStore = useAuthStore()
+const householdSocket = useHouseholdSocket()
+const route = useRoute()
+const generalSocket = useGeneralSocketStore()
+const router = useRouter()
+const {mobile} = useDisplay()
 
-    const {mobile} = useDisplay()
+/*
+  TODO localize (even for en)
+  toasts.titles.success.updated_successfully (userupdate)
+  toasts.titles.success.resent_confirmation (user email confirm resend)
+ */
 
-    if(authStore.isAuthorized())
-    {
-      householdSocket.bindActions()
-      householdSocket.joinHousehold()
-      //generalSocket.bindActions()
-    }
-
-    return {config, route, authStore, socketStore: householdSocket, generalSocket, mobile};
-  },
-  data(){
-    return {
-      navOpen: false
-    }
-  },
-  watch: {
-    authorized(){
-      if(this.authorized){
-        this.socketStore.bindActions()
-        this.socketStore.joinHousehold()
-      }
-      else {
-        this.socketStore.disconnect()
-      }
-    }
-  },
-  computed:{
-    dockVisible(){
-      if(!this.mobile){
-        return false
-      }
-
-      if(this.isAdminRoute){
-        return false
-      }
-
-      if(this.isAddRoute){
-        return false
-      }
-
-      return this.config.dock
-    },
-    isAddRoute(){
-      return this.route.path.startsWith("/create")
-    },
-    authorized(){
-      return this.authStore.isAuthorized()
-    },
-    isCreateRoute(){
-      return this.route.path.includes("/create")
-    },
-    transition(){
-      if (this.config.transitions){
-        return "scale"
-      }
-      return ""
-    },
-    isAdminRoute(){
-      return this.route.path.includes("/administration")
-    }
-  },
-  methods:{
-    reloadContent(){
-      this.$router.go()
-    },
+const navOpen = ref(false)
+const isAdminRoute = computed(() => {
+  return route.path.includes("/administration")
+})
+const dockVisible = computed(() =>{
+  if(!mobile){
+    return false
   }
+  if(isAdminRoute.value){
+    return false
+  }
+  if(isAddRoute.value){
+    return false
+  }
+
+  return config.dock
+})
+const isAddRoute = computed(() => {
+  return route.path.startsWith("/create")
+})
+
+const authorized = computed(() => {
+  return authStore.isAuthorized()
+})
+const transition = computed(() => {
+  if (config.transitions){
+    return "scale"
+  }
+  return ""
+})
+
+function reloadContent(){
+  router.go()
+}
+
+watch(authorized, (newValue, oldValue) => {
+  if(newValue)
+  {
+    householdSocket.updateHeaders()
+    householdSocket.bindActions()
+
+    generalSocket.updateHeaders()
+    generalSocket.bindActions()
+  } else{
+    householdSocket.leaveHousehold()
+  }
+
+})
+
+onMounted(() => {
+  applyStorage(getBrowserLocalStorage());
+  if(authStore.isAuthorized())
+  {
+    householdSocket.updateHeaders()
+    generalSocket.updateHeaders()
+    generalSocket.bindActions()
+  }
+})
+
+onUpdated(() => {
+  householdSocket.updateHeaders()
+  householdSocket.bindActions()
 })
 </script>
 
@@ -147,14 +140,16 @@ export default defineComponent({
       @toggle-nav="navOpen = !navOpen"
     />
     <app-create-bar
-      v-if="isCreateRoute"
+      v-if="isAddRoute"
     />
-    <app-bar-bottom
-        v-if="dockVisible"
-    />
+
     <nav-drawer
-        v-else
+        v-if="!dockVisible || isAdminRoute"
         v-model="navOpen"
+    />
+
+    <app-bar-bottom
+        v-model="dockVisible"
     />
 
 
@@ -164,7 +159,7 @@ export default defineComponent({
       <v-container
           :fluid="true"
           :class="{
-            'fill-height': $route.meta?.fillHeight ?? false
+            'fill-height': $route.meta?.fillHeight ?? false,
           }"
       >
         <router-view v-slot="{Component}">

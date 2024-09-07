@@ -162,35 +162,36 @@ onMounted(()=> {
 </template>
 
 <style scoped lang="scss">
-.slide-left-enter-active{
-  transition: all 0.5s ease-in-out;
-}
 
-.slide-left-leave-active{
-  transition: all 0.75s ease-in-out;
+
+.slide-left-enter-active{
+  transition: all 0.75s ease-out;
+}
+.slide-left-leave-active {
+  transition: all 0.75s ease-out;
 }
 
 .slide-left-enter-from {
-  transform: scale(0.75);
+  transform: scale(0);
 }
 
 .slide-left-leave-to {
-  transform: translateX(-110%);
+  transform: translateX(-200%);
 }
 
 .slide-right-enter-active{
-  transition: all 0.5s ease-in-out;
+  transition: all 0.75s ease-out;
 }
 .slide-right-leave-active {
-  transition: all 0.75s ease-in-out;
+  transition: all 0.75s ease-out;
 }
 
 .slide-right-leave-to{
-  transform: translateX(110%);
+  transform: translateX(200%);
 }
 
 .slide-right-enter-from {
-  transform: scale(0.75);
+  transform: scale(0);
 }
 
 

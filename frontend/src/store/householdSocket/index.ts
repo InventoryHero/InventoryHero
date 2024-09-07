@@ -1,29 +1,34 @@
 import {defineStore} from "pinia";
-import {householdSocket} from '@/plugins/connections'
+import {generalSocket, socket} from '@/plugins/connections'
 import {getAccessToken} from 'axios-jwt'
 import {useAuthStore} from "@/store";
 import useNewAxios from "@/composables/useAxios.ts";
 import {UserEndpoint} from "@/api/http";
 import {i18n} from "@/lang";
 import {notify} from "@kyvg/vue3-notification";
+import {io} from "socket.io-client";
 
 export const useHouseholdSocket =  defineStore("socket", {
     state: () => ({
         authStore: useAuthStore(),
-        errorCallback: undefined as (undefined | (() => void))
+        errorCallback: undefined as (undefined | (() => void)),
+        socket: undefined as SocketIO|undefned
     }),
     actions: {
         bindActions(){
-            householdSocket.on("hi", (msg) => {
-                notify({
-                    title: "SOCKET",
-                    text: msg,
-                    type: "info"
-                })
+            socket.on('connect', () => {
+                console.log("connecting")
             })
-            householdSocket.on("new-content", (msg: string) => {
+            socket.on('reconnect', () => {
+                console.log("reconnecterror")
+            })
+            socket.on("connect_error", () => {
+                console.log("connecterror")
+            })
+            socket.on("new-content", (msg: string) => {
                 let response: SocketResponse = JSON.parse(msg)
                 let content: UpdateContent = response.content as UpdateContent
+                console.log("NEW CONTENT HERE")
                 if(content.user === this.authStore.user.username){
                     return
                 }
@@ -38,33 +43,38 @@ export const useHouseholdSocket =  defineStore("socket", {
 
         },
         updateHeaders(){
+            console.log(socket)
+            this.socket?.disconnect()
             getAccessToken().then((token) => {
-                householdSocket.io.opts.extraHeaders = {
-                    Authorization: `Bearer ${token}`
+                socket.io.opts.extraHeaders = {
+                    "Authorization": `Bearer ${token}`
                 }
-                householdSocket.disconnect()
-                householdSocket.connect()
+                console.log(socket)
+                socket.disconnect()
+                socket.connect()
+
+                this.bindActions()
                 this.joinHousehold()
-
-                if(this.errorCallback !== undefined){
-                    this.errorCallback()
-                    this.errorCallback = undefined
-                }
             })
-
         },
         joinHousehold(){
-            householdSocket.emit("join", {
+            if(this.authStore.household === -1){
+                return
+            }
+            socket.emit("join", {
                 household: this.authStore.household
-            })
+            }, (data: string) => {
+                console.log(data)
+
+            } )
         },
         leaveHousehold(){
-            householdSocket.emit('leave', {
+            socket.emit('leave', {
                 household: this.authStore.household
             })
         },
         sayHi(){
-            householdSocket.emit('hi', {
+            socket.emit('hi', {
                 household: this.authStore.household
             }, (data: string) => {
                 let response: SocketResponse = JSON.parse(data)
@@ -77,6 +87,7 @@ export const useHouseholdSocket =  defineStore("socket", {
             let endpoint: UserEndpoint = userEndpoint.axios as UserEndpoint
             switch(data.status){
                 case "join_first":
+                    console.log("HALLO")
                     socketStore.joinHousehold()
                     callback()
                     return
@@ -92,7 +103,7 @@ export const useHouseholdSocket =  defineStore("socket", {
         },
         disconnect(){
             console.log("disconnecting ... ")
-            householdSocket.disconnect()
+            socket.disconnect()
         }
     }
 })

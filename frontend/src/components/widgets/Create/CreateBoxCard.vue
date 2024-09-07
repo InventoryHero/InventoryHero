@@ -112,73 +112,73 @@ export default defineComponent({
 
 <template>
   <create-card
-      :title="$t(`add.box.title`)"
-      @save="save()"
-      @clear="clear()"
-      :request-in-progress="postingBox"
-  >
-    <v-form
-        @submit.prevent
-        ref="add-form"
-        :disabled="postingBox"
+        :title="$t(`add.box.title`)"
+        @save="save()"
+        @clear="clear()"
+        :request-in-progress="postingBox"
     >
-      <v-row
-          :no-gutters="true"
-          class="mb-2"
+      <v-form
+          @submit.prevent
+          ref="add-form"
+          :disabled="postingBox"
       >
-        <v-col
-            cols="12"
+        <v-row
+            :no-gutters="true"
+            class="mb-2"
         >
-          <v-text-field
-              :clearable="true"
-              :persistent-clear="true"
-              density="comfortable"
-              auto-select-first="exact"
-              v-model="box"
-              :label="$t('add.box.labels.box')"
-              item-title="name"
-              :persistent-hint="boxNameHint.active"
-              :hint="boxNameHint.hint"
-              :rules="[rules.needName]"
+          <v-col
+              cols="12"
           >
-            <template #append>
-              <app-help-indicator
-                  @click:outside="disableHint('boxName')"
-                  @click="enableHint('boxName')"
-              />
-            </template>
-          </v-text-field>
-        </v-col>
-      </v-row>
-      <v-row
-          :no-gutters="true"
-          class="mb-2"
-      >
-        <v-col
-            cols="12"
+            <v-text-field
+                :clearable="true"
+                :persistent-clear="true"
+                density="comfortable"
+                auto-select-first="exact"
+                v-model="box"
+                :label="$t('add.box.labels.box')"
+                item-title="name"
+                :persistent-hint="boxNameHint.active"
+                :hint="boxNameHint.hint"
+                :rules="[rules.needName]"
+            >
+              <template #append>
+                <app-help-indicator
+                    @click:outside="disableHint('boxName')"
+                    @click="enableHint('boxName')"
+                />
+              </template>
+            </v-text-field>
+          </v-col>
+        </v-row>
+        <v-row
+            :no-gutters="true"
+            class="mb-2"
         >
-          <app-storage-select
-              :storage-loading="loading?.loadingLocations ?? false"
-              v-model="location"
-              :storage="storageStore.locations"
-              density="comfortable"
-              :label="$t('add.box.labels.location')"
-              :persistent-hint="locationSelectHint.active"
-              :hint="locationSelectHint.hint"
-              :hide-details="false"
-              content-type="box"
+          <v-col
+              cols="12"
           >
-            <template #hint>
-              <app-help-indicator
-                  @click:outside="disableHint('locationSelect')"
-                  @click="enableHint('locationSelect')"
-              />
-            </template>
-          </app-storage-select>
-        </v-col>
-      </v-row>
-    </v-form>
-  </create-card>
+            <app-storage-select
+                :storage-loading="loading?.loadingLocations ?? false"
+                v-model="location"
+                :storage="storageStore.locations"
+                density="comfortable"
+                :label="$t('add.box.labels.location')"
+                :persistent-hint="locationSelectHint.active"
+                :hint="locationSelectHint.hint"
+                :hide-details="false"
+                content-type="box"
+            >
+              <template #hint>
+                <app-help-indicator
+                    @click:outside="disableHint('locationSelect')"
+                    @click="enableHint('locationSelect')"
+                />
+              </template>
+            </app-storage-select>
+          </v-col>
+        </v-row>
+      </v-form>
+    </create-card>
 </template>
 
 <style scoped lang="scss">

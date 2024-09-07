@@ -1,13 +1,9 @@
 import datetime
 import uuid
-
-
 from dataclasses import dataclass
-
-from sqlalchemy.sql.functions import now
 from sqlalchemy.sql import expression
-
 from backend.database import db
+from backend.db.models import Product
 
 
 @dataclass
@@ -49,7 +45,7 @@ class Household(db.Model):
     creator: int = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
     members = db.relationship("HouseholdMembers", back_populates="household", cascade="all, delete-orphan")
     creation_date: datetime = db.Column(db.DateTime, default=datetime.datetime.now(datetime.UTC))
-    products = db.relationship("Product", cascade="all, delete-orphan")
+    products = db.relationship("Product", back_populates="household", cascade="all, delete-orphan")
     storage = db.relationship("Storage", cascade="all, delete-orphan")
 
     def to_dict(self):

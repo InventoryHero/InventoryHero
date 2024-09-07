@@ -1,5 +1,5 @@
 import {defineStore} from "pinia";
-import {generalSocket, householdSocket} from '@/plugins/connections'
+import {generalSocket, socket} from '@/plugins/connections'
 import {getAccessToken} from 'axios-jwt'
 import {useAuthStore} from "@/store";
 import useNewAxios from "@/composables/useAxios.ts";
@@ -75,14 +75,13 @@ export const useGeneralSocketStore =  defineStore("generalSocket", {
                 }
             )
         },
-        updateHeaders(callback: DefaultCallback){
+        updateHeaders(){
             getAccessToken().then((token) => {
                 generalSocket.io.opts.extraHeaders = {
                     Authorization: `Bearer ${token}`
                 }
                 generalSocket.disconnect()
                 generalSocket.connect()
-                callback()
             })
 
         },

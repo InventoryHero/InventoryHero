@@ -1,7 +1,7 @@
 from backend.database import db
 from enum import Enum
 from dataclasses import dataclass
-from sqlalchemy.orm import Mapped, backref
+from sqlalchemy.orm import backref
 from datetime import datetime
 from sqlalchemy.types import TypeDecorator, Integer
 
