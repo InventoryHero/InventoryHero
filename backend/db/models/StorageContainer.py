@@ -1,96 +1,63 @@
 from backend.database import db
 from enum import Enum
 from dataclasses import dataclass
-from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import backref
 from datetime import datetime
+from sqlalchemy.types import TypeDecorator, Integer
 
 
-
-class ContainerTypes(Enum):
-    NoContainer = 0
-    Box = 1
-    Location = 2
+class ContainerTypes(int, Enum):
+    All: int = -1
+    NoContainer: int = 0
+    Box: int = 1
+    Location: int = 2
 
     def __int__(self):
         return self.value
 
-box_product_conditions = dict(primaryjoin="and_(Box.id == orm.foreign(ProductContainerMapping.storage_id), Box.type == orm.foreign(ProductContainerMapping.storage_type))", overlaps='product_mappings, location')
 
-location_product_conditions = dict(primaryjoin="and_(Location.id == orm.foreign(ProductContainerMapping.storage_id), Location.type == orm.foreign(ProductContainerMapping.storage_type))", overlaps='product_mappings, box')
+class ContainerType(TypeDecorator):
+    impl = Integer
 
+    def process_bind_param(self, value, dialect):
+        if isinstance(value, ContainerTypes):
+            return value.value
+        raise ValueError(f"Invalid ContainerTypes value: {value}")
 
-@dataclass
-class Location(db.Model):
-    __tablename__ = "location"
-    id: int = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    name: str = db.Column(db.String(65535), nullable=False)
-    household_id: int = db.Column(db.Integer, db.ForeignKey("household.id"), nullable=False)
-    creation_date: datetime = db.Column(db.DateTime, default=datetime.utcnow())
-    type: int = db.Column(db.Integer, default=int(ContainerTypes.Location))
+    def process_result_value(self, value, dialect):
+        return ContainerTypes(value)
 
-    boxes = db.relationship("Box", back_populates="location")
-    product_mappings = db.relationship("ProductContainerMapping", back_populates="location", **location_product_conditions)
-
-    def serialize(self):
-        return {
-            "id": self.id,
-            "name": self.name,
-            "household_id": self.household_id,
-            "creation_date": self.creation_date,
-            "type": self.type
-        }
-
-    def serialize_content(self):
-        products, boxes = [], []
-        for product in self.product_mappings:
-            curr_product = product.product.serialize()
-            curr_mapping = product.serialize()
-
-            curr_product.update(curr_mapping)
-            curr_product.pop("storage")
-            products.append(curr_product)
-
-        for box in self.boxes:
-            curr_box = box.serialize()
-            boxes.append(curr_box)
-        return {
-            "products": products,
-            "boxes": boxes
-        }
 
 
 @dataclass
-class Box(db.Model):
-    __tablename__ = "box"
+class Storage(db.Model):
+    __tablename__ = "storage"
     id: int = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name: str = db.Column(db.String(65535), nullable=False)
-    location_id: int = db.Column(db.Integer, db.ForeignKey("location.id", ondelete="SET NULL"), nullable=True)
+    storage_id: int = db.Column(db.Integer, db.ForeignKey("storage.id", ondelete="SET NULL"), nullable=True)
     household_id: int = db.Column(db.Integer, db.ForeignKey("household.id"), nullable=False)
     creation_date: datetime = db.Column(db.DateTime, default=datetime.utcnow())
-    type: int = db.Column(db.Integer, default=int(ContainerTypes.Box))
+    type: ContainerTypes = db.Column(ContainerType, default=ContainerTypes.Box)
+    product_mappings = db.relationship("ProductContainerMapping", back_populates="storage")
+    storage = db.relationship("Storage", remote_side=[id], backref=backref("children"))
 
-    product_mappings = db.relationship("ProductContainerMapping", back_populates="box", **box_product_conditions)
-    location: Mapped[Location] = db.relationship("Location", back_populates="boxes")
-
+    @property
     def serialize(self):
-        return {
+        storage = {
             "id": self.id,
             "name": self.name,
-            "location": self.location.serialize() if self.location is not None else None,
-            "household_id": self.household_id,
-            "creation_date": self.creation_date,
+            "storageId": self.storage_id,
+            "householdId": self.household_id,
+            "creationDate": self.creation_date,
+            "storage": self.storage if self.storage else None,
+            "productAmount": len(self.product_mappings),
             "type": self.type
         }
+        if self.type == ContainerTypes.Location:
+            storage["boxAmount"] = len(self.children)
+        return storage
 
-    def serialize_content(self):
-        products = []
-        for product in self.product_mappings:
-            curr_product = product.product.serialize()
-            curr_mapping = product.serialize()
 
-            curr_product.update(curr_mapping)
-            curr_product.pop("storage")
 
-            products.append(curr_product)
 
-        return products
+

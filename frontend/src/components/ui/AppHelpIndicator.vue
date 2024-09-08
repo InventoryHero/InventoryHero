@@ -1,41 +1,28 @@
-<script lang="ts">
-import {defineComponent} from 'vue'
+<script setup lang="ts">
 
-export default defineComponent({
-  name: "AppHelpIndicator",
-  emits: {
-    'click:outside'(){
-      return true
-    },
-    click(){
-      return true
-    }
-  },
-  methods: {
-    handleOutside(){
-      this.$emit('click:outside')
-    },
-    handleClick(){
-      this.$emit('click')
-    },
-    include () {
-      return [document.querySelector('.included')]
-    },
-  }
-})
+const active = defineModel()
+
+function handleClickOutside(){
+  active.value = false
+}
+
+function include () {
+  return [document.querySelector('.included')]
+}
 </script>
 
 <template>
   <v-icon
+      v-bind="$attrs"
       color="primary"
       icon="mdi-help-circle-outline"
       ref="btn"
       class="included"
-      @click="handleClick()"
       v-click-outside="{
-        handler: handleOutside,
+        handler: handleClickOutside,
         include
       }"
+      @click="active=true"
   >
   </v-icon>
 </template>

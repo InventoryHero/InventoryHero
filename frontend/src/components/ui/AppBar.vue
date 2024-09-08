@@ -60,7 +60,19 @@ export default defineComponent({
         @click.stop="toggleNav()"
     ></v-app-bar-nav-icon>
     <v-toolbar-title>
-      {{ $t('app.title') }}
+      <v-hover
+        v-slot="{ isHovering, props }"
+      >
+        <v-card
+            hover
+            class="title"
+            color="dark-grey"
+
+            @click="this.$router.push('/')"
+        >
+          {{ $t('app.title') }}
+        </v-card>
+      </v-hover>
     </v-toolbar-title>
     <template v-slot:append>
       <app-icon-btn
@@ -104,30 +116,11 @@ export default defineComponent({
 </template>
 
 <style scoped lang="scss">
-  .header{
-    width: 100%;
-    height: var(--header-height);
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: 4;
-    background: var(--clr-bg);
-    display: flex;
-    align-items: center;
-    .user-dropdown{
-      display: flex;
-      justify-content: end;
-      .active
-      {
-        color: var(--clr-filter-pressed);
-      }
-      .inactive{
-        color: var(--clr-icon-inactive);
-      }
-    }
-    .title{
-      display: flex;
-      justify-content: center;
-    }
-  }
+.title{
+  width: fit-content;
+
+}
+.hovering{
+  cursor: pointer !important;
+}
 </style>

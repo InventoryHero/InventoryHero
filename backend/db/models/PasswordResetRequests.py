@@ -1,8 +1,5 @@
 import datetime
 from dataclasses import dataclass
-
-from sqlalchemy.sql import expression
-
 from backend.database import db
 
 

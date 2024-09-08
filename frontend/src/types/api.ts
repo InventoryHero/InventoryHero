@@ -26,11 +26,10 @@ export type Product = ProductOnly & {
 export type ProductLocations = {
     id: number
     amount: number,
-    box: number,
-    location: number,
+    name: string,
     product_id: number,
     updated_at: string,
-    storage: Storage|null,
+    storage: Storage|undefined,
     storage_type: number
 }
 
@@ -114,4 +113,34 @@ export interface User {
     last_name: string,
     registration_date: string,
     email_confirmed: boolean
+}
+
+export interface ApiStorage{
+    id: number,
+    name: string,
+    householdId: string,
+    creationDate: string,
+    productAmount: number,
+    boxAmount?: number,
+    storageId: number|undefined,
+    storage?: ApiStorage,
+    type: StorageTypes
+}
+
+export interface ApiProduct {
+    id: number,
+    name: string,
+    householdId: number,
+    starred: boolean,
+    creationDate: string,
+    totalAmount: number,
+}
+
+export interface ProductStorageMapping {
+    id: number,
+    productId: number,
+    amount: number,
+    updatedAt: string,
+    storage?: ApiStorage,
+    storageId?: number
 }

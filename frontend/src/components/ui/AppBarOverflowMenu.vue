@@ -34,7 +34,7 @@ export default defineComponent({
       <template #activator="{props}">
         <v-btn
             v-bind="props"
-            icon="fa:fas fa-user-circle"
+            icon="mdi-account-circle"
             variant="flat"
 
         >
@@ -45,51 +45,46 @@ export default defineComponent({
       <v-list
           class="mt-2"
           density="compact"
-          :nav="true"
+          nav
       >
-        <nav-item
-          route="/account"
-          icon="fa:fas fa-user"
-          :title="$t('nav.account')"
-          size="small"
+        <v-list-item
+            to="/account"
+            prepend-icon="mdi-account"
+            :title="$t('nav.account')"
+            color="primary"
         />
         <v-divider/>
-        <nav-item
-            route="/households"
-            icon="fa:fas fa-house-user"
+        <v-list-item
+            to="/households"
+            prepend-icon="mdi-home-account"
             :title="$t('nav.households')"
-            size="small"
+            color="primary"
         />
         <v-divider/>
-        <nav-item
-            route="/settings"
-            icon="fa:fas fa-gears"
+        <v-list-item
+            to="/settings"
+            prepend-icon="mdi-cog"
             :title="$t('nav.settings')"
-            size="small"
+            color="primary"
         />
-
-
-        <nav-item
+        <template
             v-if="isAdmin"
-            route="/administration"
-            icon="fa:fas fa-user-shield"
-            :title="$t('nav.administration')"
-            size="small"
-        />
+        >
+          <v-divider/>
+          <v-list-item
+              to="/administration"
+              prepend-icon="mdi-shield-account"
+              :title="$t('nav.administration')"
+              color="primary"
+          />
+        </template>
         <v-divider color="primary" class="border-opacity-50"/>
         <v-list-item
             @click="logout()"
-        >
-          <template #prepend>
-            <v-icon
-                icon="fa:fas fa-arrow-right-from-bracket"
-                size="small"
-              />
-          </template>
-          <v-list-item-title>
-            {{ $t('nav.logout') }}
-          </v-list-item-title>
-        </v-list-item>
+            :title="$t('nav.logout')"
+            prepend-icon="mdi-logout"
+
+        />
       </v-list>
     </v-menu>
 </template>

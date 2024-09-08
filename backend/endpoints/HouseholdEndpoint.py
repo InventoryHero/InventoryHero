@@ -2,6 +2,7 @@ import uuid
 
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, current_user
+from sqlalchemy.orm import contains_eager
 
 from backend.decorators import auth
 from backend.endpoints.Helper import user_in_household
@@ -44,11 +45,20 @@ class HouseholdEndpoint(Blueprint):
         @jwt_required()
         def get_households():
             households = HouseholdMembers.query.filter_by(member_id=current_user.id).all()
+
             self.app.logger.info(households)
+
+            households = (
+                self.db.session.query(Household)
+                .join(HouseholdMembers, Household.members)
+                .filter(HouseholdMembers.member_id == current_user.id)
+                .options(contains_eager(Household.members))
+                .all()
+            )
+
             if households is None or len(households) == 0:
                 return {"status": "no_households"}, 204
-            households = [household.household.serialize() for household in households]
-            self.app.logger.info(households)
+
             return jsonify(households), 200
 
         @self.route("/code/<int:household>", methods=["GET"])

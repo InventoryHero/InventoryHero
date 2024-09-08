@@ -2,26 +2,24 @@ import datetime
 import json
 
 from flask import Blueprint, request, jsonify
-from flask_jwt_extended import jwt_required, current_user
+from flask_jwt_extended import jwt_required
 from werkzeug.datastructures import auth
 
-from backend.flask_config import socketio
 from backend.db.models.Product import Product, ProductContainerMapping
-from backend.db.models.StorageContainer import Location, Box, ContainerTypes
+from backend.db.models.StorageContainer import Storage, ContainerTypes
 from backend.decorators import auth, emit_update
 from typing import Optional
 
 
 def get_storage(storage_type, storage, household):
-    query = None
-    if storage_type == ContainerTypes.Box:
-        query = Box
-    elif storage_type == ContainerTypes.Location:
-        query = Location
-    else:
+    if storage_type == ContainerTypes.All:
         return None, None
 
-    result = query.query.filter_by(id=storage, household_id=household).first()
+    result = Storage.query.filter_by(
+        id=storage,
+        household_id=household,
+        type=storage_type
+    ).first()
     if result is None:
         return None, None
     return result, result.id
@@ -45,46 +43,41 @@ def parse_storage_params(id, type, household):
     return True, {"id": storage.id, "type": storage_type}, 200
 
 
-def check_storage_for_update(storage_type, storage, entry, household, all_entries):
-    if storage_type is None:
-        return {}
+def check_storage_for_update(storage, entry, household, all_entries):
 
-    storage_type = ContainerTypes(int(storage_type))
-    storage, storage_id = get_storage(storage_type, storage, household)
+    storage_id = None
+    storage_type = None
+    if storage is not None:
+        storage = Storage.query.filter_by(
+            id=storage,
+            household_id=household
+        ).first()
 
-    if storage_type != ContainerTypes.NoContainer and storage is None:
-        return {
-            "error": (jsonify(status="storage_not_found"), 400)
-        }
-
-    if int(storage_type) == entry.storage_type and storage_id == entry.storage_id:
-        return {}
-
-    for e in [e for e in all_entries if e.id != entry.id and e.storage_type != entry.storage_type]:
-        if e.storage_id == storage_id:
+        if storage is None:
             return {
-                "merge_with": e,
+                "error": (jsonify(status="storage_not_found"), 400)
+            }
+
+        storage_id = storage.id
+        storage_type = storage.type
+
+    curr_storage = entry.storage_id
+
+    if storage_id == curr_storage:
+        return {}
+    for entry in all_entries:
+        if entry.storage_id == storage_id:
+            return {
+                "merge_with": entry,
                 "update": True,
             }
 
     return {
         "update": True,
         "storage_id": storage_id,
-        "storage_type": int(storage_type)
+        "storage_type": storage_type
     }
 
-
-def serialize_product(product):
-    mappings = product.mappings
-    serialized = product.serialize()
-    serialized["storage_locations"] = []
-    serialized["total_amount"] = 0
-
-    for mapping in mappings:
-        serialized["storage_locations"].append(mapping.serialize())
-        serialized["total_amount"] += mapping.amount
-
-    return serialized
 
 
 class ProductEndpoint(Blueprint):
@@ -97,62 +90,85 @@ class ProductEndpoint(Blueprint):
         super(ProductEndpoint, self).__init__(name=name, import_name=import_name, url_prefix=url_prefix, *args)
 
         @self.route("/create/<int:product_id>", methods=["POST"])
-        @self.route("/create", defaults={'product_id': None}, methods=["POST"])
         @jwt_required()
         @auth
         @emit_update()
-        def create_product(household, product_id):
-            product_name = request.json.get("name", None)
-            if product_name is not None:
-                product = Product.query.filter_by(name=product_name, household_id=household).first()
-                if product is not None:
-                    return jsonify(status="create_product_already_exists"), 400
-            elif product_id is not None:
-                product = Product.query.filter_by(id=product_id, household_id=household).first()
-                if product is None:
-                    return jsonify(status="add_product_not_found"), 400
-            else:
+        def add_existing_product(household, product_id):
+            self.app.logger.info(request.json)
+            amount = request.json.get("amount", None)
+            storage_id = request.json.get("storageId", None)
+            starred = request.json.get("starred", None)
+
+            if amount is None:
                 return jsonify(status="create_product_invalid_data"), 400
 
-            starred = request.json.get("starred", False)
-            creation_date = datetime.datetime.now(datetime.UTC)
-            storage_id = request.json.get("storage_id", None)
-            storage_type = request.json.get("storage_type", 0)
-            storage_valid, ret, code = parse_storage_params(storage_id, storage_type, household)
-            if not storage_valid:
-                return ret, code
+            product = Product.query.filter_by(household_id=household, id=product_id).first()
+            if product is None:
+                return jsonify(status="add_product_not_found"), 400
+
+            if starred is not None:
+                product.starred = starred
+
+            storage = Storage.query.filter_by(household_id=household, id=storage_id).first()
+            if storage_id is not None and storage is None:
+                return jsonify(status="storage_not_found"), 400
+
+            mapping = ProductContainerMapping.query.filter_by(product_id=product.id, storage_id=storage_id).first()
+            if mapping is None:
+                mapping = ProductContainerMapping(product_id=product.id,  amount=amount)
+                self.db.session.add(mapping)
             else:
-                storage_type = ret["type"]
-                storage_id = ret["id"]
+                mapping.amount += amount
+            self.db.session.commit()
+            return jsonify(status="success"), 200
+
+
+
+        @self.route("/create", methods=["POST"])
+        @jwt_required()
+        @auth
+        @emit_update()
+        def create_product(household):
+            product_name = request.json.get("name", None)
+            self.app.logger.info(request.json)
+            if product_name is None:
+                return jsonify(status="create_product_invalid_data"), 400
+            product = Product.query.filter_by(name=product_name, household_id=household).first()
+            if product is not None:
+                return jsonify(status="create_product_already_exists"), 400
+
+            starred = request.json.get("starred", False)
+            storage_id = request.json.get("storageId", None)
+            creation_date = datetime.datetime.now(datetime.UTC)
+            storage = Storage.query.filter_by(household_id=household, id=storage_id).first()
+            if storage_id is not None and storage is None:
+                return jsonify(status="storage_not_found"), 400
 
             amount = request.json.get("amount", 0)
             updated_at = creation_date
 
-            added_to_existing = False
-
-            if product_id is not None:
-                existing_mapping = ProductContainerMapping.query.filter_by(product_id=product.id, storage_id=storage_id,
-                                                                           storage_type=int(storage_type)).first()
-                if existing_mapping is not None:
-                    existing_mapping.amount += amount
-                    added_to_existing = True
-            else:
-                product = Product(name=product_name, household_id=household, starred=starred,
-                                  creation_date=creation_date)
-                self.db.session.add(product)
-                self.db.session.flush()
-            if not added_to_existing:
-                production_at_container = ProductContainerMapping(product_id=product.id, amount=amount,
-                                                                  storage_id=storage_id, storage_type=int(storage_type),
-                                                                  updated_at=updated_at)
-                self.db.session.add(production_at_container)
-
+            product = Product(household_id=household, name=product_name, creation_date=creation_date, starred=starred)
+            self.db.session.add(product)
             self.db.session.commit()
-            self.app.logger.info(f"Product: {product_name} with amount: {amount} successfully created, "
-                                 f"at sttorage: {storage_id} storage_type: {storage_type}")
-            self.app.logger.info(household)
 
-            return jsonify(product.serialize()), 200
+            if storage_id is None:
+                mapping = ProductContainerMapping(
+                    product_id=product.id,
+                    amount=amount,
+                    updated_at=updated_at
+                )
+            else:
+                mapping = ProductContainerMapping(
+                    product_id=product.id,
+                    storage_id=storage.id,
+                    amount=amount,
+                    updated_at=updated_at
+                )
+
+            self.db.session.add(mapping)
+            self.db.session.commit()
+            self.app.logger.info(product)
+            return jsonify(product), 200
 
         @self.route("/<int:product_id>", methods=["GET"])
         @self.route("", defaults={'product_id': None}, methods=["GET"])
@@ -160,8 +176,6 @@ class ProductEndpoint(Blueprint):
         @auth
         def get_products(household, product_id):
             get_starred = request.args.get("starred", None)
-            locations = request.args.get("storedAt", None)
-            self.app.logger.warning(locations is None)
 
             products = Product.query.filter_by(household_id=household)
             if get_starred is not None:
@@ -173,14 +187,24 @@ class ProductEndpoint(Blueprint):
             if product_id is None and products is None:
                 return {"status": "product_not_found"}, 400
 
-            if locations is None:
-                return jsonify(products), 200
+            return jsonify(products), 200
 
-            result = []
-            self.app.logger.info(products)
-            for product in products:
-                result.append(serialize_product(product))
-            return jsonify(result), 200
+        @self.route("/stored/<int:product_id>", methods=["GET"])
+        @jwt_required()
+        @auth
+        def get_product_stored_at(household, product_id):
+
+            product = Product.query.filter_by(id=product_id, household_id=household).first()
+
+            if product is None:
+                return {"status": "product_not_found"}, 400
+            stored_at = request.args.get("storage", None)
+            if stored_at is None:
+                return jsonify(product.mappings), 200
+            mappings = ProductContainerMapping.query.filter_by(product_id=product.id, storage_id=stored_at).all()
+            self.app.logger.warning(f"LOOKING FOR PRODUCTS IN {stored_at}, {mappings}")
+
+            return jsonify(mappings), 200
 
         @self.route("/<int:product_id>", methods=["DELETE"])
         @jwt_required()
@@ -213,7 +237,7 @@ class ProductEndpoint(Blueprint):
 
             self.db.session.commit()
             self.app.logger.info(f"UPDATED PRODUCT {product.name}")
-            return jsonify(updated=serialize_product(product)), 200
+            return jsonify(updated=product), 200
 
         @self.route("/stored/<int:mapping_id>", methods=["POST"])
         @jwt_required()
@@ -221,8 +245,8 @@ class ProductEndpoint(Blueprint):
         @emit_update()
         def update_product_mapping(mapping_id, household):
             new_amount = request.json.get("amount", None)
-            storage_type = request.json.get("storage_type", None)
             storage = request.json.get("storage", None)
+            self.app.logger.info(storage)
             mapping = ProductContainerMapping.query.filter_by(id=mapping_id).first()
             product_id = (mapping.product_id if mapping is not None else None)
             product = Product.query.filter_by(id=product_id, household_id=household).first()
@@ -237,7 +261,7 @@ class ProductEndpoint(Blueprint):
                 mapping.amount = new_amount
                 update = True
 
-            storage_check = check_storage_for_update(storage_type, storage, mapping, household, product.mappings)
+            storage_check = check_storage_for_update(storage, mapping, household, product.mappings)
 
             storage_error = storage_check.get('error', None)
             if storage_error is not None:
@@ -246,22 +270,21 @@ class ProductEndpoint(Blueprint):
             storage_merge_with: Optional[ProductContainerMapping] = storage_check.get('merge_with', None)
             deleted = None
             if storage_merge_with is not None:
+                self.app.logger.info(storage_merge_with)
+                self.app.logger.info(mapping)
                 update |= True
-                storage_merge_with.amount += mapping.amount
-                deleted = mapping
-                self.db.session.delete(mapping)
-                mapping = storage_merge_with
+                mapping.amount += storage_merge_with.amount
+                mapping.storage_id = storage_merge_with.storage_id
+                deleted = storage_merge_with
+                self.db.session.delete(deleted)
             elif storage_check.get('update', False):
                 update |= True
                 mapping.storage_id = storage_check.get('storage_id', None)
-                mapping.storage_type = storage_check.get('storage_type')
-
             if update:
-                if deleted is not None:
-                    deleted = deleted.serialize()
                 mapping.updated_at = datetime.datetime.now(datetime.UTC)
                 self.db.session.commit()
-                return jsonify(updated=mapping.serialize(), deleted=deleted), 200
+                mapping = ProductContainerMapping.query.filter_by(id=mapping.id).first()
+                return jsonify(updated=mapping, deleted=deleted), 200
             return jsonify(), 200
 
         @self.route("/stored/<int:mapping_id>", methods=["DELETE"])

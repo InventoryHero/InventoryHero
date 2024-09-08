@@ -3,12 +3,10 @@ import {createRouter, createWebHistory} from "vue-router";
 import Dashboard from "../views/Dashboard.vue";
 import Login from "@/views/Login.vue"
 import {useAuthStore} from "@/store";
-import Products from "@/views/Products.vue";
 import Settings from "@/views/Settings.vue";
 import Account from "@/views/Account.vue";
 import Household from "@/views/Household.vue";
 import Create from "@/views/Create.vue";
-import Boxes from "@/views/Boxes.vue";
 import Locations from "@/views/Locations.vue";
 import NotFound from "@/views/NotFound.vue";
 import Logout from "@/views/Logout.vue";
@@ -23,6 +21,9 @@ import Users from "@/components/widgets/Administration/Users.vue";
 import Overview from "@/components/widgets/Administration/Overview.vue";
 
 import passwordReset from "./routes/passwordReset.ts";
+import Products from "@/views/Products.vue";
+import Boxes from "@/views/Boxes.vue";
+
 
 
 export const router = createRouter({
@@ -273,7 +274,7 @@ router.beforeEach(async (to, from) => {
 })
 
 router.beforeEach(async (to, from) => {
-  document.title = to.meta?.title ?? i18n.global.t('app.title')
+  document.title =  to.meta?.title ?? i18n.global.t('app.title')
   notify({
     group: 'newContent', // clean only the foo group
     clean: true,

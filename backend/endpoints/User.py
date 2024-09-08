@@ -202,18 +202,20 @@ class User(Blueprint):
             if email is not None:
                 to_update.email = email
 
+
+            # TODO REFACTOR
             admins = len(ApplicationUser.query.filter_by(is_admin=True).all()) > 1
             status = "updated_successfully"
             if is_admin is not None:
                 # check if there is at least one admin left
                 if is_admin:
-                    to_update.admin = is_admin
+                    to_update.is_admin = is_admin
                 elif admins:
-                    to_update.admin = is_admin
+                    to_update.is_admin = is_admin
                 else:
                     status = "update_successful_admin_remains"
             self.db.session.commit()
-            return jsonify(status=status, user=to_update.serialize()), 200
+            return jsonify(status=status, user=to_update), 200
 
         @self.route("/create", methods=["POST"])
         @jwt_required()
@@ -262,7 +264,7 @@ class User(Blueprint):
             self.db.session.add(user)
             self.db.session.commit()
 
-            return jsonify(status="success", user=user.serialize()), 200
+            return jsonify(status="success", user=user), 200
 
         @self.route("/delete/<int:user_id>", methods=["DELETE"])
         @jwt_required()

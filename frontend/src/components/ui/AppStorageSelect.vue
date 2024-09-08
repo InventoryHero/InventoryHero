@@ -1,32 +1,30 @@
 <script lang="ts">
 import {defineComponent, PropType} from 'vue'
-import {Storage, StorageTypes} from "@/types";
-import useNewAxios from "@/composables/useAxios.ts";
-import {StorageEndpoint} from "@/api/http";
+import {ApiStorage, StorageTypes} from "@/types";
+
 
 export default defineComponent({
   name: "AppStorageSelect",
   setup(){
-    const {axios} = useNewAxios("storage")
-    return {axios: axios as StorageEndpoint}
+
   },
   emits:{
-    'update:modelValue'(payload: Storage){
+    'update:modelValue'(payload: ApiStorage){
       return true
     }
   },
   computed:{
-    storage: {
-      get(): Storage|null{
+    selected: {
+      get(): ApiStorage|null{
         return this.modelValue ?? null
       },
-      set(value: Storage)
+      set(value: ApiStorage)
       {
         this.$emit('update:modelValue', value)
       }
     },
     type(){
-      switch(this.storage?.type){
+      switch(this.selected?.type){
         case StorageTypes.Box:
           return StorageTypes.Box
         case StorageTypes.Location:
@@ -36,21 +34,16 @@ export default defineComponent({
       }
     },
     container(){
-      if(this.contentType === "product")
-      {
-        return this.allStorage
-      }
-
-      return this.allStorage.filter((item) => item.type === StorageTypes.Location)
+      return this.selected
     }
   },
   props:{
     modelValue: {
-      type: Object as PropType<Storage> | null
+      type: Object as PropType<ApiStorage> | null
     },
-    contentType:{
-      type: String as PropType<"box"|"product">,
-      default: "box"
+    storage: {
+      type: Array<ApiStorage>,
+      default: []
     },
     density: {
       type: String,
@@ -59,12 +52,15 @@ export default defineComponent({
     hideDetails: {
       type: Boolean,
       default: false
+    },
+    storageLoading: {
+      type: Boolean,
+      default: false
     }
   },
   data(){
     return{
-      allStorage: [] as Array<Storage>,
-      storageLoading: false,
+      allStorage: [] as Array<ApiStorage>,
     }
   },
   methods:{
@@ -78,29 +74,23 @@ export default defineComponent({
           return ""
       }
     },
-    getActive(item: Storage): boolean{
-      return item.id === this.storage?.id && item.type === this.storage?.type
+    getActive(item: ApiStorage): boolean{
+      return item.id === this.selected?.id && item.type === this.selected?.type
     }
   },
-  async mounted(){
-    this.storageLoading = true
-    let storage = (await this.axios.getStorageType({contained: false})) as Array<Storage>
-    this.storageLoading = false
-    this.allStorage = storage
-  }
 })
 </script>
 
 <template>
   <v-select
       v-bind="$attrs"
-      v-model="storage"
+      v-model="selected"
       :density="density"
       :single-line="true"
       :hide-details="hideDetails"
       color="primary"
       variant="filled"
-      :items="container"
+      :items="storage"
       item-title="name"
       :chips="true"
       :clearable="true"

@@ -7,6 +7,9 @@ export default defineComponent({
   emits: {
     updateFilter(payload: string){
       return true;
+    },
+    'update:search'(payload: string){
+      return true
     }
   },
   props: {
@@ -27,8 +30,17 @@ export default defineComponent({
       default: ''
     },
     storage: {
-      type: Array<Storage>,
+      type: Array<ApiStorage>,
       default: []
+    }
+  },
+  computed:{
+    searchString:{
+      get(){
+        return this.search
+      }, set(value: string){
+        this.$emit('update:search', value)
+      }
     }
   },
   data(){
@@ -47,8 +59,7 @@ export default defineComponent({
     <v-col>
       <text-filter
           v-if="!preSelected"
-          @update-filter="(val) => $emit('updateFilter', val)"
-          :filter="search"
+          v-model:filter="searchString"
           width="100%"
 
       />

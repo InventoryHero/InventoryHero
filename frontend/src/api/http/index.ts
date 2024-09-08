@@ -5,6 +5,7 @@ import {LocationEndpoint, StorageEndpoint, BoxEndpoint} from "./StorageEndpoint.
 import {ProductEndpoint} from "./ProductEndpoint.ts";
 import {AdministrationEndpoint} from "@/api/http/AdministrationEndpoint.ts";
 import {GeneralEndpoint} from "@/api/http/GeneralEndpoint.ts";
+import {io} from "socket.io-client";
 
 export {
     UserEndpoint,

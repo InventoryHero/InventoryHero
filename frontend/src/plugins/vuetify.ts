@@ -1,6 +1,7 @@
 import {createVuetify} from "vuetify";
 import * as components from "vuetify/components";
 import * as directives from "vuetify/directives";
+//@ts-expect-error
 import colors from 'vuetify/lib/util/colors'
 import '@fortawesome/fontawesome-free/css/all.css'
 import { fa } from 'vuetify/iconsets/fa'

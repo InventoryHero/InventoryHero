@@ -3,6 +3,7 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { VitePWA } from 'vite-plugin-pwa'
+//@ts-expect-error
 import {fileURLToPath, URL} from "node:url";
 import Components from 'unplugin-vue-components/vite'
 import {i18n} from './src/lang';
@@ -51,6 +52,11 @@ export default defineConfig({
             "purpose": "maskable"
           }
         ]
+      },
+      workbox: {
+        clientsClaim: true,
+        skipWaiting: true,
+        maximumFileSizeToCacheInBytes: 8000000
       },
       devOptions: {
         enabled: true

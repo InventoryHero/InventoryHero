@@ -4,6 +4,7 @@ init(){
   flask db upgrade
   echo "Flask-Migrate migrations finished"
 
+
   python3 /app/inventoryhero/backend/db/create_admin.py
 
   exit_code=$?
@@ -11,10 +12,9 @@ init(){
       echo "The script ended with an error."
       exit $exit_code
   fi
+
+
 }
-
-
-
 
 
 echo "creating user $PUID:$PGID"

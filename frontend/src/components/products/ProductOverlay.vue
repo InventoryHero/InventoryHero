@@ -1,272 +1,215 @@
-<script lang="ts">
-import {defineComponent, PropType} from 'vue'
+<script setup lang="ts">
 
-
-import {type Product, ProductLocations, StorageTypes} from "@/types";
-import ProductDetailCard from "@/components/products/ProductDetailCard.vue";
-import AppConfirmModalActivatorBtn from "@/components/ui/AppModalActivatorBtn.vue";
-import useNewAxios from "@/composables/useAxios.ts";
+import {useProducts} from "@/store"
+import useAxios from "@/composables/useAxios.ts";
 import {ProductEndpoint} from "@/api/http";
+import {computed, onMounted, ref, useTemplateRef} from "vue";
+import {ApiProduct, ProductStorageMapping} from "@/types/api.ts";
+import ProductStorageCard from "@/components/products/ProductStorageCard.vue";
+import {useI18n} from "vue-i18n";
+import {useNotification} from "@kyvg/vue3-notification";
+import useDialogConfig from "@/composables/useDialogConfig.ts";
+import StoredAtDetail from "@/components/products/StoredAtDetail.vue";
 
-export default defineComponent({
-  name: "ProductOverlay",
-  components: {AppConfirmModalActivatorBtn, ProductDetailCard},
-  setup(){
-    const {axios} = useNewAxios("product")
-    return {axios: axios as ProductEndpoint}
-  },
-  emits:{
-    'update:modelValue'(payload: Product | undefined){
-      return true
-    },
-    deleted(payload: number|undefined){
-      return true;
-    },
-    updated(payload: Product){
-      return true;
-    },
-    updateMapping(mapping: ProductLocations, callback: () => void){
-      return true;
-    },
-    deleteMapping(productId: number, callback: () => void){
-      return true;
-    }
-  },
-  computed:{
-    locations(): Array<ProductLocations>{
-      return this.storageLocations
-    },
-    visible:{
-      get(): boolean{
-        return this.product !== undefined
-      },
-      set(value: boolean){
-        if(!value)
-        {
-          this.$emit('update:modelValue', undefined)
-        }
+const productStore = useProducts()
+const {axios: productEndpoint} = useAxios<ProductEndpoint>("product")
+const i18n = useI18n()
+const {notify} = useNotification();
+const { isVisible: storedAtDetailOverlayVisible, openDialog, closeDialog, dialogProps } = useDialogConfig()
 
-      }
-    },
-    product(){
-      return this.modelValue
-    },
-    productName: {
-      get(): string{
-        if(this.newName !== undefined)
-          return this.newName
-        return this.product?.name ?? ''
-      },
-      set(value: string)
-      {
-        this.newName = value
-      }
-    }
-  },
-  props: {
-    modelValue: {
-      type: Object as PropType<Product> | undefined,
-      default: undefined
-    },
-    storageLocations:{
-      type: Array<ProductLocations>,
-      default: []
-    }
-  },
-  data(){
+
+
+const emit = defineEmits<{
+  (e: 'close'): void,
+  (e: 'deleted', id: number): void
+}>()
+
+
+const product = computed(() => {
+  return productStore.selectedProduct ?? ({} as ApiProduct)
+})
+
+const editBtnStyle = computed(() => {
+  if(editClicked.value){
     return {
-      deleteClicked: false,
-      saveClicked: false,
-      deleting: false,
-      saving: false,
-      edit: false,
-      newName: undefined as undefined|string,
-      rules: {
-        not_empty: (value: string) => value !== '' || this.$t('products.product.rules.new_name_empty')
-      },
-      mappingOverlay: undefined as undefined|ProductLocations
-    }
-  },
-  methods: {
-    toggleEdit(event: boolean)
-    {
-      this.edit=event
-      if(!this.edit)
-      {
-        this.newName = undefined
-      }
-    },
-    async handleDelete(event: string){
-      if(event === "deny"){
-        return false
-      }
-      this.deleting=true
-      let success = await this.axios.deleteProduct(this.product?.id ?? null)
-      this.deleting = false
-      if(success){
-        this.visible=false
-        this.$notify({
-          title: this.$t('toasts.titles.success.deleted_product'),
-          text: this.$t('toasts.text.success.deleted_product'),
-          type: "success"
-        })
-        this.$emit('deleted', this.product!.id)
-      }
-      return success
-    },
-    async handleSave(event: string)
-    {
-
-      if(event === "deny"){
-        return false
-      }
-
-      if(this.newName === this.product?.name){
-        return true
-      }
-      if(this.newName === '')
-      {
-        return false
-      }
-      this.saving = true
-      let {success, product} = await this.axios.updateProduct(this.product?.id ?? null, {
-        name: this.newName
-      })
-      this.saving = false
-      if(success){
-        this.$emit('updated', product!)
-        this.$notify({
-          title: this.$t('toasts.titles.success.updated_product'),
-          text: this.$t('toasts.text.success.updated_product'),
-          type: "success"
-        })
-      }
-      return success
-    },
-    async eventHandler(event: string, type: string, callback: () => void){
-      switch(type)
-      {
-        case "delete":
-          this.deleteClicked = false
-          await this.handleDelete(event)
-          this.deleting = false
-
-          break;
-        case "save":
-          this.saveClicked = false
-          await this.handleSave(event)
-          //this.saving = false
-          break
-      }
-      callback()
-    },
-    async updateMapping(mapping: ProductLocations, update: Partial<ProductLocations>, callback: () => void){
-      const {success, updated, deleted} = await this.axios.updateProductAt(mapping.id, update)
-      if(!success)
-      {
-        this.$emit('updateMapping', mapping, callback)
-        return false;
-      }
-      this.$notify({
-        title: this.$t('toasts.titles.success.updated_detail'),
-        text: this.$t('toasts.text.success.updated_detail'),
-        type: "success"
-      })
-      this.$emit('updateMapping', updated!, callback)
-
-      if(updated!.id === this.mappingOverlay?.id)
-      {
-        this.mappingOverlay = updated
-      }
-
-      if(deleted === undefined)
-      {
-        return true;
-      }
-      this.$emit('deleteMapping', deleted.product_id, () => {
-        if(this.mappingOverlay?.id === deleted.id)
-        {
-          this.mappingOverlay = updated
-        }
-      })
-    },
-    async deleteMapping(id: number, product_id: number, callback: () => void){
-      let success = await this.axios.deleteProductAt(id)
-
-      if(!success){
-        this.$emit('deleteMapping', id, callback)
-        return
-      }
-
-      this.$emit('deleteMapping', product_id, callback)
-      this.$notify({
-        title: this.$t('toasts.titles.success.deleted_detail'),
-        text: this.$t('toasts.text.success.deleted_detail'),
-        type: "success"
-      })
-      if(this.mappingOverlay?.id === id)
-      {
-        this.mappingOverlay = undefined
-      }
-    },
-    showMappingOverlay(item: ProductLocations)
-    {
-      this.mappingOverlay = item
-    },
-    redirect(storage: Storage, from: string)
-    {
-      if(storage === null)
-        return
-      switch(storage?.type ?? -1){
-        case StorageTypes.Location:
-          return this.$router.push("/storage/locations/" + storage.id + "/" + this.$t('product', {name: this.productName}))
-        case StorageTypes.Box:
-          return this.$router.push("/storage/boxes/" + storage.id + "/" + this.$t('product', {name: this.productName}))
-        default:
-          return
-      }
+      color: "primary"
     }
   }
+  return {
+    color: ''
+  }
+})
+
+const name = computed({
+  get() {
+    if(newName.value === undefined) {
+      return product.value.name
+    }
+    return newName.value
+  },
+  set(newValue: string) {
+    newName.value = newValue
+  }
+})
+
+const storedAt = computed(() => {
+  return productStore.productStorage
+})
+
+const loading = ref(false)
+const editClicked = ref(false)
+const newName = ref<string|undefined>(undefined)
+const nameRequiredRule = (value: string) => value !== '' || i18n.t('products.product.rules.new_name_empty')
+const saving = ref(false)
+const deleting = ref(false)
+
+function close(){
+  emit('close')
+}
+
+function cancelEdit(){
+  newName.value = undefined
+  editClicked.value = false
+}
+
+async function saveChanges(){
+  if(newName.value === product.value.name || newName.value === undefined){
+    newName.value = undefined
+    editClicked.value = false
+    return
+  }
+  if(newName.value === '')
+  {
+    return false
+  }
+  saving.value = true
+  let {success, updatedProduct} = await productEndpoint.updateProduct(product.value.id, {
+    name: newName.value
+  })
+  saving.value = false
+  if(!success){
+    return false
+  }
+
+  if(updatedProduct !== undefined){
+    productStore.updateProduct(updatedProduct)
+  }
+  newName.value = undefined
+  editClicked.value = false
+
+  notify({
+    title: i18n.t('toasts.titles.success.updated_product'),
+    text: i18n.t('toasts.text.success.updated_product'),
+    type: "success"
+  })
+  return success
+}
+
+function closeDetail(){
+  closeDialog()
+  productStore.deselectProductStoredAt()
+}
+function deleteProduct(){
+  deleting.value = true
+  productEndpoint.deleteProduct(product.value.id).then((success) => {
+    deleting.value = false
+    if(!success){
+      return
+    }
+
+    emit('deleted', product.value.id)
+  })
+}
+
+function deleteSelected(id: number, amount: number){
+
+  closeDialog()
+
+  productStore.deleteProductAt(id, amount)
+  notify({
+    title: i18n.t('toasts.titles.success.deleted_detail'),
+    text: i18n.t('toasts.text.success.deleted_detail'),
+    type: "success"
+  })
+}
+
+onMounted(() => {
+  loading.value = true;
+  productEndpoint.getProductStorage(product.value.id, productStore.storedAt).then((response: Array<ProductStorageMapping>) => {
+    productStore.storeProductStorage(response)
+    loading.value = false
+  })
 })
 </script>
 
 <template>
-  <product-detail-overlay
-    v-model="mappingOverlay"
-    :product-name="productName"
-    @redirect-to-storage="redirect"
-    @product-mapping:update="updateMapping"
-    @product-mapping:delete="deleteMapping"
-  />
-
-
-  <detail-overlay
-      v-model="visible"
-      @toggle-edit="toggleEdit($event)"
-      @deny="(event: 'save'|'delete', callback: () => void) => eventHandler('deny', event, callback)"
-      @accept="(event: 'save'|'delete', callback: () => void) => eventHandler('accept', event, callback)"
+  <v-dialog
+      v-model="storedAtDetailOverlayVisible"
+      v-bind="dialogProps"
   >
-      <template #title>
-        <app-overlay-title
-            v-model="productName"
-            :rules="[rules.not_empty]"
-            :edit="edit"
-        />
+    <stored-at-detail
+      @close="closeDetail"
+      @deleted="deleteSelected"
+    />
+  </v-dialog>
 
-      </template>
+
+  <v-card
+      class="position-relative d-flex flex-column fill-height"
+  >
+    <template v-slot:loader>
+      <v-progress-linear
+          :indeterminate="true"
+          :active="loading"
+          color="primary"
+      />
+    </template>
+
+    <v-card-title
+        class="d-flex align-center justify-space-between"
+    >
+      <div v-if="!editClicked">
+        {{ name }}
+      </div>
+      <div style="width: 80%" v-else>
+        <app-overlay-title
+            v-model="name"
+            :rules="[nameRequiredRule]"
+            :edit="editClicked"
+            :disabled="saving||deleting"
+        />
+      </div>
+
+      <div>
+        <app-icon-btn
+            icon="mdi-pencil"
+            variant="flat"
+            class="me-2"
+            v-bind="editBtnStyle"
+            :disabled="saving||deleting"
+            @click="editClicked = true"
+
+        />
+        <app-icon-btn
+            icon="mdi-window-minimize"
+            variant="flat"
+            :disabled="saving||deleting"
+            @click="close()"
+        />
+      </div>
+    </v-card-title>
+
+    <v-card-text class="flex-1-1 pt-0 pl-4 pr-4 overflow-hidden">
       <RecycleScroller
-          :items="locations"
+          :items="storedAt"
           :item-size="110"
           style="height: 100%;"
       >
-        <template #default="{item}">
-          <product-detail-card
-              :item="item"
-              :product-name="productName"
-              @product-mapping:update="updateMapping"
-              @product-mapping:delete="deleteMapping"
-              @show-mapping-overlay="showMappingOverlay"
-              @redirect-to-storage="redirect"
+        <template v-slot="{item}">
+          <product-storage-card
+              :storage="item"
+              @show-stored-at-detail="openDialog()"
+              @deleted="deleteSelected"
           />
         </template>
         <template #after>
@@ -281,32 +224,52 @@ export default defineComponent({
         </template>
       </RecycleScroller>
 
-      <template v-slot:delete-confirm="del">
-        <app-confirm-modal
-          @deny="del.deny()"
-          @accept="del.accept()"
-          :dialog="del.active"
-          :no-click-animation="true"
-          :title="$t('products.confirm.product.delete.title')"
-          :body="$t('products.confirm.product.delete.body')"
+    </v-card-text>
+    <v-card-actions
+      v-if="editClicked"
+      class="d-flex justify-space-between"
+    >
+      <v-btn
+          prepend-icon="mdi-cancel"
+          @click="cancelEdit"
+          :text="$t('cancel')"
+          :disabled="saving||deleting"
+      />
+      <div>
+        <app-confirm-button
+            :title="$t('products.confirm.product.delete.title')"
+            :body="$t('products.confirm.product.delete.body')"
+            :confirm-text="$t('confirm.actions.proceed')"
+            :refuse-text="$t('confirm.actions.abort')"
+            :text="$t('delete')"
+            prepend-icon="mdi-trash-can"
+            variant="outlined"
+            color="red"
+            class="me-2"
+            :disabled="saving"
+            :loading="deleting"
+            @consent="deleteProduct"
+
         />
-      </template>
-      <template v-slot:save-confirm="save">
-        <app-confirm-modal
-            @deny="save.deny()"
-            @accept="save.accept()"
-            :dialog="save.active"
-            :no-click-animation="true"
+        <app-confirm-button
             :title="$t('products.confirm.product.save.title')"
             :body="$t('products.confirm.product.save.body')"
+            :confirm-text="$t('confirm.actions.proceed')"
+            :refuse-text="$t('confirm.actions.abort')"
+            :text="$t('save')"
+            prepend-icon="mdi-content-save-all"
+            color="primary"
+            variant="elevated"
+            :loading="saving"
+            :disabled="deleting"
+            @consent="saveChanges"
         />
-      </template>
-  </detail-overlay>
+      </div>
 
-
+    </v-card-actions>
+  </v-card>
 </template>
 
 <style scoped lang="scss">
-
 
 </style>

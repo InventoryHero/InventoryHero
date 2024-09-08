@@ -38,14 +38,6 @@ export default defineComponent({
     creationDate: {
       type: String,
       default: "",
-    },
-    expanded: {
-      type: Boolean,
-      default: false
-    },
-    isUpdatedDate: {
-      type: Boolean,
-      default: false
     }
   },
   data(){
@@ -72,7 +64,6 @@ export default defineComponent({
       @mouseleave="hover=false"
       :class="{
           'hover': hover,
-          'collapsed': !elementExpanded
         }"
       @click="toggleElement()"
     >
@@ -104,7 +95,7 @@ export default defineComponent({
           <v-col
               cols="6"
           >
-            {{ isUpdatedDate ? $t('products.product.updated') : $t('products.product.created') }}
+            {{ $t('products.product.created') }}
           </v-col>
           <v-col
               cols="6"

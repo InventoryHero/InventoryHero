@@ -1,41 +1,19 @@
-<script lang="ts">
+<script setup lang="ts">
 import {defineComponent} from 'vue'
 
-export default defineComponent({
-  name: "QuickActions",
-  emits:{
-    deleteMe(){
-      return true;
-    },
-    updateAmount(increment: number)
-    {
-      return true;
-    },
-    showDetails(){
-      return true;
-    }
-  },
+
+const emits = defineEmits<{
+  (e: 'deleteMe'): void,
+  (e: 'updateAmount', increment: number): void,
+  (e: 'showDetails'): void
+}>()
+
+const {requestInProgress=false, disabled=false} = defineProps<{
+  requestInProgress: boolean,
+  disabled?: boolean,
+}>()
 
 
-  props: {
-    requestInProgress: {
-      type: Boolean,
-      default: false
-    },
-    amountOnly: {
-      type: Boolean,
-      default: false
-    },
-    amount:{
-      type: Number,
-      default: 0
-    },
-    disabled: {
-      type: Boolean,
-      default: false
-    }
-  }
-})
 </script>
 
 <template>
@@ -49,7 +27,7 @@ export default defineComponent({
   >
     <v-overlay
         :contained="true"
-        v-model="requestInProgress"
+        :model-value="requestInProgress"
         width="100%"
         class="align-center justify-center test"
     >
@@ -59,11 +37,8 @@ export default defineComponent({
           :active="true"
 
       />
-
     </v-overlay>
-    <v-col
-        v-if="!amountOnly"
-    >
+    <v-col>
       <app-icon-btn
           :disabled="disabled"
           icon="fa:fas fa-trash"
@@ -77,11 +52,6 @@ export default defineComponent({
           @click="$emit('updateAmount', -1)"
       />
     </v-col>
-    <v-col
-        v-if="amountOnly"
-    >
-      <slot name="amount"></slot>
-    </v-col>
     <v-col>
       <app-icon-btn
           :disabled="disabled"
@@ -90,15 +60,14 @@ export default defineComponent({
       />
     </v-col>
 
-    <v-col
-      v-if="!amountOnly"
-    >
+    <v-col>
       <app-icon-btn
           :disabled="disabled"
           @click="$emit('showDetails')"
           icon="fa:fas fa-info-circle"
       />
     </v-col>
+
 
   </v-row>
 </template>

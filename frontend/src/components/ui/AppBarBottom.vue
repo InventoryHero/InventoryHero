@@ -1,41 +1,55 @@
-<script lang="ts">
-import {defineComponent} from "vue";
-export default defineComponent({
-  name: "AppBarBottom"
-})
+<script setup lang="ts">
+
+
+import {useRouter} from "vue-router";
+
+const router = useRouter()
+
+const active = defineModel();
+
 
 </script>
 
 <template>
 
 <v-bottom-navigation
-    class="dock"
-    density="compact"
+    :active="active"
     :grow="true"
 >
-
-  <v-row
-    :no-gutters="true"
-    class="fill-height align-center justify-space-evenly"
-  >
-    <nav-list
-        :is-dock="true"
-    />
-
-  </v-row>
-
+  <v-btn
+      to="/"
+      icon="mdi-home"
+      active-color="primary"
+      variant="text"
+  />
+  <v-btn
+      to="/products"
+      icon="mdi-cart"
+      active-color="primary"
+      variant="text"
+  />
+  <v-btn
+      to="/create"
+      icon="mdi-plus-box"
+      active-color="primary"
+      variant="text"
+  />
+  <v-btn
+      to="/storage/boxes"
+      icon="mdi-package-variant"
+      active-color="primary"
+      variant="text"
+  />
+  <v-btn
+      to="/storage/locations"
+      icon="mdi-archive-marker"
+      active-color="primary"
+      variant="text"
+  />
 </v-bottom-navigation>
 </template>
 
 <style scoped lang="scss">
-  :deep(.v-list-item__prepend) {
-    display: flex !important;
-    justify-content: center;
-    align-items: center;
-  }
-  :deep(.v-list-item__spacer)
-  {
-    width: 0 !important;;
-  }
+
 
 </style>

@@ -1,5 +1,6 @@
 import {Endpoint} from "./Endpoint.ts";
 import {Household, Product, ProductLocations, ProductOnly} from "@/types";
+import {ApiProduct, ProductStorageMapping} from "@/types/api.ts";
 
 export class ProductEndpoint extends Endpoint{
 
@@ -8,27 +9,37 @@ export class ProductEndpoint extends Endpoint{
     }
 
     public async getProducts({
-        id = undefined as (undefined|string),
-        getStoredAt = false
-    } = {}){
+        id = undefined as (undefined|string)
+    } = {}): Promise<Array<ApiProduct>>{
 
         let url = ""
         if(id !== undefined){
-            url += `${id}/`
+            url += `/${id}`
         }
-        let response = await this.internalAxios.get(url,
-        {
-            params: {
-                storedAt: getStoredAt ? true : undefined
+        let response = await this.internalAxios.get(url)
 
+        if(response.status === 200){
+            return response.data as Array<ApiProduct>
+        }
+        this.handleNonErrorNotifications(response)
+        return [] as Array<ApiProduct>
+    }
+
+    public async getProductStorage(product_id: number, container: number|undefined = undefined): Promise<Array<ProductStorageMapping>> {
+        let url = `/stored/${product_id}`
+
+
+        let response = await this.internalAxios.get(url, {
+            params: {
+                storage: container
             }
         })
 
         if(response.status === 200){
-            return response.data as Array<Product>
+            return response.data as Array<ProductStorageMapping>
         }
         this.handleNonErrorNotifications(response)
-        return [] as Array<Product>
+        return [] as Array<ProductStorageMapping>
     }
 
     public async deleteProduct(id: number|null){
@@ -46,13 +57,13 @@ export class ProductEndpoint extends Endpoint{
         return false
     }
 
-    public async updateProduct(id: number|null, update: Partial<Product>){
+    public async updateProduct(id: number|null, update: Partial<ApiProduct>): Promise<{success: boolean, updatedProduct: ApiProduct|undefined}>{
         if(id === null)
         {
             console.error("TRYING TO DELETE NULL")
             return {
                 success: false,
-                product: undefined as Product|undefined
+                updatedProduct: undefined
             }
         }
         let data = {
@@ -63,13 +74,13 @@ export class ProductEndpoint extends Endpoint{
         {
             return {
                 success: true,
-                product: response.data.updated as Product|undefined
+                updatedProduct: response.data.updated as ApiProduct
             }
         }
         this.handleNonErrorNotifications(response)
         return {
             success: false,
-            product: undefined as Product|undefined
+            updatedProduct: undefined
         }
     }
 
@@ -90,51 +101,64 @@ export class ProductEndpoint extends Endpoint{
 
     }
 
-    public async updateProductAt(id: number|null, update: Partial<ProductLocations>){
+    public async updateProductAt(id: number|null, update: Partial<ProductStorageMapping>){
         if(id === null)
         {
             console.error("TRYING TO DELETE NULL")
             return {
                 success: false,
-                updated: undefined as ProductLocations|undefined,
-                deleted: undefined as ProductLocations|undefined
+                updated: undefined as ProductStorageMapping|undefined,
+                deleted: undefined as ProductStorageMapping|undefined
             }
         }
         let response = await this.internalAxios.post(`/stored/${id}`, {
             amount: update.amount,
-            storage: update.storage?.id ?? undefined,
-            storage_type: update.storage_type
+            storage: update.storage?.id,
         })
         if(response.status === 200)
         {
             return {
                 success: true,
-                updated: response.data.updated as ProductLocations|undefined,
-                deleted: (response.data.deleted ?? undefined) as ProductLocations|undefined
+                updated: response.data.updated as ProductStorageMapping|undefined,
+                deleted: (response.data.deleted ?? undefined) as ProductStorageMapping|undefined
             }
         }
         this.handleNonErrorNotifications(response)
         return {
             success: false,
-            updated: undefined as ProductLocations|undefined,
-            deleted: undefined as ProductLocations|undefined
+            updated: undefined as ProductStorageMapping|undefined,
+            deleted: undefined as ProductStorageMapping|undefined
         }
     }
 
-    public async createProduct(data: Partial<ProductOnly & ProductLocations>){
-        let url = "/create"
-        if(data.id !== undefined && data.id !== null)
-        {
-            url += `/${data.id}`
-        }
-        let response = await this.internalAxios.post(url, {
+    public async addExistingProduct(data: Partial<ProductStorageMapping>, updateStarred: boolean, starred?: boolean){
+        let url = `/create/${data.productId}`
+        const response = await this.internalAxios.post(url, {
             ...data,
-            id: undefined
+            productId: undefined,
+            starred: updateStarred ? starred : undefined
+        })
+        if(response.status === 200){
+            return {
+                success: true
+            }
+        }
+        this.handleNonErrorNotifications(response)
+        return {
+            success: false
+        }
+    }
+
+
+    public async createProduct(name: string, amount: number, starred: boolean, storageId?: number){
+        let url = "/create"
+        let response = await this.internalAxios.post(url, {
+            name, amount, starred, storageId
         })
         if(response.status === 200){
             return {
                 success: true,
-                product: response.data as Product
+                product: response.data as ApiProduct
             }
         }
         this.handleNonErrorNotifications(response)

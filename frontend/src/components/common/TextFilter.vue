@@ -5,7 +5,7 @@ import AppIconBtn from "@/components/ui/AppIconBtn.vue";
 export default defineComponent({
   name: "TextFilter",
   emits: {
-    updateFilter(payload: string){
+    'update:filter'(payload: string){
       return true;
     }
   },
@@ -19,20 +19,17 @@ export default defineComponent({
       default: ""
     }
   },
-  data(){
-    return {
-      needle: this.filter
+  computed: {
+    filterString: {
+      get(){
+        return this.filter
+      }, set(value: string|null){
+        this.$emit('update:filter', value ?? '')
+      }
     }
   },
   methods: {
-    updateFilter(clear: boolean = false)
-    {
-      if(clear)
-      {
-        this.needle = ""
-      }
-      this.$emit('updateFilter', this.needle)
-    }
+
   }
 
 })
@@ -56,13 +53,12 @@ export default defineComponent({
             ref="filter"
             :hide-details="true"
             density="compact"
-            v-model="needle"
+            v-model="filterString"
             :placeholder="placeHolderText"
             :label="placeHolderText"
             :clearable="true"
             :persistent-clear="true"
-            @update:model-value="updateFilter()"
-            @click:clear="updateFilter(true)"
+
         >
 
         </v-text-field>

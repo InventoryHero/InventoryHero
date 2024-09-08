@@ -36,7 +36,7 @@ def socket_token():
                     "status": "cannot_decode_token"
                 }
             except Exception as e:
-                app.logger.info(e)
+                print(e)
                 return "error fml", 500
 
         return decorator
@@ -84,7 +84,7 @@ class HouseholdSocket(namespace.Namespace):
         if room is None:
             return 403, json.dumps({"status": "error"})
         username = current_user.username
-        app.logger.info("HALLO HERE I AM")
+        app.logger.info(f"HALLO HERE I AM {username}, {room}")
         join_room(room)
         return True, json.dumps({"status": "success"})
 

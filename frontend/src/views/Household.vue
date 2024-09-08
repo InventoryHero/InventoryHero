@@ -10,6 +10,7 @@ import {HouseholdEndpoint} from "@/api/http";
 import {notify} from "@kyvg/vue3-notification";
 import {i18n} from "@/lang";
 import InviteModal from "@/components/widgets/Households/InviteModal.vue";
+import {useHouseholdSocket} from "@/store";
 
 
 export default defineComponent({
@@ -22,8 +23,9 @@ export default defineComponent({
   components: {InviteModal, HouseholdItem},
   setup(){
     const {axios} = useNewAxios("household");
+    const householdSocket = useHouseholdSocket();
     const authStore = useAuthStore();
-    return {axios: axios as HouseholdEndpoint, authStore}
+    return {axios: axios as HouseholdEndpoint, authStore, householdSocket}
   },
   data(){
     return {
@@ -79,7 +81,7 @@ export default defineComponent({
         title: this.$t('toasts.titles.success.default_household_set'),
         type: "success"
       })
-
+      this.householdSocket.joinHousehold()
       if(this.authStore.returnUrl !== null)
       {
         this.authStore.followReturnUrl()
@@ -153,54 +155,61 @@ export default defineComponent({
             <v-col
                 class="d-flex justify-end align-center"
             >
-              <font-awesome-icon
-                  :icon="['fas', createHouseholdCollapsed ? 'plus' : 'minus']"
+              <app-icon-btn
+                  :icon="createHouseholdCollapsed ? 'mdi-plus' : 'mdi-minus'"
                   @click="createHouseholdCollapsed=!createHouseholdCollapsed"
               />
+
             </v-col>
           </v-row>
         </v-card-title>
-
         <v-slide-y-transition
-          :group="true"
         >
-          <v-card-text
-              v-if="!createHouseholdCollapsed"
-          >
-            <v-form ref="householdForm" action="" @submit.prevent="">
-              <v-text-field
-                  density="compact"
-                  hide-details="auto"
-                  v-model="newHouseholdName"
-                  :rules="[rules.required]"
-                  validate-on="lazy"
-                  :label="$t('households.create_new.labels.name')"
-              >
-                <template #append-inner>
-                  <font-awesome-icon
-                      :icon="['fas', 'times']"
-                      v-if="newHouseholdName !== '' && newHouseholdName.length !== 0 && !saved"
-                      @click="newHouseholdName = ''"
-                  />
-                </template>
-              </v-text-field>
-            </v-form>
-          </v-card-text>
-          <v-card-actions
-              class="justify-end"
-              v-if="!createHouseholdCollapsed"
-          >
-            <v-btn
-                @click="createHousehold($event)"
+
+          <v-container v-show="!createHouseholdCollapsed">
+            <v-row
+                justify="center"
             >
-              <template #prepend>
-                <font-awesome-icon
-                    :icon="['fas', 'save']"
-                />
-              </template>
-              {{ $t('households.create_new.save')}}
-            </v-btn>
-          </v-card-actions>
+              <v-col
+                  cols="12"
+              >
+                <v-form ref="householdForm" action="" @submit.prevent="">
+                  <v-text-field
+                      density="compact"
+                      hide-details="auto"
+                      v-model="newHouseholdName"
+                      :rules="[rules.required]"
+                      validate-on="lazy"
+                      :label="$t('households.create_new.labels.name')"
+                  >
+                    <template #append-inner>
+                      <font-awesome-icon
+                          :icon="['fas', 'times']"
+                          v-if="newHouseholdName !== '' && newHouseholdName.length !== 0 && !saved"
+                          @click="newHouseholdName = ''"
+                      />
+                    </template>
+                  </v-text-field>
+                </v-form>
+              </v-col>
+            </v-row>
+            <v-row
+              justify="end"
+            >
+              <v-btn
+                  @click="createHousehold($event)"
+                  color="primary"
+                  variant="outlined"
+                  :text="$t('households.create_new.save')"
+                  density="compact"
+                  prepend-icon="mdi-save"
+                  class="mb-2 me-2"
+              />
+            </v-row>
+          </v-container>
+
+
+
         </v-slide-y-transition>
       </v-card>
       <v-divider />

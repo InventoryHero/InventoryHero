@@ -3,6 +3,7 @@ import {defineComponent} from 'vue'
 
 export default defineComponent({
   name: "CreateCard",
+  inject: ['loading'],
   emits:{
     clear(){
       return true;
@@ -11,8 +12,15 @@ export default defineComponent({
       return true
     }
   },
+  computed: {
+    resourcesLoading(){
+      return (this.loading.loadingBoxes ?? false) ||
+              (this.loading.loadingProducts ?? false) ||
+              (this.loading.loadingLocations ?? false)
+    }
+  },
   props: {
-    loading: {
+    requestInProgress: {
       type: Boolean,
       default: false
     },
@@ -31,7 +39,7 @@ export default defineComponent({
 
     <v-progress-linear
         :indeterminate="true"
-        :active="loading"
+        :active="requestInProgress"
         color="primary"
     />
     <v-card-title
@@ -65,7 +73,12 @@ export default defineComponent({
       <v-btn
           color="primary"
           variant="elevated"
-          @click="$emit('save')"
+          :disabled="resourcesLoading"
+          @click="() => {
+            if(!resourcesLoading){
+              $emit('save')
+            }
+          }"
       >
         <template #prepend>
           <v-icon
@@ -76,6 +89,7 @@ export default defineComponent({
       </v-btn>
     </v-card-actions>
   </v-card>
+
 </template>
 
 <style scoped lang="scss">
