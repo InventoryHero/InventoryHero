@@ -46,7 +46,7 @@ export default defineComponent({
   >
     <template #prepend>
       <v-icon
-          icon="fa:fas fa-times"
+          icon="mdi-close"
           class="ms-2"
           @click="$router.push(back)"
       />
@@ -66,10 +66,9 @@ export default defineComponent({
               }"
               class="fill-height"
               variant="plain"
-              size="small"
               color="primary"
               @click="switchView('product')"
-              prepend-icon="fa:fas fa-shopping-cart"
+              prepend-icon="mdi-cart"
           >
             {{ $t('add.product.tab') }}
           </v-btn>
@@ -85,10 +84,9 @@ export default defineComponent({
               style="height: 100% !important;"
               class="fill-height"
               variant="plain"
-              size="small"
               color="primary"
               @click="switchView('box')"
-              prepend-icon="fa:fas fa-boxes"
+              prepend-icon="mdi-package-variant"
           >
             {{ $t('add.box.tab') }}
           </v-btn>
@@ -102,10 +100,9 @@ export default defineComponent({
               }"
               class="fill-height"
               variant="plain"
-              size="small"
               color="primary"
               @click="switchView('location')"
-              prepend-icon="fa:fas fa-location-dot"
+              prepend-icon="mdi-archive-marker"
           >
             {{ $t('add.location.tab') }}
           </v-btn>

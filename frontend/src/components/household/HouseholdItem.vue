@@ -61,7 +61,7 @@ export default defineComponent({
   methods: {
     isNotDefaultHousehold()
     {
-      return this.authStore.user.household?.id !== this.id
+      return this.authStore.household !== this.id
     },
   }
 })
@@ -89,28 +89,24 @@ export default defineComponent({
           v-if="!isJoined"
           >
            <app-icon-btn
-               icon="fa:fas fa-edit"
-               size="medium"
+               icon="mdi-store-edit"
                class="me-4"
                @click="$emit('toggleEdit', id)"
            />
            <app-icon-btn
-               icon="fa:fas fa-user-plus"
-               size="medium"
+               icon="mdi-account-plus"
                class="me-4"
                @click="$emit('toggleInvite', id)"
            />
         </template>
         <app-icon-btn
             v-else
-            icon="fa:fas fa-right-from-bracket"
-            size="medium"
+            icon="mdi-logout"
             class="me-4"
             @click="$emit('leaveHousehold', id)"
         />
         <app-icon-btn
-            :icon="isNotDefaultHousehold() ? 'fa:far fa-square' : 'fa:far fa-check-square'"
-            size="medium"
+            :icon="isNotDefaultHousehold() ? 'mdi-checkbox-blank-outline' : 'mdi-checkbox-outline'"
             @click="$emit('setDefaultHousehold', id)"
         />
       </v-col>

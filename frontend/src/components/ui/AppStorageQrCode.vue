@@ -65,11 +65,11 @@ export default defineComponent({
       switch(this.storage?.type ?? -1)
       {
         case StorageTypes.Location:
-          return "fa:fas fa-building"
+          return "mdi-archive-marker"
         case StorageTypes.Box:
-          return "fa:fas fa-boxes"
+          return "mdi-package-variant"
         default:
-          return "fa:fas fa-cancel"
+          return "mdi-archive-off"
       }
     }
   },
