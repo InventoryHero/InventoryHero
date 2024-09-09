@@ -1,12 +1,11 @@
 <script lang="ts">
-import {defineComponent, defineModel} from 'vue'
-
-type Rule = (value: string) => string
+import {defineComponent} from 'vue'
 
 
 export default defineComponent({
   name: "AppOverlayTitle",
   emits:{
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     'update:modelValue'(_: string){
       return true
     }
@@ -16,7 +15,7 @@ export default defineComponent({
       get() {
         return this.modelValue
       },
-      set(value) {
+      set(value: string) {
         this.$emit('update:modelValue', value)
       }
     }

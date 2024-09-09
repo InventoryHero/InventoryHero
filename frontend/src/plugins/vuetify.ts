@@ -1,15 +1,13 @@
 import {createVuetify} from "vuetify";
-import * as components from "vuetify/components";
-import * as directives from "vuetify/directives";
-//@ts-expect-error
+import 'vuetify/styles'
+//@ts-expect-error colors are there but they are not properly found
 import colors from 'vuetify/lib/util/colors'
 import '@fortawesome/fontawesome-free/css/all.css'
+import '@mdi/font/css/materialdesignicons.css'
 import { fa } from 'vuetify/iconsets/fa'
 import {aliases, mdi} from "vuetify/iconsets/mdi";
 
 export default createVuetify({
-    components,
-    directives,
     theme : {
         defaultTheme: "dark",
         themes: {

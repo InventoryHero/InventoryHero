@@ -37,7 +37,7 @@ socketio.on_namespace(GeneralSocket("/general"))
 def check_smtp():
     app.logger.info(app.config['SMTP'].values())
     smtp_configured = all(app.config['SMTP'].values())
-    return jsonify({'smtp_configured': smtp_configured}), 200
+    return jsonify(enabled=smtp_configured), 200
 
 
 if __name__ == "__main__":

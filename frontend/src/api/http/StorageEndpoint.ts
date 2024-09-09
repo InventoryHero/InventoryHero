@@ -1,16 +1,9 @@
 import {Endpoint} from "./Endpoint";
 import {
     ApiProduct,
-    Box,
-    Location,
-    LocationContent,
-    ProductLocations,
-    ProductOnly,
-    Storage,
+    ApiStorage,
     StorageTypes
 } from "@/types";
-import {ApiStorage} from "@/types/api.ts";
-import {Api} from "@vitejs/plugin-vue";
 
 
 type GetStorageParams = {
@@ -51,13 +44,13 @@ export class StorageEndpoint extends Endpoint{
         if(id !== undefined){
             url += `/${id}`
         }
-        let params = {
+        const params = {
             params: {
                 contained: contained
             }
         }
 
-        let response = await this.internalAxios.get(url, params)
+        const response = await this.internalAxios.get(url, params)
         if(response.status === 200)
         {
             return response.data
@@ -72,8 +65,8 @@ export class StorageEndpoint extends Endpoint{
             console.error("INVALID CALL FOR GET STORAGE CONTENT")
             return
         }
-        let url = `${this.subroute}/content/${id}`
-        let response = await this.internalAxios.get(url)
+        const url = `${this.subroute}/content/${id}`
+        const response = await this.internalAxios.get(url)
         if(response.status === 200)
         {
             return response.data?.content ?? {}
@@ -94,8 +87,8 @@ export class StorageEndpoint extends Endpoint{
             console.error("DELETING NULL")
             return false;
         }
-        let url = `${this.subroute}/${id}`
-        let response = await this.internalAxios.delete(url)
+        const url = `${this.subroute}/${id}`
+        const response = await this.internalAxios.delete(url)
         if(response.status === 204)
         {
             return true
@@ -114,8 +107,8 @@ export class StorageEndpoint extends Endpoint{
             }
         }
 
-        let url = `${this.subroute}/add`
-        let response = await this.internalAxios.post(url, data)
+        const url = `${this.subroute}/add`
+        const response = await this.internalAxios.post(url, data)
         if(response.status === 201)
         {
             return {
@@ -139,8 +132,8 @@ export class StorageEndpoint extends Endpoint{
         }
 
 
-        let url = `${this.subroute}/${id}/name`
-        let response = await this.internalAxios.get(url)
+        const url = `${this.subroute}/${id}/name`
+        const response = await this.internalAxios.get(url)
         if(response.status === 200)
         {
             return response.data.name ?? ""
@@ -162,19 +155,19 @@ export class LocationEndpoint extends StorageEndpoint{
         id: undefined,
         contained: true
     }){
-        let data = await this.getStorageType(params)
+        const data = await this.getStorageType(params)
         return data as Array<ApiStorage>
     }
 
     public async getContent(id: number){
-        let data = await this.getStorageContent(id.toString())
+        const data = await this.getStorageContent(id.toString())
         return {
             boxes: data.boxes,
             products: data.products
         }
     }
 
-    public async updateLocation(id: number|null, updatedData: Partial<Location>)
+    public async updateLocation(id: number|null, updatedData: Partial<ApiStorage>)
     {
         if(id === null)
         {
@@ -184,12 +177,12 @@ export class LocationEndpoint extends StorageEndpoint{
             }
         }
 
-        let data = {
+        const data = {
             storage: updatedData
         }
 
-        let url = `${this.subroute}/${id}`
-        let response = await this.internalAxios.post(url, data)
+        const url = `${this.subroute}/${id}`
+        const response = await this.internalAxios.post(url, data)
         if(response.status === 200)
         {
             return {
@@ -202,12 +195,12 @@ export class LocationEndpoint extends StorageEndpoint{
         }
     }
 
-    public async createLocation(data: Partial<Location>){
+    public async createLocation(data: Partial<ApiStorage>){
         const {success, newStorage} = await this.createStorage(data)
 
         return {
             success,
-            newLocation: newStorage as Location|undefined
+            newLocation: newStorage as ApiStorage
         }
     }
 
@@ -227,7 +220,7 @@ export class BoxEndpoint extends StorageEndpoint{
         super(StorageTypes.Box)
     }
     public async getBoxes(params:Partial<GetStorageParams>){
-        let data = await this.getStorageType(params)
+        const data = await this.getStorageType(params)
         return data as Array<ApiStorage>
     }
 
@@ -239,7 +232,7 @@ export class BoxEndpoint extends StorageEndpoint{
             }
         }
 
-        let data = await this.getStorageContent(id.toString())
+        const data = await this.getStorageContent(id.toString())
         return {
             products: (data?.products ?? []) as Array<ApiProduct>
         }
@@ -255,12 +248,12 @@ export class BoxEndpoint extends StorageEndpoint{
             }
         }
 
-        let data = {
+        const data = {
             storage: updatedData
         }
 
-        let url = `${this.subroute}/${id}`
-        let response = await this.internalAxios.post(url, data)
+        const url = `${this.subroute}/${id}`
+        const response = await this.internalAxios.post(url, data)
         if(response.status === 200)
         {
             return {
@@ -273,12 +266,12 @@ export class BoxEndpoint extends StorageEndpoint{
         }
     }
 
-    public async createBox(data: Partial<Box>){
+    public async createBox(data: Partial<ApiStorage>){
         const {success, newStorage} = await this.createStorage(data)
 
         return {
             success,
-            newBox: newStorage as Box|undefined
+            newBox: newStorage as ApiStorage
         }
     }
 

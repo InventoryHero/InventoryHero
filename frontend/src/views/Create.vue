@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import {computed, defineComponent, onMounted, provide, ref} from 'vue'
 import {onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter} from "vue-router";
 import {useConfigStore, useProducts, useStorage} from "@/store";
 import {BoxEndpoint, LocationEndpoint, ProductEndpoint} from "@/api/http";
@@ -73,7 +72,7 @@ function swipe (direction: "Right"|"Left"|"Up"|"Down") {
   router.push(addRoutes.value[newRoute])
 }
 
-onBeforeRouteLeave((to, from) => {
+onBeforeRouteLeave((to) => {
   if(forceLeave.value)
   {
     forceLeave.value = false
@@ -187,6 +186,7 @@ onMounted(()=> {
 }
 
 .slide-right-leave-to{
+  position: relative;
   transform: translateX(200%);
 }
 

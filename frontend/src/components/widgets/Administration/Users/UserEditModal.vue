@@ -16,6 +16,7 @@ export default defineComponent({
     }
   },
   emits:{
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     'update:modelValue'(value: User|undefined){
       return true
     }
@@ -25,6 +26,7 @@ export default defineComponent({
       get(){
         return this.modelValue !== undefined
       },
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       set(value: boolean){
         this.$emit('update:modelValue', undefined)
       }

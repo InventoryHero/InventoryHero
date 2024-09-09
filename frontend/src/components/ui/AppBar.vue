@@ -1,54 +1,35 @@
-<script lang="ts">
-
-import {defineComponent} from "vue";
+<script setup lang="ts">
 import {useAuthStore} from "@/store";
-import {useRoute} from "vue-router";
 
-export default defineComponent({
-  name: "AppBar",
-  setup(){
-    const authStore = useAuthStore()
-    const route = useRoute()
-    return {authStore, route}
-  },
-  emits: {
-    toggleNav(){
-      return true
-    }
-  },
-  computed: {
-    displayNav(){
-      return this.nav && this.isAuthorized
-    },
-    isAuthorized(){
-      return this.authStore.isAuthorized();
-    },
-    isSettings(){
-      return this.route.name === "settings"
-    },
+const authStore = useAuthStore()
+const route = useRoute()
 
-  },
-  data(){
-    return{
-      userDropdown: false,
-      scanQrCode: false,
-    }
-  },
-  methods:{
-    toggleNav(){
-      this.$emitter.emit('nav-opened')
-      this.$emit('toggleNav')
-    }
-  },
-  props:{
-    nav:{
-      type: Boolean,
-      default: false
-    }
-  },
-  beforeMount() {
-  }
+const emit = defineEmits<{
+  (e: 'toggleNav'): void
+}>()
+
+const {nav=false} = defineProps<{
+  nav?: boolean
+}>()
+
+const displayNav = computed(() => {
+  return nav && isAuthorized.value
 })
+const isAuthorized = computed(() => {
+  return authStore.authorized
+})
+
+const isSettings = computed(() => {
+  return route.name === "settings"
+})
+
+const scanQrCode = ref(false)
+
+
+function toggleNav(){
+  emit('toggleNav')
+}
+
 </script>
 
 <template>
@@ -60,19 +41,14 @@ export default defineComponent({
         @click.stop="toggleNav()"
     ></v-app-bar-nav-icon>
     <v-toolbar-title>
-      <v-hover
-        v-slot="{ isHovering, props }"
+      <v-card
+          hover
+          width="fit-content"
+          color="dark-grey"
+          to="/"
       >
-        <v-card
-            hover
-            class="title"
-            color="dark-grey"
-
-            @click="this.$router.push('/')"
-        >
-          {{ $t('app.title') }}
-        </v-card>
-      </v-hover>
+        {{ $t('app.title') }}
+      </v-card>
     </v-toolbar-title>
     <template v-slot:append>
       <app-icon-btn
@@ -116,10 +92,7 @@ export default defineComponent({
 </template>
 
 <style scoped lang="scss">
-.title{
-  width: fit-content;
 
-}
 .hovering{
   cursor: pointer !important;
 }

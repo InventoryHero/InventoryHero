@@ -36,9 +36,9 @@ export default defineComponent({
 </script>
 
 <template>
+  <!--eslint-disable-next-line vue/no-mutating-props-->
 <v-dialog
-
-  v-model="dialog"
+  :model-value="dialog"
   :persistent="true"
   :no-click-animation="noClickAnimation"
 

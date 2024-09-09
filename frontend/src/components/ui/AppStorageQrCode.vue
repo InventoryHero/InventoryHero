@@ -1,7 +1,6 @@
 <script lang="ts">
-import {defineComponent, PropType, ref} from 'vue'
-import {Level, RenderAs} from "qrcode.vue";
-import {Storage, StorageTypes} from "@/types";
+import {ApiStorage, StorageTypes} from "@/types";
+import {PropType} from "vue";
 
 export default defineComponent({
   name: "AppStorageQrCode",
@@ -11,7 +10,7 @@ export default defineComponent({
       default: ''
     },
     storage:{
-      type: Object as PropType<Storage>,
+      type: Object as PropType<ApiStorage>,
       default: undefined
     },
     printLabel:{
@@ -76,8 +75,6 @@ export default defineComponent({
   },
   data(){
     return {
-      level: ref<Level>('M'),
-      renderAs: ref<RenderAs>('canvas'),
       showQr: false,
       vueQrDownload: ""
     }
@@ -144,7 +141,7 @@ export default defineComponent({
 }
 
 .text{
-  text-wrap: normal;
+  text-wrap: auto;
   word-break: break-all;
 }
 </style>

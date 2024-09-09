@@ -7,8 +7,6 @@ import {useDisplay} from "vuetify";
 import UserEditModal from "@/components/widgets/Administration/Users/UserEditModal.vue";
 import {GeneralEndpoint, UserEndpoint} from "@/api/http";
 
-//TODO RESEND EMAIL VERIFICATION
-
 export default defineComponent({
   name: "Users",
   components: {UserEditModal},
@@ -29,7 +27,7 @@ export default defineComponent({
       return this.usersToDelete.length > 0 && !this.deleting
     },
     headers() {
-      let headers: Array<Object> = [
+      let headers: Array<object> = [
         {
           title: this.$t("administration.users.table.headers.username"),
           value: "username"
@@ -44,31 +42,26 @@ export default defineComponent({
         headers = headers.concat([
           {
             title: this.$t("administration.users.table.headers.first_name"),
-            value: "first_name"
+            value: "firstName"
           },
           {
             title: this.$t("administration.users.table.headers.last_name"),
-            value: "last_name"
+            value: "lastName"
           },
           {
             title: this.$t("administration.users.table.headers.admin"),
-            value: "is_admin",
+            value: "isAdmin",
           },
           {
             title: this.$t("administration.users.table.headers.registered"),
-            value: "registration_date"
+            value: "registrationDate"
           }
         ])
       }
-      if(this.smtpEnabled){
-        headers.push({
-          title: this.$t("administration.users.reset_password"),
-          value: "reset_password"
-        })
-      }
+
       headers.push({
         title: this.$t("administration.users.table.headers.account_confirmed"),
-        value: "email_confirmed"
+        value: "emailConfirmed"
       })
     headers.push({
         title: this.$t("administration.users.table.headers.actions"),
@@ -124,12 +117,15 @@ export default defineComponent({
       passwordResetModalActive: false,
       userIdForPwReset: undefined as (number|undefined),
       userNameForPwReset: undefined as (string|undefined),
-      resettingPassword: false
+      resettingPassword: false,
+      sendingConfirmationEmail: false
     }
   },
   methods:{
     resendEmail(userId: number){
+      this.sendingConfirmationEmail = true
       this.adminEndpoint.resendConfirmationEmail(userId).then((success: boolean) => {
+        this.sendingConfirmationEmail = false
         if(success){
           this.$notify({
             title: this.$t('toasts.titles.success.resent_confirmation'),
@@ -141,22 +137,10 @@ export default defineComponent({
 
     },
     resetPassword(userId: number, userName: string){
-      this.resettingPassword = true
-      this.userEndpoint.resetPasswordRequest(userId).then(result => {
-        this.resettingPassword = false
-        if(result.success){
-          this.$notify({
-            title: this.$t(`toasts.titles.success.${result.message}`),
-            text: this.$t(`toasts.text.success.${result.message}`),
-            type: "success"
-          })
-          return;
-        }
-        if(result.message === "email_not_configured"){
-          this.userIdForPwReset = userId
-          this.userNameForPwReset = userName
-        }
-      })
+      this.userIdForPwReset = userId
+      this.userNameForPwReset = userName
+      this.passwordResetModalActive = true
+
     },
     editUser(user: Partial<User>, index: number){
       this.user = index
@@ -269,9 +253,14 @@ export default defineComponent({
         @deny="abortDeletion"
       />
       <password-reset-modal
-        v-model="userIdForPwReset"
+        v-model:active="passwordResetModalActive"
+        v-model:user-id="userIdForPwReset"
+        :from-admin="true"
         :user-name="userNameForPwReset"
-        @update:model-value="userNameForPwReset=undefined"
+        @update:active="() => {
+          userIdForPwReset = undefined
+          userNameForPwReset = undefined
+        }"
       />
 
       <v-container :fluid="true" class="pl-0 pr-0">
@@ -389,15 +378,17 @@ export default defineComponent({
             />
           </template>
 
-          <template v-slot:item.is_admin="{item}">
+          <template v-slot:item.isAdmin="{item}">
             <v-icon
                 icon="mdi-check-circle-outline"
-                :color="item.is_admin ? 'green' : 'grey'"
+                :color="item.isAdmin ? 'green' : 'grey'"
             />
           </template>
-          <template v-slot:item.email_confirmed="{item}">
+          <template
+              v-slot:item.emailConfirmed="{item}"
+          >
             <v-icon
-                v-if="item.email_confirmed"
+                v-if="item.emailConfirmed"
                 icon="mdi-check-circle-outline"
                 color="green"
             />
@@ -406,6 +397,8 @@ export default defineComponent({
                 icon="mdi-email-sync"
                 color="primary"
                 size="large"
+                :disabled="sendingConfirmationEmail"
+                :loading="sendingConfirmationEmail"
                 @click="resendEmail(item.id!)"
             />
           </template>

@@ -19,13 +19,16 @@ def socket_token():
                 verify_jwt_in_request()
                 return fn(*args, **kwargs)
             except NoAuthorizationError as e:
+                print("fnl")
                 return "fml", 401
             except ExpiredSignatureError as e:
+                print("no you")
                 return {
                     "code": 401,
                     "status": "expired_signature"
                 }
             except RevokedTokenError as e:
+                print("I HAte you")
                 return {
                     "code": 401,
                     "status": "token_revoked"

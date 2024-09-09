@@ -10,7 +10,7 @@ import {
 } from "@/api/http";
 
 import {useAuthStore} from "@/store";
-import GeneralSettings from "@/components/settings/GeneralSettings.vue";
+
 
 type SpecificEndpoint = UserEndpoint | HouseholdEndpoint | LocationEndpoint | StorageEndpoint | BoxEndpoint | ProductEndpoint | AdministrationEndpoint | GeneralEndpoint;
 

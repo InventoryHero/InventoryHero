@@ -1,7 +1,6 @@
 <script lang="ts">
 import {defineComponent} from "vue";
 import {useConfigStore} from "@/store";
-import {isMobile} from "mobile-device-detect";
 
 export default defineComponent({
   name: "UiSettings",
@@ -24,9 +23,6 @@ export default defineComponent({
     }
   },
   methods:{
-    isMobile() {
-      return isMobile
-    },
     changeTheme(){
       this.config.themeChange({
         dark: !this.theme
@@ -64,7 +60,7 @@ export default defineComponent({
           :hide-details="true"
           density="compact"
           v-model="transitions"
-          @click.native.stop
+          @click.stop
           @click="toggleTransitions"
       />
     </app-setting>
@@ -78,7 +74,7 @@ export default defineComponent({
           :hide-details="true"
           density="compact"
           v-model="theme"
-          @click.native.stop
+          @click.stop
           @click="changeTheme"
       />
     </app-setting>
@@ -102,7 +98,7 @@ export default defineComponent({
           :hide-details="true"
           density="compact"
           v-model="dock"
-          @click.native.stop
+          @click.stop
           @click="useDock"
       />
     </app-setting>

@@ -1,9 +1,7 @@
 <script lang="ts">
-import {defineComponent, ref, StyleValue} from 'vue'
-import  {Level, RenderAs } from 'qrcode.vue'
-import {downloadQrCodeImage} from "@/api/XhrRequests.ts";
 import {useVueToPrint} from "vue-to-print";
-import {Storage} from "@/types";
+import {ApiStorage} from "@/types";
+import {MaybeRefOrGetter, StyleValue} from "vue";
 
 export default defineComponent({
   name: "AppPrintQrCode",
@@ -29,7 +27,7 @@ export default defineComponent({
       type: Boolean
     },
     storage:{
-      type: Array<Storage>,
+      type: Array<ApiStorage>,
       default: []
     }
   },
@@ -42,21 +40,20 @@ export default defineComponent({
     },
     pagePreviewStyle(): StyleValue{
       return {
-        display: this.showPagePreview ? "block" : "none",
         overflow: "auto",
         height: "70svh",
         margin: "16px"
 
       }
     },
-    testData(): Storage {
+    testData(): ApiStorage {
       return {
         id: -1,
-        household_id: "-1",
+        householdId: "-1",
         name: this.$t('print.example_storage'),
         type: 1,
-        creation_date: ""
-      } as Storage
+        creationDate: ""
+      } as ApiStorage
     },
     qrCodePreviewStyle(): StyleValue{
       return {
@@ -67,8 +64,6 @@ export default defineComponent({
   },
   data(){
     return {
-      level: ref<Level>('M'),
-      renderAs: ref<RenderAs>('canvas'),
       showQr: false,
       vueQrDownload: "",
       showPagePreview: false,
@@ -93,7 +88,7 @@ export default defineComponent({
   methods: {
     vueToPrint(){
       const { handlePrint } = useVueToPrint({
-        content: this.$refs.componentRef,
+        content: this.$refs.componentRef as MaybeRefOrGetter<HTMLElement>,
         removeAfterPrint: true
       });
       handlePrint()
@@ -108,7 +103,12 @@ export default defineComponent({
 
 <template>
   <template v-if="modelValue">
-    <div v-bind="$attrs" :style="pagePreviewStyle" ref="componentRef">
+    <div
+        v-if="showPagePreview"
+        v-bind="$attrs"
+        :style="pagePreviewStyle"
+        ref="componentRef"
+    >
       <app-print-preview
           class="print-preview"
           :style="`transform: scale(${settings.previewScale})`"
@@ -446,6 +446,10 @@ export default defineComponent({
 </template>
 
 <style scoped lang="scss">
+
+.test{
+  position: absolute !important;
+}
 .qr-code{
   background-color: white;
   color: black;

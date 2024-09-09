@@ -1,20 +1,12 @@
 <script lang="ts">
-import {defineComponent} from 'vue'
-import {isMobile} from "mobile-device-detect";
-import {Box, Location} from "@/types";
-import {useAuthStore, useStorage} from "@/store";
-import useNewAxios from "@/composables/useAxios.ts";
-import {BoxEndpoint, LocationEndpoint} from "@/api/http";
-import useAxios from "@/composables/useAxios.ts";
 
-type Views = "product" | "box" | "location"
-type Clear = {
-  [K in Views]: boolean
-}
+import {useAuthStore, useStorage} from "@/store";
+import {BoxEndpoint} from "@/api/http";
+import useAxios from "@/composables/useAxios.ts";
+import {ApiStorage} from "@/types";
 
 export default defineComponent({
   name: "CreateBoxCard",
-  components: {},
   inject: ['loading'],
   setup(){
     const {axios} = useAxios<BoxEndpoint>("box")
@@ -30,8 +22,8 @@ export default defineComponent({
     return {
       postingBox: false,
       box: "",
-      boxes: [] as Array<Box>,
-      location: null as null|Location,
+      boxes: [] as Array<ApiStorage>,
+      location: undefined as undefined|ApiStorage,
       hints: {
         boxName: '',
         locationSelect: ''
@@ -56,9 +48,6 @@ export default defineComponent({
     }
   },
   methods: {
-    isMobile() {
-      return isMobile
-    },
     clear(){
       this.$refs["add-form"].reset()
     },
@@ -87,7 +76,7 @@ export default defineComponent({
       this.postingBox = true
       const {success, newBox} = await this.axios.createBox({
         name: this.box,
-        location_id: this.location?.id ?? undefined
+        storageId: this.location?.id ?? undefined
       })
 
       this.postingBox = false

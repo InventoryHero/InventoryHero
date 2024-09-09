@@ -1,10 +1,7 @@
 import { defineStore } from 'pinia'
 import {useLocalStorage} from "@vueuse/core";
-import vuetify from "@/plugins/vuetify.ts";
 import {TinyColor} from "@ctrl/tinycolor";
-import {i18n} from "@/lang";
-import {Locale} from 'vue-i18n'
-import {useDisplay} from "vuetify";
+import {Theme} from "./types"
 
 
 export const useConfigStore = defineStore('config', {
@@ -25,16 +22,17 @@ export const useConfigStore = defineStore('config', {
     },
     actions: {
         themeChange(newTheme: Partial<Theme>){
+
             this.config.theme = {
                 ...this.config.theme,
                 ...newTheme
             }
             const theme = this.config.theme.dark ? "dark" : "light"
             const primary = new TinyColor(this.config.theme.color);
-            vuetify.theme.themes.value[theme].colors.primary = this.config.theme.color
-            vuetify.theme.themes.value[theme].colors.secondary = primary.desaturate(5).darken(10).toHexString()
-            vuetify.theme.themes.value[theme].colors.accent = primary.desaturate(0).lighten(20).toHexString()
-            vuetify.theme.global.name.value = theme
+            this.vuetify.theme.themes.value[theme].colors.primary = this.config.theme.color
+            this.vuetify.theme.themes.value[theme].colors.secondary = primary.desaturate(5).darken(10).toHexString()
+            this.vuetify.theme.themes.value[theme].colors.accent = primary.desaturate(0).lighten(20).toHexString()
+            this.vuetify.theme.global.name.value = theme
             document?.querySelector('meta[name="theme-color"]')?.setAttribute("content", this.config.theme.color);
         },
         toggleDock(useDock: boolean){
@@ -53,15 +51,13 @@ export const useConfigStore = defineStore('config', {
         languageChange(newLanguage: string){
             if(newLanguage === "default"){
                 this.config.language = "default"
-                //@ts-expect-error
-                i18n.global.locale = (navigator.language || navigator.userLanguage)
+                //@ts-expect-error - I really couldn't figure out how to type newLanguage to not trigger an error
+                this.i18n.global.locale = (navigator.language || navigator.userLanguage)
                 return
             }
-            //@ts-expect-error
-            if(i18n.global.availableLocales.includes(newLanguage)){
+            if(this.i18n.global.availableLocales.includes(newLanguage)){
                 this.config.language = newLanguage
-                //@ts-expect-error
-                i18n.global.locale = this.config.language
+                this.i18n.global.locale = this.config.language
             }
         },
         init(){

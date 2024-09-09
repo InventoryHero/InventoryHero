@@ -9,6 +9,11 @@ import {GeneralEndpoint} from "@/api/http";
 export default defineComponent({
   name: "LoginCard",
   components: {AppPasswordTextfield},
+  emits: {
+    resetPassword(){
+      return true
+    }
+  },
   setup(){
     const authStore = useAuthStore();
     const {axios} = useAxios("general")
@@ -26,8 +31,8 @@ export default defineComponent({
       username: "",
       password: '',
       rules: {
-        usernameNeeded: (value: string) => value !== '' || this.$t('login.login.username_needed'),
-        passwordNeeded: (value: string) => value !== '' || this.$t('login.login.password_needed')
+        usernameNeeded: (value: string) => value !== '' || this.$t('login.login.rules.username_needed'),
+        passwordNeeded: (value: string) => value !== '' || this.$t('login.login.rules.password_needed')
       },
       smtpEnabled: false,
 
@@ -43,6 +48,9 @@ export default defineComponent({
         await this.authStore.login(this.username, this.password)
         this.loading = false;
       }
+    },
+    resetPassword(){
+      this.$emit('resetPassword')
     }
   },
   beforeMount(){
@@ -73,6 +81,7 @@ export default defineComponent({
         :rules="[rules.passwordNeeded]"
         :label="$t('login.login.password')"
         v-model="password"
+        :disable-min-length="true"
       />
     </v-form>
   </v-card-text>
@@ -86,19 +95,18 @@ export default defineComponent({
         v-if="smtpEnabled"
         variant="text"
         class="justify-space-between"
+        @click="resetPassword"
     >
       {{ $t("login.login.forgot_password_btn") }}
     </v-btn>
     <v-btn
         :loading="loading"
-        prepend-icon="fa:fas fa-lock"
+        prepend-icon="mdi-lock"
         variant="elevated"
         color="green-lighten-1"
         @click="login()"
     >
-      <template #prepend>
-        <v-icon size="small"/>
-      </template>
+
       {{ $t("login.login.btn") }}
     </v-btn>
   </v-card-actions>

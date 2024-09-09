@@ -1,56 +1,42 @@
-<script lang="ts">
-import {defineComponent} from 'vue'
+<script setup lang="ts">
 import {useAuthStore} from "@/store";
 
-export default defineComponent({
-  name: "Logout",
-  data(){
-    return{
-      loggingOut: true
-    }
-  },
-  beforeRouteEnter(){
-    const authStore = useAuthStore();
-    if(authStore.isAuthorized())
-      return "/"
+const authStore = useAuthStore()
 
-    if(!authStore.isAuthorized() && !authStore.userSet)
-      return "/login"
-  }
+onMounted(() => {
+  authStore.logout()
 })
+
 </script>
 
 <template>
-  <v-row>
-    <v-dialog
-        :fullscreen="true"
-        :persistent="true"
-        v-model="loggingOut"
+    <v-row
+        justify="center"
+        class="fill-height align-content-center"
     >
-      <v-row
-          justify="center"
-          class="fill-height align-content-center"
+      <v-col
+          cols="8"
+          lg="8"
+          class="fill-height"
       >
-        <v-col
-            cols="11"
-            lg="6"
+        <div
+            class="d-flex flex-column justify-center align-center pt-16"
         >
-          <v-card
-              class="d-flex flex-column justify-center align-center pb-4 pt-4"
-          >
+          <v-progress-circular
+              width="10"
+              size="140"
+              indeterminate
+              color="primary"
+              class="mt-2"
+          />
+          <span class="mt-2">
             {{ $t('logging_out') }}
-            <v-progress-circular
-                width="8"
-                size="90"
-                indeterminate
-                color="primary"
-                class="mt-2"
-            />
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-dialog>
-  </v-row>
+          </span>
+
+        </div>
+      </v-col>
+    </v-row>
+
 </template>
 
 <style scoped lang="scss">

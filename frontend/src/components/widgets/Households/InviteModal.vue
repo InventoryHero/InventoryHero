@@ -1,7 +1,6 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
 import {HouseholdEndpoint} from "@/api/http";
-import useNewAxios from "@/composables/useAxios.ts";
 import {useAuthStore} from "@/store";
 import useAxios from "@/composables/useAxios.ts";
 
@@ -31,7 +30,8 @@ export default defineComponent({
     }
   },
   emits:{
-    "update:modelValue"(newValue: boolean){
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    "update:modelValue"(_: boolean){
       return true;
     }
   },
@@ -96,11 +96,6 @@ export default defineComponent({
       navigator.clipboard.writeText(this.invite);
       this.copiedConfirm = true;
       return
-      this.$notify({
-        title: this.$t('toasts.titles.success.copied_to_clipboard'),
-        text: this.$t('toasts.text.success.copied_to_clipboard'),
-        type: "success"
-      })
     }
   }
 })
@@ -176,9 +171,8 @@ export default defineComponent({
           </v-btn>
         </v-card-actions>
         <v-card-actions
-            v-else
+            v-else-if="!loading"
             class="justify-space-evenly"
-            v-if="!loading"
         >
           <s-email
               :share-options="emailShare"

@@ -1,5 +1,5 @@
 import uuid
-from datetime import datetime, timezone, timedelta
+from datetime import datetime, timezone, timedelta, UTC
 
 import sqlalchemy.exc
 from flask import Blueprint, request, jsonify
@@ -105,17 +105,14 @@ class User(Blueprint):
         def login():
             username = request.json.get("username", None)
             if username is None:
-                self.app.logger.error("No or invalid username provided")
                 return {"status": "no_username"}, 400
 
             password = request.json.get("password", None)
             if password is None:
-                self.app.logger.error("No password provided")
                 return {"status": "no_password"}, 400
 
             user = ApplicationUser.query.filter_by(username=username).first()
             if user is None:
-                self.app.logger.error("User does not exist")
                 return {"status": "username_not_found"}, 401
 
             if not user.email_confirmed:
@@ -131,11 +128,7 @@ class User(Blueprint):
         @self.route("", methods=["GET"])
         @jwt_required()
         def get_user():
-            return {
-                "id": current_user.id,
-                "username": current_user.username,
-                "email": current_user.email,
-            }, 200
+            return jsonify(current_user), 200
 
         @self.route("/refresh_token", methods=["POST"])
         @jwt_required(refresh=True)
@@ -172,21 +165,26 @@ class User(Blueprint):
             return jsonify(), 200
 
         @self.route("/update/<int:user_id>", methods=["POST"])
-        @self.route("/update", defaults={'user_id': None}, methods=["POST"])
         @jwt_required()
         @admin_required()
-        def update_user(user_id):
-            if user_id is None:
-                user_id = current_user.id
+        def update_user_admin(user_id):
             to_update = ApplicationUser.query.filter_by(id=user_id).first()
+            return update_user(to_update)
+
+        @self.route("/update", methods=["POST"])
+        @jwt_required()
+        def update_own():
+            return update_user(current_user)
+
+        def update_user(to_update):
             if to_update is None:
                 return jsonify(status="user_not_found"), 400
 
             username = request.json.get("username", None)
-            firstname = request.json.get("first_name", None)
-            lastname = request.json.get("last_name", None)
+            firstname = request.json.get("firstName", None)
+            lastname = request.json.get("lastName", None)
             email = request.json.get("email", None)
-            is_admin = request.json.get("is_admin", None)
+            is_admin = request.json.get("isAdmin", None)
 
             existing = ApplicationUser.query.filter((ApplicationUser.username == username) | (ApplicationUser.email == email)).first()
 
@@ -201,6 +199,7 @@ class User(Blueprint):
                 to_update.last_name = lastname
             if email is not None:
                 to_update.email = email
+                # TODO RESEND EMAIL NOTIFICATION HERE
 
 
             # TODO REFACTOR
@@ -224,9 +223,9 @@ class User(Blueprint):
             username = request.json.get("username", None)
             password = request.json.get("password", None)
             email = request.json.get("email", None)
-            lastname = request.json.get("lastname", None)
-            firstname = request.json.get("firstname", None)
-            is_admin = request.json.get("is_admin", False)
+            lastname = request.json.get("lastName", None)
+            firstname = request.json.get("firstName", None)
+            is_admin = request.json.get("isAdmin", False)
             if username is None:
                 return jsonify(status="no_username"), 422
             if password is None:
@@ -284,17 +283,17 @@ class User(Blueprint):
             if user.is_admin and not admins:
                 return jsonify(status="delete_not_possible_last_admin"), 422
 
-            households = HouseholdMembers.query.filter_by(member_id=user_id).all()
-            for household in households:
-                db.session.delete(household)
-            households = Household.query.filter_by(creator=user_id).all()
+            #households = HouseholdMembers.query.filter_by(member_id=user_id).all()
+            #for household in households:
+            #    db.session.delete(household)
+            #households = Household.query.filter_by(creator=user_id).all()#
 
-            for household in households:
-                other_members = HouseholdMembers.query.filter_by(household_id=household.id).all()
-                if len(other_members) != 0:
-                    household.creator = other_members[0].member_id
-                    continue
-                self.db.session.delete(household)
+            #for household in households:
+            #    other_members = HouseholdMembers.query.filter_by(household_id=household.id).all()
+            #    if len(other_members) != 0:
+            #        household.creator = other_members[0].member_id
+            #        continue
+            #    self.db.session.delete(household)
 
             self.db.session.delete(user)
             self.db.session.commit()
@@ -307,25 +306,30 @@ class User(Blueprint):
                 admin=current_user.is_admin
             ), 200
 
-        @self.route("/reset-password/<int:user_id>", defaults={'email': None}, methods=["GET"])
-        @self.route("/reset-password/<string:email>", defaults={'user_id': None}, methods=["GET"])
-        def reset_password_request(user_id, email):
-            #TODO THIS THEN NEEDS EMAIL SENDING
-            #TODO MAYBE MAKE A EMAIL CONFIG SECTION AS WELL
-            #TODO THIS COULD ALSO BE USED TO VERIFY CONFIGURATION/UPDATE IT IF NEEDED
-
-            if not self.app.config["SMTP"]["in_use"]:
-                return jsonify(status="email_not_configured"), 503
-
-            user = None
-            if user_id is not None:
-                user = ApplicationUser.query.filter_by(id=user_id).first()
-            elif email is not None:
-                user = ApplicationUser.query.filter_by(email=email).first()
-
+        @self.route("/reset-password/<int:user_id>", methods=["GET"])
+        @jwt_required()
+        @admin_required()
+        def reset_password_request_admin(user_id):
+            user = ApplicationUser.query.filter_by(id=user_id).first()
             if user is None:
                 return jsonify(), 400
+            return request_password_reset_mail(user)
 
+        @self.route("/reset-password/<string:email>", methods=["GET"])
+        def reset_password_request_email(email):
+            user = ApplicationUser.query.filter_by(email=email).first()
+            return request_password_reset_mail(user)
+
+        @self.route("/reset-password", methods=["GET"])
+        @jwt_required()
+        def reset_password_request_current_user():
+            return request_password_reset_mail(current_user)
+
+        def request_password_reset_mail(user):
+            if not self.app.config["SMTP"]["in_use"]:
+                return jsonify(status="email_not_configured"), 503
+            if user is None:
+                return jsonify(), 200
             reset_id = uuid.uuid4().hex
             # TODO ABORT IF NO EMAIL CONFIGURED AND NOTIFY USER
             mail = Mail(self.app.config["SMTP"], self.app.config["APP_URL"])
@@ -347,18 +351,61 @@ class User(Blueprint):
 
             return jsonify(status="success_24h_time"), 200
 
-        @self.route("/reset-password/<string:code>", methods=["POST"])
+        @self.route("/reset-password", methods=["POST"])
+        @jwt_required()
+        def reset_password_with_old_password():
+            old_password = request.json.get("oldPassword", None)
+            new_password = request.json.get("newPassword", None)
+            if old_password is None or new_password is None:
+                return jsonify(status="no_password"), 400
+            pw_valid = bcrypt.checkpw(old_password.encode('utf-8'), current_user.password.encode('utf-8'))
+            if not pw_valid:
+                return jsonify(status="password_invalid"), 403
+            salt = bcrypt.gensalt()
+            new_password = new_password.encode('utf-8')
+            new_password = bcrypt.hashpw(new_password, salt)
+            current_user.password = new_password.decode("utf-8")
+            current_user.force_reset = False
+            self.db.session.commit()
+            return jsonify(), 200
+
+        @self.route("/reset-password/<string:token>", methods=["POST"])
+        def reset_password_with_token(token):
+            password = request.json.get("password", None)
+            if password is None:
+                return jsonify(status="no_password"), 400
+            is_valid, msg, password_request = is_reset_token_valid(token)
+            if not is_valid:
+                return jsonify(status=msg), 403
+            user = ApplicationUser.query.filter_by(id=password_request.user_id).first()
+            if user is None:
+                return jsonify(status="user_not_found"), 400
+
+            salt = bcrypt.gensalt()
+            password = bcrypt.hashpw(password.encode('utf-8'), salt)
+            user.password = password.decode("utf-8")
+            user.force_reset = False
+            self.db.session.delete(password_request)
+            self.db.session.commit()
+            return jsonify(), 200
+
+        @self.route("/reset-password/<string:code>", methods=["PUT"])
         def reset_password_preflight(code):
-            self.app.logger.info(code)
+            self.app.logger.error("OPTIONS")
+            is_valid, msg, _ = is_reset_token_valid(code)
+            if not is_valid:
+                return jsonify(status=msg), 400
+            return jsonify(), 200
+
+        def is_reset_token_valid(code):
             reset_hash = sha256(code.encode('utf-8')).hexdigest()
             reset_request = PasswordResetRequest.query.filter_by(password_reset_hash=reset_hash).first()
+            self.app.logger.info(reset_request)
             if reset_request is None:
-                return {}, 400
-            if reset_request.password_reset_time + timedelta(hours=24) < datetime.utcnow():
-                return jsonify(status="expired"), 400
-            return {}, 200
-
-
+                return False, "invalid_token", None
+            if reset_request.password_reset_time + timedelta(hours=24) < datetime.now(UTC):
+                return False, "expired", None
+            return True, "", reset_request
 
     def blacklist_token(self, token):
         jti = token["jti"]

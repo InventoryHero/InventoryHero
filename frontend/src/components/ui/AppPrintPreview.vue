@@ -1,25 +1,22 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
-import {Storage} from "@/types";
+import {ApiStorage} from "@/types";
 
-const papers = {
-  "A4": {
-    height: 297,
-    width: 210,
-  }
-}
+
+
+
 
 
 export default defineComponent({
   name: "AppPrintPreview",
   computed:{
     items(){
-      let rows = [] as Array<Array<Storage>>
+      let rows = [] as Array<Array<ApiStorage>>
       for(let i = 0; i < this.modelValue.length; i++)
       {
         if(i % this.itemsPerRow === 0)
         {
-          rows.push([] as Array<Storage>)
+          rows.push([] as Array<ApiStorage>)
         }
         rows[rows.length-1].push(this.modelValue[i])
 
@@ -27,10 +24,10 @@ export default defineComponent({
       return rows
     },
     paperHeight(){
-      return papers[this.paper].height;
+      return "297"
     },
     paperWidth(){
-      return papers[this.paper].width;
+      return "210"
     },
     margin(){
       return {
@@ -43,7 +40,7 @@ export default defineComponent({
   },
   props:{
     modelValue: {
-      type: Array<Storage>,
+      type: Array<ApiStorage>,
       default: []
     },
     paper: {
@@ -92,18 +89,21 @@ export default defineComponent({
 </script>
 
 <template>
-  <div
+  <v-sheet
     class="page"
     :style="`height: ${paperHeight}mm; width: ${paperWidth}mm`"
+
   >
     <div class="content">
       <div
-          v-for="row in items"
+          v-for="(row, index) in items"
           class="row d-flex"
+          :key="index"
       >
         <div
-            v-for="col in row"
+            v-for="(col, innerIndex) in row"
             class="col"
+            :key="innerIndex"
         >
           <app-storage-qr-code
               :storage="col"
@@ -115,7 +115,7 @@ export default defineComponent({
         </div>
       </div>
     </div>
-  </div>
+  </v-sheet>
 </template>
 
 <style scoped lang="scss">

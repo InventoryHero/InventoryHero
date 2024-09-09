@@ -40,10 +40,12 @@ export default defineStore("storage", {
                 const location = this._storage["location"].find(l => l.id === updated.storageId)
                 const oldLocation = this._storage["location"].find(l => l.id === storage.storageId)
                 if(location){
-                    location.boxAmount++;
+                    let currentAmount = location.boxAmount ?? 0
+                    location.boxAmount = currentAmount++;
                 }
                 if(oldLocation){
-                    oldLocation.boxAmount--;
+                    let currentAmount = oldLocation.boxAmount ?? 0
+                    oldLocation.boxAmount = currentAmount--;
                 }
             }
 
@@ -92,7 +94,7 @@ export default defineStore("storage", {
             if(this._storage[type]){
                 this._storage[type].push(storage)
             } else{
-                this._addStorage([storage], type)
+                this._addStorage(storage, type)
             }
         },
 
@@ -117,8 +119,8 @@ export default defineStore("storage", {
             if(!this._removeProductFromStorage(oldStorageId ?? -1, 'box')){
                 this._removeProductFromStorage(oldStorageId ?? -1, 'location')
             }
-            if(!this._moveProductToStorage(newStorageId, 'box')){
-                this._moveProductToStorage(newStorageId, 'location')
+            if(!this._moveProductToStorage(newStorageId ?? -1, 'box')){
+                this._moveProductToStorage(newStorageId ?? -1, 'location')
             }
 
         },
@@ -148,8 +150,9 @@ export default defineStore("storage", {
         removeProductFromLocation(id: number){
             this._removeProductFromStorage(id, "location")
         },
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         removeBoxFromLocation(locationId: number, boxId: number){
-            if(this._selectedStorage["location"].id === locationId){
+            if(this._selectedStorage["location"]?.id === locationId){
                 this._storage["box"] = this._storage["box"].filter(s => s.id !== locationId)
             }
         },

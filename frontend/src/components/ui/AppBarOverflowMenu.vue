@@ -1,30 +1,13 @@
-<script lang="ts">
+<script setup lang="ts">
 import {useAuthStore} from "@/store/index.ts";
-import {defineComponent} from "vue";
-
-export default defineComponent({
-  name: "AppBarOverflowMenu",
-  setup(){
-    const auth = useAuthStore();
-    return {auth}
-  },
-  computed:{
-    isAdmin(){
-      return this.auth.isAdmin
-    }
-  },
-  methods:{
-    async logout() {
-      this.loggingOut=true
-      await this.auth.logout();
-    },
-  },
-  data(){
-    return{
-      loggingOut: false
-    }
-  }
+import {computed} from "vue";
+const auth = useAuthStore();
+const isAdmin = computed(() =>{
+  return auth.isAdmin
 })
+
+
+
 </script>
 
 <template>
@@ -80,7 +63,7 @@ export default defineComponent({
         </template>
         <v-divider color="primary" class="border-opacity-50"/>
         <v-list-item
-            @click="logout()"
+            to="/logout"
             :title="$t('nav.logout')"
             prepend-icon="mdi-logout"
 

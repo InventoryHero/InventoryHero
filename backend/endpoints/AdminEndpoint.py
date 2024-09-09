@@ -7,16 +7,7 @@ from flask_jwt_extended import jwt_required, current_user
 
 from backend.db.models.User import User
 from backend.mail.Mail import Mail
-
-
-def require_admin(f):
-    @wraps(f)
-    def decorator(*args, **kwargs):
-        if not current_user.is_admin:
-            return jsonify(), 403
-        return f(*args, **kwargs)
-    return decorator
-
+from decorators import admin_required
 
 class AdminEndpoint(Blueprint):
     def __init__(self, name, import_name, application, db, url_prefix, *args):
@@ -29,14 +20,14 @@ class AdminEndpoint(Blueprint):
 
         @self.route("/users", methods=["GET"])
         @jwt_required()
-        @require_admin
+        @admin_required()
         def get_users():
             users = User.query.all()
             return jsonify(users=users), 200
 
         @self.route("/resend/<int:user_id>", methods=["GET"])
         @jwt_required()
-        @require_admin
+        @admin_required()
         def resend_confirmation(user_id):
             user = User.query.filter_by(id=user_id).first()
             if user is None:
@@ -55,7 +46,7 @@ class AdminEndpoint(Blueprint):
 
         @self.route("/reset-password/<int:user_id>", methods=["POST"])
         @jwt_required()
-        @require_admin
+        @admin_required()
         def reset_password(user_id):
             password = request.json.get('password', None)
             self.app.logger.info(f"Resetting password for user {user_id}: {password}")
@@ -66,5 +57,6 @@ class AdminEndpoint(Blueprint):
             if user is None:
                 return jsonify(status="user_not_found"), 422
             user.password = password.decode("utf-8")
+            user.force_reset = True
             self.db.session.commit()
             return jsonify(), 200

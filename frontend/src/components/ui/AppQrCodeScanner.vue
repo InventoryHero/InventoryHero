@@ -5,6 +5,7 @@ import {Html5QrcodeCameraScanConfig, Html5QrcodeResult, Html5QrcodeScanner} from
 export default defineComponent({
   name: "AppQrCodeScanner",
   emits:{
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     scanResult(result: Html5QrcodeResult){
       return true;
     }

@@ -18,6 +18,7 @@ class User(db.Model):
     first_name: str = db.Column(db.String(80), nullable=False, server_default="")
     last_name: str = db.Column(db.String(80), nullable=False, server_default="")
     registration_date: datetime = db.Column(db.DateTime(timezone=True), default=lambda: datetime.datetime.now(datetime.UTC), nullable=False)
+    force_reset: bool = db.Column(db.Boolean, default=False, nullable=False)
 
     def __repr__(self):
         return '<User %r>' % self.username
@@ -28,11 +29,11 @@ class User(db.Model):
             "id": self.id,
             "username": self.username,
             "email": self.email,
-            "is_admin": self.is_admin,
-            "first_name": self.first_name,
-            "last_name": self.last_name,
-            "registration_date": self.registration_date,
-            "email_confirmed": self.email_confirmed
+            "isAdmin": self.is_admin,
+            "firstName": self.first_name,
+            "lastName": self.last_name,
+            "registrationDate": self.registration_date,
+            "emailConfirmed": self.email_confirmed
         }
         return test
 
@@ -42,7 +43,7 @@ class Household(db.Model):
     __tablename__ = "household"
     id: int = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name: str = db.Column(db.String(65535), nullable=False)
-    creator: int = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    creator: int = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=False)
     members = db.relationship("HouseholdMembers", back_populates="household", cascade="all, delete-orphan")
     creation_date: datetime = db.Column(db.DateTime, default=datetime.datetime.now(datetime.UTC))
     products = db.relationship("Product", back_populates="household", cascade="all, delete-orphan")
@@ -67,8 +68,8 @@ class Household(db.Model):
 class HouseholdMembers(db.Model):
     __tablename__ = "household_members"
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    household_id: int = db.Column(db.Integer, db.ForeignKey("household.id"), nullable=False)
-    member_id: int = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=True)
+    household_id: int = db.Column(db.Integer, db.ForeignKey("household.id", ondelete="CASCADE"), nullable=False)
+    member_id: int = db.Column(db.Integer, db.ForeignKey("user.id", ondelete="CASCADE"), nullable=True)
     invite: uuid.UUID = db.Column(db.Uuid, nullable=True)
     joined: bool = db.Column(db.Boolean, nullable=False, default=False)
 

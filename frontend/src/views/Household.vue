@@ -1,16 +1,13 @@
 <script lang="ts">
 import {defineComponent} from "vue";
 import {Household} from "@/types";
-
-import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
 import {useAuthStore} from "@/store";
 import HouseholdItem from "@/components/household/HouseholdItem.vue";
 import useNewAxios from "@/composables/useAxios.ts";
 import {HouseholdEndpoint} from "@/api/http";
 import {notify} from "@kyvg/vue3-notification";
-import {i18n} from "@/lang";
 import InviteModal from "@/components/widgets/Households/InviteModal.vue";
-import {useHouseholdSocket} from "@/store";
+import {useHouseholdSocketStore} from "@/store";
 
 
 export default defineComponent({
@@ -23,7 +20,7 @@ export default defineComponent({
   components: {InviteModal, HouseholdItem},
   setup(){
     const {axios} = useNewAxios("household");
-    const householdSocket = useHouseholdSocket();
+    const householdSocket = useHouseholdSocketStore();
     const authStore = useAuthStore();
     return {axios: axios as HouseholdEndpoint, authStore, householdSocket}
   },
@@ -37,7 +34,7 @@ export default defineComponent({
       inviteModal: false,
       inviteId: NaN as number,
       rules: {
-        required: (value: String) => !!value || this.$t('households.rules.name_required'),
+        required: (value: string) => !!value || this.$t('households.rules.name_required'),
       }
     }
   },
@@ -50,10 +47,6 @@ export default defineComponent({
     async fetchHouseholds(){
       this.loadingHouseholds = true;
       this.households = await this.axios.getHouseholds()
-      if(this.authStore.user.household === null && this.households.length >= 1)
-      {
-        this.setDefaultHousehold(this.households[0].id)
-      }
       this.loadingHouseholds = false;
     },
     async createHousehold(event: Event){
@@ -100,12 +93,14 @@ export default defineComponent({
       }
       return false
     },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     leaveHousehold(id: number){
       this.$notify({
         title: this.$t('toasts.titles.info.leave_household'),
         type: "info"
       })
     },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     toggleEdit(id: number){
       this.$notify({
         title: this.$t('toasts.titles.info.edit_household'),
@@ -181,10 +176,11 @@ export default defineComponent({
                       :rules="[rules.required]"
                       validate-on="lazy"
                       :label="$t('households.create_new.labels.name')"
+
                   >
-                    <template #append-inner>
-                      <font-awesome-icon
-                          :icon="['fas', 'times']"
+                    <template v-slot:append-inner>
+                      <v-icon
+                          icon="mdi-close"
                           v-if="newHouseholdName !== '' && newHouseholdName.length !== 0 && !saved"
                           @click="newHouseholdName = ''"
                       />

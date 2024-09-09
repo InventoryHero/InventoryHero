@@ -3,7 +3,6 @@
 import {useProducts} from "@/store"
 import useAxios from "@/composables/useAxios.ts";
 import {ProductEndpoint} from "@/api/http";
-import {computed, onMounted, ref, useTemplateRef} from "vue";
 import {ApiProduct, ProductStorageMapping} from "@/types/api.ts";
 import ProductStorageCard from "@/components/products/ProductStorageCard.vue";
 import {useI18n} from "vue-i18n";

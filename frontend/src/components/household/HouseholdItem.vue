@@ -5,15 +5,20 @@ import {useAuthStore} from "@/store";
 export default defineComponent({
   name: "HouseholdItem",
   emits: {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     toggleEdit(id: number){
       return true
     },
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     toggleInvite(id: number){
       return true
     },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     leaveHousehold(id: number){
       return true
     },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     setDefaultHousehold(id: number){
       return true
     }

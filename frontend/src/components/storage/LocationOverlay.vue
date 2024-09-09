@@ -6,7 +6,6 @@ import {LocationEndpoint} from "@/api/http";
 import useEditBtnStyle from "@/composables/useEditBtnStyle.ts";
 import {useI18n} from "vue-i18n";
 import useDialogConfig from "@/composables/useDialogConfig.ts";
-import {computed, onMounted, ref, watch} from "vue";
 import {ApiProduct, ApiStorage, StorageTypes} from "@/types";
 import ProductOverlay from "@/components/products/ProductOverlay.vue";
 
