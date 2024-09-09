@@ -201,7 +201,7 @@ onMounted(() => {
     <v-card-text class="flex-1-1 pt-0 pl-4 pr-4 overflow-hidden">
       <RecycleScroller
           :items="storedAt"
-          :item-size="110"
+          :item-size="120"
           style="height: 100%;"
       >
         <template v-slot="{item}">
