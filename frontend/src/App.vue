@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {useAuthStore, useConfigStore, useGeneralSocketStore, useHouseholdSocket} from "@/store"
+import {useAuthStore, useConfigStore, useGeneralSocketStore, useHouseholdSocketStore} from "@/store"
 import AppBarBottom from "@/components/ui/AppBarBottom.vue";
 import AppBar from "@/components/ui/AppBar.vue";
 import {Notifications} from "@kyvg/vue3-notification";
@@ -8,20 +8,20 @@ import {useRoute, useRouter} from "vue-router";
 import AppCreateBar from "@/components/ui/AppCreateBar.vue";
 import {computed, defineComponent, onMounted, onUpdated, ref, watch} from "vue";
 import {useDisplay} from "vuetify";
-import {applyStorage, getBrowserLocalStorage} from "axios-jwt";
+import {applyStorage, getAccessToken, getBrowserLocalStorage} from "axios-jwt";
 
-const config = useConfigStore()
+const configStore = useConfigStore()
 const authStore = useAuthStore()
-const householdSocket = useHouseholdSocket()
+const householdSocket = useHouseholdSocketStore()
 const route = useRoute()
 const generalSocket = useGeneralSocketStore()
 const router = useRouter()
 const {mobile} = useDisplay()
+// TODO ADMIN USER TABLE CAN BENEFIT FROM SOCKET (E.G. USER VERIFIED EMAIL)
 
 /*
-  TODO localize (even for en)
-  toasts.titles.success.updated_successfully (userupdate)
-  toasts.titles.success.resent_confirmation (user email confirm resend)
+  TODO localize (even for en) - general translations rn
+  check everything through
  */
 
 const navOpen = ref(false)
@@ -29,7 +29,7 @@ const isAdminRoute = computed(() => {
   return route.path.includes("/administration")
 })
 const dockVisible = computed(() =>{
-  if(!mobile){
+  if(!mobile.value){
     return false
   }
   if(isAdminRoute.value){
@@ -39,53 +39,49 @@ const dockVisible = computed(() =>{
     return false
   }
 
-  return config.dock
+  return configStore.dock
 })
 const isAddRoute = computed(() => {
   return route.path.startsWith("/create")
 })
 
 const authorized = computed(() => {
-  return authStore.isAuthorized()
+  return authStore.authorized
 })
 const transition = computed(() => {
-  if (config.transitions){
+  if (configStore.transitions){
     return "scale"
   }
   return ""
 })
 
 function reloadContent(){
-  router.go()
+  router.go(0)
 }
 
-watch(authorized, (newValue, oldValue) => {
-  if(newValue)
-  {
-    householdSocket.updateHeaders()
-    householdSocket.bindActions()
 
-    generalSocket.updateHeaders()
-    generalSocket.bindActions()
-  } else{
-    householdSocket.leaveHousehold()
-  }
-
-})
-
-onMounted(() => {
+onMounted(async () => {
   applyStorage(getBrowserLocalStorage());
-  if(authStore.isAuthorized())
+  configStore.init()
+  await authStore.init()
+  if(await authStore.isAuthorized())
   {
-    householdSocket.updateHeaders()
-    generalSocket.updateHeaders()
-    generalSocket.bindActions()
+    getAccessToken().then((token) => {
+      householdSocket.updateHeaders(token)
+      generalSocket.updateHeaders(token)
+      generalSocket.bindActions()
+    })
+
   }
 })
 
-onUpdated(() => {
-  householdSocket.updateHeaders()
+onUpdated(async () => {
+  /*applyStorage(getBrowserLocalStorage());
+  householdSocket.updateHeaders()x
   householdSocket.bindActions()
+
+  generalSocket.updateHeaders()
+  generalSocket.bindActions()*/
 })
 </script>
 
@@ -93,12 +89,14 @@ onUpdated(() => {
 
 
   <notifications
-    position="top right"
-    classes="vue-notification mt-2 me-8"
-    :max="2"
+      v-if="!(route.meta.tokenized ?? false)"
+      position="top right"
+      classes="vue-notification mt-2 me-8"
+      :max="2"
   />
 
   <notifications
+      v-if="!(route.meta.tokenized ?? false)"
       position="bottom right"
       style="bottom: 40px"
       classes="vue-notification me-2"
@@ -108,27 +106,42 @@ onUpdated(() => {
       :duration="-1"
       @click="(item) => {reloadContent()}"
       width="30svh"
-  >
-  </notifications>
+  />
 
-
-  <v-app v-if="!authorized">
-    <app-bar
-        :nav="!dockVisible && !isAddRoute"
-        @toggle-nav="navOpen = !navOpen"
-    />
-    <v-main >
+  <v-app v-if="route.meta.tokenized ?? false">
+    <v-app-bar
+        density="compact"
+    >
+      <v-toolbar-title>
+        <v-hover
+            v-slot="{ isHovering, props }"
+        >
+          <v-card
+              hover
+              style="width: 130px"
+              color="dark-grey"
+              @click="router.push('/')"
+          >
+            {{ $t('app.title') }}
+          </v-card>
+        </v-hover>
+      </v-toolbar-title>
+    </v-app-bar>
+    <v-main
+        class=""
+    >
       <v-container
           :fluid="true"
           :class="{
-            'fill-height': $route.meta?.fillHeight ?? false
+            'fill-height': route.meta?.fillHeight ?? false,
           }"
       >
         <router-view v-slot="{Component}">
-          <transition name="scale" mode="out-in">
+          <transition :name="transition" mode="out-in" >
             <component :is="Component" />
           </transition>
         </router-view>
+
       </v-container>
     </v-main>
   </v-app>
@@ -140,15 +153,16 @@ onUpdated(() => {
       @toggle-nav="navOpen = !navOpen"
     />
     <app-create-bar
-      v-if="isAddRoute"
+      v-if="isAddRoute && authorized"
     />
 
     <nav-drawer
-        v-if="!dockVisible || isAdminRoute"
+        v-if="(!dockVisible || isAdminRoute) && authorized"
         v-model="navOpen"
     />
 
     <app-bar-bottom
+        v-if="authorized"
         v-model="dockVisible"
     />
 
@@ -159,7 +173,7 @@ onUpdated(() => {
       <v-container
           :fluid="true"
           :class="{
-            'fill-height': $route.meta?.fillHeight ?? false,
+            'fill-height': route.meta?.fillHeight ?? false,
           }"
       >
         <router-view v-slot="{Component}">

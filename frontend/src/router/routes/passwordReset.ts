@@ -12,6 +12,7 @@ export default {
         requiresAuth: false,
         requiresHousehold: false,
         fillHeight: false,
-        title: i18n.global.t('titles.password_reset')
+        title: i18n.global.t('titles.password_reset'),
+        tokenized: true
     }
 }

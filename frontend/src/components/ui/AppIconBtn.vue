@@ -1,77 +1,46 @@
-<script lang="ts">
-  import {defineComponent} from "vue";
+<script setup lang="ts">
 
-  export default defineComponent({
-    name: "AppIconBtn",
-    emits: {
-      click(){
-        return true;
-      }
-    },
-    computed: {
-      cssClass(){
-        let dict = {} as {[key: string] : boolean}
-        this.class.split(" ").forEach(x => {dict[x] = true})
-        return dict
-      }
-    },
-    methods: {
-      clicked()
-      {
-        if(!this.disabled)
-        {
-          this.$emit("click")
-        }
-      },
-    },
-    props:{
-      icon:{
-        type: String,
-        default: ''
-      },
-      disabled: {
-        type: Boolean,
-        default: false
-      },
-      color:{
-        type: String,
-        default: "",
-      },
-      size: {
-        default: "1x"
-      },
-      class: {
-        type: String,
-        default: ''
-      }
-    }
-  })
+
+import {computed} from "vue";
+
+defineOptions({
+  inheritAttrs: false
+})
+
+const {color=""} = defineProps<{
+  color?: string
+}>()
+
+const setColor = computed(() => {
+  return color?? 'primary'
+})
+
 </script>
 
 <template>
-
-    <v-hover>
-      <template v-slot:default="{isHovering, props}">
-        <v-icon
-            v-bind="{...$attrs, ...props}"
-
-            :icon="icon"
-            :size="size"
-            :color="color"
-            :disabled="disabled"
-            fixed-width
-            class="app-font-awesome-btn"
-            :class="{
-              'hovering': isHovering && !disabled,
-              'disabled': disabled,
-              ...cssClass
-            }"
-
-            @click="clicked()"
-        />
-      </template>
-    </v-hover>
-
+  <v-hover
+      v-if="!$attrs['loading'] ?? true"
+      v-slot="{ isHovering, props}"
+  >
+    <v-icon
+        v-bind="{...$attrs, ...props}"
+        :color="setColor"
+        fixed-width
+        class="app-font-awesome-btn"
+        :class="{
+          'hovering': isHovering && !$attrs['disabled'],
+          'disabled': $attrs['disabled'],
+        }"
+    />
+  </v-hover>
+  <v-progress-circular
+      v-if="$attrs['loading'] ?? false"
+      :active="true"
+      :indeterminate="true"
+      size="25"
+      width="3"
+      :color="setColor"
+  />
 </template>
 
 <style scoped lang="scss">

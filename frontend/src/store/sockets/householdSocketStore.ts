@@ -1,6 +1,4 @@
 import {defineStore} from "pinia";
-import {generalSocket, socket} from '@/plugins/connections'
-import {getAccessToken} from 'axios-jwt'
 import {useAuthStore} from "@/store";
 import useNewAxios from "@/composables/useAxios.ts";
 import {UserEndpoint} from "@/api/http";
@@ -8,28 +6,34 @@ import {i18n} from "@/lang";
 import {notify} from "@kyvg/vue3-notification";
 import {io} from "socket.io-client";
 
-export const useHouseholdSocket =  defineStore("socket", {
+const householdSocket = io("/household", {
+    autoConnect: false
+})
+
+export const useHouseholdSocketStore =  defineStore("socket", {
     state: () => ({
         authStore: useAuthStore(),
         errorCallback: undefined as (undefined | (() => void)),
-        socket: undefined as SocketIO|undefned
     }),
     actions: {
         bindActions(){
-            socket.on('connect', () => {
-                console.log("connecting")
+            householdSocket.on('connect', () => {
+                console.log("HOUSEHOLD SOCKET CONNECTED")
             })
-            socket.on('reconnect', () => {
-                console.log("reconnecterror")
+            householdSocket.on('reconnect', () => {
+                console.log("HOUSEHOLD SOCKET RECONNECTED")
             })
-            socket.on("connect_error", () => {
-                console.log("connecterror")
+            householdSocket.on("connect_error", () => {
+                console.log("HOUSEHOLD SOCKET CONNECT ERROR")
             })
-            socket.on("new-content", (msg: string) => {
+            householdSocket.on("disconnect", () => {
+                console.log("HOUSEHOLD SOCKET DISCONNECTED")
+            })
+            householdSocket.on("new-content", (msg: string) => {
                 let response: SocketResponse = JSON.parse(msg)
                 let content: UpdateContent = response.content as UpdateContent
                 console.log("NEW CONTENT HERE")
-                if(content.user === this.authStore.user.username){
+                if(content.user === this.authStore.user?.username){
                     return
                 }
                 notify({
@@ -42,26 +46,25 @@ export const useHouseholdSocket =  defineStore("socket", {
             })
 
         },
-        updateHeaders(){
-            console.log(socket)
-            this.socket?.disconnect()
-            getAccessToken().then((token) => {
-                socket.io.opts.extraHeaders = {
-                    "Authorization": `Bearer ${token}`
-                }
-                console.log(socket)
-                socket.disconnect()
-                socket.connect()
+        updateHeaders(token?: string){
+            householdSocket.io.opts.extraHeaders = {
+                "Authorization": `Bearer ${token}`
+            }
 
+            householdSocket.disconnect()
+            if(token){
+                householdSocket.connect()
                 this.bindActions()
                 this.joinHousehold()
-            })
+            }
+
+
         },
         joinHousehold(){
             if(this.authStore.household === -1){
                 return
             }
-            socket.emit("join", {
+            householdSocket.emit("join", {
                 household: this.authStore.household
             }, (data: string) => {
                 console.log(data)
@@ -69,12 +72,15 @@ export const useHouseholdSocket =  defineStore("socket", {
             } )
         },
         leaveHousehold(){
-            socket.emit('leave', {
+            if(this.authStore.household === -1){
+                return
+            }
+            householdSocket.emit('leave', {
                 household: this.authStore.household
             })
         },
         sayHi(){
-            socket.emit('hi', {
+            householdSocket.emit('hi', {
                 household: this.authStore.household
             }, (data: string) => {
                 let response: SocketResponse = JSON.parse(data)
@@ -82,7 +88,7 @@ export const useHouseholdSocket =  defineStore("socket", {
             } )
         },
         socketErrorHandler(data: SocketResponse, callback: () => void){
-            const socketStore = useHouseholdSocket()
+            const socketStore = useHouseholdSocketStore()
             const userEndpoint = useNewAxios("user")
             let endpoint: UserEndpoint = userEndpoint.axios as UserEndpoint
             switch(data.status){
@@ -103,7 +109,7 @@ export const useHouseholdSocket =  defineStore("socket", {
         },
         disconnect(){
             console.log("disconnecting ... ")
-            socket.disconnect()
+            householdSocket.disconnect()
         }
     }
 })

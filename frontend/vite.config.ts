@@ -1,19 +1,18 @@
 // noinspection ES6PreferShortImport
-
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { VitePWA } from 'vite-plugin-pwa'
 //@ts-expect-error
 import {fileURLToPath, URL} from "node:url";
 import Components from 'unplugin-vue-components/vite'
+import AutoImport from 'unplugin-auto-import/vite'
 import {i18n} from './src/lang';
-import basicSsl from '@vitejs/plugin-basic-ssl'
 import vuetify from "vite-plugin-vuetify";
 
-// https://vitejs.dev/config/
 export default defineConfig({
   build: {
-    target: "esnext"
+    target: "esnext",
+    sourcemap: false
   },
   plugins: [
     vue(),
@@ -62,15 +61,28 @@ export default defineConfig({
         enabled: true
       }
     }),
-
+    AutoImport({
+      include: [
+        /\.[tj]sx?$/, // .ts, .tsx, .js, .jsx
+        /\.vue$/,
+        /\.vue\?vue/, // .vue
+      ],
+      imports: [
+        'vue',
+        'vue-router',
+        {
+          'vue-i18n':[
+              'useI18n'
+          ]
+        }
+      ]
+    }),
     Components({
-
     })
   ],
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
-      'lang': fileURLToPath(new URL('./src/lang/', import.meta.url))
     }
   },
   server:{

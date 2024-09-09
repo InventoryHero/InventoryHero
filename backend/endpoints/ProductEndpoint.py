@@ -115,14 +115,12 @@ class ProductEndpoint(Blueprint):
 
             mapping = ProductContainerMapping.query.filter_by(product_id=product.id, storage_id=storage_id).first()
             if mapping is None:
-                mapping = ProductContainerMapping(product_id=product.id,  amount=amount)
+                mapping = ProductContainerMapping(product_id=product.id, amount=amount, storage_id=storage_id)
                 self.db.session.add(mapping)
             else:
                 mapping.amount += amount
             self.db.session.commit()
             return jsonify(status="success"), 200
-
-
 
         @self.route("/create", methods=["POST"])
         @jwt_required()
@@ -268,6 +266,7 @@ class ProductEndpoint(Blueprint):
                 return storage_error
 
             storage_merge_with: Optional[ProductContainerMapping] = storage_check.get('merge_with', None)
+            self.app.logger.warning(f"merge with {storage_merge_with}")
             deleted = None
             if storage_merge_with is not None:
                 self.app.logger.info(storage_merge_with)

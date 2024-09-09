@@ -2,23 +2,17 @@
 import {defineComponent, PropType} from "vue";
 import {User} from "@/types/api.ts";
 import {useDisplay} from "vuetify";
-import {useGeneralSocketStore, useHouseholdSocket} from "@/store";
+import {useGeneralSocketStore, useHouseholdSocketStore} from "@/store";
 import useAxios from "@/composables/useAxios.ts";
 import {UserEndpoint} from "@/api/http";
-
-
-// flags for required data types
-const USERNAME_SET = 1
-const PASSWORD_SET = 2
-const EMAIL_SET = 4
-
-
+import AppResetButton from "@/components/ui/AppResetButton.vue";
 
 export default defineComponent({
   name: "UserCard",
+  components: {AppResetButton},
   setup(){
     const {mobile} = useDisplay()
-    const sockets = useHouseholdSocket()
+    const sockets = useHouseholdSocketStore()
     const generalSocket = useGeneralSocketStore()
     const {axios} = useAxios("user")
 
@@ -55,24 +49,24 @@ export default defineComponent({
     },
     firstname: {
       get(){
-        if(this.updatedUserData.first_name !== undefined){
-          return this.updatedUserData.first_name
+        if(this.updatedUserData.firstName !== undefined){
+          return this.updatedUserData.firstName
         }
-        return this.user?.first_name ?? ''
+        return this.user?.firstName ?? ''
       },
       set(firstname: string){
-        this.updatedUserData.first_name = firstname
+        this.updatedUserData.firstName = firstname
       }
     },
     lastname:{
       get(){
-        if(this.updatedUserData.last_name !== undefined){
-          return this.updatedUserData.last_name
+        if(this.updatedUserData.lastName !== undefined){
+          return this.updatedUserData.lastName
         }
-        return this.user?.last_name ?? ''
+        return this.user?.lastName ?? ''
       },
       set(lastname: string){
-        this.updatedUserData.last_name = lastname
+        this.updatedUserData.lastName = lastname
       }
     },
     email:{
@@ -96,13 +90,13 @@ export default defineComponent({
     },
     admin:{
       get(){
-        if(this.updatedUserData.is_admin !== undefined){
-          return this.updatedUserData.is_admin
+        if(this.updatedUserData.isAdmin !== undefined){
+          return this.updatedUserData.isAdmin
         }
-        return this.user?.is_admin ?? false
+        return this.user?.isAdmin ?? false
       },
       set(admin: boolean){
-        this.updatedUserData.is_admin = admin
+        this.updatedUserData.isAdmin = admin
       }
     },
     textFieldStyle(){
@@ -116,9 +110,6 @@ export default defineComponent({
         class: "mb-4",
         disabled: this.loading
       } as Partial<{}>
-    },
-    userCorrect(){
-      return (PASSWORD_SET|USERNAME_SET|EMAIL_SET)
     }
 
   },
@@ -143,14 +134,24 @@ export default defineComponent({
   data(){
     return {
       edited: false,
-      correct: 0,
+      valid: false,
       updatedUserData: {} as Partial<User>,
       usernameFree: true,
       emailFree: true,
       rules: {
         required: (value: string) => !!value || this.$t('administration.users.rules.field_required'),
-        username_free: (_: string) => this.usernameFree || this.$t('administration.users.rules.username_taken'),
-        email_free: (_: string) => this.emailFree || this.$t('administration.users.rules.email_taken')
+        username_free: (value: string) => {
+          if(this.usernameFree){
+            return
+          }
+          return this.$t('administration.users.rules.username_taken')
+        },
+        email_free: (_: string) => {
+          if(this.emailFree){
+            return
+          }
+          return this.$t('administration.users.rules.email_taken')
+        }
       }
     }
   },
@@ -177,38 +178,19 @@ export default defineComponent({
     },
     checkUserName(){
       this.edited = true;
-      let callback = (isTaken: boolean) => {
+      this.generalSocket.isUserNameTaken(this.updatedUserData.username ?? '').then((isTaken) => {
         this.usernameFree = !isTaken
-
-        //@ts-expect-error
-        this.$refs?.usernameField?.validate()?.then((obj: Proxy<Array>) => {
-          // no errors in the verification array
-          this.correct &= ~USERNAME_SET;
-          if(obj.length === 0){
-            this.correct |= USERNAME_SET;
-          }
-        })
-      }
-      this.generalSocket.isUserNameFree(this.updatedUserData.username ?? '', callback)
+      })
+      //this.generalSocket.isUserNameTaken(, callback)
     },
     checkEmail(){
       this.edited = true;
-      let callback = (isTaken: boolean) => {
+      this.generalSocket.isEmailTaken(this.updatedUserData.email ?? '').then((isTaken) => {
         this.emailFree = !isTaken
-        //@ts-expect-error
-        this.$refs?.emailField?.validate()?.then((obj: Proxy<Array>) => {
-          // no errors in the verification array
-          this.correct &= ~EMAIL_SET;
-          if(obj.length === 0){
-            this.correct |= EMAIL_SET;
-          }
-        })
-      }
-      this.generalSocket.isEmailFree(this.updatedUserData.email ?? '', callback)
+      })
     },
     setPasswordEdited(){
       this.edited = true;
-      this.correct |= PASSWORD_SET;
     },
     close(){
       if(this.loading){
@@ -221,11 +203,6 @@ export default defineComponent({
     this.updatedUserData = {}
     this.edited = false
   },
-  beforeMount(){
-    if(this.edit){
-      this.correct |= (PASSWORD_SET|USERNAME_SET|EMAIL_SET);
-    }
-  }
 })
 </script>
 
@@ -241,19 +218,12 @@ export default defineComponent({
     >
       {{ title }}
       <v-spacer />
-      <v-fade-transition>
-        <v-btn
-            v-if="edited"
-            class="me-4"
-            density="comfortable"
-            prepend-icon="mdi-lock-reset"
-            variant="tonal"
-            :disabled="loading"
-            @click="reset()"
-        >
-          {{ $t('administration.users.reset') }}
-        </v-btn>
-      </v-fade-transition>
+      <app-reset-button
+          @click="reset()"
+          :text="$t('administration.users.reset')"
+          :visible="edited"
+          :disabled="loading"
+      />
       <app-icon-btn
         icon="mdi-close"
         @click="close()"
@@ -264,7 +234,7 @@ export default defineComponent({
     >
       <v-form
         ref="form"
-
+        v-model="valid"
       >
         <v-text-field
             ref="usernameField"
@@ -347,7 +317,7 @@ export default defineComponent({
           variant="elevated"
           color="primary"
           @click="saveUser()"
-          :disabled="!edited || correct != userCorrect"
+          :disabled="!edited || !valid"
           :loading="loading"
       >
         {{ $t('administration.users.save_user') }}

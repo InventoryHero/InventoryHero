@@ -90,6 +90,7 @@ export default defineComponent({
       lg="6"
     >
       <v-card
+
       >
         <v-card-title>
           <v-row

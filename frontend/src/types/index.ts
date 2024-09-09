@@ -1,23 +1,16 @@
 import {
     Household,
     HouseholdMember,
-    Product,
-    ProductLocations,
-    ProductOnly,
-    Box,
-    Location,
     StorageTypes,
-    Storage,
-    isInstanceOfStorage,
     ILoginRequest,
     IUser,
     ILoginResponse,
     IRegisterRequest,
     IReqisterResponse,
-    LocationContent,
     ApiStorage,
     ProductStorageMapping,
-    ApiProduct
+    ApiProduct,
+    User
 
 } from "./api"
 
@@ -33,27 +26,21 @@ import {
 export type {
     Household,
     HouseholdMember,
-    Product,
-    ProductLocations,
-    ProductOnly,
-    Box,
-    Location,
-    Storage,
     ILoginRequest,
     ILoginResponse,
     IUser,
     MappingUpdateData,
     IRegisterRequest,
     IReqisterResponse,
-    LocationContent,
     ApiStorage,
     ProductStorageMapping,
-    ApiProduct
+    ApiProduct,
+    User
 
 }
 
 
-export { StorageTypes, isInstanceOfStorage }
+export { StorageTypes }
 
 export type {
     StorageQrData

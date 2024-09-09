@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {computed, inject, ref, useTemplateRef, watch} from "vue";
 import {useProducts, useStorage} from "@/store";
-import {ApiProduct, ApiStorage, ProductOnly, ProductStorageMapping} from "@/types";
+import {ApiProduct, ApiStorage, ProductStorageMapping} from "@/types";
 import {useI18n} from "vue-i18n";
 import useAxios from "@/composables/useAxios.ts";
 import {ProductEndpoint} from "@/api/http";
@@ -15,7 +15,11 @@ const {axios: productEndpoint} = useAxios<ProductEndpoint>('product')
 const {t} = useI18n()
 const {notify} = useNotification()
 
-const resourcesLoading = inject('loading')
+const resourcesLoading = inject<{
+ loadingProducts: boolean,
+ loadingBoxes: boolean,
+ loadingLocations: boolean
+}>('loading')
 const addForm = useTemplateRef('add-form')
 const combobox = useTemplateRef('combobox')
 const postingProduct = ref(false)
@@ -37,7 +41,11 @@ const storage = computed(() => {
 const starred = computed({
   get(){
     if(newStarred.value === undefined){
-      return newProduct.value?.starred ?? false
+      if(newProduct.value?.hasOwnProperty('starred'))
+      {
+        return (newProduct.value as ApiProduct).starred ?? false
+      }
+      return false
     }
     return newStarred.value
   },
@@ -52,11 +60,11 @@ const {hintActive: amountHintActive, message: amountHint } = useHint(t(`add.prod
 const {hintActive: starHintActive, message: starHint } = useHint(t(`add.product.hints.star`))
 
 const productsLoading = computed(() =>{
-  return resourcesLoading.loadingProducts ?? false
+  return resourcesLoading?.loadingProducts ?? false
 })
 
 const storageLoading = computed(() =>{
-  return (resourcesLoading.loadingLocations ?? false) || (resourcesLoading.loadingBoxes ?? false)
+  return (resourcesLoading?.loadingLocations ?? false) || (resourcesLoading?.loadingBoxes ?? false)
 })
 
 const rules = {
@@ -67,7 +75,7 @@ const rules = {
 
 
 
-function notifySuccess(name, amount){
+function notifySuccess(name: string, amount: number){
   notify({
     title: t('toasts.titles.success.add_product', {
       name: name,
@@ -79,7 +87,7 @@ function notifySuccess(name, amount){
 }
 
 function addExisting(){
-  let product = newProduct.value!
+  let product = newProduct.value! as ApiProduct
   let data = {
     productId: product.id,
     amount: amount.value,
@@ -109,8 +117,13 @@ function addExisting(){
 
 function addNew(){
   postingProduct.value = true
+  if(newProduct.value === null || newProduct.value === '')
+  {
+    return
+  }
+
   productEndpoint.createProduct(
-      newProduct.value,
+      newProduct.value as string,
       amount.value,
       starred.value,
       selectedStorage.value?.id
@@ -119,20 +132,24 @@ function addNew(){
     if(!success){
       return;
     }
-    notifySuccess(product.name, amount.value)
-    productStore.addProduct(product)
+    notifySuccess(product!.name, amount.value)
+    productStore.addProduct(product!)
     clear()
   })
 
 }
 
 async function save(){
+  //@ts-expect-error
   const {valid} = await addForm.value.validate()
   if(!valid){
     return
   }
   postingProduct.value = true
-  if(newProduct.value.hasOwnProperty('id')){
+  if(newProduct.value === null){
+    return
+  }
+  if(newProduct.value!.hasOwnProperty('id')){
     addExisting()
   } else{
     addNew()
@@ -141,6 +158,7 @@ async function save(){
 }
 
 function clear(){
+  //@ts-expect-error
   addForm.value.reset()
   newStarred.value = undefined
 }
@@ -189,18 +207,14 @@ function enableHint(hint: any){
               :rules="[rules.needProduct]"
               :disabled="productsLoading"
               @keydown.enter="() => {
-              combobox.blur()
+                //@ts-expect-error
+                combobox.blur()
             }"
               :messages="comboboxHint"
+              :loading="productsLoading"
 
           >
-            <template #loader>
-              <v-progress-linear
-                  color="primary"
-                  :indeterminate="true"
-                  :active="productsLoading"
-              />
-            </template>
+
             <template #no-data>
               <v-list-item>
                 <v-list-item-title

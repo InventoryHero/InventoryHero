@@ -1,6 +1,5 @@
 import {Endpoint} from "./Endpoint.ts";
-import {Household, Product, ProductLocations, ProductOnly} from "@/types";
-import {ApiProduct, ProductStorageMapping} from "@/types/api.ts";
+import {ApiProduct, ProductStorageMapping} from "@/types";
 
 export class ProductEndpoint extends Endpoint{
 

@@ -1,7 +1,6 @@
 <script lang="ts">
 import {defineComponent} from "vue";
 import {useConfigStore} from "@/store";
-import {isMobile} from "mobile-device-detect";
 
 export default defineComponent({
   name: "UiSettings",
@@ -24,9 +23,6 @@ export default defineComponent({
     }
   },
   methods:{
-    isMobile() {
-      return isMobile
-    },
     changeTheme(){
       this.config.themeChange({
         dark: !this.theme

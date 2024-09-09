@@ -35,7 +35,7 @@ class Storage(db.Model):
     id: int = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name: str = db.Column(db.String(65535), nullable=False)
     storage_id: int = db.Column(db.Integer, db.ForeignKey("storage.id", ondelete="SET NULL"), nullable=True)
-    household_id: int = db.Column(db.Integer, db.ForeignKey("household.id"), nullable=False)
+    household_id: int = db.Column(db.Integer, db.ForeignKey("household.id", ondelete="CASCADE"), nullable=False)
     creation_date: datetime = db.Column(db.DateTime, default=datetime.utcnow())
     type: ContainerTypes = db.Column(ContainerType, default=ContainerTypes.Box)
     product_mappings = db.relationship("ProductContainerMapping", back_populates="storage")

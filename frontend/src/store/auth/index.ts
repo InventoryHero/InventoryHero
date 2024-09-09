@@ -1,20 +1,25 @@
 import {defineStore} from "pinia";
 import {Household, IRegisterRequest} from "@/types";
-import {isLoggedIn} from "axios-jwt";
+import {applyStorage, clearAuthTokens, getAccessToken, getBrowserLocalStorage, isLoggedIn} from "axios-jwt";
 import {useLocalStorage} from "@vueuse/core";
 import useNewAxios from "@/composables/useAxios.ts";
 import {UserEndpoint} from "@/api/http";
-import {useHouseholdSocket} from "@/store";
-import {Permissions} from "@/types/api.ts";
+import {useGeneralSocketStore, useHouseholdSocketStore} from "@/store";
+import {Permissions, User} from "@/types/api.ts";
+import useAxios from "@/composables/useAxios.ts";
 
 
-
+interface UserStore {
+    user?: User,
+    household?: Household,
+    authorized?: boolean
+}
 
 
 export const useAuthStore = defineStore('auth', {
     state: () => ({
-        user: useLocalStorage(
-            "user", null,
+        _user: useLocalStorage<UserStore>(
+            "user", {},
              {
                 mergeDefaults: (storageValue, defaults) => storageValue,
                 serializer: {
@@ -24,14 +29,20 @@ export const useAuthStore = defineStore('auth', {
             },
         ),
         permissions: {} as Permissions,
-        userEndpoint: useNewAxios("user") as {axios: UserEndpoint},
+        userEndpoint: useAxios<UserEndpoint>("user"),
         returnUrl: null as (null|string),
     }),
     actions: {
-        reset() {
-            this.user = null;
+        async reset() {
+            this._user = {};
             this.permissions = {}
             this.returnUrl = null
+            await clearAuthTokens()
+            const generalSocket = useGeneralSocketStore()
+            const householdSocket = useHouseholdSocketStore()
+            generalSocket.updateHeaders()
+            householdSocket.updateHeaders()
+
         },
         async login(username: string, password: string)
         {
@@ -42,47 +53,45 @@ export const useAuthStore = defineStore('auth', {
             if(!loginSuccess){
                 return
             }
-            if(!isLoggedIn()) {
+            if(!(await isLoggedIn())) {
                 return;
             }
 
-
            let userData =  await this.userEndpoint.axios.getUser()
-
             if(userData !== undefined && userData !== null)
             {
-                this.user = {...userData, authorized: true}
+                this._user.user = {
+                    ...userData,
+                    isAdmin: undefined
+                }
+                this._user.authorized = true
             }
             await this.fetchPermissions()
+            getAccessToken().then((token) => {
+                const generalSocket = useGeneralSocketStore()
+                const householdSocket = useHouseholdSocketStore()
+                generalSocket.updateHeaders(token)
+                householdSocket.updateHeaders(token)
+            })
             if(this.returnUrl === null)
             {
-
                 await this.$router.push("/");
                 return;
             }
-
-
             await this.$router.push(this.returnUrl)
-
-
         },
         async logout()
         {
             this.returnUrl = null;
-            this.user.authorized = false
-            await this.$router.push("/logout")
-            const socketStore = useHouseholdSocket()
+            const socketStore = useHouseholdSocketStore()
             socketStore.leaveHousehold()
-
-
-
             const success = await this.userEndpoint.axios.logout()
-            this.user = null;
             if(!success)
             {
                 // TODO notify
+                console.log("WTF")
             }
-            this.reset()
+            await this.reset()
             this.$router.push("/login")
         },
         async changeHousehold(household: Household | undefined)
@@ -91,21 +100,20 @@ export const useAuthStore = defineStore('auth', {
             {
                 return;
             }
-
-            const socketStore = useHouseholdSocket()
-            //socketStore.leaveHousehold("dufotze")
-            this.user.household  = {
-                id: household.id,
-                name: household.name
-            } as Household
+            const socketStore = useHouseholdSocketStore()
+            socketStore.leaveHousehold()
+            this._user!.household  = {
+                ...household,
+                members: []
+            }
             socketStore.joinHousehold()
         },
         async destroy(){
-            const socketStore = useHouseholdSocket()
+            const socketStore = useHouseholdSocketStore()
             socketStore.leaveHousehold()
-            this.user = null;
+            await this.reset()
             await this.$router.push("/login")
-            this.reset()
+
         },
         async register(username: string, password: string, email: string, localized_error="")
         {
@@ -116,8 +124,8 @@ export const useAuthStore = defineStore('auth', {
             }
             return await this.userEndpoint.axios.register(data)
         },
-        isAuthorized(){
-            return this.user?.authorized ?? false
+        async isAuthorized(){
+            return await isLoggedIn();
         },
         setReturnUrl(url: string)
         {
@@ -135,22 +143,29 @@ export const useAuthStore = defineStore('auth', {
            await this.$router.push(returnUrl)
         },
         async fetchPermissions(){
-            if(!this.isAuthorized()){
+            if(!(await this.isAuthorized())){
                 return
             }
             this.permissions = await this.userEndpoint.axios.getPermissions()
         },
         async init(){
             await this.fetchPermissions()
+        },
+        updateUser(toUpdate: User){
+            this._user.user = {
+                ...toUpdate,
+                isAdmin: undefined
+            }
         }
     },
     getters: {
-        household: state => {return state.user?.household?.id ?? -1},
-        householdName: state => state.user?.household?.name ?? '',
-        userSet: state => {return state.user !== null},
+        user: state => state._user.user,
+        household: state => {return state._user.household?.id ?? -1},
+        householdName: state => state._user.household?.name ?? '',
+        userSet: state => {return state._user !== null},
         isAdmin: state => {
-
             return state.permissions.admin ?? false
-        }
+        },
+        authorized: state => state._user.authorized ?? false
     }
 })

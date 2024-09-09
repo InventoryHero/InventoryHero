@@ -1,15 +1,12 @@
 <script lang="ts">
 import {defineComponent} from "vue";
 import {useConfigStore} from "@/store";
-import AppSetting from "@/components/ui/AppSetting.vue";
-import { isMobile } from 'mobile-device-detect';
-import {useDisplay} from "vuetify";
-import AppThemeColorPicker from "@/components/ui/AppThemeColorPicker.vue";
 import UiSettings from "@/components/settings/UiSettings.vue";
+import GeneralSettings from "@/components/settings/GeneralSettings.vue";
 export default defineComponent({
   name: "Settings",
   components: {
-    UiSettings
+    UiSettings, GeneralSettings
   },
   setup(){
     const config = useConfigStore();

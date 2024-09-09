@@ -1,48 +1,37 @@
-<script lang="ts">
-import {defineComponent} from 'vue'
+<script setup lang="ts">
+import {computed, onMounted, ref} from 'vue'
 import {UserEndpoint} from "@/api/http";
-import useNewAxios from "@/composables/useAxios.ts";
+import useAxios from "@/composables/useAxios.ts";
+import { useRouter} from "vue-router";
+import {useI18n} from "vue-i18n";
 
+const {axios: userEndpoint} = useAxios<UserEndpoint>("user")
+const {t: $t} = useI18n()
+const router = useRouter()
 
-export default defineComponent({
-  name: "Confirmation",
-  setup(){
-    const {axios} = useNewAxios("user")
-    return {
-      userEndpoint: axios as UserEndpoint
-    }
-  },
-  computed:{
-    progressBarState(){
-      return (this.countdown-this.time) * (100/this.countdown)
-    }
-  },
-  props:{
-    code: {
-      type: String,
-      required: true
-    }
-  },
-  data(){
-    return {
-      verified: false,
-      status: "",
-      countdown: 5,
-      time: 5
-    }
-  },
-  methods:{
-    updateProgress(seconds: number)
-    {
-      this.time = seconds
-    }
-  },
-  async mounted() {
-    const {verified, status} = await this.userEndpoint.confirmEmail(this.code)
-    this.verified = verified
-    this.status = status
-  }
+const {code=""} = defineProps<{
+  code?: string
+}>()
+
+const countdown = ref(5)
+const time = ref(5)
+const verified = ref(false)
+const status = ref("")
+const requestInProgress = ref(false)
+
+const progressBarState = computed(() => {
+  return (countdown.value-time.value) * (100/countdown.value)
 })
+
+onMounted(() => {
+  requestInProgress.value = true
+  userEndpoint.confirmEmail(code).then(({success, verified: userVerified, status: message}) => {
+    requestInProgress.value = false
+    verified.value = userVerified ?? false
+    status.value = message
+  })
+})
+
 </script>
 
 <template>
@@ -54,63 +43,73 @@ export default defineComponent({
       cols="12"
       lg="6"
     >
-      <v-card
-          v-if="verified"
-      >
-        <v-card-title>
-          {{ $t('confirmation.email_confirmed')}}
-        </v-card-title>
-        <v-card-text
-          class="mt-2 d-flex justify-center"
-        >
-          <v-progress-circular
-              :model-value="progressBarState"
-              :size="150"
-              :width="8"
+      <v-card>
+        <template v-slot:loader>
+          <v-progress-linear
               color="primary"
+              :active="requestInProgress"
+              :indeterminate="true"
+          />
+        </template>
+        <template
+          v-if="!requestInProgress"
+        >
+          <v-card-title >
+            {{ verified ? $t('confirmation.email_confirmed') : $t('confirmation.failure')}}
+          </v-card-title>
+          <v-card-text
+              v-if="verified"
+              class="mt-2 d-flex flex-column justify-content-center align-center justify-center"
           >
-            <vue-countdown
-                :time="countdown*1000" :interval="1000" :auto-start="true"
-                v-slot="{seconds}"
-                @progress="updateProgress($event.seconds)"
-                @end="this.$router.push('/login')"
+            <v-progress-circular
+                :model-value="progressBarState"
+                :size="150"
+                :width="8"
+                color="primary"
             >
-              <span class="text-wrap">
+              <vue-countdown
+                  :time="countdown*1000" :interval="1000" :auto-start="true"
+                  v-slot="{seconds}"
+                  @progress="time=$event.seconds"
+                  @end="router.push('/login')"
+              >
+                <span class="text-wrap">
                 {{ $t('confirmation.redirect_in', {seconds: seconds}) }}
               </span>
-            </vue-countdown>
-          </v-progress-circular>
+              </vue-countdown>
+            </v-progress-circular>
 
-        </v-card-text>
-        <v-card-actions
-          class="justify-end"
-        >
-          <v-btn
-            variant="outlined"
-            color="primary"
-            @click="this.$router.push('/login')"
+            <span
+                class="mt-4 text-h6"
+            >
+            {{ $t('confirmation.activated')}}
+          </span>
+          </v-card-text>
+          <v-card-text
+              v-else
           >
-            {{ $t('confirmation.redirect_now') }}
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-      <v-card v-else>
-        <v-card-title>
-          {{ $t('confirmation.failure') }}
-        </v-card-title>
-        <v-card-text>
-          {{ $t(`confirmation.${status}`) }}
-        </v-card-text>
-        <v-card-actions
-          class="justify-end">
-          <v-btn
-            variant="elevated"
-            color="primary"
-            @click="$router.push('/login')"
+            {{ $t(`confirmation.${status}`) }}
+          </v-card-text>
+          <v-card-actions
+              class="justify-end"
           >
-            {{ $t('confirmation.go_to_login')}}
-          </v-btn>
-        </v-card-actions>
+            <v-btn
+                variant="outlined"
+                color="primary"
+                to="/login"
+                :disabled="requestInProgress"
+            >
+              {{ $t('confirmation.go_to_login')}}
+            </v-btn>
+          </v-card-actions>
+        </template>
+        <template v-else>
+          <v-card-text
+            class="d-flex justify-center"
+          >
+            {{ $t('confirmation.verifying') }}
+          </v-card-text>
+        </template>
       </v-card>
     </v-col>
   </v-row>

@@ -1,6 +1,12 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
-import {Storage} from "@/types";
+import {ApiStorage} from "@/types";
+
+type Paper = {
+  height: number,
+  width: number
+}
+
 
 const papers = {
   "A4": {
@@ -14,12 +20,12 @@ export default defineComponent({
   name: "AppPrintPreview",
   computed:{
     items(){
-      let rows = [] as Array<Array<Storage>>
+      let rows = [] as Array<Array<ApiStorage>>
       for(let i = 0; i < this.modelValue.length; i++)
       {
         if(i % this.itemsPerRow === 0)
         {
-          rows.push([] as Array<Storage>)
+          rows.push([] as Array<ApiStorage>)
         }
         rows[rows.length-1].push(this.modelValue[i])
 
@@ -92,9 +98,10 @@ export default defineComponent({
 </script>
 
 <template>
-  <div
+  <v-sheet
     class="page"
     :style="`height: ${paperHeight}mm; width: ${paperWidth}mm`"
+
   >
     <div class="content">
       <div
@@ -115,7 +122,7 @@ export default defineComponent({
         </div>
       </div>
     </div>
-  </div>
+  </v-sheet>
 </template>
 
 <style scoped lang="scss">

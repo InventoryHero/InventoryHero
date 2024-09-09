@@ -1,6 +1,6 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
-import {Storage} from "@/types";
+import {ApiStorage, Storage} from "@/types";
 
 export default defineComponent({
   name: "QrCodeFilter",

@@ -8,7 +8,6 @@ import Account from "@/views/Account.vue";
 import Household from "@/views/Household.vue";
 import Create from "@/views/Create.vue";
 import Locations from "@/views/Locations.vue";
-import NotFound from "@/views/NotFound.vue";
 import Logout from "@/views/Logout.vue";
 import CreateProductCard from "@/components/widgets/Create/CreateProductCard.vue";
 import CreateBoxCard from "@/components/widgets/Create/CreateBoxCard.vue";
@@ -23,10 +22,11 @@ import Overview from "@/components/widgets/Administration/Overview.vue";
 import passwordReset from "./routes/passwordReset.ts";
 import Products from "@/views/Products.vue";
 import Boxes from "@/views/Boxes.vue";
+import RouteNotFound from "@/views/RouteNotFound.vue";
 
 
 
-export const router = createRouter({
+const vueRouter =  createRouter({
   history: createWebHistory(),
   routes: [
     {
@@ -45,7 +45,9 @@ export const router = createRouter({
       props: true,
       meta: {
         requiresAuth: false,
-        fillHeight: true
+        fillHeight: true,
+        requiresHousehold: false,
+        tokenized: true
       }
     },
     {
@@ -195,7 +197,12 @@ export const router = createRouter({
     {
       path: '/logout',
       name: "logout",
-      component: Logout
+      component: Logout,
+      meta: {
+        requiresHousehold: false,
+        requiresAuth: true,
+        fillHeight: true
+      }
     },
     {
       path: "/administration",
@@ -221,9 +228,21 @@ export const router = createRouter({
     },
     passwordReset,
     {
+      path: '/not-found',
+      component: RouteNotFound,
+      name: "route-not-found",
+      meta: {
+        fillHeight: true,
+        requiresAuth: false,
+        requiresAdmin: false,
+        requiresHousehold: false,
+        transition: 'slide'
+      }
+    },
+    {
       path: '/:pathMatch(.*)*',
       name: '404',
-      component: NotFound
+      redirect: '/not-found'
     }
 
   ],
@@ -236,10 +255,7 @@ export const router = createRouter({
   },
 })
 
-router.beforeEach(async (to, from) => {
-
-  if(to.path === "/logout")
-    return;
+vueRouter.beforeEach(async (to, from) => {
   const authStore = useAuthStore();
   const loggedIn = await authStore.isAuthorized()
   if(!loggedIn){
@@ -249,42 +265,39 @@ router.beforeEach(async (to, from) => {
     if(!(to.meta.requiresAuth ?? true)){
       return
     }
-    authStore.setReturnUrl(to.fullPath)
+    if(to.path !== "/logout"){
+      authStore.setReturnUrl(to.fullPath)
+    }
     return "/login"
   }
 
-  if(to.path === "/login")
+  if(to.path === "/login") {
     return "/"
-  if(to.path.startsWith("/confirmation"))
-    return "/"
+  }
 
   if(to.meta.requiresHousehold && (authStore.household === -1)){
     authStore.setReturnUrl(to.fullPath)
     return "/households"
   }
 
-  if((to.meta.requiresAdmin ?? false) && !authStore.isAdmin){
+  if((to.meta.requiresAdmin ?? false) && !authStore.isAdmin) {
     notify({
       title: i18n.global.t('toasts.titles.info.insufficient_permissions'),
-      text:  i18n.global.t('toasts.text.info.insufficient_permissions'),
+      text: i18n.global.t('toasts.text.info.insufficient_permissions'),
       type: 'info'
     })
     return "/"
   }
 })
 
-router.beforeEach(async (to, from) => {
+vueRouter.beforeEach(async (to, from) => {
   document.title =  to.meta?.title ?? i18n.global.t('app.title')
   notify({
-    group: 'newContent', // clean only the foo group
+    group: 'newContent',
     clean: true,
   });
 })
 
-declare module 'vue-router' {
-  interface RouteMeta {
-    fillHeight?: boolean
-    requiresAuth?: boolean
-    requiresHousehold?: boolean
-  }
-}
+export default vueRouter
+
+

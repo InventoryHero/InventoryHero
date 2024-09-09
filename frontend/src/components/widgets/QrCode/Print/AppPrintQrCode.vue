@@ -42,7 +42,6 @@ export default defineComponent({
     },
     pagePreviewStyle(): StyleValue{
       return {
-        display: this.showPagePreview ? "block" : "none",
         overflow: "auto",
         height: "70svh",
         margin: "16px"
@@ -108,7 +107,12 @@ export default defineComponent({
 
 <template>
   <template v-if="modelValue">
-    <div v-bind="$attrs" :style="pagePreviewStyle" ref="componentRef">
+    <div
+        v-if="showPagePreview"
+        v-bind="$attrs"
+        :style="pagePreviewStyle"
+        ref="componentRef"
+    >
       <app-print-preview
           class="print-preview"
           :style="`transform: scale(${settings.previewScale})`"
@@ -446,6 +450,10 @@ export default defineComponent({
 </template>
 
 <style scoped lang="scss">
+
+.test{
+  position: absolute !important;
+}
 .qr-code{
   background-color: white;
   color: black;

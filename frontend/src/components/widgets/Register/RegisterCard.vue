@@ -1,59 +1,57 @@
-<script lang="ts">
+<script setup lang="ts">
 import {useAuthStore} from "@/store";
-import {defineComponent} from "vue";
-
-export default defineComponent({
-  name: "RegisterCard",
-  setup(){
-    const authStore = useAuthStore()
-    return {authStore}
-  },
-  emits: {
-    registered(){
-      return true
-    }
-  },
-  data() {
-    return {
-      loading: false,
-      username: "",
-      password: "",
-      password_repeat: "",
-      email: "",
-      rules: {
-        usernameNeeded: (value: string) => value !== '' || this.$t('login.register.username_needed'),
-        passwordNeeded: (value: string) => value !== '' || this.$t('login.register.password_needed'),
-        repeatNotEqual: (value: string) => value === this.password || this.$t('login.register.passwords_not_equal'),
-        emailNeeded: (value: string) => value !== '' || this.$t('login.register.email_needed')
-      }
-    }
-  },
-  methods:{
-    async register() {
-      this.loading=true;
-      let validation = await this.$refs["register-form"].validate();
-      if(!validation.valid)
-      {
-        return
-      }
+import { ref, useTemplateRef} from "vue";
+import {useI18n} from "vue-i18n";
 
 
-      let success = await this.authStore.register(this.username, this.password, this.email, "")
-      if (success) {
-        this.password = "";
-        this.password_repeat = "";
-        this.username = "";
-        this.email = "";
-        this.loading=false
-        this.$emit('registered')
-      }
-      else
-      {
-        this.loading = false
-      }
-    },
+const authStore = useAuthStore()
+const {t: $t} = useI18n()
+
+const emit = defineEmits<{
+  (e: 'registered'): void
+}>()
+
+const loading = ref(false)
+const username = ref("")
+
+const password = ref("")
+const passwordRepeat = ref("")
+const email = ref("")
+const registerForm = useTemplateRef("register-form")
+const rules = {
+  usernameNeeded: (value: string) => value !== '' || $t('login.register.rules.username_needed'),
+  passwordNeeded: (value: string) => value !== '' || $t('login.register.rules.password_needed'),
+  repeatNotEqual: (value: string) => value === password.value || $t('login.register.rules.passwords_not_equal'),
+  emailNeeded: (value: string) => value !== '' || $t('login.register.rules.email_needed')
+}
+async function register() {
+  loading.value=true;
+  //@ts-expect-error
+  const {valid} = await registerForm.value.validate();
+  if(!valid)
+  {
+    return
   }
-})
+
+  let success = await authStore.register(username.value, password.value, email.value, "")
+  loading.value = false
+  if (success) {
+    reset()
+    close()
+  }
+}
+
+function reset(){
+  password.value = "";
+  passwordRepeat.value = "";
+  username.value = "";
+  email.value= "";
+}
+
+function close(){
+  emit('registered')
+}
+
 </script>
 
 <template>
@@ -89,7 +87,7 @@ export default defineComponent({
       />
       <app-password-textfield
           :label="$t('login.register.repeat_password')"
-          v-model="password_repeat"
+          v-model="passwordRepeat"
           :rules="[rules.repeatNotEqual]"
           density="compact"
           variant="outlined"

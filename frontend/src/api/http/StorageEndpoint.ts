@@ -1,15 +1,9 @@
 import {Endpoint} from "./Endpoint";
 import {
     ApiProduct,
-    Box,
-    Location,
-    LocationContent,
-    ProductLocations,
-    ProductOnly,
-    Storage,
+    ApiStorage,
     StorageTypes
 } from "@/types";
-import {ApiStorage} from "@/types/api.ts";
 import {Api} from "@vitejs/plugin-vue";
 
 
@@ -174,7 +168,7 @@ export class LocationEndpoint extends StorageEndpoint{
         }
     }
 
-    public async updateLocation(id: number|null, updatedData: Partial<Location>)
+    public async updateLocation(id: number|null, updatedData: Partial<ApiStorage>)
     {
         if(id === null)
         {
@@ -202,12 +196,12 @@ export class LocationEndpoint extends StorageEndpoint{
         }
     }
 
-    public async createLocation(data: Partial<Location>){
+    public async createLocation(data: Partial<ApiStorage>){
         const {success, newStorage} = await this.createStorage(data)
 
         return {
             success,
-            newLocation: newStorage as Location|undefined
+            newLocation: newStorage as ApiStorage
         }
     }
 
@@ -273,12 +267,12 @@ export class BoxEndpoint extends StorageEndpoint{
         }
     }
 
-    public async createBox(data: Partial<Box>){
+    public async createBox(data: Partial<ApiStorage>){
         const {success, newStorage} = await this.createStorage(data)
 
         return {
             success,
-            newBox: newStorage as Box|undefined
+            newBox: newStorage as ApiStorage
         }
     }
 

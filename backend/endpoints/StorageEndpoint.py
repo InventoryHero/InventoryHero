@@ -128,7 +128,7 @@ class StorageEndpoint(Blueprint):
             if storage_name == "":
                 return jsonify(status="create_box_invalid_name"), 400
 
-            location = request.json.pop("location_id", None)
+            location = request.json.pop("storageId", None)
             location_id = None
             if location is not None:
                 location = Storage.query.filter_by(household_id=household, id=location).first()
@@ -193,7 +193,10 @@ class StorageEndpoint(Blueprint):
             ).first()
             if box is None:
                 return jsonify(status="box_not_found"), 204
-
+            # TODO JUST DELETING SETS THE IDs to NONE
+            # AS EXPECTED FORM DB
+            # CHECK BEFORE IF SOME PRODUCTS ALREADY EXIST IN "VOID"
+            # TO MERGE PROPERLY
             self.db.session.delete(box)
             self.db.session.commit()
             return {}, 204
@@ -248,7 +251,10 @@ class StorageEndpoint(Blueprint):
             ).first()
             if location is None:
                 return jsonify(status="location_not_found"), 400
-
+            # TODO JUST DELETING SETS THE IDs to NONE
+            # AS EXPECTED FORM DB
+            # CHECK BEFORE IF SOME PRODUCTS ALREADY EXIST IN "VOID"
+            # TO MERGE PROPERLY
             self.db.session.delete(location)
             self.db.session.commit()
             self.app.logger.info(f"DELETED BOX {location.name}")
@@ -309,17 +315,4 @@ class StorageEndpoint(Blueprint):
                 return jsonify(status="location_not_found"), 400
 
             return jsonify(name=location.name), 200
-
-        @self.route("/test", methods=["GET"])
-        def test(household):
-
-            filtered_products = (
-                self.db.session.query(Product)
-                .join(ProductContainerMapping, Product.mappings)
-                .filter(ProductContainerMapping.storage_id == 4)
-                .options(contains_eager(Product.mappings))
-                .all()
-            )
-
-            return jsonify(filtered_products), 200
 
