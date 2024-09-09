@@ -148,10 +148,11 @@ export default defineComponent({
               :loading="loading"
           >
             <template v-slot:append>
-              <v-icon
+              <app-icon-btn
                   :disabled="loading"
-                  icon="fa:fas fa-clipboard"
+                  icon="mdi-clipboard-outline"
                   @click="copyToClipboard()"
+                  size="large"
               />
             </template>
           </v-textarea>
@@ -179,7 +180,7 @@ export default defineComponent({
 
           >
             <v-btn
-                icon="fa:fas fa-envelope"
+                icon="mdi-email"
             >
               <v-icon size="large" color="primary" class="me-1"/>
             </v-btn>
@@ -189,7 +190,7 @@ export default defineComponent({
               :share-options="whatsAppShare"
           >
             <v-btn
-                icon="fa:fab fa-whatsapp"
+                icon="mdi-whatsapp"
             >
               <v-icon size="large" color="primary" class="me-1"/>
             </v-btn>

@@ -68,11 +68,11 @@ export default defineComponent({
     getIcon(type: StorageTypes){
       switch(type){
         case StorageTypes.Location:
-          return "fa:fas fa-building"
+          return "mdi-archive-marker"
         case StorageTypes.Box:
-          return "fa:fas fa-boxes"
+          return "mdi-package-variant"
         default:
-          return ""
+          return "mdi-archive-off"
       }
     },
     getActive(item: ApiStorage): boolean{

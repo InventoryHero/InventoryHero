@@ -135,16 +135,22 @@ export default defineComponent({
         <v-col>
           {{ title }}
         </v-col>
-        <v-col cols="2" class="d-flex justify-center align-center">
+        <v-col
+            cols="2"
+            class="d-flex justify-center align-center"
+        >
           <v-icon
               :color="color.hex"
               icon="mdi-circle"
 
           />
         </v-col>
-        <v-col cols="1">
+        <v-col
+            cols="1"
+            class="d-flex justify-center align-center"
+        >
           <app-icon-btn
-            icon="fa:fas fa-times"
+            icon="mdi-close-thick"
             @click="menu=false"
           ></app-icon-btn>
         </v-col>

@@ -101,7 +101,7 @@ function close(){
         variant="elevated"
         color="green-lighten-1"
         @click="register()"
-        prepend-icon="fa:fas fa-lock"
+        prepend-icon="mdi-lock"
     >
       <template #prepend>
         <v-icon size="small"/>

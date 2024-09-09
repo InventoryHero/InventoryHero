@@ -68,14 +68,12 @@ function toggleNav(){
       >
         <v-btn
             v-if="!isSettings"
-            icon="fa:fas fa-gears"
-            size="small"
+            icon="mdi-cog"
             @click="() => {$router.push('/settings')}"
         />
         <v-btn
             v-else
-            icon="fa:fas fa-arrow-left"
-            size="small"
+            icon="mdi-arrow-left"
             @click="() => {$router.push('/login')}"
         />
 

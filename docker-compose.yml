@@ -1,16 +1,52 @@
 version: "3.4"
 services:
   inventoryhero:
-    container_name: inventory-hero
-    image: inventoryhero
-    build:
-      target: release
-      dockerfile: Dockerfile
+    container_name: inventoryhero
+    image: ghcr.io/inventoryhero/inventoryhero:beta
     restart: always
     volumes:
       - ./dev/:/app/inventoryhero/data
     ports:
       - "8080:80"
-    env_file:
-      - .env
+    environment:
+      # email config
+      #INVENTORYHERO_SMTP_FROM_NAME: ""
+      #INVENTORYHERO_SMTP_SERVER: ""
+      #INVENTORYHERO_SMTP_USERNAME: ""
+      #INVENTORYHERO_SMTP_PASSWORD: ""
+      #INVENTORYHERO_SMTP_PORT:
+      #INVENTORYHERO_SMTP_FROM_ADDRESS: ""
+
+      #database
+      INVENTORYHERO_DB_TYPE: postgresql
+      INVENTORYHERO_DB_HOST: postgres
+      INVENTORYHERO_DB_PORT: 5432
+      INVENTORYHERO_DB_NAME: inventoryhero
+      INVENTORYHERO_DB_USER: inventoryhero
+      INVENTORYHERO_DB_PASSWORD: inventoryhero
+
+      # if self registration is allowed / email confirmation needed
+      INVENTORYHERO_CONFIRMATION_NEEDED: false
+      INVENTORYHERO_REGISTRATION_ALLOWED: false
+
+      # default user config (only needed on first run)
+      INVENTORYHERO_ADMIN_USERNAME: "admin"
+      INVENTORYHERO_ADMIN_EMAIL: "admin@inventory.hero"
+      INVENTORYHERO_ADMIN_PASSWORD: "changeme"
+
+      # needed if mailing is enabled, to set base url properly
+      INVENTORYHERO_APP_URL: "http://localhost:8080"
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres
+    restart: always
+    # set shared memory limit when using docker-compose
+    shm_size: 128mb
+    environment:
+      POSTGRES_PASSWORD: inventoryhero
+      POSTGRES_USER: inventoryhero
+      POSTGRES_DB: inventoryhero
+
       

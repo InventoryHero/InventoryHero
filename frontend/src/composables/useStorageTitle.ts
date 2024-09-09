@@ -7,11 +7,11 @@ export default (storage: Ref<ApiStorage|undefined|null>) => {
     const icon = computed(() => {
         switch (storage.value?.type ?? -1) {
             case StorageTypes.Location:
-                return 'fa:fas fa-location-dot';
+                return "mdi-archive-marker"
             case StorageTypes.Box:
-                return 'fa:fas fa-boxes';
+                return "mdi-package-variant"
             default:
-                return 'fa:fas fa-ban';
+                return "mdi-archive-off"
         }
     });
 

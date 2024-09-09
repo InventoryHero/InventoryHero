@@ -139,13 +139,13 @@ onMounted(()=> {
         :body="$t('confirm.leave.text')"
       >
         <v-btn
-            prepend-icon="fa:fas fa-ban"
+            prepend-icon="mdi-cancel"
             @click="stay()"
         >
           {{ $t('confirm.leave.deny') }}
         </v-btn>
         <v-btn
-            prepend-icon="fa:fas fa-check-circle"
+            prepend-icon="mdi-check-circle"
             @click="leave()"
         >
           {{ $t('confirm.leave.accept') }}

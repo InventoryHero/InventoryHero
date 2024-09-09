@@ -23,9 +23,9 @@ const passwordRules = computed(() => {
 
 const innerIcon = computed(() => {
   if(!visible.value){
-    return 'fa:fas fa-eye-slash'
+    return 'mdi-eye-off'
   }
-  return 'fa:fas fa-eye'
+  return 'mdi-eye'
 })
 
 function showPassword(){

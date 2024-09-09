@@ -39,21 +39,21 @@ const {requestInProgress=false, disabled=false} = defineProps<{
     <v-col>
       <app-icon-btn
           :disabled="disabled"
-          icon="fa:fas fa-trash"
+          icon="mdi-trash-can"
           @click="$emit('deleteMe')"
       />
     </v-col>
     <v-col>
       <app-icon-btn
           :disabled="disabled"
-          icon="fa:fas fa-minus"
+          icon="mdi-minus"
           @click="$emit('updateAmount', -1)"
       />
     </v-col>
     <v-col>
       <app-icon-btn
           :disabled="disabled"
-          icon="fa:fas fa-plus"
+          icon="mdi-plus"
           @click="$emit('updateAmount', +1)"
       />
     </v-col>
@@ -62,7 +62,7 @@ const {requestInProgress=false, disabled=false} = defineProps<{
       <app-icon-btn
           :disabled="disabled"
           @click="$emit('showDetails')"
-          icon="fa:fas fa-info-circle"
+          icon="mdi-information"
       />
     </v-col>
 
