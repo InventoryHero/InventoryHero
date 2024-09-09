@@ -27,7 +27,7 @@ export default defineComponent({
       return this.usersToDelete.length > 0 && !this.deleting
     },
     headers() {
-      let headers: Array<Object> = [
+      let headers: Array<object> = [
         {
           title: this.$t("administration.users.table.headers.username"),
           value: "username"

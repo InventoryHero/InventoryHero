@@ -3,6 +3,7 @@ import {defineComponent} from "vue";
 import {useAuthStore} from "@/store";
 import {i18n} from "@/lang";
 import {notify} from "@kyvg/vue3-notification";
+import {RouteLocation} from "vue-router";
 
 export default defineComponent({
 
@@ -12,7 +13,9 @@ export default defineComponent({
       authStore
     }
   },
-  beforeRouteEnter(to, from){
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  beforeRouteEnter(_: RouteLocation, __: RouteLocation){
     const authStore = useAuthStore()
     if(!authStore.isAdmin){
       notify({

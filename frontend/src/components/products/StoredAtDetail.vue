@@ -35,13 +35,7 @@ const currProductAt = computed(() => {
   return productStore.selectedProductStorage
 })
 
-const amount = computed({
-  get(){
-    return currProductAt.value?.amount
-  }, set(value: number){
 
-  }
-})
 
 const storage = computed({
   get(){

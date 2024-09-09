@@ -1,6 +1,6 @@
 import {createVuetify} from "vuetify";
 import 'vuetify/styles'
-//@ts-expect-error
+//@ts-expect-error colors are there but they are not properly found
 import colors from 'vuetify/lib/util/colors'
 import '@fortawesome/fontawesome-free/css/all.css'
 import '@mdi/font/css/materialdesignicons.css'

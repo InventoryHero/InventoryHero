@@ -1,7 +1,6 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
-import {Storage} from "@/types";
-import {b} from "vite/dist/node/types.d-jgA8ss1A";
+import {ApiStorage} from "@/types";
 
 export default defineComponent({
   name: "PrintQrModal",
@@ -40,7 +39,7 @@ export default defineComponent({
       default: false
     },
     storage: {
-      type: Array<Storage>,
+      type: Array<ApiStorage>,
       default: []
     }
   },
@@ -125,7 +124,7 @@ export default defineComponent({
                 <v-list-item
                     :title="item.name"
                 >
-                  <template v-slot:prepend="{ isActive }">
+                  <template v-slot:prepend>
                       <v-checkbox-btn
                           density="comfortable"
                           color="primary"

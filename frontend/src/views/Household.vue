@@ -34,7 +34,7 @@ export default defineComponent({
       inviteModal: false,
       inviteId: NaN as number,
       rules: {
-        required: (value: String) => !!value || this.$t('households.rules.name_required'),
+        required: (value: string) => !!value || this.$t('households.rules.name_required'),
       }
     }
   },
@@ -93,12 +93,14 @@ export default defineComponent({
       }
       return false
     },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     leaveHousehold(id: number){
       this.$notify({
         title: this.$t('toasts.titles.info.leave_household'),
         type: "info"
       })
     },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     toggleEdit(id: number){
       this.$notify({
         title: this.$t('toasts.titles.info.edit_household'),

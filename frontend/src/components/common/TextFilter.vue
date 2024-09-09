@@ -1,10 +1,11 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
-import AppIconBtn from "@/components/ui/AppIconBtn.vue";
+
 
 export default defineComponent({
   name: "TextFilter",
   emits: {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     'update:filter'(payload: string){
       return true;
     }

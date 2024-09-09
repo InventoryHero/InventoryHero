@@ -4,6 +4,7 @@ import {defineComponent} from 'vue'
 export default defineComponent({
   name: "AppModalActivatorBtn",
   emits:{
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     'update:model-value'(value: boolean){
       return true
     }
@@ -48,7 +49,7 @@ export default defineComponent({
   >
     <template #loader>
       <v-overlay
-          v-model="loading"
+          :model-value="loading"
           :contained="true"
           class="justify-center align-center rounded"
       ><v-progress-circular color="primary" :indeterminate="true"/>

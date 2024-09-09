@@ -1,7 +1,6 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
 import {useAuthStore, useStorage} from "@/store";
-import useNewAxios from "@/composables/useAxios.ts";
 import {LocationEndpoint} from "@/api/http";
 import useAxios from "@/composables/useAxios.ts";
 

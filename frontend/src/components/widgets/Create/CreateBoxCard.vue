@@ -5,11 +5,6 @@ import {BoxEndpoint} from "@/api/http";
 import useAxios from "@/composables/useAxios.ts";
 import {ApiStorage} from "@/types";
 
-type Views = "product" | "box" | "location"
-type Clear = {
-  [K in Views]: boolean
-}
-
 export default defineComponent({
   name: "CreateBoxCard",
   inject: ['loading'],

@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import {computed, defineComponent, ref} from 'vue'
-import {useI18n} from "vue-i18n";
 
 type rule = ((value: string) => string | boolean) | boolean | string
 
@@ -14,7 +12,7 @@ const {rules=[], disableMinLength=false} = defineProps<{
 }>()
 
 const visible = ref(false)
-const minCharacters = (value: string) => value.length >= 8 || $t('rules.min_password_length')
+const minCharacters = (value?: string) => (value?.length ?? 0) >= 8 || $t('rules.min_password_length')
 
 const passwordRules = computed(() => {
   if(disableMinLength){

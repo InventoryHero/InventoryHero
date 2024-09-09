@@ -28,6 +28,7 @@ export default defineComponent({
     close(){
       return true
     },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     'click:save'(_: Partial<User>){
       return true;
     }
@@ -109,7 +110,7 @@ export default defineComponent({
         hideDetails: "auto",
         class: "mb-4",
         disabled: this.loading
-      } as Partial<{}>
+      } as Partial<object>
     }
 
   },
@@ -140,12 +141,14 @@ export default defineComponent({
       emailFree: true,
       rules: {
         required: (value: string) => !!value || this.$t('administration.users.rules.field_required'),
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         username_free: (value: string) => {
           if(this.usernameFree){
             return
           }
           return this.$t('administration.users.rules.username_taken')
         },
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         email_free: (_: string) => {
           if(this.emailFree){
             return

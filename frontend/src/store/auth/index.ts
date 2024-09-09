@@ -1,8 +1,7 @@
 import {defineStore} from "pinia";
 import {Household, IRegisterRequest} from "@/types";
-import {applyStorage, clearAuthTokens, getAccessToken, getBrowserLocalStorage, isLoggedIn} from "axios-jwt";
+import {clearAuthTokens, getAccessToken, isLoggedIn} from "axios-jwt";
 import {useLocalStorage} from "@vueuse/core";
-import useNewAxios from "@/composables/useAxios.ts";
 import {UserEndpoint} from "@/api/http";
 import {useGeneralSocketStore, useHouseholdSocketStore} from "@/store";
 import {Permissions, User} from "@/types/api.ts";
@@ -21,10 +20,11 @@ export const useAuthStore = defineStore('auth', {
         _user: useLocalStorage<UserStore>(
             "user", {},
              {
-                mergeDefaults: (storageValue, defaults) => storageValue,
+                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                mergeDefaults: (storageValue, _) => storageValue,
                 serializer: {
-                    read: (v: any) => v ? JSON.parse(v) : null,
-                    write: (v: any) => JSON.stringify(v),
+                    read: (v: string) => v ? JSON.parse(v) : null,
+                    write: (v: UserStore) => JSON.stringify(v),
                 },
             },
         ),
@@ -46,7 +46,7 @@ export const useAuthStore = defineStore('auth', {
         },
         async login(username: string, password: string)
         {
-            let loginSuccess = await this.userEndpoint.axios.login({
+            const loginSuccess = await this.userEndpoint.axios.login({
                 username: username,
                 password: password
             })
@@ -57,7 +57,7 @@ export const useAuthStore = defineStore('auth', {
                 return;
             }
 
-           let userData =  await this.userEndpoint.axios.getUser()
+           const userData =  await this.userEndpoint.axios.getUser()
             if(userData !== undefined && userData !== null)
             {
                 this._user.user = {
@@ -115,9 +115,9 @@ export const useAuthStore = defineStore('auth', {
             await this.$router.push("/login")
 
         },
-        async register(username: string, password: string, email: string, localized_error="")
+        async register(username: string, password: string, email: string)
         {
-            let data: IRegisterRequest = {
+            const data: IRegisterRequest = {
                 username: username,
                 password: password,
                 email: email
@@ -132,7 +132,7 @@ export const useAuthStore = defineStore('auth', {
             this.returnUrl = url
         },
         async followReturnUrl(){
-            let returnUrl = this.returnUrl
+            const returnUrl = this.returnUrl
             this.returnUrl = null
 
             if(returnUrl === null)

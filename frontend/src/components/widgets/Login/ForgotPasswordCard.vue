@@ -21,25 +21,23 @@ const emailForm = useTemplateRef("emailForm")
 const saving = ref(false)
 const sent = ref(false)
 const text = computed(() => {
-  if(sent.value){
-    return t('password_reset.request_finished')
-  }
-  return t('password_reset.email_description')
+  return t('password_reset.description')
 })
 
 
 
-const emailNeeded = (value: string) => !!value || t('password_reset.email_needed')
+const emailNeeded = (value: string) => !!value || t('password_reset.rules.email_needed')
 
 
 async function save(){
+  //@ts-expect-error couldn't figure out how to type the form-ref properly
   const {valid} = await emailForm.value.validate()
   console.log(valid)
   if(!valid){
     return
   }
   saving.value = true
-  userEndpoint.forgotPassword(email.value).then(({success, message}) => {
+  userEndpoint.forgotPassword(email.value).then(() => {
     saving.value = false
     notify({
       title: t('toasts.titles.success.password_reset_request'),
@@ -52,7 +50,7 @@ async function save(){
 }
 
 function close(){
-  //@ts-expect-error
+  //@ts-expect-error couldn't figure out how to type the form-ref properly
   emailForm.value.reset()
   saving.value = false
   emit('close')
@@ -68,20 +66,18 @@ function close(){
     >
       <v-text-field
           v-bind="textFieldStyle"
-          :placeholder="t('password_reset.email')"
-          :label="t('password_reset.email')"
+          :placeholder="t('password_reset.email_placeholder')"
+          :label="t('password_reset.email_label')"
           v-model="email"
           :rules="[emailNeeded]"
       />
     </v-form>
     <v-sheet
-        class="pa-4 mb-2"
+        class="pa-4 mb-2 d-flex justify-center"
         color="accent"
         rounded="lg"
     >
-      <v-banner-text>
         {{text}}
-      </v-banner-text>
     </v-sheet>
 
   </v-card-text>

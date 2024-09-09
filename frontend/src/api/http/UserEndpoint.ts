@@ -28,7 +28,7 @@ export class UserEndpoint extends Endpoint{
         const response = await this.internalAxios.post('/login', loginParams)
         if(response.status === 200)
         {
-            let data: ILoginResponse = response.data as ILoginResponse
+            const data: ILoginResponse = response.data as ILoginResponse
 
             await setAuthTokens({
                 accessToken: data.access_token,
@@ -43,7 +43,7 @@ export class UserEndpoint extends Endpoint{
     public async logout(){
         const refreshToken = await getRefreshToken() ?? ""
 
-        let body = {
+        const body = {
             data: {
                 refreshToken: refreshToken
             }
@@ -177,7 +177,7 @@ export class UserEndpoint extends Endpoint{
         this.handleNonErrorNotifications(response)
         return {
             success: false,
-            // @ts-expect-error
+            // @ts-expect-error - this is actually an error case then ...
             message: response.response.data.status
         }
     }
@@ -210,10 +210,12 @@ export class UserEndpoint extends Endpoint{
                     message: ""
                 };
             }
-        } catch(error: any){
+        } catch(error: unknown){
+            const e = error as AxiosError
+            const data = e.response?.data as {status?: string}|undefined
             return {
                 success: false,
-                message: error.response.data.status
+                message: data?.status ?? ''
             }
         }
     }
@@ -229,10 +231,12 @@ export class UserEndpoint extends Endpoint{
                     message: ""
                 };
             }
-        } catch(error: any){
+        } catch(error: unknown){
+            const e = error as AxiosError
+            const data = e.response?.data as {status?: string}|undefined
             return {
                 success: false,
-                message: error.response.data.status
+                message: data?.status ?? ''
             }
         }
     }
@@ -249,10 +253,12 @@ export class UserEndpoint extends Endpoint{
                     message: ""
                 };
             }
-        } catch(error: any){
+        } catch(error: unknown){
+            const e = error as AxiosError
+            const data = e.response?.data as {status?: string}|undefined
             return {
                 success: false,
-                message: error.response.data.status
+                message: data?.status ?? ''
             }
         }
     }
@@ -268,12 +274,12 @@ export class UserEndpoint extends Endpoint{
                 status: response.data?.status
             }
 
-        } catch(error: any){
-            console.log(error)
+        } catch(error: unknown){
+            const e = error as AxiosError
+            const data = e.response?.data as {status?: string}|undefined
             return {
                 success: false,
-                verified: undefined,
-                status: error.response.data.status
+                message: data?.status ?? ''
             }
         }
         // TODO HANDLE ERRORS

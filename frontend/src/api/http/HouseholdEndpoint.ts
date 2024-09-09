@@ -18,7 +18,7 @@ export class HouseholdEndpoint extends Endpoint{
     }
 
     public async createHousehold(name: string): Promise<boolean> {
-        let body = {
+        const body = {
             name: name
         }
         const response = await this.internalAxios.post("/create", body)

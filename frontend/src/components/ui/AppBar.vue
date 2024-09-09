@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import {computed, defineComponent, onUpdated, ref, watch} from "vue";
 import {useAuthStore} from "@/store";
-import {useRoute} from "vue-router";
 
 const authStore = useAuthStore()
 const route = useRoute()
@@ -17,7 +15,6 @@ const {nav=false} = defineProps<{
 const displayNav = computed(() => {
   return nav && isAuthorized.value
 })
-
 const isAuthorized = computed(() => {
   return authStore.authorized
 })
@@ -44,19 +41,14 @@ function toggleNav(){
         @click.stop="toggleNav()"
     ></v-app-bar-nav-icon>
     <v-toolbar-title>
-      <v-hover
-        v-slot="{ isHovering, props }"
+      <v-card
+          hover
+          width="fit-content"
+          color="dark-grey"
+          to="/"
       >
-        <v-card
-            hover
-            class="title"
-            color="dark-grey"
-
-            @click="this.$router.push('/')"
-        >
-          {{ $t('app.title') }}
-        </v-card>
-      </v-hover>
+        {{ $t('app.title') }}
+      </v-card>
     </v-toolbar-title>
     <template v-slot:append>
       <app-icon-btn
@@ -100,10 +92,7 @@ function toggleNav(){
 </template>
 
 <style scoped lang="scss">
-.title{
-  width: fit-content;
 
-}
 .hovering{
   cursor: pointer !important;
 }

@@ -1,5 +1,5 @@
 <script lang="ts">
-import {defineComponent, PropType} from 'vue'
+import {defineComponent} from 'vue'
 import iro from "@jaames/iro";
 import IroColorPicker from "@/components/ui/IroColorPicker.vue";
 import {useConfigStore} from "@/store";
@@ -10,14 +10,7 @@ import {IroColor} from "@irojs/iro-core";
 // PRETTY MUCH TAKEN FROM
 // https://github.com/fluidd-core/fluidd/blob/develop/src/components/ui/AppColorPicker.vue
 
-type Color = {
-  hex: string,
-  rgb: {
-    r: number,
-    g: number,
-    b: number
-  }
-}
+
 
 
 export default defineComponent({

@@ -1,8 +1,6 @@
 <script setup lang="ts">
-import {defineComponent} from 'vue'
 
-
-const emits = defineEmits<{
+const $emit = defineEmits<{
   (e: 'deleteMe'): void,
   (e: 'updateAmount', increment: number): void,
   (e: 'showDetails'): void

@@ -3,11 +3,9 @@ import {useAuthStore, useConfigStore, useGeneralSocketStore, useHouseholdSocketS
 import AppBarBottom from "@/components/ui/AppBarBottom.vue";
 import AppBar from "@/components/ui/AppBar.vue";
 import {Notifications} from "@kyvg/vue3-notification";
-import NavDrawer from "@/components/ui/NavDrawer.vue";
-import {useRoute, useRouter} from "vue-router";
-import AppCreateBar from "@/components/ui/AppCreateBar.vue";
-import {computed, defineComponent, onMounted, onUpdated, ref, watch} from "vue";
-import {useDisplay} from "vuetify";
+
+
+
 import {applyStorage, getAccessToken, getBrowserLocalStorage} from "axios-jwt";
 
 const configStore = useConfigStore()
@@ -113,18 +111,14 @@ onUpdated(async () => {
         density="compact"
     >
       <v-toolbar-title>
-        <v-hover
-            v-slot="{ isHovering, props }"
+        <v-card
+            hover
+            style="width: 130px"
+            color="dark-grey"
+            @click="router.push('/')"
         >
-          <v-card
-              hover
-              style="width: 130px"
-              color="dark-grey"
-              @click="router.push('/')"
-          >
-            {{ $t('app.title') }}
-          </v-card>
-        </v-hover>
+          {{ $t('app.title') }}
+        </v-card>
       </v-toolbar-title>
     </v-app-bar>
     <v-main

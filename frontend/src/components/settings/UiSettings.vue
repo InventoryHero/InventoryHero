@@ -60,7 +60,7 @@ export default defineComponent({
           :hide-details="true"
           density="compact"
           v-model="transitions"
-          @click.native.stop
+          @click.stop
           @click="toggleTransitions"
       />
     </app-setting>
@@ -74,7 +74,7 @@ export default defineComponent({
           :hide-details="true"
           density="compact"
           v-model="theme"
-          @click.native.stop
+          @click.stop
           @click="changeTheme"
       />
     </app-setting>
@@ -98,7 +98,7 @@ export default defineComponent({
           :hide-details="true"
           density="compact"
           v-model="dock"
-          @click.native.stop
+          @click.stop
           @click="useDock"
       />
     </app-setting>

@@ -1,5 +1,5 @@
 import {defineStore} from "pinia";
-import {ApiProduct, ApiStorage, Product, ProductStorageMapping} from "@/types/api.ts";
+import {ApiProduct, ApiStorage, ProductStorageMapping} from "@/types/api.ts";
 import {useStorage} from "@/store";
 
 export default defineStore("products", {

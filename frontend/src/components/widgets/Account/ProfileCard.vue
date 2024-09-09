@@ -110,7 +110,7 @@ function reset(){
 }
 
 async function saveUpdatedUserdata(){
-  //@ts-expect-error
+  //@ts-expect-error couldn't figure out how to type template ref
   const {valid} = await userForm.value.validate()
   if(!valid){
     return

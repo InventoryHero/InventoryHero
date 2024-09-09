@@ -73,10 +73,10 @@ export default defineComponent({
       <v-card-title
         class="text-wrap"
       >
-        {{ $t('join.title', {owner: this.household_meta.owner}) }}
+        {{ $t('join.title', {owner: household_meta.owner}) }}
       </v-card-title>
       <v-card-text
-        v-html="$t('join.text', this.household_meta)"
+        v-html="$t('join.text', household_meta)"
       >
 
       </v-card-text>

@@ -1,13 +1,15 @@
 <script lang="ts">
 import {defineComponent} from 'vue'
-import {ApiStorage, Storage} from "@/types";
+import {ApiStorage} from "@/types";
 
 export default defineComponent({
   name: "QrCodeFilter",
   emits: {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     updateFilter(payload: string){
       return true;
     },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     'update:search'(payload: string){
       return true
     }

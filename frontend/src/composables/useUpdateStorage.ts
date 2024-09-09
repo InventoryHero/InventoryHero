@@ -1,10 +1,10 @@
-import {Box, Storage, Location} from "@/types";
+import {ApiStorage} from "@/types";
 import {StorageTypes} from "@/types";
 import {ref, Ref, toValue} from 'vue';
 import {notify} from "@kyvg/vue3-notification";
 
 
-export default (maybeRefOrGetter: Ref<Array<Storage>>, storage: Storage|undefined = undefined, overlayStorage: Ref<Storage|undefined> = ref(undefined)) =>
+export default (maybeRefOrGetter: Ref<Array<ApiStorage>>, storage: ApiStorage|undefined = undefined, overlayStorage: Ref<ApiStorage|undefined> = ref(undefined)) =>
 {
     if (storage === undefined)
     {
@@ -16,7 +16,7 @@ export default (maybeRefOrGetter: Ref<Array<Storage>>, storage: Storage|undefine
     let i = 0
     for(; i < content.length; i++)
     {
-        if(content.at(i)?.id !== storage.id)
+        if(content[i]?.id !== storage.id)
         {
             continue
         }
@@ -24,9 +24,8 @@ export default (maybeRefOrGetter: Ref<Array<Storage>>, storage: Storage|undefine
         switch(storage.type)
         {
             case StorageTypes.Box:
-                let current: Box = content[i] as Box
-                current.location = (storage as Box).location
-                current.location_id = (storage as Box).location_id
+                content[i].storageId = storage?.id
+                content[i].storage = storage
                 break
             case StorageTypes.Location:
                 break

@@ -2,12 +2,8 @@
 
 import {useProducts} from "@/store";
 import {useI18n} from "vue-i18n";
-import {ProductStorageMapping, Storage} from "@/types/api.ts";
-import {computed, ref} from "vue";
+import {ProductStorageMapping} from "@/types/api.ts";
 import useStorageTitle from "@/composables/useStorageTitle.ts";
-import useAxios from "@/composables/useAxios.ts";
-import {ProductEndpoint} from "@/api/http";
-import {useNotification} from "@kyvg/vue3-notification";
 import useUpdateProductStoredAt from "@/composables/useModifyProductStoredAt.ts";
 import useRedirectToStorage from "@/composables/useRedirectToStorage.ts";
 
@@ -34,11 +30,11 @@ const productName = computed(() => {
 const productStorage = computed(() => {
   return props.storage!
 })
-const storage = computed(() => {
+const productStoredAt = computed(() => {
   return productStorage.value.storage
 })
 
-const {name, icon} = useStorageTitle(storage)
+const {name, icon} = useStorageTitle(productStoredAt)
 
 
 function deleteMe(){
@@ -79,7 +75,7 @@ function showStoredAtDetail(){
             color="primary"
             :title="name"
             variant="tonal"
-            @click="redirect(storage, productName ?? '')"
+            @click="redirect(productStoredAt, productName ?? '')"
         />
     </v-col>
   </v-row>

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {computed, onMounted, ref, useTemplateRef} from 'vue'
-import {useDisplay} from "vuetify";
 import useAxios from "@/composables/useAxios.ts";
 import {AdministrationEndpoint, GeneralEndpoint, UserEndpoint} from "@/api/http";
 import useTextFieldStyle from "@/composables/useTextFieldStyle.ts";
@@ -12,7 +11,6 @@ defineOptions({
   inheritAttrs: false
 })
 
-const {mobile} = useDisplay()
 const {axios: adminEndpoint} = useAxios<AdministrationEndpoint>("administration")
 const {axios: userEndpoint} = useAxios<UserEndpoint>("user")
 const {axios: generalEndpoint} = useAxios<GeneralEndpoint>("general")
@@ -176,6 +174,7 @@ onMounted(() => {
                     class="mb-4"
                     v-model="oldPassword"
                     :rules="[rules.required]"
+                    :disable-min-length="true"
                 />
 
                 <app-password-textfield

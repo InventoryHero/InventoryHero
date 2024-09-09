@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import {computed, inject, ref, useTemplateRef, watch} from "vue";
 import {useProducts, useStorage} from "@/store";
 import {ApiProduct, ApiStorage, ProductStorageMapping} from "@/types";
 import {useI18n} from "vue-i18n";
@@ -7,6 +6,7 @@ import useAxios from "@/composables/useAxios.ts";
 import {ProductEndpoint} from "@/api/http";
 import {useNotification} from "@kyvg/vue3-notification";
 import useHint from "@/composables/useHint.ts";
+import {useTemplateRef} from "vue";
 
 const storageStore = useStorage()
 const productStore = useProducts()
@@ -41,7 +41,7 @@ const storage = computed(() => {
 const starred = computed({
   get(){
     if(newStarred.value === undefined){
-      if(newProduct.value?.hasOwnProperty('starred'))
+      if(Object.prototype.hasOwnProperty.call(newProduct.value ?? {}, 'starred'))
       {
         return (newProduct.value as ApiProduct).starred ?? false
       }
@@ -68,9 +68,9 @@ const storageLoading = computed(() =>{
 })
 
 const rules = {
-  isNumber: (value: any) => !isNaN(parseInt(value)) || t('add.product.rules.amount_nan'),
+  isNumber: (value: string) => !isNaN(parseInt(value)) || t('add.product.rules.amount_nan'),
   positive: (value: number) => value >= 0 || t('add.product.rules.amount_negative'),
-  needProduct: (value: any) => value !== null && value !== undefined && value !== '' || t('add.product.rules.need_product')
+  needProduct: (value: string|null|undefined) => value !== null && value !== undefined && value !== '' || t('add.product.rules.need_product')
 }
 
 
@@ -140,7 +140,7 @@ function addNew(){
 }
 
 async function save(){
-  //@ts-expect-error
+  //@ts-expect-error - couldn't figure out how to type the form-ref properly
   const {valid} = await addForm.value.validate()
   if(!valid){
     return
@@ -149,7 +149,7 @@ async function save(){
   if(newProduct.value === null){
     return
   }
-  if(newProduct.value!.hasOwnProperty('id')){
+  if(Object.prototype.hasOwnProperty.call(newProduct.value ?? {}, 'id')){
     addExisting()
   } else{
     addNew()
@@ -158,17 +158,12 @@ async function save(){
 }
 
 function clear(){
-  //@ts-expect-error
+  //@ts-expect-error  - couldn't figure out how to type the form-ref properly
   addForm.value.reset()
   newStarred.value = undefined
 }
 
-function disableHint(hint: any){
-  // TODO
-}
-function enableHint(hint: any){
-  // TODO
-}
+
 
 </script>
 

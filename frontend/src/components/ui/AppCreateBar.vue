@@ -124,6 +124,6 @@ export default defineComponent({
 }
 .tab-active{
   border-bottom: 1px solid rgba(var(--v-theme-primary), 1);
-  border-radius: 0px !important;
+  border-radius: 0 !important;
 }
 </style>

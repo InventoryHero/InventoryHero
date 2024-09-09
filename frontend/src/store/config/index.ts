@@ -1,10 +1,7 @@
 import { defineStore } from 'pinia'
 import {useLocalStorage} from "@vueuse/core";
-//import vuetify from "@/plugins/vuetify.ts";
 import {TinyColor} from "@ctrl/tinycolor";
-//import {i18n} from "@/lang";
-import {Locale, useI18n} from 'vue-i18n'
-import {useDisplay} from "vuetify";
+import {Theme} from "./types"
 
 
 export const useConfigStore = defineStore('config', {
@@ -54,14 +51,12 @@ export const useConfigStore = defineStore('config', {
         languageChange(newLanguage: string){
             if(newLanguage === "default"){
                 this.config.language = "default"
-                //@ts-expect-error
+                //@ts-expect-error - I really couldn't figure out how to type newLanguage to not trigger an error
                 this.i18n.global.locale = (navigator.language || navigator.userLanguage)
                 return
             }
-            //@ts-expect-error
             if(this.i18n.global.availableLocales.includes(newLanguage)){
                 this.config.language = newLanguage
-                //@ts-expect-error
                 this.i18n.global.locale = this.config.language
             }
         },

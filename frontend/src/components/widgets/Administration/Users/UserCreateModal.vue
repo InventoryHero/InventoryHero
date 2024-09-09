@@ -1,10 +1,9 @@
 <script lang="ts">
-import {defineComponent, PropType} from "vue";
+import {defineComponent} from "vue";
 import {useDisplay} from "vuetify";
 import {User} from "@/types/api.ts";
 import useAxios from "@/composables/useAxios.ts";
 import {UserEndpoint} from "@/api/http";
-import {useGeneralSocketStore} from "@/store";
 
 export default defineComponent({
   name: "UserCreateModal",
@@ -18,9 +17,11 @@ export default defineComponent({
     }
   },
   emits:{
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     'created:user'(_: User){
       return true
     },
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     'update:modelValue'(value: boolean){
       return true
     }

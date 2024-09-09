@@ -2,18 +2,9 @@
 import {defineComponent} from 'vue'
 import {ApiStorage} from "@/types";
 
-type Paper = {
-  height: number,
-  width: number
-}
 
 
-const papers = {
-  "A4": {
-    height: 297,
-    width: 210,
-  }
-}
+
 
 
 export default defineComponent({
@@ -33,10 +24,10 @@ export default defineComponent({
       return rows
     },
     paperHeight(){
-      return papers[this.paper].height;
+      return "297"
     },
     paperWidth(){
-      return papers[this.paper].width;
+      return "210"
     },
     margin(){
       return {
@@ -49,7 +40,7 @@ export default defineComponent({
   },
   props:{
     modelValue: {
-      type: Array<Storage>,
+      type: Array<ApiStorage>,
       default: []
     },
     paper: {
@@ -105,12 +96,14 @@ export default defineComponent({
   >
     <div class="content">
       <div
-          v-for="row in items"
+          v-for="(row, index) in items"
           class="row d-flex"
+          :key="index"
       >
         <div
-            v-for="col in row"
+            v-for="(col, innerIndex) in row"
             class="col"
+            :key="innerIndex"
         >
           <app-storage-qr-code
               :storage="col"

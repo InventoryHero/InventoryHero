@@ -39,7 +39,7 @@ export const useGeneralSocketStore =  defineStore("generalSocket", {
                 'hi',
                 {},
                 (data: string) => {
-                    let response: SocketResponse = JSON.parse(data)
+                    const response: SocketResponse = JSON.parse(data)
                     this.socketErrorHandler(response, () => {})
                 }
             )
@@ -112,9 +112,10 @@ export const useGeneralSocketStore =  defineStore("generalSocket", {
                 })
             })
         },
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         socketErrorHandler(data: SocketResponse, callback: Callback){
             const userEndpoint = useNewAxios("user")
-            let endpoint: UserEndpoint = userEndpoint.axios as UserEndpoint
+            const endpoint: UserEndpoint = userEndpoint.axios as UserEndpoint
             switch(data.status){
                 case "token_revoked":
                 case "expired_signature":

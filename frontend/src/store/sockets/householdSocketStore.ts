@@ -30,8 +30,8 @@ export const useHouseholdSocketStore =  defineStore("socket", {
                 console.log("HOUSEHOLD SOCKET DISCONNECTED")
             })
             householdSocket.on("new-content", (msg: string) => {
-                let response: SocketResponse = JSON.parse(msg)
-                let content: UpdateContent = response.content as UpdateContent
+                const response: SocketResponse = JSON.parse(msg)
+                const content: UpdateContent = response.content as UpdateContent
                 console.log("NEW CONTENT HERE")
                 if(content.user === this.authStore.user?.username){
                     return
@@ -83,14 +83,14 @@ export const useHouseholdSocketStore =  defineStore("socket", {
             householdSocket.emit('hi', {
                 household: this.authStore.household
             }, (data: string) => {
-                let response: SocketResponse = JSON.parse(data)
+                const response: SocketResponse = JSON.parse(data)
                 this.socketErrorHandler(response, this.sayHi)
             } )
         },
         socketErrorHandler(data: SocketResponse, callback: () => void){
             const socketStore = useHouseholdSocketStore()
             const userEndpoint = useNewAxios("user")
-            let endpoint: UserEndpoint = userEndpoint.axios as UserEndpoint
+            const endpoint: UserEndpoint = userEndpoint.axios as UserEndpoint
             switch(data.status){
                 case "join_first":
                     console.log("HALLO")

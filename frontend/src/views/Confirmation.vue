@@ -25,10 +25,10 @@ const progressBarState = computed(() => {
 
 onMounted(() => {
   requestInProgress.value = true
-  userEndpoint.confirmEmail(code).then(({success, verified: userVerified, status: message}) => {
+  userEndpoint.confirmEmail(code).then((result) => {
     requestInProgress.value = false
-    verified.value = userVerified ?? false
-    status.value = message
+    verified.value = result.verified ?? false
+    status.value = result.status
   })
 })
 

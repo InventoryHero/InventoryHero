@@ -1,7 +1,5 @@
 <script lang="ts">
 import {useAuthStore} from "@/store";
-import {FontAwesomeIcon} from "@fortawesome/vue-fontawesome";
-import {Household} from "@/types"
 import HouseholdQuickSelectCard from "@/components/widgets/Households/HouseholdQuickSelectCard.vue";
 
 

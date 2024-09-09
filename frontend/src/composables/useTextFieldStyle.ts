@@ -1,4 +1,4 @@
-import {computed, ref} from "vue";
+
 
 export default () => {
     const textFieldStyle = computed(() => {
@@ -11,7 +11,7 @@ export default () => {
             hideDetails: "auto",
             class: "mb-4",
             disabled: false
-        } as Partial<{}>
+        } as Partial<object>
     })
 
 

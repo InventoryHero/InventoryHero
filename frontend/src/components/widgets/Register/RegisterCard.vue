@@ -26,7 +26,7 @@ const rules = {
 }
 async function register() {
   loading.value=true;
-  //@ts-expect-error
+  //@ts-expect-error couldn't figure out how to type template ref
   const {valid} = await registerForm.value.validate();
   if(!valid)
   {

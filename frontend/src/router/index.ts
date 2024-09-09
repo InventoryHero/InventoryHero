@@ -255,7 +255,7 @@ const vueRouter =  createRouter({
   },
 })
 
-vueRouter.beforeEach(async (to, from) => {
+vueRouter.beforeEach(async (to) => {
   const authStore = useAuthStore();
   const loggedIn = await authStore.isAuthorized()
   if(!loggedIn){
@@ -290,8 +290,8 @@ vueRouter.beforeEach(async (to, from) => {
   }
 })
 
-vueRouter.beforeEach(async (to, from) => {
-  document.title =  to.meta?.title ?? i18n.global.t('app.title')
+vueRouter.beforeEach(async (to) => {
+  document.title = (to.meta?.title ?? i18n.global.t('app.title')) as string
   notify({
     group: 'newContent',
     clean: true,

@@ -2,7 +2,7 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { VitePWA } from 'vite-plugin-pwa'
-//@ts-expect-error
+//@ts-expect-error node url cannot be found, but it is there
 import {fileURLToPath, URL} from "node:url";
 import Components from 'unplugin-vue-components/vite'
 import AutoImport from 'unplugin-auto-import/vite'
@@ -62,6 +62,9 @@ export default defineConfig({
       }
     }),
     AutoImport({
+      eslintrc: {
+        enabled: true
+      },
       include: [
         /\.[tj]sx?$/, // .ts, .tsx, .js, .jsx
         /\.vue$/,
@@ -71,8 +74,11 @@ export default defineConfig({
         'vue',
         'vue-router',
         {
-          'vue-i18n':[
+          'vue-i18n': [
               'useI18n'
+          ],
+          'vuetify': [
+              'useDisplay'
           ]
         }
       ]

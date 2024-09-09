@@ -1,11 +1,7 @@
 <script setup lang="ts">
 import {useAuthStore} from "@/store/index.ts";
 import {computed} from "vue";
-import {useRouter} from "vue-router";
-
-
 const auth = useAuthStore();
-const router = useRouter()
 const isAdmin = computed(() =>{
   return auth.isAdmin
 })

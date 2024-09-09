@@ -62,6 +62,7 @@ function loadBoxes(){
   })
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 watch(() => preselectedBox, (_: string|undefined, __: string|undefined) =>{
   loadBoxes()
 });

@@ -21,13 +21,13 @@ const password = ref("")
 const passwordRepeat = ref("")
 const valid = ref(false)
 const resettingPassword = ref(false)
-const errorMessage = ref(false)
+const errorMessage = ref("")
 
 const passwordForm = useTemplateRef("passwordForm")
 
 const rules = {
-  passwordNeeded: (value: string) => value !== '' || $t('password_reset.password_needed'),
-  repeatNotEqual: (value: string) => value === password.value || $t('password_reset.passwords_not_equal'),
+  passwordNeeded: (value: string) => value !== '' || $t('password_reset.rules.password_needed'),
+  repeatNotEqual: (value: string) => value === password.value || $t('password_reset.rules.passwords_not_equal'),
 }
 
 // TODO LOCALIZE THIS COMPONENT
@@ -36,28 +36,31 @@ async function resetPassword(){
   if(resettingPassword.value){
     return
   }
+  //@ts-expect-error don't know how to type correctly
   const {valid} = await passwordForm.value.validate()
   console.log(valid)
   if(!valid){
     return
   }
   resettingPassword.value = true
-  userEndpoint.resetPasswordMail(id, password.value).then(({success, message}) => {
+  userEndpoint.resetPasswordMail(id, password.value).then((result) => {
     resettingPassword.value = false
-    if(!success){
+    if(!result?.success){
       notify({
-        title: $t(`toasts.titles.error.password_reset_${message}`), //invalid or expired TODO
-        text: $t(`toasts.text.error.password_reset_${message}`),
+        title: $t(`toasts.titles.error.password_reset_${result?.message}`),
+        text: $t(`toasts.text.error.password_reset_${result?.message}`),
         type: "error"
       })
       return
     }
-    notify({
-      title: $t(`toasts.titles.success.password_reset`),
-      text: $t(`toasts.text.success.password_reset`),
-      type: "success"
+
+    router.push("/").then(() => {
+      notify({
+        title: $t(`toasts.titles.success.password_reset`),
+        text: $t(`toasts.text.success.password_reset`),
+        type: "success"
+      })
     })
-    router.push("/")
   })
 }
 
@@ -69,10 +72,10 @@ function close(){
 }
 
 onBeforeMount(() => {
-  userEndpoint.resetPasswordPreflight(id).then(({success, message}) => {
-    allowed.value = success
+  userEndpoint.resetPasswordPreflight(id).then((result) => {
+    allowed.value = result?.success ?? false
     preflightCheck.value = false
-    errorMessage.value = message
+    errorMessage.value = result?.message ?? ''
   })
 })
 
@@ -131,6 +134,7 @@ onBeforeMount(() => {
         </v-card-text>
         <v-card-text
           v-else
+          class="text-h6"
         >
           {{ $t(`password_reset.card.error.${errorMessage}`) }}
         </v-card-text>

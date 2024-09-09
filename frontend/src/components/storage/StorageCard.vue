@@ -46,7 +46,7 @@ const localizationBase = computed(() => {
 
 <template>
   <v-hover
-    v-slot="{ isHovering, props }"
+    v-slot="{ isHovering }"
   >
     <v-card
         :elevation="0"

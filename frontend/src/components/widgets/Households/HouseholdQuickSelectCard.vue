@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import {computed, defineComponent, onMounted, PropType, ref} from 'vue'
 import {useAuthStore} from "@/store";
-import useNewAxios from "@/composables/useAxios.ts";
 import {HouseholdEndpoint} from "@/api/http";
 import {Household} from "@/types";
 import useAxios from "@/composables/useAxios.ts";

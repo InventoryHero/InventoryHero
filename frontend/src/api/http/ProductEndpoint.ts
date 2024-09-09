@@ -15,7 +15,7 @@ export class ProductEndpoint extends Endpoint{
         if(id !== undefined){
             url += `/${id}`
         }
-        let response = await this.internalAxios.get(url)
+        const response = await this.internalAxios.get(url)
 
         if(response.status === 200){
             return response.data as Array<ApiProduct>
@@ -25,10 +25,10 @@ export class ProductEndpoint extends Endpoint{
     }
 
     public async getProductStorage(product_id: number, container: number|undefined = undefined): Promise<Array<ProductStorageMapping>> {
-        let url = `/stored/${product_id}`
+        const url = `/stored/${product_id}`
 
 
-        let response = await this.internalAxios.get(url, {
+        const response = await this.internalAxios.get(url, {
             params: {
                 storage: container
             }
@@ -47,7 +47,7 @@ export class ProductEndpoint extends Endpoint{
             console.error("TRYING TO DELETE NULL")
             return false
         }
-        let response = await this.internalAxios.delete(`/${id}`)
+        const response = await this.internalAxios.delete(`/${id}`)
         if(response.status === 204)
         {
             return true
@@ -65,10 +65,10 @@ export class ProductEndpoint extends Endpoint{
                 updatedProduct: undefined
             }
         }
-        let data = {
+        const data = {
             product: update
         }
-        let response = await this.internalAxios.post(`/update/${id}`, data)
+        const response = await this.internalAxios.post(`/update/${id}`, data)
         if(response.status === 200)
         {
             return {
@@ -90,7 +90,7 @@ export class ProductEndpoint extends Endpoint{
             return false
         }
 
-        let response = await this.internalAxios.delete(`/stored/${id}`)
+        const response = await this.internalAxios.delete(`/stored/${id}`)
         if(response.status === 200)
         {
             return true
@@ -110,7 +110,7 @@ export class ProductEndpoint extends Endpoint{
                 deleted: undefined as ProductStorageMapping|undefined
             }
         }
-        let response = await this.internalAxios.post(`/stored/${id}`, {
+        const response = await this.internalAxios.post(`/stored/${id}`, {
             amount: update.amount,
             storage: update.storage?.id,
         })
@@ -131,7 +131,7 @@ export class ProductEndpoint extends Endpoint{
     }
 
     public async addExistingProduct(data: Partial<ProductStorageMapping>, updateStarred: boolean, starred?: boolean){
-        let url = `/create/${data.productId}`
+        const url = `/create/${data.productId}`
         const response = await this.internalAxios.post(url, {
             ...data,
             productId: undefined,
@@ -150,8 +150,8 @@ export class ProductEndpoint extends Endpoint{
 
 
     public async createProduct(name: string, amount: number, starred: boolean, storageId?: number){
-        let url = "/create"
-        let response = await this.internalAxios.post(url, {
+        const url = "/create"
+        const response = await this.internalAxios.post(url, {
             name, amount, starred, storageId
         })
         if(response.status === 200){

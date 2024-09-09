@@ -3,23 +3,24 @@ import {defineComponent, PropType} from 'vue'
 import iro from '@jaames/iro';
 import {IroColorPicker, ColorPickerProps} from "@jaames/iro/dist/ColorPicker";
 import {IroColor} from "@irojs/iro-core";
-
-
-type SupportedEvents = 'color:change' | 'color:init'
-
 // PRETTY MUCH TAKEN FROM
 // https://github.com/fluidd-core/fluidd/blob/develop/src/components/ui/AppIroColorPicker.vue
 
 export default defineComponent({
   name: "IroColorPicker",
   emits:{
-    "color:change"(payload: IroColor){
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    "color:change"(_: IroColor){
       return true;
     },
-    "color:init"(payload: IroColor){
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    "color:init"(_: IroColor){
       return true;
     },
-    "input:end"(payload: IroColor){
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    "input:end"(_: IroColor){
       return true;
     }
 
@@ -36,7 +37,7 @@ export default defineComponent({
   props: {
     options:{
       type:  Object as PropType<ColorPickerProps>,
-      default: {}
+      default: {} as ColorPickerProps
     },
     color: {
       type: String,

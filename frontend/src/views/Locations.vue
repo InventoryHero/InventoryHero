@@ -61,6 +61,7 @@ function loadLocations(){
   })
 }
 
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 watch(() => preselectedLocation, (_: string|undefined, __: string|undefined) =>{
   loadLocations()
 });
