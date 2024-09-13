@@ -35,6 +35,11 @@ export default defineComponent({
 
     </v-col>
   </v-row>
+  <v-row>
+    <v-col>
+      <app-qr-code/>
+    </v-col>
+  </v-row>
 
 </template>
 

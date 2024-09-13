@@ -11,6 +11,7 @@ import FloatingVue from 'floating-vue'
 import Notifications from '@kyvg/vue3-notification'
 import vueQr from 'vue-qr/src/packages/vue-qr.vue'
 import VueCountdown from '@chenfengyuan/vue-countdown';
+
 import { SWhatsApp, STelegram, SEmail} from 'vue-socials';
 
 

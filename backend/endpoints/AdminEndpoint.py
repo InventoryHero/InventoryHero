@@ -7,7 +7,7 @@ from flask_jwt_extended import jwt_required, current_user
 
 from backend.db.models.User import User
 from backend.mail.Mail import Mail
-from decorators import admin_required
+from backend.decorators import admin_required
 
 class AdminEndpoint(Blueprint):
     def __init__(self, name, import_name, application, db, url_prefix, *args):
