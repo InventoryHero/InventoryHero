@@ -1,98 +1,42 @@
-<script lang="ts">
-import {defineComponent, PropType} from 'vue'
+<script setup lang="ts">
 import {ApiStorage, StorageTypes} from "@/types";
 
-
-export default defineComponent({
-  name: "AppStorageSelect",
-  setup(){
-
-  },
-  emits:{
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    'update:modelValue'(payload: ApiStorage){
-      return true
-    }
-  },
-  computed:{
-    selected: {
-      get(): ApiStorage|null{
-        return this.modelValue ?? null
-      },
-      set(value: ApiStorage)
-      {
-        this.$emit('update:modelValue', value)
-      }
-    },
-    type(){
-      switch(this.selected?.type){
-        case StorageTypes.Box:
-          return StorageTypes.Box
-        case StorageTypes.Location:
-          return StorageTypes.Location
-        default:
-          return StorageTypes.NoStorage
-      }
-    },
-    container(){
-      return this.selected
-    }
-  },
-  props:{
-    modelValue: {
-      type: Object as PropType<ApiStorage> | null
-    },
-    storage: {
-      type: Array<ApiStorage>,
-      default: []
-    },
-    density: {
-      type: String,
-      default: "compact"
-    },
-    hideDetails: {
-      type: Boolean,
-      default: false
-    },
-    storageLoading: {
-      type: Boolean,
-      default: false
-    }
-  },
-  data(){
-    return{
-      allStorage: [] as Array<ApiStorage>,
-    }
-  },
-  methods:{
-    getIcon(type: StorageTypes){
-      switch(type){
-        case StorageTypes.Location:
-          return "mdi-archive-marker"
-        case StorageTypes.Box:
-          return "mdi-package-variant"
-        default:
-          return "mdi-archive-off"
-      }
-    },
-    getActive(item: ApiStorage): boolean{
-      return item.id === this.selected?.id && item.type === this.selected?.type
-    }
-  },
+defineOptions({
+  inheritAttrs: false
 })
+
+const selected = defineModel<ApiStorage|null>()
+
+const {
+  storageLoading=false,
+  storage = []
+} = defineProps<{
+  storageLoading?: boolean,
+  storage?: Array<ApiStorage>
+}>()
+
+function getIcon(type: StorageTypes){
+  switch(type){
+    case StorageTypes.Location:
+      return "mdi-archive-marker"
+    case StorageTypes.Box:
+      return "mdi-package-variant"
+    default:
+      return "mdi-archive-off"
+  }
+}
 </script>
 
 <template>
   <v-select
       v-bind="$attrs"
       v-model="selected"
-      :density="density"
       :single-line="true"
-      :hide-details="hideDetails"
       color="primary"
       variant="filled"
       :items="storage"
       item-title="name"
+      item-value="id"
       :chips="true"
       :clearable="true"
       :persistent-clear="true"
@@ -103,10 +47,8 @@ export default defineComponent({
     <template v-slot:item="{props, item}">
       <v-list-item
           v-bind="props"
-          :active="getActive(item.raw)"
           :title="item.title"
           :prepend-icon="getIcon(item.raw.type)"
-
       >
         <template v-slot:prepend>
           <v-icon size="small"/>

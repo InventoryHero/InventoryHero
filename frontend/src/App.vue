@@ -4,9 +4,11 @@ import AppBarBottom from "@/components/ui/AppBarBottom.vue";
 import AppBar from "@/components/ui/AppBar.vue";
 import {Notifications} from "@kyvg/vue3-notification";
 
+// TODO the print settings look a bit clunky
 
 
 import {applyStorage, getAccessToken, getBrowserLocalStorage} from "axios-jwt";
+import useDialogConfig from "@/composables/useDialogConfig.ts";
 
 const configStore = useConfigStore()
 const authStore = useAuthStore()
@@ -16,11 +18,6 @@ const generalSocket = useGeneralSocketStore()
 const router = useRouter()
 const {mobile} = useDisplay()
 // TODO ADMIN USER TABLE CAN BENEFIT FROM SOCKET (E.G. USER VERIFIED EMAIL)
-
-/*
-  TODO localize (even for en) - general translations rn
-  check everything through
- */
 
 const navOpen = ref(false)
 const isAdminRoute = computed(() => {
@@ -57,6 +54,12 @@ function reloadContent(){
   router.go(0)
 }
 
+const {
+  isVisible: scanQrCodeModalVisible,
+  openDialog: openScanQrCodeModal,
+  closeDialog: closeScanQrCodeModal
+} = useDialogConfig()
+
 
 onMounted(async () => {
   applyStorage(getBrowserLocalStorage());
@@ -73,14 +76,6 @@ onMounted(async () => {
   }
 })
 
-onUpdated(async () => {
-  /*applyStorage(getBrowserLocalStorage());
-  householdSocket.updateHeaders()x
-  householdSocket.bindActions()
-
-  generalSocket.updateHeaders()
-  generalSocket.bindActions()*/
-})
 </script>
 
 <template>
@@ -130,6 +125,9 @@ onUpdated(async () => {
             'fill-height': route.meta?.fillHeight ?? false,
           }"
       >
+
+
+
         <router-view v-slot="{Component}">
           <transition :name="transition" mode="out-in" >
             <component :is="Component" />
@@ -139,12 +137,14 @@ onUpdated(async () => {
       </v-container>
     </v-main>
   </v-app>
+
   <v-app
       v-else
   >
     <app-bar
       :nav="(!dockVisible && !isAddRoute) || isAdminRoute"
       @toggle-nav="navOpen = !navOpen"
+      @scan-qr-code="openScanQrCodeModal"
     />
     <app-create-bar
       v-if="isAddRoute && authorized"
@@ -161,6 +161,16 @@ onUpdated(async () => {
     />
 
 
+    <v-dialog
+        noClickAnimation
+        class="fill-height"
+        v-model="scanQrCodeModalVisible"
+    >
+      <qr-scanner
+          @close="closeScanQrCodeModal"
+      />
+    </v-dialog>
+
     <v-main
         class=""
     >
@@ -170,6 +180,7 @@ onUpdated(async () => {
             'fill-height': route.meta?.fillHeight ?? false,
           }"
       >
+
         <router-view v-slot="{Component}">
           <transition :name="transition" mode="out-in" >
             <component :is="Component" />

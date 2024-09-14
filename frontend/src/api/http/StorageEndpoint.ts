@@ -127,8 +127,9 @@ export class StorageEndpoint extends Endpoint{
     protected async getName(id: number){
         if(this.type <= StorageTypes.NoStorage || this.type > StorageTypes.Location)
         {
-            console.error("INVALID CALL FOR DELETE")
-            return
+            return {
+                success: false
+            }
         }
 
 
@@ -136,10 +137,15 @@ export class StorageEndpoint extends Endpoint{
         const response = await this.internalAxios.get(url)
         if(response.status === 200)
         {
-            return response.data.name ?? ""
+            return {
+                success: true,
+                name: response.data.name ?? ""
+            }
         }
         this.handleNonErrorNotifications(response)
-        return ""
+        return {
+            success: false
+        }
     }
 }
 

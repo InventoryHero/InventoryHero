@@ -10,6 +10,7 @@ export type HouseholdMember = {
     member: number
 }
 
+
 export enum StorageTypes {
     AllStorage = -1,
     NoStorage = 0,

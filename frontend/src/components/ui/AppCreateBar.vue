@@ -40,7 +40,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <v-app-bar
+  <<v-app-bar
       density="compact"
       v-if="true"
   >

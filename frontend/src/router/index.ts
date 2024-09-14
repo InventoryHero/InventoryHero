@@ -101,6 +101,11 @@ const vueRouter =  createRouter({
           component: Boxes,
         },
         {
+          path: ':preselectedBox',
+          component: Boxes,
+          props: true
+        },
+        {
           path: ':preselectedBox/:filteredFrom',
           component: Boxes,
           props: true

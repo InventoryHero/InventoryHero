@@ -8,6 +8,7 @@ import Components from 'unplugin-vue-components/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import {i18n} from './src/lang';
 import vuetify from "vite-plugin-vuetify";
+import basicSsl from '@vitejs/plugin-basic-ssl'
 
 export default defineConfig({
   build: {
@@ -15,6 +16,11 @@ export default defineConfig({
     sourcemap: false
   },
   plugins: [
+    basicSsl({
+      /** name of certification */
+      name: 'test',
+
+    }),
     vue(),
     vuetify(),
     VitePWA({
@@ -93,6 +99,7 @@ export default defineConfig({
   },
   server:{
     port: 3000,
+    https: true,
     proxy: {
       "/api/v1": {
         target: 'http://127.0.0.1:5000/'

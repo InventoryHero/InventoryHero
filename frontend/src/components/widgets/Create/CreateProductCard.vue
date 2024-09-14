@@ -207,6 +207,7 @@ function clear(){
             }"
               :messages="comboboxHint"
               :loading="productsLoading"
+              hide-details="auto"
 
           >
 
@@ -248,7 +249,7 @@ function clear(){
               :storage="storage"
               density="comfortable"
               :label="t('add.product.labels.location')"
-              :hide-details="false"
+              hide-details="auto"
               content-type="product"
               :messages="locationSelectHint"
           >
@@ -264,9 +265,7 @@ function clear(){
           :no-gutters="true"
           class="mb-2 justify-space-between"
       >
-        <v-col
-            cols="7"
-        >
+        <v-col>
           <v-text-field
               :messages="amountHint"
               type="number"
@@ -275,6 +274,7 @@ function clear(){
               v-model.number="amount"
               :rules="[rules.isNumber, rules.positive]"
               class="num-input"
+              hide-details="auto"
           >
             <template #append>
               <app-help-indicator
@@ -283,10 +283,14 @@ function clear(){
             </template>
           </v-text-field>
         </v-col>
+      </v-row>
+      <v-row
+          :no-gutters="true"
+          class="mb-2 justify-space-between"
+      >
         <v-col
-
-            cols="4"
         >
+
           <v-switch
               density="comfortable"
               v-model="starred"
@@ -300,7 +304,6 @@ function clear(){
               />
             </template>
           </v-switch>
-
         </v-col>
       </v-row>
 
@@ -312,5 +315,13 @@ function clear(){
 </template>
 
 <style scoped lang="scss">
+.switch-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Aligns items vertically */
+}
 
+.switch-container label {
+  margin-right: 10px; /* Adjust the space between the text and the switch */
+}
 </style>
