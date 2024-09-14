@@ -118,7 +118,7 @@ onBeforeRouteLeave(() => {
               :pre-selected="preselectedLocation !== undefined"
               v-model:search="search"
               pre-selection-close-action="/storage/locations"
-              :pre-selection-title="$t('locations.prefiltered', {prefilter: filteredFrom})"
+              :pre-selection-title="$t('locations.prefiltered', {prefilter: filteredFrom ?? $t('scan.from')})"
               @qr-selection-toggled="scrollToTop"
           />
         </v-card-title>

@@ -130,6 +130,11 @@ const vueRouter =  createRouter({
           path: ':preselectedLocation/:filteredFrom',
           component: Locations,
           props: true
+        },
+        {
+          path: ':preselectedLocation',
+          component: Locations,
+          props: true
         }
       ],
       meta: {

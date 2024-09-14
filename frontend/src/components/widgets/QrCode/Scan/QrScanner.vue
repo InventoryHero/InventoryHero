@@ -40,6 +40,10 @@ function paintOutline(detectedCodes, ctx) {
 }
 
 async function onDetect(detectedCodes) {
+  if(paused.value){
+    // on mobile paused doesn't seem to work ...
+    return
+  }
   paused.value = true
   parsingScans.value = true
   const baseUrlRegex = new RegExp(`^${window.location.origin}/storage/(locations|boxes)/(\\d+)$`);
