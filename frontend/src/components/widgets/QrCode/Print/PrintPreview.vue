@@ -57,6 +57,7 @@ const { handlePrint } = useVueToPrint({
   onAfterPrint: () => {
     loadingPrint.value = false
   },
+  removeAfterPrint: true
 });
 
 const previewScale = computed({
