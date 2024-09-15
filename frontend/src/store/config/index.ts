@@ -73,6 +73,7 @@ export const useConfigStore = defineStore('config', {
         color: state => state.config.theme.color,
         dock: state => state.config.useDock,
         language: state => state.config.language,
-        transitions: state => state.config.transitions
+        transitions: state => state.config.transitions,
+        primary: state => state.config.theme.color
     }
 })

@@ -1,20 +1,4 @@
-<script lang="ts">
-import {useAuthStore, useHouseholdSocketStore} from "@/store";
-import {defineComponent} from "vue";
-
-export default defineComponent({
-  name: "Dashboard",
-  setup(){
-    const authStore = useAuthStore();
-    const socketStore = useHouseholdSocketStore();
-    return {authStore, socketStore}
-  },
-  computed: {
-
-  },
-  methods: {
-  }
-})
+<script setup lang="ts">
 </script>
 
 <template>
@@ -35,7 +19,6 @@ export default defineComponent({
 
     </v-col>
   </v-row>
-
 </template>
 
 <style scoped lang="scss">

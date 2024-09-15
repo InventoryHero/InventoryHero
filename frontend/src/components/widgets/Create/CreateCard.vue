@@ -51,7 +51,6 @@ export default defineComponent({
         class="create-card-content"
     >
       <slot />
-
     </v-card-text>
 
     <v-card-actions

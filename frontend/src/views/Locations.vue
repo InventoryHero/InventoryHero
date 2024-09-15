@@ -12,6 +12,8 @@ import {onBeforeRouteLeave} from "vue-router";
 const storageStore = useStorage()
 const {axios: locationEndpoint} = useAxios<LocationEndpoint>("location")
 
+provide('storageType', StorageTypes.Location)
+
 const {scrolledDown, scrollToTop, hasScrolled} = useScrollToTop('scroller')
 const { isVisible: boxOverlayVisible, openDialog, closeDialog, dialogProps } = useDialogConfig()
 
@@ -116,8 +118,8 @@ onBeforeRouteLeave(() => {
               :pre-selected="preselectedLocation !== undefined"
               v-model:search="search"
               pre-selection-close-action="/storage/locations"
-              :pre-selection-title="$t('locations.prefiltered', {prefilter: filteredFrom})"
-              :storage="allLocations"
+              :pre-selection-title="$t('locations.prefiltered', {prefilter: filteredFrom ?? $t('scan.from')})"
+              @qr-selection-toggled="scrollToTop"
           />
         </v-card-title>
         <v-card-text

@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import {useAuthStore} from "@/store";
+import useDialogConfig from "@/composables/useDialogConfig.ts";
 
 const authStore = useAuthStore()
 const route = useRoute()
 
 const emit = defineEmits<{
-  (e: 'toggleNav'): void
+  (e: 'toggleNav'): void,
+  (e: 'scanQrCode'): void
 }>()
 
 const {nav=false} = defineProps<{
@@ -23,7 +25,8 @@ const isSettings = computed(() => {
   return route.name === "settings"
 })
 
-const scanQrCode = ref(false)
+
+
 
 
 function toggleNav(){
@@ -55,9 +58,7 @@ function toggleNav(){
         v-if="isAuthorized"
         icon="mdi-qrcode-scan"
         color="primary"
-        class="me-2"
-        size="small"
-        @click="scanQrCode=true"
+        @click="emit('scanQrCode')"
       />
       <app-bar-overflow-menu
           v-if="isAuthorized"
@@ -66,26 +67,27 @@ function toggleNav(){
       <template
           v-else
       >
-        <v-btn
+        <app-icon-btn
             v-if="!isSettings"
             icon="mdi-cog"
+            size="x-large"
             @click="() => {$router.push('/settings')}"
         />
-        <v-btn
+        <app-icon-btn
             v-else
             icon="mdi-arrow-left"
+            size="x-large"
             @click="() => {$router.push('/login')}"
         />
 
       </template>
 
     </template>
+
   </v-app-bar>
 
 
-  <scan-qr-code-modal
-    v-model="scanQrCode"
-  />
+
 
 </template>
 

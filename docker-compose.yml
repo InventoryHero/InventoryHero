@@ -43,6 +43,8 @@ services:
     image: postgres
     restart: always
     # set shared memory limit when using docker-compose
+    ports:
+      - "5432:5432"
     shm_size: 128mb
     environment:
       POSTGRES_PASSWORD: inventoryhero

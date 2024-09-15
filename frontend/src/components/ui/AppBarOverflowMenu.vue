@@ -15,13 +15,11 @@ const isAdmin = computed(() =>{
     <v-menu
     >
       <template #activator="{props}">
-        <v-btn
+        <app-icon-btn
             v-bind="props"
             icon="mdi-account-circle"
-            variant="flat"
-
-        >
-        </v-btn>
+            size="x-large"
+        />
 
 
       </template>

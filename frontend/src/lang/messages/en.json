@@ -290,50 +290,64 @@
       }
     }
   },
-  "print": {
-    "select_ok": "Ok",
-    "print_selected": "Print",
+  "storage_selection": {
     "select_all": "Select all",
     "select_storage": "Select Storage",
     "deselect_all": "Deselect all",
-    "qr_code": "Print QR-Codes",
+    "select_ok": "Ok",
+    "title": "Select to print QR-Codes"
+  },
+  "print": {
+    "configuration": "Configuration",
+    "preview": "Preview",
+    "example_text": "This is an example label text",
+    "storage_icon_sizes": {
+      "x-small": "X-Small",
+      "small": "Small",
+      "medium": "Medium",
+      "large": "Large",
+      "x-large": "X-Large"
+    },
     "qr_code_settings": {
       "title": "QR Code Settings",
-      "show_qr_code_icon": "Display icon",
-      "show_border": "QR Code border",
-      "show_storage_type_icon": "Display storage type icon",
+      "show_qr_code": "Display QR Code",
+      "qr_code_icon": "App Icon in QR Code",
+      "border_thickness": "Border thickness",
+      "storage_type_icon": "Storage type icon",
+      "storage_type_icon_size": "Size",
       "show_title": "Display storage name",
-      "print_label": "Display storage label"
+      "print_label": "Display storage label",
+      "constrained": "The preview above will not change when going lower than ~7 rows."
     },
     "page_settings": {
       "margin_left": "Margin on the left",
       "margin_right": "Margin on the right",
       "margin_top": "Margin on the top",
       "margin_bottom": "Margin on the bottom",
-      "items_per_row": "QR Codes per row",
-      "preview_scale": "Scale of the preview",
+      "num_cols": "QR Codes per row",
+      "num_rows": "Rows per page",
+      "paper": "Paper size",
       "title": "Print Settings"
-
+    },
+    "preview_page": {
+      "scale": "Scale of the preview",
+      "print": "Print",
+      "save_img": "Save as PNG"
     },
     "show_preview": "Show print preview",
     "close_preview": "Close print preview",
-    "print": "Print",
+
     "example_storage": "Example Storage"
   },
   "scan": {
-    "right_household": "Have you selected the correct household?",
     "from": "scanned QR Code",
     "qr_code": {
       "title": "Scan Storage QR Code"
     },
-    "go_to": {
-      "boxes": "Show box",
-      "locations": "Show Location"
-    },
-    "scanned_type": {
-      "boxes": "Box: ",
-      "locations": "Location: "
-    }
+    "go_to": "Go to {name}",
+    "select_camera": "Please select your camera to proceed",
+    "camera_paused": "The camera feed is currently paused, to scan different codes, click here",
+    "loading_camera": "Please wait, loading camera feed"
   },
   "confirm": {
     "actions": {

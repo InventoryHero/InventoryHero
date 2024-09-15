@@ -101,6 +101,11 @@ const vueRouter =  createRouter({
           component: Boxes,
         },
         {
+          path: ':preselectedBox',
+          component: Boxes,
+          props: true
+        },
+        {
           path: ':preselectedBox/:filteredFrom',
           component: Boxes,
           props: true
@@ -123,6 +128,11 @@ const vueRouter =  createRouter({
         },
         {
           path: ':preselectedLocation/:filteredFrom',
+          component: Locations,
+          props: true
+        },
+        {
+          path: ':preselectedLocation',
           component: Locations,
           props: true
         }

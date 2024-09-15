@@ -1,5 +1,5 @@
 import {defineStore} from "pinia";
-import {ApiStorage} from "@/types";
+import {ApiStorage, StorageTypes} from "@/types";
 
 interface StorageMap {
     [key: string]: Array<ApiStorage>; // Maps storageStore type to an array of storages
@@ -15,7 +15,8 @@ export default defineStore("storage", {
     state: () => {
         return {
             _storage: {} as StorageMap,
-            _selectedStorage: {} as SelectedStorageMap
+            _selectedStorage: {} as SelectedStorageMap,
+            _printSelection: [] as Array<number>
         }
     },
     actions: {
@@ -160,10 +161,30 @@ export default defineStore("storage", {
           this._addStorage(newLocation, "location")
         },
 
-
+        getStorage(type: StorageTypes){
+            if(type === StorageTypes.Box){
+                return this._storage["box"]
+            }
+            if(type === StorageTypes.Location){
+                return this._storage["location"]
+            }
+            return []
+        },
+        selectForPrinting(id: number, selectAll: boolean = false){
+            const item = this._printSelection.findIndex(selection => selection === id)
+            if(item === -1){
+                this._printSelection.push(id)
+            } else if(!selectAll){
+                this._printSelection.splice(item, 1);
+            }
+        },
+        deselectAllFromPrinting(){
+          this._printSelection = []
+        },
         reset(){
             this._storage = {}
             this._selectedStorage = {}
+            this._printSelection = []
         }
 
 
@@ -172,7 +193,8 @@ export default defineStore("storage", {
         boxes: state =>  state._storage.box ?? [],
         selectedBox: state => state._selectedStorage.box,
         locations: state =>  state._storage.location ?? [],
-        selectedLocation: state => state._selectedStorage.location
+        selectedLocation: state => state._selectedStorage.location,
+        printSelection: state => state._printSelection
 
     }
 })

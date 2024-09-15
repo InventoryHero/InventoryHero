@@ -1,94 +1,114 @@
-<script lang="ts">
-import {defineComponent} from 'vue'
-import {ApiStorage} from "@/types";
+<script setup lang="ts">
 
-export default defineComponent({
-  name: "QrCodeFilter",
-  emits: {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    updateFilter(payload: string){
-      return true;
-    },
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    'update:search'(payload: string){
-      return true
-    }
-  },
-  props: {
-    preSelected: {
-      type: Boolean,
-      default: false
-    },
-    preSelectionTitle: {
-      type: String,
-      default: ""
-    },
-    preSelectionCloseAction:{
-      type: String,
-      default: ''
-    },
-    search: {
-      type: String,
-      default: ''
-    },
-    storage: {
-      type: Array<ApiStorage>,
-      default: []
-    }
-  },
-  computed:{
-    searchString:{
-      get(){
-        return this.search
-      }, set(value: string){
-        this.$emit('update:search', value)
-      }
-    }
-  },
-  data(){
-    return{
-      selectForQrCodePrinting: false
-    }
-  }
+
+import StorageSelectionModal from "@/components/widgets/QrCode/Print/StorageSelectionModal.vue";
+import useDialogConfig from "@/composables/useDialogConfig.ts";
+import {useStorage} from "@/store";
+import {useNotification} from "@kyvg/vue3-notification";
+
+const storageStore = useStorage()
+const {t} = useI18n()
+const {notify} = useNotification()
+
+const emit = defineEmits<{
+  (e: 'qrSelectionToggled'): void
+}>()
+
+const {
+  isVisible: selectionDialogVisible,
+  openDialog: openSelectionDialog,
+  closeDialog: closeSelectionDialog,
+  dialogProps: selectionDialogProps
+} = useDialogConfig()
+
+const {
+  isVisible: printConfigDialogVisible,
+  openDialog: openPrintConfigDialog,
+  closeDialog: closePrintConfigDialog,
+  dialogProps: printConfigDialogProps
+} = useDialogConfig()
+
+
+const search = defineModel<string>("search")
+const {
+  preSelected=false,
+  preSelectionCloseAction="",
+  preSelectionTitle=""
+} = defineProps<{
+  preSelected?: boolean,
+  preSelectionCloseAction?: string,
+  preSelectionTitle?: string
+}>()
+
+const storageSelected = computed(() => {
+  return Object.values(storageStore.printSelection).some(s => s ?? false)
 })
+
+function printSelection(){
+  if(storageSelected.value){
+    openPrintConfigDialog()
+  } else {
+    notify({
+      title: t("toasts.title.info.no_storage_selected"),
+      text: t("toasts.text.info.no_storage_selected"),
+      type: "info"
+    })
+  }
+  closeSelectionDialog()
+}
+
+function openSelection(){
+  emit('qrSelectionToggled')
+  openSelectionDialog()
+}
+
 </script>
 
 <template>
-  <v-row
-      :no-gutters="true"
-      v-bind="$attrs"
+
+  <v-dialog
+      v-model="selectionDialogVisible"
+      v-bind="selectionDialogProps"
   >
-    <v-col>
+    <storage-selection-modal
+      @close="closeSelectionDialog"
+      @selection-confirmed="printSelection"
+    />
+  </v-dialog>
+
+  <v-dialog
+    v-model="printConfigDialogVisible"
+    v-bind="printConfigDialogProps"
+  >
+    <print-qr-codes-modal
+      @close="closePrintConfigDialog"
+    />
+  </v-dialog>
+
+  <div
+    class="d-flex align-center"
+  >
+    <div
+      class="flex-1-1"
+    >
       <text-filter
           v-if="!preSelected"
-          v-model:filter="searchString"
-          width="100%"
-
+          v-model:filter="search"
       />
-
       <app-preselection-filter
           v-else
           @click:close="$router.push(preSelectionCloseAction)"
           :title="preSelectionTitle"
       />
-    </v-col>
-    <v-col
-        cols="1"
-        lg="1"
-        class="d-flex justify-end align-center ms-2"
-    >
-      <app-icon-btn
-          icon="mdi-qrcode"
-          size="large"
-          @click="selectForQrCodePrinting = true"
-      />
-    </v-col>
-  </v-row>
+    </div>
 
-  <print-qr-modal
-      v-model="selectForQrCodePrinting"
-      :storage="storage"
-  />
+    <app-icon-btn
+        class="flex-0-0"
+        icon="mdi-qrcode"
+        size="x-large"
+        @click="openSelection"
+    />
+  </div>
 </template>
 
 <style scoped lang="scss">
