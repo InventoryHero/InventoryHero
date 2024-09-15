@@ -225,7 +225,7 @@ export class BoxEndpoint extends StorageEndpoint{
     constructor(){
         super(StorageTypes.Box)
     }
-    public async getBoxes(params:Partial<GetStorageParams>){
+    public async getBoxes(params?:Partial<GetStorageParams>){
         const data = await this.getStorageType(params)
         return data as Array<ApiStorage>
     }

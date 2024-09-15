@@ -25,15 +25,15 @@ const rules = {
   emailNeeded: (value: string) => value !== '' || $t('login.register.rules.email_needed')
 }
 async function register() {
-  loading.value=true;
+
   //@ts-expect-error couldn't figure out how to type template ref
   const {valid} = await registerForm.value.validate();
   if(!valid)
   {
     return
   }
-
-  let success = await authStore.register(username.value, password.value, email.value, "")
+  loading.value=true;
+  let success = await authStore.register(username.value, password.value, email.value)
   loading.value = false
   if (success) {
     reset()
@@ -68,6 +68,7 @@ function close(){
           type="text"
           v-model="username"
           :rules="[rules.usernameNeeded]"
+          @keyup.enter="register"
       />
       <v-text-field
           density="compact"
@@ -77,6 +78,7 @@ function close(){
           type="email"
           v-model="email"
           :rules="[rules.emailNeeded]"
+          @keyup.enter="register"
       />
       <app-password-textfield
           v-model="password"
@@ -84,6 +86,7 @@ function close(){
           :rules="[rules.passwordNeeded]"
           density="compact"
           variant="outlined"
+          @keyup.enter="register"
       />
       <app-password-textfield
           :label="$t('login.register.repeat_password')"
@@ -91,6 +94,7 @@ function close(){
           :rules="[rules.repeatNotEqual]"
           density="compact"
           variant="outlined"
+          @keyup.enter="register"
       />
 
     </v-form>

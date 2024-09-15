@@ -178,24 +178,6 @@ const vueRouter =  createRouter({
     {
       path: "/create",
       component: Create,
-      redirect: '/create/product',
-      children:[
-        {
-          path: 'product',
-          name: "create.product",
-          component: CreateProductCard,
-        },
-        {
-          path: 'box',
-          name: "Create Box",
-          component: CreateBoxCard,
-        },
-        {
-          path: 'location',
-          name: "Create Location",
-          component: CreateLocationCard,
-        },
-      ],
       meta:{
         requiresAuth: true,
         requiresHousehold: true,

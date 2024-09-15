@@ -2,7 +2,7 @@
 import {computed, onMounted, ref, useTemplateRef} from 'vue'
 import useAxios from "@/composables/useAxios.ts";
 import {AdministrationEndpoint, GeneralEndpoint, UserEndpoint} from "@/api/http";
-import useTextFieldStyle from "@/composables/useTextFieldStyle.ts";
+import useTextFieldStyle from "@/composables/useAppStyling.ts";
 import {useI18n} from "vue-i18n";
 import PasswordResetAdminBanner from "@/components/widgets/Administration/Users/PasswordResetAdminBanner.vue";
 import {useNotification} from "@kyvg/vue3-notification";

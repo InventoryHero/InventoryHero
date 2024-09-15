@@ -74,6 +74,7 @@ export default defineComponent({
           :rules="[rules.usernameNeeded]"
           type="text"
           v-model="username"
+          @keyup.enter="login"
       />
       <app-password-textfield
         density="compact"
@@ -82,6 +83,7 @@ export default defineComponent({
         :label="$t('login.login.password')"
         v-model="password"
         :disable-min-length="true"
+        @keyup.enter="login"
       />
     </v-form>
   </v-card-text>

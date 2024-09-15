@@ -1,47 +1,46 @@
-<script lang="ts">
-import {defineComponent} from 'vue'
+<script setup lang="ts">
 
-export default defineComponent({
-  name: "CreateCard",
-  inject: ['loading'],
-  emits:{
-    clear(){
-      return true;
-    },
-    save(){
-      return true
-    }
-  },
-  computed: {
-    resourcesLoading(){
-      return (this.loading.loadingBoxes ?? false) ||
-              (this.loading.loadingProducts ?? false) ||
-              (this.loading.loadingLocations ?? false)
-    }
-  },
-  props: {
-    requestInProgress: {
-      type: Boolean,
-      default: false
-    },
-    title: {
-      type: String,
-      required: true,
-    }
+const {t} = useI18n()
+
+const loading = inject("loading", ref({
+  loadingBoxes: true,
+  loadingLocations: true,
+  loadingProducts: true
+}))
+
+const emit = defineEmits<{
+  (e: 'clear'): void,
+  (e: 'save'): void
+}>()
+
+const resourcesLoading = computed(() => Object.values(loading.value).some(value => value))
+
+const {
+  requestInProgress=false,
+  title
+} = defineProps<{
+  requestInProgress?: boolean,
+  title: string
+}>()
+
+function save(){
+  if(!resourcesLoading.value){
+    emit('save')
   }
-})
+}
 </script>
 
 <template>
   <v-card
-      elevation="5"
+    :loading="requestInProgress || resourcesLoading"
   >
-
-    <v-progress-linear
-        :indeterminate="true"
-        :active="requestInProgress"
-        color="primary"
-    />
+    <template v-slot:loader="{ isActive }">
+      <v-progress-linear
+          :indeterminate="true"
+          :active="isActive"
+          color="primary"
+      />
+    </template>
     <v-card-title
         class="shadowed mb-4"
     >
@@ -59,33 +58,18 @@ export default defineComponent({
       <v-btn
           color="red-lighten-1"
           variant="outlined"
-          @click="$emit('clear')"
-      >
-        <template #prepend>
-          <v-icon
-              color="red"
-              icon="mdi-trash-can"
-          />
-        </template>
-        {{$t('add.clear')}}
-      </v-btn>
+          @click="emit('clear')"
+          prepend-icon="mdi-trash-can"
+          :text="t('add.clear')"
+      />
       <v-btn
           color="primary"
           variant="elevated"
+          prepend-icon="mdi-content-save"
           :disabled="resourcesLoading"
-          @click="() => {
-            if(!resourcesLoading){
-              $emit('save')
-            }
-          }"
-      >
-        <template #prepend>
-          <v-icon
-              icon="mdi-content-save"
-          />
-        </template>
-        {{$t('add.save')}}
-      </v-btn>
+          @click="save"
+          :text="t('add.save')"
+      />
     </v-card-actions>
   </v-card>
 

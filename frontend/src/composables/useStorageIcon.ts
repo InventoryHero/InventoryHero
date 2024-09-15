@@ -3,7 +3,6 @@ import { StorageTypes} from "@/types";
 
 export default (type: StorageTypes) => {
 
-
     return computed(() => {
         switch (type) {
             case StorageTypes.Location:
