@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import {useAuthStore} from "@/store";
-import useDialogConfig from "@/composables/useDialogConfig.ts";
 
 const authStore = useAuthStore()
 const route = useRoute()
+const router = useRouter()
 
 const emit = defineEmits<{
   (e: 'toggleNav'): void,
@@ -25,6 +25,9 @@ const isSettings = computed(() => {
   return route.name === "settings"
 })
 
+const tabsVisible = computed(() => route.path === "/create")
+
+const tab = inject<string>("tab")
 
 
 
@@ -37,22 +40,24 @@ function toggleNav(){
 
 <template>
   <v-app-bar
-      density="compact"
+      density="comfortable"
   >
-    <v-app-bar-nav-icon
-        v-if="displayNav"
-        @click.stop="toggleNav()"
-    ></v-app-bar-nav-icon>
-    <v-toolbar-title>
+    <template v-slot:prepend>
+      <v-app-bar-nav-icon
+          v-if="displayNav"
+          @click.stop="toggleNav()"
+      ></v-app-bar-nav-icon>
+    </template>
+    <v-app-bar-title>
       <v-card
-          hover
-          width="fit-content"
-          color="dark-grey"
-          to="/"
+        hover
+        width="fit-content"
+        to="/"
+
       >
         {{ $t('app.title') }}
       </v-card>
-    </v-toolbar-title>
+    </v-app-bar-title>
     <template v-slot:append>
       <app-icon-btn
         v-if="isAuthorized"
@@ -84,11 +89,39 @@ function toggleNav(){
 
     </template>
 
+
+  <template
+      v-slot:extension
+      v-if="tabsVisible"
+  >
+    <v-tabs
+
+      v-model="tab"
+      rounded="0"
+      color="primary"
+
+    >
+      <v-tab
+        value="product"
+        prepend-icon="mdi-cart"
+      >
+        {{ $t('add.product.tab') }}
+      </v-tab>
+      <v-tab
+        value="box"
+        prepend-icon="mdi-package-variant"
+      >
+        {{ $t('add.box.tab') }}
+      </v-tab>
+      <v-tab
+        value="location"
+        prepend-icon="mdi-archive-marker"
+      >
+        {{ $t('add.location.tab') }}
+      </v-tab>
+    </v-tabs>
+  </template>
   </v-app-bar>
-
-
-
-
 </template>
 
 <style scoped lang="scss">
@@ -96,4 +129,6 @@ function toggleNav(){
 .hovering{
   cursor: pointer !important;
 }
+
+
 </style>

@@ -3,6 +3,7 @@ import {useAuthStore, useConfigStore, useGeneralSocketStore, useHouseholdSocketS
 import AppBarBottom from "@/components/ui/AppBarBottom.vue";
 import AppBar from "@/components/ui/AppBar.vue";
 import {Notifications} from "@kyvg/vue3-notification";
+import {TabType} from "@/types/TabType.ts";
 
 // TODO the print settings look a bit clunky
 
@@ -30,25 +31,14 @@ const dockVisible = computed(() =>{
   if(isAdminRoute.value){
     return false
   }
-  if(isAddRoute.value){
-    return false
-  }
-
   return configStore.dock
 })
-const isAddRoute = computed(() => {
-  return route.path.startsWith("/create")
-})
+
 
 const authorized = computed(() => {
   return authStore.authorized
 })
-const transition = computed(() => {
-  if (configStore.transitions){
-    return "scale"
-  }
-  return ""
-})
+
 
 function reloadContent(){
   router.go(0)
@@ -59,6 +49,9 @@ const {
   openDialog: openScanQrCodeModal,
   closeDialog: closeScanQrCodeModal
 } = useDialogConfig()
+
+const tab = ref(TabType.Product)
+provide("tab", tab)
 
 
 onMounted(async () => {
@@ -79,15 +72,12 @@ onMounted(async () => {
 </script>
 
 <template>
-
-
   <notifications
       v-if="!(route.meta.tokenized ?? false)"
       position="top right"
       classes="vue-notification mt-2 me-8"
       :max="2"
   />
-
   <notifications
       v-if="!(route.meta.tokenized ?? false)"
       position="bottom right"
@@ -142,12 +132,9 @@ onMounted(async () => {
       v-else
   >
     <app-bar
-      :nav="(!dockVisible && !isAddRoute) || isAdminRoute"
+      :nav="(!dockVisible) || isAdminRoute"
       @toggle-nav="navOpen = !navOpen"
       @scan-qr-code="openScanQrCodeModal"
-    />
-    <app-create-bar
-      v-if="isAddRoute && authorized"
     />
 
     <nav-drawer
@@ -182,7 +169,7 @@ onMounted(async () => {
       >
 
         <router-view v-slot="{Component}">
-          <transition :name="transition" mode="out-in" >
+          <transition name="scale" mode="out-in" >
             <component :is="Component" />
           </transition>
         </router-view>
@@ -196,7 +183,7 @@ onMounted(async () => {
 
 .scale-enter-active,
 .scale-leave-active {
-  transition: all 0.15s ease;
+  transition: all 0.35s ease;
 }
 
 .scale-enter-from,

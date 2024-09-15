@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import {ApiStorage, StorageTypes} from "@/types";
+import useAppStyling from "@/composables/useAppStyling.ts";
 
 defineOptions({
   inheritAttrs: false
@@ -15,6 +16,8 @@ const {
   storage?: Array<ApiStorage>
 }>()
 
+const {styling} = useAppStyling()
+
 function getIcon(type: StorageTypes){
   switch(type){
     case StorageTypes.Location:
@@ -29,16 +32,16 @@ function getIcon(type: StorageTypes){
 
 <template>
   <v-select
-      v-bind="$attrs"
+      v-bind="{
+        ...styling,
+        ...$attrs,
+      }"
       v-model="selected"
       :single-line="true"
-      color="primary"
-      variant="filled"
       :items="storage"
       item-title="name"
       item-value="id"
       :chips="true"
-      :clearable="true"
       :persistent-clear="true"
       :loading="storageLoading"
       :return-object="true"

@@ -6,7 +6,9 @@ import useAxios from "@/composables/useAxios.ts";
 import {ProductEndpoint} from "@/api/http";
 import {useNotification} from "@kyvg/vue3-notification";
 import useHint from "@/composables/useHint.ts";
-import {useTemplateRef} from "vue";
+import {onMounted, useTemplateRef} from "vue";
+import useAppStyling from "@/composables/useAppStyling.ts";
+import {TabType} from "@/types/TabType.ts";
 
 const storageStore = useStorage()
 const productStore = useProducts()
@@ -15,17 +17,24 @@ const {axios: productEndpoint} = useAxios<ProductEndpoint>('product')
 const {t} = useI18n()
 const {notify} = useNotification()
 
-const resourcesLoading = inject<{
+const resourcesLoading = inject<Ref<{
  loadingProducts: boolean,
  loadingBoxes: boolean,
  loadingLocations: boolean
-}>('loading')
+}>>('loading', ref({
+  loadingProducts: true,
+  loadingBoxes: true,
+  loadingLocations: true
+}))
+
+const tab = inject<Ref<TabType>>("tab", ref(TabType.Product))
+
 const addForm = useTemplateRef('add-form')
-const combobox = useTemplateRef('combobox')
+const comboBox = useTemplateRef('combobox')
 const postingProduct = ref(false)
 
 const newProduct = ref<ApiProduct|string|null>(null)
-const amount = ref(0)
+const amount = ref<number|undefined>()
 const newStarred = ref<boolean|undefined>(undefined)
 const selectedStorage = ref<ApiStorage|undefined>(undefined)
 
@@ -60,11 +69,11 @@ const {hintActive: amountHintActive, message: amountHint } = useHint(t(`add.prod
 const {hintActive: starHintActive, message: starHint } = useHint(t(`add.product.hints.star`))
 
 const productsLoading = computed(() =>{
-  return resourcesLoading?.loadingProducts ?? false
+  return resourcesLoading?.value.loadingProducts
 })
 
 const storageLoading = computed(() =>{
-  return (resourcesLoading?.loadingLocations ?? false) || (resourcesLoading?.loadingBoxes ?? false)
+  return (resourcesLoading?.value.loadingLocations) || (resourcesLoading?.value.loadingBoxes)
 })
 
 const rules = {
@@ -73,6 +82,7 @@ const rules = {
   needProduct: (value: string|null|undefined) => value !== null && value !== undefined && value !== '' || t('add.product.rules.need_product')
 }
 
+const {styling} = useAppStyling()
 
 
 function notifySuccess(name: string, amount: number){
@@ -90,7 +100,7 @@ function addExisting(){
   let product = newProduct.value! as ApiProduct
   let data = {
     productId: product.id,
-    amount: amount.value,
+    amount: amount.value ?? 0,
     storageId: selectedStorage.value?.id
   } as Partial<ProductStorageMapping>
 
@@ -105,7 +115,7 @@ function addExisting(){
     if(!success){
       return
     }
-    notifySuccess(product.name, amount.value)
+    notifySuccess(product.name, amount.value!)
     if(starred.value !== product.starred){
       productStore.updateStarred(product.id)
     }
@@ -124,7 +134,7 @@ function addNew(){
 
   productEndpoint.createProduct(
       newProduct.value as string,
-      amount.value,
+      amount.value ?? 0,
       starred.value,
       selectedStorage.value?.id
   ).then(({success, product}) => {
@@ -132,7 +142,7 @@ function addNew(){
     if(!success){
       return;
     }
-    notifySuccess(product!.name, amount.value)
+    notifySuccess(product!.name, amount.value ?? 0)
     productStore.addProduct(product!)
     clear()
   })
@@ -164,6 +174,12 @@ function clear(){
 }
 
 
+watch(tab, (newValue: TabType, oldValue: TabType) => {
+  if(newValue !== TabType.Product && oldValue === TabType.Product){
+    clear()
+  }
+})
+
 
 </script>
 
@@ -171,8 +187,8 @@ function clear(){
 
   <create-card
       :title="t(`add.product.title`)"
-      @save="save()"
-      @clear="clear()"
+      @save="save"
+      @clear="clear"
       :request-in-progress="postingProduct"
   >
     <v-form
@@ -180,20 +196,16 @@ function clear(){
         ref="add-form"
         :disabled="postingProduct"
     >
-
       <v-row
-          :no-gutters="true"
+          no-gutters
           class="mb-2"
       >
-        <v-col
-            cols="12"
-        >
+        <v-col>
           <v-combobox
-              ref="combobox"
-              :clearable="true"
+              v-bind="styling"
+              ref="comboBox"
               :persistent-clear="true"
               :hide-no-data="false"
-              density="comfortable"
               auto-select-first="exact"
               v-model="newProduct"
               :label="t('add.product.labels.product')"
@@ -202,15 +214,13 @@ function clear(){
               :rules="[rules.needProduct]"
               :disabled="productsLoading"
               @keydown.enter="() => {
-                //@ts-expect-error
-                combobox.blur()
-            }"
+                  //@ts-expect-error
+                  comboBox.blur()
+              }"
               :messages="comboboxHint"
               :loading="productsLoading"
-              hide-details="auto"
 
           >
-
             <template #no-data>
               <v-list-item>
                 <v-list-item-title
@@ -237,19 +247,15 @@ function clear(){
         </v-col>
       </v-row>
       <v-row
-          :no-gutters="true"
+          no-gutters
           class="mb-2"
       >
-        <v-col
-            cols="12"
-        >
+        <v-col>
           <app-storage-select
               :storage-loading="storageLoading"
               v-model="selectedStorage"
               :storage="storage"
-              density="comfortable"
               :label="t('add.product.labels.location')"
-              hide-details="auto"
               content-type="product"
               :messages="locationSelectHint"
           >
@@ -262,19 +268,18 @@ function clear(){
         </v-col>
       </v-row>
       <v-row
-          :no-gutters="true"
-          class="mb-2 justify-space-between"
+        no-gutters
+        class="mb-2"
       >
         <v-col>
           <v-text-field
+              v-bind="styling"
               :messages="amountHint"
               type="number"
-              density="comfortable"
               :label="t('add.product.labels.amount')"
               v-model.number="amount"
               :rules="[rules.isNumber, rules.positive]"
               class="num-input"
-              hide-details="auto"
           >
             <template #append>
               <app-help-indicator
@@ -285,11 +290,10 @@ function clear(){
         </v-col>
       </v-row>
       <v-row
-          :no-gutters="true"
-          class="mb-2 justify-space-between"
+          no-gutters
+          class="mb-2n"
       >
-        <v-col
-        >
+        <v-col>
 
           <v-switch
               density="comfortable"
@@ -306,7 +310,6 @@ function clear(){
           </v-switch>
         </v-col>
       </v-row>
-
     </v-form>
   </create-card>
 
@@ -315,13 +318,5 @@ function clear(){
 </template>
 
 <style scoped lang="scss">
-.switch-container {
-  display: flex;
-  flex-direction: column;
-  align-items: center; /* Aligns items vertically */
-}
 
-.switch-container label {
-  margin-right: 10px; /* Adjust the space between the text and the switch */
-}
 </style>

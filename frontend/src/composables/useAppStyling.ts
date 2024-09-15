@@ -1,7 +1,7 @@
 
 
 export default () => {
-    const textFieldStyle = computed(() => {
+    const styling = computed(() => {
         return {
             variant: "solo-filled",
             rounded: "lg",
@@ -9,13 +9,13 @@ export default () => {
             clearable: true,
             persistentClear: true,
             hideDetails: "auto",
-            class: "mb-4",
-            disabled: false
+            disabled: false,
+            density: "comfortable"
         } as Partial<object>
     })
 
 
     return {
-        textFieldStyle
+        styling
     }
 }

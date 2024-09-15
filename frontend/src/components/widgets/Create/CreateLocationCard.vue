@@ -1,100 +1,79 @@
-<script lang="ts">
-import {defineComponent} from 'vue'
-import {useAuthStore, useStorage} from "@/store";
+<script setup lang="ts">
+import {useStorage} from "@/store";
 import {LocationEndpoint} from "@/api/http";
 import useAxios from "@/composables/useAxios.ts";
+import useHint from "@/composables/useHint.ts";
+import {useNotification} from "@kyvg/vue3-notification";
+import {TabType} from "@/types/TabType.ts";
+import useAppStyling from "@/composables/useAppStyling.ts";
+import {useTemplateRef} from "vue";
+
+const {axios: locationEndpoint} = useAxios<LocationEndpoint>("location")
+const storageStore = useStorage()
+const {t} = useI18n()
+const {notify} = useNotification()
+
+const tab = inject<Ref<TabType>>("tab", ref(TabType.Location))
+const {styling} = useAppStyling()
+
+const {
+  hintActive: locationNameHintActive,
+  message: locationNameHint
+} = useHint(t(`add.product.hints.combobox`))
+
+const rules = ref({
+  needName: (value: string) => value !== "" || t('add.location.hints.locationName')
+})
+
+const location = ref<string>("")
+const postingLocation = ref(false)
+const addForm = useTemplateRef('add-form')
 
 
-export default defineComponent({
-  name: "CreateLocationCard",
-  setup(){
-    const {axios} = useAxios<LocationEndpoint>("location")
-    const user = useAuthStore();
-    const storageStore = useStorage()
-    return {
-      axios,
-      user,
-      storageStore
-    }
-  },
-  computed: {
-    locationNameHint(){
-      return{
-        active: this.hints.locationName !== '',
-        hint: this.hints.locationName
-      }
-    },
-  },
-  data(){
-    return {
-      postingLocation: false,
-      location: "",
-      hints: {
-        locationName: ''
-      },
-      rules: {
-        needName: (value: string) => value !== "" || this.$t('add.location.rules.name_needed')
-      }
-    }
-  },
-  methods: {
-    enableHint(hint: keyof typeof this.hints)
-    {
-      this.$refs["add-form"].resetValidation();
-      Object.keys(this.hints).forEach(v => this.hints[v as keyof typeof this.hints] = '')
-      if(this.hints[hint] === '') {
-        this.hints[hint] = this.$t(`add.location.hints.${hint}`)
-      }
-      else {
-        this.hints[hint] = ''
-      }
-    },
-    disableHint(hint: keyof typeof this.hints)
-    {
-      this.hints[hint] = ''
-    },
-    async save(){
-      const validation = await this.$refs["add-form"].validate()
-      if(!validation.valid){
-        return
-      }
+async function save(){
+  //@ts-expect-error couldn't figure out how to type it properly
+  const validation = await addForm.value.validate()
+  if(!validation.valid){
+    return
+  }
+  postingLocation.value = true
+  const {success, newLocation} = await locationEndpoint.createLocation({
+    name: location.value
+  })
 
-      let formData = new FormData();
-      formData.append("household", this.user.household)
-      formData.append("name", this.location)
-      this.postingLocation = true
-      const {success, newLocation} = await this.axios.createLocation({
-        name: this.location
-      })
+  postingLocation.value = false
+  if(success){
+    storageStore.addLocation(newLocation)
+    notify({
+      title: t('toasts.titles.success.add_location', {
+        name: location.value
+      }),
+      text: t('toasts.text.success.add_location'),
+      type: "success"
+    })
+    clear()
+  }
+}
 
-      this.postingLocation = false
-      if(success){
-        this.storageStore.addLocation(newLocation)
-        this.$notify({
-          title: this.$t('toasts.titles.success.add_location', {
-            name: this.location
-          }),
-          text: this.$t('toasts.text.success.add_location'),
-          type: "success"
-        })
-        this.$refs["add-form"].reset()
-      }
+function clear(){
+  //@ts-expect-error couldn't figure out how to type it properly
+  addForm.value.reset()
+}
 
-    },
-    clear(){
-      this.$refs["add-form"].reset()
-    }
-
+watch(tab, (newValue: TabType, oldValue: TabType) => {
+  if(newValue !== TabType.Location && oldValue === TabType.Location){
+    clear()
   }
 })
+
 </script>
 
 <template>
 
   <create-card
       :title="$t(`add.location.title`)"
-      @save="save()"
-      @clear="clear()"
+      @save="save"
+      @clear="clear"
       :request-in-progress="postingLocation"
   >
     <v-form
@@ -111,21 +90,17 @@ export default defineComponent({
             cols="12"
         >
           <v-text-field
-              :clearable="true"
-              :persistent-clear="true"
-              density="comfortable"
+              v-bind="styling"
               auto-select-first="exact"
               v-model="location"
               :label="$t('add.location.labels.location')"
               item-title="name"
-              :persistent-hint="locationNameHint.active"
-              :hint="locationNameHint.hint"
+              :message="locationNameHint"
               :rules="[rules.needName]"
           >
-            <template #append>
+            <template v-slot:message>
               <app-help-indicator
-                  @click:outside="disableHint('locationName')"
-                  @click="enableHint('locationName')"
+                  v-model="locationNameHintActive"
               />
             </template>
           </v-text-field>

@@ -18,9 +18,6 @@ export default defineComponent({
     mobile(){
       return this.$vuetify.display.mobile
     },
-    transitions(){
-      return this.config.transitions
-    }
   },
   methods:{
     changeTheme(){
@@ -34,9 +31,6 @@ export default defineComponent({
     useDock(){
       this.config.toggleDock(!this.dock)
     },
-    toggleTransitions(){
-      this.config.toggleTransitions()
-    }
   }
 })
 </script>
@@ -49,20 +43,6 @@ export default defineComponent({
     <app-setting
         :title="$t('settings.ui.preset')"
     >
-    </app-setting>
-    <v-divider/>
-    <app-setting
-        :title="$t('settings.ui.transitions')"
-    >
-      <v-switch
-          class="d-inline-flex"
-          color="primary"
-          :hide-details="true"
-          density="compact"
-          v-model="transitions"
-          @click.stop
-          @click="toggleTransitions"
-      />
     </app-setting>
     <v-divider/>
     <app-setting

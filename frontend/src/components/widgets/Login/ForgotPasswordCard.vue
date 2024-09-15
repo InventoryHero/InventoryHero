@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import useTextFieldStyle from "@/composables/useTextFieldStyle.ts";
+import useTextFieldStyle from "@/composables/useAppStyling.ts";
 import {useI18n} from "vue-i18n";
 import {computed, ref, useTemplateRef} from "vue";
 import useAxios from "@/composables/useAxios.ts";
