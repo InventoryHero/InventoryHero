@@ -169,8 +169,8 @@ onUpdated(async () => {
           <v-container
               class="fill-width"
               :class="{
-            'fill-height': route.meta?.fillHeight ?? false,
-          }"
+                'fill-height': route.meta?.fillHeight ?? false,
+              }"
           >
             <component :is="Component" />
           </v-container>

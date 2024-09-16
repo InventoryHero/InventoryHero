@@ -143,11 +143,11 @@ function leaveHousehold(){
     <v-card-text
         class="d-flex justify-space-between align-center"
     >
-    <span
-        class="d-inline-block text-wrap me-2"
-    >
-      {{ household.name }}
-    </span>
+      <span
+          class="d-inline-block text-truncate flex-1-1"
+      >
+        {{ household.name }}
+      </span>
       <v-sheet
           class="flex-0-0"
       >

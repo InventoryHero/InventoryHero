@@ -189,6 +189,7 @@ function removeFromHousehold(){
     density="compact"
     elevation="0"
     :disabled="disabled || transferringOwnership || kickingUser"
+    class="fill-width"
   >
     <template v-slot:loader>
       <v-progress-linear
@@ -198,10 +199,11 @@ function removeFromHousehold(){
       />
     </template>
     <v-card-text
-      class="d-flex justify-space-between align-center"
+      class="d-flex align-center"
     >
       <span
         v-if="householdMember.joined"
+        class="d-inline-block text-wrap flex-1-1"
       >
         {{ householdMember.username }}
       </span>
@@ -250,9 +252,8 @@ function removeFromHousehold(){
           </template>
         </v-text-field>
       </span>
-
       <div
-        class="ms-1 flex-0-0"
+        class="flex-0-0"
       >
         <template v-if="householdMember.joined">
           <app-icon-btn

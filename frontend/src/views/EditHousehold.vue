@@ -150,27 +150,11 @@ function reset(){
 </script>
 
 <template>
-  <confirmation-dialog
-      :dialog-opened="deleteConfirmDialogVisible"
-      :title="t('households.edit.delete.confirm.title')"
-      :cancel-text="t('households.edit.delete.confirm.abort')"
-      :confirm-text="t('households.edit.delete.confirm.confirm')"
-      cancel-icon="mdi-cancel"
-      confirm-icon="mdi-delete"
-      :on-cancel="closeDeleteConfirmDialog"
-      :on-confirm="() => {
-        deleteConfirmed = true
-        deleteHousehold()
-    }"
-  >
-    <template v-slot:text>
-      <p v-html="t('households.edit.delete.confirm.text')"/>
-    </template>
-  </confirmation-dialog>
+
 
 
   <v-row
-    class="fill-height"
+    class="fill-height fill-width"
     justify="center"
     no-gutters
   >
@@ -236,20 +220,20 @@ function reset(){
           </div>
         </div>
         <v-card-actions
-            class="d-flex justify-space-between"
+          class="justify-end"
         >
           <v-btn
-            prepend-icon="mdi-arrow-left-bottom"
-            :text="t('households.edit.to_households')"
-            variant="tonal"
-            to="/households"
+              prepend-icon="mdi-arrow-left-bottom"
+              :text="t('households.edit.to_households')"
+              variant="tonal"
+              to="/households"
           />
           <v-btn
-            prepend-icon="mdi-trash-can"
-            :text="t('households.edit.delete_household')"
-            variant="tonal"
-            color="red-accent-1"
-            @click="deleteHousehold"
+              prepend-icon="mdi-trash-can"
+              :text="t('households.edit.delete_household')"
+              variant="tonal"
+              color="red-accent-1"
+              @click="deleteHousehold"
           />
         </v-card-actions>
       </v-card>
