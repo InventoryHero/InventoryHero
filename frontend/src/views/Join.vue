@@ -35,12 +35,12 @@ export default defineComponent({
     },
     async accept(){
       this.accepting = true
-      const success = await this.endpoint.joinHousehold(this.code)
+      const {success, household} = await this.endpoint.joinHousehold(this.code)
       if(!success){
         // TODO
         return
       }
-
+      this.authStore.addHousehold(household!)
       // reset return url otherwise user will be redirected to this join route again
       this.authStore.returnUrl = "";
       this.$router.push("/households")
@@ -69,17 +69,12 @@ export default defineComponent({
     cols="12"
     lg="6"
   >
-    <v-card>
-      <v-card-title
-        class="text-wrap"
-      >
-        {{ $t('join.title', {owner: household_meta.owner}) }}
-      </v-card-title>
-      <v-card-text
-        v-html="$t('join.text', household_meta)"
-      >
-
-      </v-card-text>
+    <v-card
+      :title="$t('join.title', {owner: household_meta.owner})"
+    >
+      <template v-slot:text>
+        <p v-html="$t('join.text', household_meta)" />
+      </template>
       <v-card-actions
         class="justify-space-between"
       >

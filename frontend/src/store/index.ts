@@ -7,6 +7,7 @@ import {useGeneralSocketStore} from "./sockets/generalSocketStore.ts"
 import productStore from "./productStore"
 import storageStore from "./storageStore"
 import printSettings from "@/store/printSettings";
+import notifications from "@/store/notifications";
 
 
 const pinia = createPinia()
@@ -19,5 +20,6 @@ export {
     useGeneralSocketStore,
     productStore as useProducts,
     storageStore as useStorage,
-    printSettings as usePrintSettings
+    printSettings as usePrintSettings,
+    notifications as useNotificationStore
 }

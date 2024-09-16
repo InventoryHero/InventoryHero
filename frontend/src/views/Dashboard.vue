@@ -1,24 +1,14 @@
 <script setup lang="ts">
+
 </script>
 
 <template>
-  <v-row
-    :no-gutters="true"
-    justify="center"
-  >
-    <v-col
-      cols="12"
-      lg="8"
-      class="d-flex justify-center align-center flex-column"
-    >
-      WELCOME TO INVENTORY HERO  😊
-      <household-quick-select-card
-          width="100%"
-          :collapsible="true"
-      />
 
-    </v-col>
-  </v-row>
+  <household-quick-select-card
+    :collapsible="true"
+    class="fill-width"
+  />
+
 </template>
 
 <style scoped lang="scss">

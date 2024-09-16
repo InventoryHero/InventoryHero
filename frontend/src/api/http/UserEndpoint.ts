@@ -49,7 +49,6 @@ export class UserEndpoint extends Endpoint{
             }
         }
         const response = await this.internalAxios.delete("/logout", body)
-        console.log(response)
         if(response.status === 200)
         {
             await clearAuthTokens()
@@ -118,9 +117,7 @@ export class UserEndpoint extends Endpoint{
     }
 
     public async updateMe(updated: Partial<User>){
-        console.log(updated)
         const response = await this.internalAxios.post(`/update`, updated)
-        console.log(response)
         if(response.status === 200){
             return {
                 success: true,
@@ -267,7 +264,6 @@ export class UserEndpoint extends Endpoint{
         const confirmAxios = axios.create()
         try{
             const response = await confirmAxios.post(`${baseURL}user/confirm/${code}`)
-            console.log(response)
             return {
                 success: response.status === 200,
                 verified: response.status === 200,

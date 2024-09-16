@@ -7,7 +7,7 @@ import useEditBtnStyle from "@/composables/useEditBtnStyle.ts";
 import {useI18n} from "vue-i18n";
 import useDialogConfig from "@/composables/useDialogConfig.ts";
 import {ApiProduct, ApiStorage, StorageTypes} from "@/types";
-import ProductOverlay from "@/components/products/ProductOverlay.vue";
+import ProductOverlay from "@/components/widgets/products/ProductOverlay.vue";
 
 interface LocationContent {
   item: ApiProduct | ApiStorage,

@@ -5,11 +5,16 @@ import {UserEndpoint} from "@/api/http";
 import {io} from "socket.io-client";
 import {getAccessToken} from "axios-jwt";
 import useAxios from "@/composables/useAxios.ts";
+import {SocketResponse} from "@/types/sockets.ts";
 
 type DefaultCallback = () => void
 type TakenCallback = (is_taken: boolean) => void
 
 type Callback = DefaultCallback | TakenCallback;
+
+
+
+
 
 const generalSocket = io("/general", {
     autoConnect: false
@@ -33,16 +38,29 @@ export const useGeneralSocketStore =  defineStore("generalSocket", {
             generalSocket.on("disconnect", () => {
                 console.log("GENERAL SOCKET DISCONNECTED")
             })
-        },
-        hi(){
-            generalSocket.emit(
-                'hi',
-                {},
-                (data: string) => {
-                    const response: SocketResponse = JSON.parse(data)
-                    this.socketErrorHandler(response, () => {})
+            generalSocket.on("kicked", (data: SocketResponse) => {
+                if(data.status !== "ok"){
+                    return
                 }
-            )
+                const content = data.content as {household: number}
+                this.authStore.removeHousehold(content.household, "kick")
+            })
+            generalSocket.on("ownership_received", (data: SocketResponse) => {
+                if(data.status !== "ok"){
+                    return
+                }
+
+                const content = data.content as {household: number}
+                this.authStore.ownHousehold(content.household)
+            })
+            generalSocket.on("deleted", (data: SocketResponse) => {
+                const content = data.content as {household: number}
+                this.authStore.removeHousehold(content.household, "deleted")
+            })
+
+        },
+        leave(){
+          generalSocket.disconnect()
         },
         isUserNameTaken(username: string): Promise<boolean> {
             return new Promise((resolve, reject) => {

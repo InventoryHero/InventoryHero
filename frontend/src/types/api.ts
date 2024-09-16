@@ -2,12 +2,15 @@ export type Household = {
     id: number,
     creator: number,
     name: string,
-    members: Array<HouseholdMember>
+    //members: Array<HouseholdMember>
 }
 
 export type HouseholdMember = {
     id: number,
-    member: number
+    username: string,
+    joined: boolean,
+    invite?: string,
+    size?: number
 }
 
 

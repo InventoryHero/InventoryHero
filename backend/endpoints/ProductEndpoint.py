@@ -7,7 +7,7 @@ from werkzeug.datastructures import auth
 
 from backend.db.models.Product import Product, ProductContainerMapping
 from backend.db.models.StorageContainer import Storage, ContainerTypes
-from backend.decorators import auth, emit_update
+from backend.decorators import require_household_member, emit_update
 from typing import Optional
 
 
@@ -91,7 +91,7 @@ class ProductEndpoint(Blueprint):
 
         @self.route("/create/<int:product_id>", methods=["POST"])
         @jwt_required()
-        @auth
+        @require_household_member
         @emit_update()
         def add_existing_product(household, product_id):
             self.app.logger.info(request.json)
@@ -124,7 +124,7 @@ class ProductEndpoint(Blueprint):
 
         @self.route("/create", methods=["POST"])
         @jwt_required()
-        @auth
+        @require_household_member
         @emit_update()
         def create_product(household):
             product_name = request.json.get("name", None)
@@ -171,7 +171,7 @@ class ProductEndpoint(Blueprint):
         @self.route("/<int:product_id>", methods=["GET"])
         @self.route("", defaults={'product_id': None}, methods=["GET"])
         @jwt_required()
-        @auth
+        @require_household_member
         def get_products(household, product_id):
             get_starred = request.args.get("starred", None)
 
@@ -189,7 +189,7 @@ class ProductEndpoint(Blueprint):
 
         @self.route("/stored/<int:product_id>", methods=["GET"])
         @jwt_required()
-        @auth
+        @require_household_member
         def get_product_stored_at(household, product_id):
 
             product = Product.query.filter_by(id=product_id, household_id=household).first()
@@ -206,7 +206,7 @@ class ProductEndpoint(Blueprint):
 
         @self.route("/<int:product_id>", methods=["DELETE"])
         @jwt_required()
-        @auth
+        @require_household_member
         @emit_update()
         def delete_product(household, product_id):
             product = Product.query.filter_by(id=product_id, household_id=household).first()
@@ -219,7 +219,7 @@ class ProductEndpoint(Blueprint):
 
         @self.route("/update/<int:product_id>", methods=["POST"])
         @jwt_required()
-        @auth
+        @require_household_member
         @emit_update()
         def update_product(household, product_id):
             to_update = request.json.get("product", None)
@@ -239,7 +239,7 @@ class ProductEndpoint(Blueprint):
 
         @self.route("/stored/<int:mapping_id>", methods=["POST"])
         @jwt_required()
-        @auth
+        @require_household_member
         @emit_update()
         def update_product_mapping(mapping_id, household):
             new_amount = request.json.get("amount", None)
@@ -288,7 +288,7 @@ class ProductEndpoint(Blueprint):
 
         @self.route("/stored/<int:mapping_id>", methods=["DELETE"])
         @jwt_required()
-        @auth
+        @require_household_member
         @emit_update()
         def delete_mapping(mapping_id, household):
             mapping = ProductContainerMapping.query.filter_by(id=mapping_id).first()

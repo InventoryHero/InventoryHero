@@ -76,6 +76,9 @@ export default defineConfig({
         /\.vue$/,
         /\.vue\?vue/, // .vue
       ],
+      dirs: [
+        "./src/composables"
+      ],
       imports: [
         'vue',
         'vue-router',

@@ -35,13 +35,10 @@ export type {
     ApiStorage,
     ProductStorageMapping,
     ApiProduct,
-    User
-
+    User,
+    StorageQrData
 }
 
 
 export { StorageTypes }
 
-export type {
-    StorageQrData
-}

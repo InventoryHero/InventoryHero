@@ -55,7 +55,7 @@ export class Endpoint {
                     await this.authStore.destroy();
                     break
                 case 403:
-                    if(error.response.data.status!== null && error.response.data.status !== undefined) {
+                    if(error.response.data?.status !== null && error.response.data?.status !== undefined) {
                         notify({
                             title: i18n.global.t(`toasts.titles.error.${error.response.data.status ?? 'unauthorized'}`),
                             text: i18n.global.t(`toasts.text.error.${error.response.data.status ?? 'unauthorized'}`),
@@ -111,7 +111,7 @@ export class Endpoint {
         this.internalAxios.interceptors.request.use((cfg) => {
             if(this.prependHousehold)
             {
-                cfg.baseURL += `${this.authStore.household}`
+                cfg.baseURL += `${this.authStore.household?.id}`
             }
             cfg.url = this.endpoint + cfg.url
             return cfg

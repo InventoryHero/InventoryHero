@@ -7,7 +7,7 @@ import useAxios from "@/composables/useAxios.ts";
 import {BoxEndpoint} from "@/api/http";
 import useScrollToTop from "@/composables/useScrollToTop.ts";
 import useDialogConfig from "@/composables/useDialogConfig.ts";
-import BoxOverlay from "@/components/storage/BoxOverlay.vue";
+import BoxOverlay from "@/components/widgets/storage/BoxOverlay.vue";
 import {onBeforeRouteLeave} from "vue-router";
 
 const storageStore = useStorage()
@@ -127,10 +127,10 @@ onBeforeRouteLeave(() => {
         <v-card-text
             class="d-flex position-relative flex-1-1"
         >
-          <div class="scroller-wrapper">
+          <div class="wrapper">
             <recycle-scroller
                 ref="scroller"
-                class="scroller"
+                class="scroll"
                 :buffer="0"
                 :item-size="90"
                 :items="filteredBoxes"

@@ -5,20 +5,25 @@ import {Household} from "@/types";
 import useAxios from "@/composables/useAxios.ts";
 import {useI18n} from "vue-i18n";
 import {useRouter} from "vue-router";
+import useAppStyling from "@/composables/useAppStyling.ts";
 const authData = useAuthStore();
 const {axios} = useAxios<HouseholdEndpoint>("household");
 
 const {t: $t} = useI18n()
 const $router = useRouter()
+const {styling} = useAppStyling()
 
-const {collapsible=false} = defineProps<{
+
+const {
+  collapsible=false
+} = defineProps<{
   collapsible?: boolean
 }>()
 
 const collapsed = ref(false)
 const loadingUserHouseholds = ref(false)
 const userHouseholds = ref<Array<Household>>([])
-const selectedHousehold = ref<Household|undefined>(undefined)
+const selectedHousehold = computed(() => authData.household)
 
 const icon = computed(() =>{
   if(collapsed.value){
@@ -44,7 +49,7 @@ const placeholderText = computed(() => {
 })
 
 const saveBtnDisabled = computed(() => {
-    return selectedHousehold.value?.id === authData.household
+    return selectedHousehold.value?.id === authData.household?.id
 })
 
 function saveHouseholdChanges(){
@@ -57,7 +62,7 @@ function editHouseholds(){
 onMounted(() => {
   loadingUserHouseholds.value = true
   axios.getHouseholds().then((households: Array<Household>) => {
-    const selected = households.find(h => h.id === authData.household)
+    const selected = households.find(h => h.id === authData.household?.id)
     if(selected){
       selectedHousehold.value = selected
     }
@@ -70,72 +75,67 @@ onMounted(() => {
 
 <template>
 
-  <v-card
-      class="mt-4"
-      v-bind="$attrs"
-      density="compact"
+  <v-row
+    no-gutters
+    class="mt-2"
   >
-    <v-card-title
-        class="d-flex justify-space-between align-center"
-        :class="{
-            shadowed: !collapsed
-          }"
-    >
-      {{ $t('account.household_card.title') }}
-      <v-btn
-          v-if="collapsible"
+    <v-col>
+      <v-card
+          v-bind="$attrs"
           density="compact"
-          :icon="icon"
-          variant="flat"
-          size="small"
-          @click="collapsed = !collapsed"
+          rounded="20"
       >
-      </v-btn>
-    </v-card-title>
-    <v-slide-y-transition
+        <v-card-title
+            class="d-flex justify-space-between align-center"
+        >
+          {{ $t('account.household_card.title') }}
+          <div>
+            <app-icon-btn
+              icon="mdi-store-edit"
+              color="primary"
+              @click="editHouseholds"
+            />
+            <app-icon-btn
+                v-if="collapsible"
+                :icon="icon"
+                @click="collapsed = !collapsed"
+            />
+          </div>
 
-    >
-        <v-container :fluid="true" class="pa-0 ma-0" v-show="!collapsed">
-          <v-card-text>
+        </v-card-title>
+        <v-slide-y-transition>
+          <v-container
+              class="pt-0"
+              v-show="!collapsed"
+          >
+
             <v-select
+                v-bind="styling"
                 :items="userHouseholds"
-                :chips="true"
+                density="compact"
                 item-title="name"
-                hide-details="auto"
                 :single-line="true"
                 :placeholder="placeholderText"
                 :no-data-text="noDataText"
                 return-object
                 v-model="selectedHousehold"
-                density="compact"
-                color="primary"
                 :loading="loadingUserHouseholds"
-            />
-          </v-card-text>
-          <v-card-actions
-            class="d-flex justify-space-between"
-          >
-            <v-btn
-                variant="elevated"
-                density="compact"
-                rounded="sm"
-                :text="$t('account.household_card.edit_households')"
-                color="primary"
-                @click="editHouseholds"
-            />
-            <v-btn
-                variant="elevated"
-                density="compact"
-                rounded="sm"
-                :text="$t('account.household_card.save_changes')"
-                color="primary"
-                :disabled="saveBtnDisabled"
-                @click="saveHouseholdChanges"
-            />
-          </v-card-actions>
-        </v-container>
-    </v-slide-y-transition>
-  </v-card>
+            >
+             <template v-slot:append>
+               <app-icon-btn
+                   :color="saveBtnDisabled ? '' : 'primary'"
+                   icon="mdi-content-save-check"
+                   :disabled="saveBtnDisabled"
+                   @click="saveHouseholdChanges"
+               />
+             </template>
+            </v-select>
+
+          </v-container>
+        </v-slide-y-transition>
+      </v-card>
+    </v-col>
+  </v-row>
 
 
 

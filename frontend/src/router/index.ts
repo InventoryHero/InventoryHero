@@ -2,16 +2,12 @@
 import {createRouter, createWebHistory} from "vue-router";
 import Dashboard from "../views/Dashboard.vue";
 import Login from "@/views/Login.vue"
-import {useAuthStore} from "@/store";
+import {useAuthStore, useNotificationStore} from "@/store";
 import Settings from "@/views/Settings.vue";
 import Account from "@/views/Account.vue";
-import Household from "@/views/Household.vue";
 import Create from "@/views/Create.vue";
 import Locations from "@/views/Locations.vue";
 import Logout from "@/views/Logout.vue";
-import CreateProductCard from "@/components/widgets/Create/CreateProductCard.vue";
-import CreateBoxCard from "@/components/widgets/Create/CreateBoxCard.vue";
-import CreateLocationCard from "@/components/widgets/Create/CreateLocationCard.vue";
 import {i18n} from "@/lang";
 import Confirmation from "@/views/Confirmation.vue";
 import Join from "@/views/Join.vue";
@@ -23,6 +19,7 @@ import passwordReset from "./routes/passwordReset.ts";
 import Products from "@/views/Products.vue";
 import Boxes from "@/views/Boxes.vue";
 import RouteNotFound from "@/views/RouteNotFound.vue";
+import {householdsOverview, editHousehold} from "@/router/routes/household.ts";
 
 
 
@@ -165,16 +162,8 @@ const vueRouter =  createRouter({
         title: i18n.global.t('titles.account')
       }
     },
-    {
-      path: "/households",
-      name: "households",
-      component: Household,
-      meta: {
-        requiresAuth: true,
-        fillHeight: true,
-        title: i18n.global.t('titles.households')
-      }
-    },
+    householdsOverview,
+    editHousehold,
     {
       path: "/create",
       component: Create,
@@ -247,8 +236,9 @@ const vueRouter =  createRouter({
   },
 })
 
-vueRouter.beforeEach(async (to) => {
+vueRouter.beforeEach(async (to, from) => {
   const authStore = useAuthStore();
+  const notificationStore = useNotificationStore()
   const loggedIn = await authStore.isAuthorized()
   if(!loggedIn){
     if(to.path === "/login") {
@@ -267,16 +257,20 @@ vueRouter.beforeEach(async (to) => {
     return "/"
   }
 
-  if(to.meta.requiresHousehold && (authStore.household === -1)){
+  if(to.meta.requiresHousehold && !authStore.household){
     authStore.setReturnUrl(to.fullPath)
     return "/households"
   }
+  if(!(to.meta.requiresAdmin ?? false)){
+    return
+  }
 
+  await authStore.fetchPermissions()
   if((to.meta.requiresAdmin ?? false) && !authStore.isAdmin) {
-    notify({
-      title: i18n.global.t('toasts.titles.info.insufficient_permissions'),
-      text: i18n.global.t('toasts.text.info.insufficient_permissions'),
-      type: 'info'
+    notificationStore.addNotification({
+      title: i18n.global.t('toasts.titles.warning.insufficient_permissions'),
+      text: i18n.global.t('toasts.text.warning.insufficient_permissions'),
+      type: 'warning'
     })
     return "/"
   }

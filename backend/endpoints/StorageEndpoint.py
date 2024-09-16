@@ -4,7 +4,7 @@ from sqlalchemy import desc
 from sqlalchemy.orm import aliased, contains_eager
 
 from backend.db.models.StorageContainer import ContainerTypes, Storage
-from backend.decorators import auth, emit_update
+from backend.decorators import require_household_member, emit_update
 from backend.db.models.Product import Product, ProductContainerMapping
 
 
@@ -38,7 +38,7 @@ class StorageEndpoint(Blueprint):
 
         @self.route("/all", methods=["GET"])
         @jwt_required()
-        @auth
+        @require_household_member
         def get_all(household):
             self.app.logger.info("motherfucker")
             storage_container, code = get_storage_helper(ContainerTypes.All, household)
@@ -47,7 +47,7 @@ class StorageEndpoint(Blueprint):
         @self.route("/box/<int:box_id>", methods=["GET"])
         @self.route("/box", defaults={'box_id': None}, methods=["GET"])
         @jwt_required()
-        @auth
+        @require_household_member
         def get_boxes(household, box_id):
             self.app.logger.info(box_id)
             result, code = get_storage_helper(ContainerTypes.Box, household, box_id)
@@ -60,7 +60,7 @@ class StorageEndpoint(Blueprint):
         @self.route("/location/<int:location_id>", methods=["GET"])
         @self.route("/location", defaults={'location_id': None} ,methods=["GET"])
         @jwt_required()
-        @auth
+        @require_household_member
         def get_locations(household, location_id):
             result, code = get_storage_helper(ContainerTypes.Location, household, location_id)
             if code != 200:
@@ -70,7 +70,7 @@ class StorageEndpoint(Blueprint):
 
         @self.route("/box/content/<int:id>", methods=["GET"])
         @jwt_required()
-        @auth
+        @require_household_member
         def get_content(household, id):
             storage = Storage.query.filter_by(
                 household_id=household,
@@ -92,7 +92,7 @@ class StorageEndpoint(Blueprint):
 
         @self.route("/location/content/<int:id>", methods=["GET"])
         @jwt_required()
-        @auth
+        @require_household_member
         def get_location_content(household, id):
             storage = Storage.query.filter_by(
                 household_id=household,
@@ -121,7 +121,7 @@ class StorageEndpoint(Blueprint):
 
         @self.route("/box/add", methods=["POST"])
         @jwt_required()
-        @auth
+        @require_household_member
         @emit_update()
         def add_box(household):
             storage_name = request.json.pop("name", "")
@@ -157,7 +157,7 @@ class StorageEndpoint(Blueprint):
 
         @self.route("/location/add", methods=["POST"])
         @jwt_required()
-        @auth
+        @require_household_member
         @emit_update()
         def add_location(household):
             storage_name = request.json.pop("name", "")
@@ -183,7 +183,7 @@ class StorageEndpoint(Blueprint):
 
         @self.route("/box/<int:box_id>", methods=["DELETE"])
         @jwt_required()
-        @auth
+        @require_household_member
         @emit_update()
         def delete_box(household, box_id):
             box = Storage.query.filter_by(
@@ -203,7 +203,7 @@ class StorageEndpoint(Blueprint):
 
         @self.route("/box/<int:box_id>", methods=["POST"])
         @jwt_required()
-        @auth
+        @require_household_member
         @emit_update()
         def edit_box(household, box_id):
             box = Storage.query.filter_by(
@@ -241,7 +241,7 @@ class StorageEndpoint(Blueprint):
 
         @self.route("/location/<int:location_id>", methods=["DELETE"])
         @jwt_required()
-        @auth
+        @require_household_member
         @emit_update()
         def delete_location(household, location_id):
             location = Storage.query.filter_by(
@@ -262,7 +262,7 @@ class StorageEndpoint(Blueprint):
 
         @self.route("/location/<int:location_id>", methods=["POST"])
         @jwt_required()
-        @auth
+        @require_household_member
         @emit_update()
         def edit_location(household, location_id):
             location = Storage.query.filter_by(
@@ -290,7 +290,7 @@ class StorageEndpoint(Blueprint):
 
         @self.route("/box/<int:box_id>/name", methods=["GET"])
         @jwt_required()
-        @auth
+        @require_household_member
         def box_name(household, box_id):
             box = Storage.query.filter_by(
                 id=box_id,
@@ -304,7 +304,7 @@ class StorageEndpoint(Blueprint):
 
         @self.route("/location/<int:location_id>/name", methods=["GET"])
         @jwt_required()
-        @auth
+        @require_household_member
         def location_name(household, location_id):
             location = Storage.query.filter_by(
                 id=location_id,

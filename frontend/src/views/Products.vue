@@ -6,7 +6,7 @@ import {ApiProduct} from "@/types/api.ts";
 import useAxios from "@/composables/useAxios.ts";
 import {ProductEndpoint} from "@/api/http";
 import {useProducts} from "@/store";
-import ProductOverlay from "@/components/products/ProductOverlay.vue";
+import ProductOverlay from "@/components/widgets/products/ProductOverlay.vue";
 import useDialogConfig from "@/composables/useDialogConfig.ts";
 import {useI18n} from "vue-i18n";
 import useScrollToTop from "@/composables/useScrollToTop.ts";
@@ -88,9 +88,9 @@ onBeforeRouteLeave(() => {
 
 <template>
   <v-row
-      :no-gutters="true"
-      justify="center"
-      class="fill-height"
+    :no-gutters="true"
+    justify="center"
+    class="fill-height"
   >
     <v-col
         cols="12"
@@ -131,10 +131,10 @@ onBeforeRouteLeave(() => {
         <v-card-text
             class="d-flex position-relative flex-1-1"
         >
-          <div class="scroller-wrapper">
+          <div class="wrapper">
             <RecycleScroller
                 ref="scroller"
-                class="scroller"
+                class="scroll"
                 :item-size="90"
                 :items="filteredProducts"
                 :buffer="0"

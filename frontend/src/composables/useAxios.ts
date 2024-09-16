@@ -19,7 +19,7 @@ export type AxiosContext<T extends Endpoint> = {
 };
 
 export default function useAxios<T extends SpecificEndpoint>(endpoint: string): AxiosContext<T> {
-    const authStore = useAuthStore()
+    //const authStore = useAuthStore()
     let axios = null;
     switch(endpoint){
         case "user":
@@ -41,9 +41,9 @@ export default function useAxios<T extends SpecificEndpoint>(endpoint: string): 
             axios = new ProductEndpoint() as T
             break
         case "administration":
-            if(authStore.isAdmin){
-                axios = new AdministrationEndpoint() as T
-            }
+            //if(authStore.isAdmin){
+            axios = new AdministrationEndpoint() as T
+            //}
             break
         case "general":
             axios = new GeneralEndpoint() as T

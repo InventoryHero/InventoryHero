@@ -5,6 +5,7 @@ import {UserEndpoint} from "@/api/http";
 import {i18n} from "@/lang";
 import {notify} from "@kyvg/vue3-notification";
 import {io} from "socket.io-client";
+import {SocketResponse} from "@/types/sockets.ts";
 
 const householdSocket = io("/household", {
     autoConnect: false
@@ -31,8 +32,7 @@ export const useHouseholdSocketStore =  defineStore("socket", {
             })
             householdSocket.on("new-content", (msg: string) => {
                 const response: SocketResponse = JSON.parse(msg)
-                const content: UpdateContent = response.content as UpdateContent
-                console.log("NEW CONTENT HERE")
+                const content = response.content as { user: string }
                 if(content.user === this.authStore.user?.username){
                     return
                 }
@@ -45,47 +45,35 @@ export const useHouseholdSocketStore =  defineStore("socket", {
                 })
             })
 
+
+
         },
         updateHeaders(token?: string){
             householdSocket.io.opts.extraHeaders = {
                 "Authorization": `Bearer ${token}`
             }
-
             householdSocket.disconnect()
             if(token){
                 householdSocket.connect()
                 this.bindActions()
                 this.joinHousehold()
             }
-
-
         },
         joinHousehold(){
-            if(this.authStore.household === -1){
+            if(!this.authStore.household?.id){
                 return
             }
             householdSocket.emit("join", {
-                household: this.authStore.household
-            }, (data: string) => {
-                console.log(data)
-
-            } )
+                household: this.authStore.household.id
+            })
         },
         leaveHousehold(){
-            if(this.authStore.household === -1){
+            if(!this.authStore.household?.id){
                 return
             }
             householdSocket.emit('leave', {
-                household: this.authStore.household
+                household: this.authStore.household.id
             })
-        },
-        sayHi(){
-            householdSocket.emit('hi', {
-                household: this.authStore.household
-            }, (data: string) => {
-                const response: SocketResponse = JSON.parse(data)
-                this.socketErrorHandler(response, this.sayHi)
-            } )
         },
         socketErrorHandler(data: SocketResponse, callback: () => void){
             const socketStore = useHouseholdSocketStore()
@@ -93,7 +81,6 @@ export const useHouseholdSocketStore =  defineStore("socket", {
             const endpoint: UserEndpoint = userEndpoint.axios as UserEndpoint
             switch(data.status){
                 case "join_first":
-                    console.log("HALLO")
                     socketStore.joinHousehold()
                     callback()
                     return
@@ -108,7 +95,6 @@ export const useHouseholdSocketStore =  defineStore("socket", {
             }
         },
         disconnect(){
-            console.log("disconnecting ... ")
             householdSocket.disconnect()
         }
     }

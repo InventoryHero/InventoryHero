@@ -7,9 +7,11 @@ defineOptions({
 
 <template>
   <v-btn
-      v-bind="{...$attrs}"
-      variant="plain"
-      density="compact"
+      v-bind="{
+        variant: 'plain',
+        density: 'compact',
+        ...$attrs
+      }"
       :ripple="false"
   />
 </template>

@@ -38,7 +38,6 @@ async function resetPassword(){
   }
   //@ts-expect-error don't know how to type correctly
   const {valid} = await passwordForm.value.validate()
-  console.log(valid)
   if(!valid){
     return
   }

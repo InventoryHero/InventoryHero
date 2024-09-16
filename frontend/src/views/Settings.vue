@@ -1,8 +1,8 @@
 <script lang="ts">
 import {defineComponent} from "vue";
 import {useConfigStore} from "@/store";
-import UiSettings from "@/components/settings/UiSettings.vue";
-import GeneralSettings from "@/components/settings/GeneralSettings.vue";
+import UiSettings from "@/components/widgets/settings/UiSettings.vue";
+import GeneralSettings from "@/components/widgets/settings/GeneralSettings.vue";
 export default defineComponent({
   name: "Settings",
   components: {

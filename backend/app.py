@@ -10,7 +10,7 @@ from backend.endpoints.StorageEndpoint import StorageEndpoint
 from backend.endpoints.HouseholdEndpoint import HouseholdEndpoint
 
 from backend.flask_config import app, socketio
-from backend.sockets.sockets import HouseholdSocket, UserSocket, GeneralSocket
+from backend.sockets.sockets import HouseholdSocket, GeneralSocket
 from backend.database import db, migrate
 from backend.endpoints.AdminEndpoint import AdminEndpoint
 

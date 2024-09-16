@@ -2,10 +2,12 @@ import {defineStore} from "pinia";
 import {Household, IRegisterRequest} from "@/types";
 import {clearAuthTokens, getAccessToken, isLoggedIn} from "axios-jwt";
 import {useLocalStorage} from "@vueuse/core";
-import {UserEndpoint} from "@/api/http";
+import {HouseholdEndpoint, UserEndpoint} from "@/api/http";
 import {useGeneralSocketStore, useHouseholdSocketStore} from "@/store";
 import {Permissions, User} from "@/types/api.ts";
 import useAxios from "@/composables/useAxios.ts";
+import {notify} from "@kyvg/vue3-notification";
+import {i18n} from "@/lang";
 
 
 interface UserStore {
@@ -28,6 +30,7 @@ export const useAuthStore = defineStore('auth', {
                 },
             },
         ),
+        _households: [] as Array<Household>,
         permissions: {} as Permissions,
         userEndpoint: useAxios<UserEndpoint>("user"),
         returnUrl: null as (null|string),
@@ -67,6 +70,7 @@ export const useAuthStore = defineStore('auth', {
                 this._user.authorized = true
             }
             await this.fetchPermissions()
+            await this.fetchHouseholds()
             getAccessToken().then((token) => {
                 const generalSocket = useGeneralSocketStore()
                 const householdSocket = useHouseholdSocketStore()
@@ -85,28 +89,25 @@ export const useAuthStore = defineStore('auth', {
             this.returnUrl = null;
             const socketStore = useHouseholdSocketStore()
             socketStore.leaveHousehold()
+            const generalSocketStore = useGeneralSocketStore()
+            generalSocketStore.leave()
             const success = await this.userEndpoint.axios.logout()
             if(!success)
             {
                 // TODO notify
-                console.log("WTF")
             }
             await this.reset()
             this.$router.push("/login")
         },
-        async changeHousehold(household: Household | undefined)
+        changeHousehold(household: Household | undefined)
         {
-            if(household === undefined)
-            {
-                return;
-            }
             const socketStore = useHouseholdSocketStore()
             socketStore.leaveHousehold()
-            this._user!.household  = {
-                ...household,
-                members: []
+            this._user!.household = household
+            if(household)
+            {
+                socketStore.joinHousehold()
             }
-            socketStore.joinHousehold()
         },
         async destroy(){
             const socketStore = useHouseholdSocketStore()
@@ -148,19 +149,81 @@ export const useAuthStore = defineStore('auth', {
             }
             this.permissions = await this.userEndpoint.axios.getPermissions()
         },
+        async fetchHouseholds(){
+            if(!(await this.isAuthorized())){
+                return
+            }
+            const {axios: householdEndpoint} = useAxios<HouseholdEndpoint>("household")
+            this._households = await householdEndpoint.getHouseholds()
+            this._households.sort((a, b) => a.name.localeCompare(b.name))
+        },
         async init(){
             await this.fetchPermissions()
+            await this.fetchHouseholds()
         },
         updateUser(toUpdate: User){
             this._user.user = {
                 ...toUpdate,
                 isAdmin: undefined
             }
+        },
+        addHousehold(household: Household){
+            this._households.push(household)
+            this._households.sort((a, b) => a.name.localeCompare(b.name))
+        },
+        leftHousehold(household: Household){
+            this._households = this._households.filter(h => h.id !== household.id)
+        },
+        removeHousehold(id: number, action: string){
+            const household = this._households.find(h => h.id === id)
+            if(!household){
+                return
+            }
+            const currentHousehold = this.household?.id
+            const removedName = household.name
+            this._households = this._households.filter(h => h.id !== id)
+            const notification = {
+                title: i18n.global.t(`toasts.titles.info.household_${action}`),
+                text: i18n.global.t(`toasts.text.info.household_${action}`, {name: removedName}),
+                type: 'info',
+            }
+            if(id === currentHousehold){
+
+                this.changeHousehold(undefined)
+                this.$router.push("/households").then(() => {
+                    notify(notification)
+                })
+            } else {
+                notify(notification)
+            }
+        },
+        updateHousehold(id: number, updateData: Partial<Household>){
+            const household = this._households.findIndex(h => h.id === id)
+            if(household === -1)
+                return
+            this._households[household] = {
+                ...this._households[household],
+                ...updateData
+            }
+        },
+        ownHousehold(id: number){
+            const household = this._households.find(h => h.id === id)
+            if(!household){
+                return
+            }
+            household.creator = this.user!.id
+            notify({
+                title: i18n.global.t('toasts.titles.info.ownership_received', {household: household.name}),
+                text: i18n.global.t('toasts.text.info.ownership_received'),
+                type: 'info'
+            })
         }
     },
     getters: {
         user: state => state._user.user,
-        household: state => {return state._user.household?.id ?? -1},
+        household: state =>  state._user.household,
+        households: state => state._households,
+
         householdName: state => state._user.household?.name ?? '',
         userSet: state => {return state._user !== null},
         isAdmin: state => {
