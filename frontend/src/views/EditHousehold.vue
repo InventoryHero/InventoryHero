@@ -6,11 +6,13 @@ import {useTemplateRef} from "vue";
 import ConfirmationDialog from "@/components/common/ConfirmationDialog.vue";
 import useDialogConfig from "@/composables/useDialogConfig.ts";
 import {notify} from "@kyvg/vue3-notification";
+import {useDisplay} from "vuetify";
 
 const authStore = useAuthStore()
 const {axios: householdEndpoint} = useAxios<HouseholdEndpoint>("household")
 const {t} = useI18n()
 const router = useRouter()
+const {mobile} = useDisplay()
 
 const {styling} = useAppStyling()
 
@@ -151,6 +153,23 @@ function reset(){
 
 <template>
 
+  <confirmation-dialog
+      :dialog-opened="deleteConfirmDialogVisible"
+      :title="t('households.edit.delete.confirm.title')"
+      :cancel-text="t('households.edit.delete.confirm.abort')"
+      :confirm-text="t('households.edit.delete.confirm.confirm')"
+      cancel-icon="mdi-cancel"
+      confirm-icon="mdi-delete"
+      :on-cancel="closeDeleteConfirmDialog"
+      :on-confirm="() => {
+        deleteConfirmed = true
+        deleteHousehold()
+    }"
+  >
+    <template v-slot:text>
+      <p v-html="t('households.edit.delete.confirm.text')"/>
+    </template>
+  </confirmation-dialog>
 
 
   <v-row
@@ -164,7 +183,7 @@ function reset(){
     >
       <v-card
           v-if="household && isOwner"
-          class="d-flex flex-column fill-height"
+          class="d-flex flex-column fill-height fill-width"
           :disabled="loadingMembers || deletingHousehold"
       >
         <template v-slot:loader>
@@ -220,7 +239,7 @@ function reset(){
           </div>
         </div>
         <v-card-actions
-          class="d-flex justify-end overflow-auto"
+          class="overflow-x-auto"
         >
           <v-btn
               prepend-icon="mdi-arrow-left-bottom"
@@ -229,6 +248,7 @@ function reset(){
               to="/households"
           />
           <v-btn
+
               prepend-icon="mdi-trash-can"
               :text="t('households.edit.delete_household')"
               variant="tonal"
