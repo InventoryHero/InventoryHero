@@ -220,7 +220,7 @@ function reset(){
           </div>
         </div>
         <v-card-actions
-          class="justify-end"
+          class="d-flex justify-end overflow-auto"
         >
           <v-btn
               prepend-icon="mdi-arrow-left-bottom"

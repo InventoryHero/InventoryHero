@@ -154,7 +154,7 @@ const qrcode = computed(() => {
   class="label"
   :id="elementId"
 >
-  <div class="wrapper">
+  <div class="label-wrapper">
     <div
         v-if="qrCodeVisible"
         class="qr-code-wrapper"
@@ -212,7 +212,7 @@ const qrcode = computed(() => {
   // cap preview, to still look nice in frontend
   max-width: 100%;
 
-  .wrapper{
+  .label-wrapper{
     display: flex;
     justify-content: v-bind(contentLayout);
     height: v-bind(labelHeightInMm);
