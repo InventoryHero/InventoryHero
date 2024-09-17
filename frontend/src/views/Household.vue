@@ -1,14 +1,10 @@
 <script setup lang="ts">
-import {Household} from "@/types";
 import {useAuthStore} from "@/store";
-import {HouseholdEndpoint} from "@/api/http";
-import {useNotification} from "@kyvg/vue3-notification";
-import {useHouseholdSocketStore} from "@/store";
 
 
 const authStore = useAuthStore();
 const {t: $t} = useI18n()
-const {notify} = useNotification()
+
 const households = computed(() => authStore.households)
 const collapsed = ref(true)
 const createHouseholdCollapsed = computed({

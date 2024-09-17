@@ -50,7 +50,7 @@ const {
           </template>
 
           <v-card-actions
-            class="justify-end"
+            class="overflow-auto"
           >
             <v-btn
                 :prepend-icon="cancelIcon"
