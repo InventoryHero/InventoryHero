@@ -83,6 +83,7 @@
     "useStorageIcon": true,
     "useStorageTitle": true,
     "useUpdateStorage": true,
-    "useShareMethods": true
+    "useShareMethods": true,
+    "useGoBackOneLevel": true
   }
 }

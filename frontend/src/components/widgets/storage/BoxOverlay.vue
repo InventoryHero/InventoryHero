@@ -8,7 +8,7 @@ import {BoxEndpoint, LocationEndpoint} from "@/api/http";
 import {ApiProduct, ApiStorage} from "@/types";
 import useEditBtnStyle from "@/composables/useEditBtnStyle.ts";
 import {useI18n} from "vue-i18n";
-import ProductOverlay from "@/components/widgets/products/ProductOverlay.vue";
+import ProductOverlay from "@/components/widgets/products/Product.vue";
 import useDialogConfig from "@/composables/useDialogConfig.ts";
 
 const storageStore = useStorage()

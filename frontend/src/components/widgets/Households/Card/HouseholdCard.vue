@@ -2,7 +2,7 @@
 import {Household} from "@/types"
 import {useAuthStore, useHouseholdSocketStore} from "@/store";
 import useDialogConfig from "@/composables/useDialogConfig.ts";
-import HouseholdInvite from "@/components/widgets/Households/HouseholdInvite.vue";
+import HouseholdInvite from "@/components/widgets/Households/Card/HouseholdInvite.vue";
 import {HouseholdEndpoint} from "@/api/http";
 import {useNotification} from "@kyvg/vue3-notification";
 import ConfirmationDialog from "@/components/common/ConfirmationDialog.vue";
@@ -155,7 +155,7 @@ function leaveHousehold(){
             v-if="isOwnHousehold"
             icon="mdi-store-edit"
             class="me-1"
-            :to="`/household/edit/${household.id}`"
+            :to="`/households/edit/${household.id}`"
         />
         <app-icon-btn
             v-if="isOwnHousehold"

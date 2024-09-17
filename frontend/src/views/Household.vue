@@ -1,20 +1,4 @@
 <script setup lang="ts">
-import {useAuthStore} from "@/store";
-
-
-const authStore = useAuthStore();
-const {t: $t} = useI18n()
-
-const households = computed(() => authStore.households)
-const collapsed = ref(true)
-const createHouseholdCollapsed = computed({
-  get(){
-    return households.value.length > 0 && collapsed.value
-  },
-  set(value: boolean){
-    collapsed.value = value
-  }
-})
 
 
 
@@ -24,7 +8,7 @@ const createHouseholdCollapsed = computed({
 
 
   <v-row
-    class="fill-height"
+    class="fill-height fill-width"
     justify="center"
     no-gutters
   >
@@ -33,64 +17,9 @@ const createHouseholdCollapsed = computed({
       lg="8"
       class="d-flex flex-column position-relative fill-height"
     >
-
-      <create-household-card
-          v-model:collapsed="createHouseholdCollapsed"
-          class="fill-width"
-      />
-      <v-divider
-        color="primary"
-        class="mt-2 mb-2"
-        thickness="2"
-        opacity="25%"
-      />
-
-      <v-card
-          class="flex-1-1 fill-width"
-      >
-        <v-card-text
-          class="position-relative fill-height"
-        >
-          <div
-              class="wrapper"
-          >
-            <DynamicScroller
-                ref="scroller"
-                class="scroll"
-                :items="households"
-                :min-item-size="65"
-            >
-              <template v-slot="{ item, index, active}">
-                <DynamicScrollerItem
-                    :item="item"
-                    :active="active"
-                    :data-index="index"
-                    :size-dependencies="[
-                      item.name,
-                    ]"
-                >
-                  <household-card
-                      :household="item"
-                  />
-                </DynamicScrollerItem>
-              </template>
-              <template #after>
-                <v-card
-                    density="comfortable"
-                    elevation="0"
-                >
-                  <v-card-text
-                    class="d-flex justify-center align-center"
-                  >
-                    {{ $t('households.all_displayed') }}
-                  </v-card-text>
-                </v-card>
-              </template>
-            </DynamicScroller>
-          </div>
-        </v-card-text>
-
-      </v-card>
+      <router-view v-slot="{Component, route }">
+        <component :is="Component"  :key="route" />
+      </router-view>
     </v-col>
   </v-row>
 </template>

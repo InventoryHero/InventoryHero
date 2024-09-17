@@ -9,7 +9,9 @@ export default defineStore("products", {
             _storage: [] as Array<ProductStorageMapping>,
             _selectedProduct: undefined as ApiProduct | undefined,
             _selectedProductStorage: undefined as ProductStorageMapping | undefined,
-            _fromStorage: undefined as number|undefined
+            _fromStorage: undefined as number|undefined,
+            _loadingProducts: false,
+            _loadingProductStorage: false
         }
     },
     actions: {
@@ -19,11 +21,11 @@ export default defineStore("products", {
         storeProductStorage(storage: Array<ProductStorageMapping>){
             this._storage = [...storage]
         },
-        selectProduct(product: ApiProduct){
-            this._selectedProduct = product
+        selectProduct(id: number){
+            this._selectedProduct = this._products.find(p => p.id === id)
         },
-        selectProductStoredAt(productStorage: ProductStorageMapping){
-          this._selectedProductStorage = productStorage
+        selectProductStoredAt(id: number){
+          this._selectedProductStorage = this._storage.find(p => p.id === id)
         },
         deselectProduct(){
             this._selectedProduct = undefined
@@ -106,12 +108,20 @@ export default defineStore("products", {
         addProduct(product: ApiProduct){
             this._products.push(product)
         },
+        setLoadingProducts(value: boolean){
+            this._loadingProducts = value
+        },
+        setLoadingProductStorage(value: boolean){
+            this._loadingProductStorage = value
+        },
         reset(){
             this._products = []
             this._selectedProduct = undefined
             this._fromStorage = undefined
             this._selectedProductStorage = undefined
             this._storage = []
+            this._loadingProducts = false
+            this._loadingProductStorage = false
         }
     },
     getters: {
@@ -121,6 +131,8 @@ export default defineStore("products", {
         selectedProduct: state => state._selectedProduct,
         selectedProductStorage: state => state._selectedProductStorage,
         calledFromStorage: state => state._fromStorage !== undefined,
-        storedAt: state => state._fromStorage
+        storedAt: state => state._fromStorage,
+        loadingProducts: state => state._loadingProducts,
+        loadingProductStorage: state => state._loadingProductStorage
     }
 })

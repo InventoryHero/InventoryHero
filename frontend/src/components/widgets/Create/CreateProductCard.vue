@@ -6,7 +6,7 @@ import useAxios from "@/composables/useAxios.ts";
 import {ProductEndpoint} from "@/api/http";
 import {useNotification} from "@kyvg/vue3-notification";
 import useHint from "@/composables/useHint.ts";
-import {onMounted, useTemplateRef} from "vue";
+import {useTemplateRef} from "vue";
 import useAppStyling from "@/composables/useAppStyling.ts";
 import {TabType} from "@/types/TabType.ts";
 
@@ -30,7 +30,7 @@ const resourcesLoading = inject<Ref<{
 const tab = inject<Ref<TabType>>("tab", ref(TabType.Product))
 
 const addForm = useTemplateRef('add-form')
-const comboBox = useTemplateRef('combobox')
+const comboBox = useTemplateRef('comboBox')
 const postingProduct = ref(false)
 
 const newProduct = ref<ApiProduct|string|null>(null)

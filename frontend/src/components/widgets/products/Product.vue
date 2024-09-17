@@ -1,31 +1,33 @@
 <script setup lang="ts">
 
-import {useProducts} from "@/store"
+import {useProducts, useScrollPositionStore} from "@/store"
 import useAxios from "@/composables/useAxios.ts";
 import {ProductEndpoint} from "@/api/http";
-import {ApiProduct, ProductStorageMapping} from "@/types/api.ts";
-import ProductStorageCard from "@/components/widgets/products/ProductStorageCard.vue";
+import {ProductStorageMapping} from "@/types/api.ts";
+import ProductStorageCard from "@/components/widgets/products/Cards/ProductStorageCard.vue";
 import {useI18n} from "vue-i18n";
 import {useNotification} from "@kyvg/vue3-notification";
-import useDialogConfig from "@/composables/useDialogConfig.ts";
-import StoredAtDetail from "@/components/widgets/products/StoredAtDetail.vue";
+import useGoBackOneLevel from "@/composables/useGoBackOneLevel.ts";
+import useScrollToTop from "@/composables/useScrollToTop.ts";
 
 const productStore = useProducts()
+const scrollStore = useScrollPositionStore()
 const {axios: productEndpoint} = useAxios<ProductEndpoint>("product")
-const i18n = useI18n()
+const {t} = useI18n()
 const {notify} = useNotification();
-const { isVisible: storedAtDetailOverlayVisible, openDialog, closeDialog, dialogProps } = useDialogConfig()
+const router = useRouter()
+const route = useRoute();
+const {goBackOneLevel} = useGoBackOneLevel({hasId: true})
 
-
-
-const emit = defineEmits<{
-  (e: 'close'): void,
-  (e: 'deleted', id: number): void
-}>()
-
+const {
+  scrolledDown,
+  scrollToTop,
+  hasScrolled,
+  visible
+} = useScrollToTop('scroller')
 
 const product = computed(() => {
-  return productStore.selectedProduct ?? ({} as ApiProduct)
+  return productStore.selectedProduct
 })
 
 const editBtnStyle = computed(() => {
@@ -42,7 +44,7 @@ const editBtnStyle = computed(() => {
 const name = computed({
   get() {
     if(newName.value === undefined) {
-      return product.value.name
+      return product.value?.name
     }
     return newName.value
   },
@@ -55,15 +57,16 @@ const storedAt = computed(() => {
   return productStore.productStorage
 })
 
-const loading = ref(false)
+const loading = computed(() => productStore.loadingProductStorage || productStore.loadingProducts)
+
 const editClicked = ref(false)
 const newName = ref<string|undefined>(undefined)
-const nameRequiredRule = (value: string) => value !== '' || i18n.t('products.product.rules.new_name_empty')
+const nameRequiredRule = (value: string) => value !== '' || t('products.product.rules.new_name_empty')
 const saving = ref(false)
 const deleting = ref(false)
 
 function close(){
-  emit('close')
+  goBackOneLevel()
 }
 
 function cancelEdit(){
@@ -72,7 +75,7 @@ function cancelEdit(){
 }
 
 async function saveChanges(){
-  if(newName.value === product.value.name || newName.value === undefined){
+  if(newName.value === product.value?.name || newName.value === undefined){
     newName.value = undefined
     editClicked.value = false
     return
@@ -82,7 +85,7 @@ async function saveChanges(){
     return false
   }
   saving.value = true
-  let {success, updatedProduct} = await productEndpoint.updateProduct(product.value.id, {
+  let {success, updatedProduct} = await productEndpoint.updateProduct(product.value!.id, {
     name: newName.value
   })
   saving.value = false
@@ -97,64 +100,55 @@ async function saveChanges(){
   editClicked.value = false
 
   notify({
-    title: i18n.t('toasts.titles.success.updated_product'),
-    text: i18n.t('toasts.text.success.updated_product'),
+    title: t('toasts.titles.success.updated_product'),
+    text: t('toasts.text.success.updated_product'),
     type: "success"
   })
   return success
 }
 
-function closeDetail(){
-  closeDialog()
-  productStore.deselectProductStoredAt()
-}
+
 function deleteProduct(){
+  const id = product.value!.id
   deleting.value = true
-  productEndpoint.deleteProduct(product.value.id).then((success) => {
+  productEndpoint.deleteProduct(product.value!.id).then((success) => {
     deleting.value = false
     if(!success){
       return
     }
 
-    emit('deleted', product.value.id)
+    notify({
+      title: t('toasts.titles.success.deleted_product'),
+      text: t('toasts.text.success.deleted_product'),
+      type: "success"
+    })
+    goBackOneLevel().then(() => {
+      productStore.deleteProduct(id)
+    })
   })
 }
 
+
+
 function deleteSelected(id: number, amount: number){
-
-  closeDialog()
-
   productStore.deleteProductAt(id, amount)
   notify({
-    title: i18n.t('toasts.titles.success.deleted_detail'),
-    text: i18n.t('toasts.text.success.deleted_detail'),
+    title: t('toasts.titles.success.deleted_detail'),
+    text: t('toasts.text.success.deleted_detail'),
     type: "success"
   })
 }
 
-onMounted(() => {
-  loading.value = true;
-  productEndpoint.getProductStorage(product.value.id, productStore.storedAt).then((response: Array<ProductStorageMapping>) => {
-    productStore.storeProductStorage(response)
-    loading.value = false
-  })
-})
+
+function showProductDetail(item: ProductStorageMapping){
+  scrollStore.pushPosition(route.fullPath, storedAt.value.findIndex(p => p.id === item.id))
+  router.replace(`${route.fullPath}/detail/${item.id}`)
+}
 </script>
 
 <template>
-  <v-dialog
-      v-model="storedAtDetailOverlayVisible"
-      v-bind="dialogProps"
-  >
-    <stored-at-detail
-      @close="closeDetail"
-      @deleted="deleteSelected"
-    />
-  </v-dialog>
-
-
   <v-card
-      class="position-relative d-flex flex-column fill-height"
+      class="d-flex flex-column fill-height fill-width"
   >
     <template v-slot:loader>
       <v-progress-linear
@@ -165,7 +159,7 @@ onMounted(() => {
     </template>
 
     <v-card-title
-        class="d-flex align-center justify-space-between"
+        class="d-flex flex-0-0 align-center justify-space-between"
     >
       <div v-if="!editClicked">
         {{ name }}
@@ -182,51 +176,64 @@ onMounted(() => {
       <div>
         <app-icon-btn
             icon="mdi-pencil"
-            variant="flat"
-            class="me-2"
             v-bind="editBtnStyle"
             :disabled="saving||deleting"
             @click="editClicked = true"
 
         />
         <app-icon-btn
-            icon="mdi-window-minimize"
-            variant="flat"
+            icon="mdi-close"
             :disabled="saving||deleting"
             @click="close()"
         />
       </div>
     </v-card-title>
+    <div class="flex-1-1 position-relative">
+      <v-card-text class="pt-0 wrapper">
+        <RecycleScroller
+            class="scroll"
+            ref="scroller"
+            :items="storedAt"
+            :item-size="109"
+            :buffer="0"
+            :emit-update="true"
+            @update="hasScrolled"
+            @visible="visible(route.fullPath, storedAt.length-1)"
+        >
+          <template v-slot="{item}">
+            <product-storage-card
+                :storage="item"
+                @show-stored-at-detail="showProductDetail(item)"
+                @deleted="deleteSelected"
+            />
+          </template>
+          <template #after>
+            <v-row
+                :no-gutters="true"
+                justify="center"
 
-    <v-card-text class="flex-1-1 pt-0 pl-4 pr-4 overflow-hidden">
-      <RecycleScroller
-          :items="storedAt"
-          :item-size="120"
-          style="height: 100%;"
-      >
-        <template v-slot="{item}">
-          <product-storage-card
-              :storage="item"
-              @show-stored-at-detail="openDialog()"
-              @deleted="deleteSelected"
-          />
-        </template>
-        <template #after>
-          <v-row
-              :no-gutters="true"
-              justify="center"
-          >
-            <p class="text-center">
-              {{ $t("products.locations.all_displayed")}}
-            </p>
-          </v-row>
-        </template>
-      </RecycleScroller>
+            >
+              <p
+                  v-if="!loading"
+                  class="text-center"
+              >
+                {{ $t("products.locations.all_displayed")}}
+              </p>
+              <p
+                  v-else
+                  class="text-center"
+              >
+                {{ $t("products.locations.loading")}}
+              </p>
+            </v-row>
+          </template>
+        </RecycleScroller>
+      </v-card-text>
+    </div>
 
-    </v-card-text>
     <v-card-actions
       v-if="editClicked"
-      class="d-flex justify-space-between"
+      class="d-flex justify-space-between flex-0-0"
     >
       <v-btn
           prepend-icon="mdi-cancel"
@@ -267,6 +274,11 @@ onMounted(() => {
 
     </v-card-actions>
   </v-card>
+  <app-scroll-to-top-btn
+      :scrolled-down="scrolledDown"
+      @click.stop="scrollToTop"
+      density="compact"
+  />
 </template>
 
 <style scoped lang="scss">

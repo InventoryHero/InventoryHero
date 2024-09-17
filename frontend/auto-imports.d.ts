@@ -61,6 +61,7 @@ declare global {
   const useDisplay: typeof import('vuetify')['useDisplay']
   const useEditBtnStyle: typeof import('./src/composables/useEditBtnStyle')['default']
   const useFieldIsNotTakenValidator: typeof import('./src/composables/useFieldIsNotTakenValidator')['default']
+  const useGoBackOneLevel: typeof import('./src/composables/useGoBackOneLevel')['default']
   const useHint: typeof import('./src/composables/useHint')['default']
   const useI18n: typeof import('vue-i18n')['useI18n']
   const useLink: typeof import('vue-router')['useLink']

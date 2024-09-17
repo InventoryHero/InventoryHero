@@ -55,7 +55,6 @@ function adjustAmount(increment: number){
 }
 
 function showStoredAtDetail(){
-  productStore.selectProductStoredAt(productStorage.value)
   emit('showStoredAtDetail')
 }
 

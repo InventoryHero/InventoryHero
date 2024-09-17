@@ -1,54 +1,28 @@
-<script lang="ts">
-import {defineComponent} from 'vue'
+<script setup lang="ts">
 
+const {styling} = useAppStyling()
+const text = defineModel<string>()
 
-export default defineComponent({
-  name: "AppOverlayTitle",
-  emits:{
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    'update:modelValue'(_: string){
-      return true
-    }
-  },
-  computed: {
-    value: {
-      get() {
-        return this.modelValue
-      },
-      set(value: string) {
-        this.$emit('update:modelValue', value)
-      }
-    }
-  },
-  props:{
-    modelValue:{
-      type: String
-    },
-    label: {
-      type: String,
-      default: ""
-    },
-    edit: {
-      type: Boolean,
-      default: false
-    },
-  }
-})
+const {edit=false} = defineProps<{
+  edit?: boolean
+}>()
 </script>
 
 <template>
   <v-text-field
-      density="compact"
-      v-if="edit"
-      hide-details="auto"
-      :label="label"
-      v-model="value"
-      v-bind="$attrs"
+    v-if="edit"
+    density="compact"
+    hide-details="auto"
+    v-model="text"
+    v-bind="{
+      ...styling,
+      ...$attrs
+    }"
   >
 
   </v-text-field>
   <template v-else>
-    {{ value }}
+    {{ text }}
   </template>
 </template>
 

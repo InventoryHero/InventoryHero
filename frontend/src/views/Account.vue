@@ -1,6 +1,6 @@
 <script lang="ts">
 import {useAuthStore} from "@/store";
-import HouseholdQuickSelectCard from "@/components/widgets/Households/HouseholdQuickSelectCard.vue";
+import HouseholdQuickSelectCard from "@/components/widgets/Households/Card/HouseholdQuickSelectCard.vue";
 
 
 export default{
