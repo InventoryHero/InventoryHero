@@ -4,11 +4,11 @@ import {useProducts} from "@/store"
 import useAxios from "@/composables/useAxios.ts";
 import {ProductEndpoint} from "@/api/http";
 import {ApiProduct, ProductStorageMapping} from "@/types/api.ts";
-import ProductStorageCard from "@/components/products/ProductStorageCard.vue";
+import ProductStorageCard from "@/components/widgets/products/ProductStorageCard.vue";
 import {useI18n} from "vue-i18n";
 import {useNotification} from "@kyvg/vue3-notification";
 import useDialogConfig from "@/composables/useDialogConfig.ts";
-import StoredAtDetail from "@/components/products/StoredAtDetail.vue";
+import StoredAtDetail from "@/components/widgets/products/StoredAtDetail.vue";
 
 const productStore = useProducts()
 const {axios: productEndpoint} = useAxios<ProductEndpoint>("product")

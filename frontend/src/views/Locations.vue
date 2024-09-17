@@ -125,10 +125,10 @@ onBeforeRouteLeave(() => {
         <v-card-text
             class="d-flex position-relative flex-1-1"
         >
-          <div class="scroller-wrapper">
+          <div class="wrapper">
             <recycle-scroller
                 ref="scroller"
-                class="scroller"
+                class="scroll"
                 :buffer="0"
                 :item-size="110"
                 :items="filteredLocations"

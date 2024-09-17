@@ -1,6 +1,7 @@
 {
   "app": {
-    "title": "InventoryHero"
+    "title": "InventoryHero",
+    "loading_content": "Almost ready! \uD83D\uDE80 We’re fine-tuning everything for you. \uD83D\uDEE0\uFE0F"
   },
   "description": "An easy to use inventory management system",
   "cancel": "Cancel",
@@ -231,8 +232,63 @@
       },
       "save": "Save household"
     },
+    "leave": {
+      "confirm": {
+        "title": "Leave Household <strong class='text-primary'>{name}</strong>",
+        "text": "Leaving this household can not be undone. To rejoin the household you'll need to ask the owner for a new invite.",
+        "stay": "Stay",
+        "leave": "Leave"
+      }
+    },
+    "edit": {
+      "delete_household": "Delete Household",
+      "to_households": "Back to households",
+      "invite_link": "Unused invitation link",
+      "not_found": {
+        "title": "Household Not Found \uD83D\uDE14",
+        "text": "We couldn't locate the household you’re looking for. It might have been removed or not available at the moment. Try refreshing the page to see if that helps.",
+        "back": "Back to all households"
+      },
+      "no_rights": {
+        "title": "Permission Required \uD83D\uDD12",
+        "text": "You don’t have permission to edit this household. Only the creator or owner of the household can make changes. Please suggest your changes to the owner of this household"
+      },
+      "delete": {
+        "confirm": {
+          "text": "Are you sure you want to delete this household? This action is <strong class='text-primary'>permanent and cannot be undone</strong>. All data related to the household will be <strong class='text-primary'>permanently removed</strong>, and members will no longer have access to it. Please confirm if you wish to proceed.",
+          "title": "⚠\uFE0F Confirm Household Deletion \uD83D\uDDD1\uFE0F",
+          "abort": "Cancel",
+          "confirm": "@:households.edit.delete_household"
+        }
+      },
+      "transfer_ownership": {
+        "confirm": {
+          "text": "Are you sure you want to transfer ownership of this household? This action is <strong class='text-primary'>permanent and cannot be undone</strong>. Ownership and all permissions, including the ability to edit, delete, and invite users to the household, will be transferred to the chosen user: {user}. Please confirm if you wish to proceed.",
+          "title": "⚠\uFE0F Confirm Ownership Transfer \uD83C\uDFE0",
+          "abort": "Cancel",
+          "confirm": "Transfer ownership"
+        }
+      },
+      "kick": {
+        "confirm": {
+          "text": "Are you sure you want to remove this user from the household? This action will be executed <strong class='text-primary'>immediately and cannot be undone</strong>. The user will be removed from the household, and if they wish to rejoin, a new invite will need to be issued. Please confirm if you wish to proceed.",
+          "title": "\uD83D\uDEAA Confirm User Removal \uD83D\uDEAB",
+          "abort": "Cancel",
+          "confirm": "Remove User"
+        }
+      },
+      "delete_invite": {
+        "confirm": {
+          "text": "Are you sure you want to delete this invite? This action will <strong class='text-primary'>invalidate the invite link</strong>, and any user attempting to join with this link will not be able to. If you want to invite the user again, a new invite will need to be issued. Please confirm if you wish to proceed.",
+          "title": "❌ Confirm Invite Deletion \uD83D\uDEAB",
+          "abort": "Cancel",
+          "confirm": "Delete invite"
+        }
+      }
+    },
     "rules": {
-      "name_required": "A name needs to be set!"
+      "name_required": "A name needs to be set!",
+      "name_shorter_than": "The name must be shorter than 26 characters"
     }
   },
   "account": {
@@ -366,6 +422,7 @@
     "locations": "Locations - InventoryHero",
     "account": "Account - InventoryHero",
     "households": "Households - InventoryHero",
+    "edit_household": "Edit Household - InventoryHero",
     "settings": "Settings - InventoryHero",
     "create": "Add new item - InventoryHero",
     "administration": "Administration",
@@ -389,7 +446,9 @@
     "deny": "Inventory' alone!"
   },
   "invite": {
+    "generating_code": "Generating your invite link...",
     "title": "Invite your friend",
+    "text": "Hey! \uD83C\uDF89\n\nLet’s get organized together! \uD83D\uDCE6 \n\nI’ve been using InventoryHero to manage my stuff, and I think you’ll love it too! Check it out and join me here: \n\n{inviteLink}",
     "copy_to_clipboard": "Copy the invite link into your clipboard...",
     "or": "...or share it directly",
     "email": {
@@ -461,7 +520,9 @@
         "no_households": "No households received",
         "leave_household": "Leaving this household will soon be possible",
         "edit_household": "Editing this household will soon be possible",
-        "some_deleted": "Not all users could be deleted properly"
+        "some_deleted": "Not all users could be deleted properly",
+        "household_kick": "\uD83D\uDEAA Kicked from Household",
+        "household_deleted": "❌ Household Deleted"
       },
       "error": {
         "invalid_request": "Invalid request",
@@ -507,10 +568,17 @@
         "no_access": "Insufficient access rights",
         "delete_not_possible_last_admin": "The deletion is not possible, this is the only admin account.",
         "service_not_available": "This service is currently not available.",
-        "password_invalid": "Password reset failed"
+        "password_invalid": "Password reset failed",
+        "leave_no_member": "❌ Member Not Found",
+        "member_not_found": "The requested member could not be found in the household.",
+        "cannot_kick_yourself ": "❌ Action Not Allowed",
+        "household_invalid_update_data": "❌ Invalid Update Data",
+        "user_not_found": "\uD83D\uDD0D User Not Found",
+        "no_admin": "\uD83D\uDEAB Admin Privileges Required"
       },
       "success": {
         "default_household_set": "Default household updated",
+        "household_created": "Household {name} created",
         "register": "User {name} successfully created",
         "deleted_detail": "Product successfully removed from storage",
         "updated_detail": "Product successfully updated",
@@ -533,7 +601,16 @@
         "resent_confirmation": "Confirmation E-Mail successfully sent",
         "password_reset_request": "Email sent",
         "password_reset_invalid_token": "Reset Token Invalid",
-        "password_reset_expired": "Reset Token expired"
+        "password_reset_expired": "Reset Token expired",
+        "household_left": "Left household",
+        "removed_from_household": "Invite deleted",
+        "kicked_from_household": "User removed",
+        "household_transferred": "Household transferred",
+        "household_updated": "Household updated",
+        "household_deleted": "Household deleted"
+      },
+      "warning": {
+        "insufficient_permissions": "\uD83D\uDEAB You do not have the necessary permissions to perform this action."
       },
       "new-content": {
         "new": "{user} updated your household"
@@ -542,7 +619,9 @@
     "text": {
       "info": {
         "no_households": "Please create a new household to get started with InventoryHero 😊",
-        "some_deleted": ""
+        "some_deleted": "",
+        "household_kick": "You have been removed from the household {name}",
+        "household_deleted": "The household {name} you were part of has been deleted"
       },
       "error": {
         "invalid_request": "",
@@ -587,10 +666,17 @@
         "service_not_available": "Please try again later",
         "password_invalid": "Your old password was incorrect",
         "password_reset_invalid_token": "",
-        "password_reset_expired": ""
+        "password_reset_expired": "",
+        "leave_no_member": "You are not a member of this household. You cannot perform this action.",
+        "member_not_found": "The requested member could not be found in the household.",
+        "cannot_kick_yourself s": "You cannot kick yourself from the household.",
+        "household_invalid_update_data": "The data provided for the household update is invalid. Please check and try again.",
+        "user_not_found": "We couldn’t find the user. Please verify the details and try again.",
+        "no_admin": ""
       },
       "success": {
         "default_household_set": "",
+        "household_created": "",
         "register": "You can now login with your account! Happy Inventoring! 🤩",
         "confirm_email": "Please confirm your email before proceeding! 😊",
         "deleted_detail": "",
@@ -612,7 +698,16 @@
         "password_reset_admin_mail": "Password reset email successfully sent",
         "updated_successfully": "",
         "resent_confirmation": "",
-        "password_reset_request": ""
+        "password_reset_request": "",
+        "household_left": "",
+        "removed_from_household": "",
+        "kicked_from_household": "",
+        "household_transferred": "",
+        "household_updated": "",
+        "household_deleted": ""
+      },
+      "warning": {
+        "insufficient_permissions": ""
       },
       "new-content": {
         "new": "Some things in your household might have changed. Click here to load the most recent data!"

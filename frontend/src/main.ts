@@ -19,9 +19,9 @@ import router from '@/router'
 import {i18n} from "@/lang"
 import pinia from "@/store";
 
-import App from './App.vue'
+import AppWrapper from "@/AppWrapper.vue";
 
-const app = createApp(App)
+const app = createApp(AppWrapper)
 
 pinia.use(({store}) => {
     store.$router = markRaw(router)

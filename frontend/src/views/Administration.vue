@@ -1,35 +1,23 @@
-<script lang="ts">
-import {defineComponent} from "vue";
-import {useAuthStore} from "@/store";
-import {i18n} from "@/lang";
+<script setup lang="ts">
+/*import {useAuthStore} from "@/store";
 import {notify} from "@kyvg/vue3-notification";
-import {RouteLocation} from "vue-router";
 
-export default defineComponent({
 
-  setup(){
-    const authStore = useAuthStore()
-    return {
-      authStore
-    }
-  },
+const authStore = useAuthStore()
+const router = useRouter()
+const {t} = useI18n()
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  beforeRouteEnter(_: RouteLocation, __: RouteLocation){
-    const authStore = useAuthStore()
-    if(!authStore.isAdmin){
-      notify({
-        title: i18n.global.t('toasts.titles.error.no_access'),
-        text: i18n.global.t('toasts.text.error.no_access'),
-        type: "error"
-      })
-      return "/"
-    }
-  },
-  props: {
+if(!authStore.isAdmin){
 
-  }
-})
+  router.push("/").then(() => {
+    notify({
+      title: t('toasts.titles.info.insufficient_permissions'),
+      text: t('toasts.text.info.insufficient_permissions'),
+      type: 'info'
+    })
+  })
+}*/
+
 </script>
 
 <template>

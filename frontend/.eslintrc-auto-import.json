@@ -69,6 +69,20 @@
     "watch": true,
     "watchEffect": true,
     "watchPostEffect": true,
-    "watchSyncEffect": true
+    "watchSyncEffect": true,
+    "useAppStyling": true,
+    "useAxios": true,
+    "useCompareStorage": true,
+    "useDialogConfig": true,
+    "useEditBtnStyle": true,
+    "useFieldIsNotTakenValidator": true,
+    "useHint": true,
+    "useModifyProductStoredAt": true,
+    "useRedirectToStorage": true,
+    "useScrollToTop": true,
+    "useStorageIcon": true,
+    "useStorageTitle": true,
+    "useUpdateStorage": true,
+    "useShareMethods": true
   }
 }

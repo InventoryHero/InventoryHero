@@ -1,6 +1,7 @@
 import json
 from functools import wraps
 
+from flask import request
 from flask_jwt_extended import verify_jwt_in_request, current_user, jwt_required
 from flask_jwt_extended.exceptions import NoAuthorizationError, RevokedTokenError, JWTDecodeError
 from flask_socketio import namespace, join_room, emit, leave_room, rooms
@@ -9,6 +10,8 @@ from jwt import ExpiredSignatureError
 from backend.db.models.User import HouseholdMembers, User
 
 from backend.flask_config import app
+
+from .SidManager import general_socket_sid_mapping
 
 
 def socket_token():
@@ -19,16 +22,13 @@ def socket_token():
                 verify_jwt_in_request()
                 return fn(*args, **kwargs)
             except NoAuthorizationError as e:
-                print("fnl")
                 return "fml", 401
             except ExpiredSignatureError as e:
-                print("no you")
                 return {
                     "code": 401,
                     "status": "expired_signature"
                 }
             except RevokedTokenError as e:
-                print("I HAte you")
                 return {
                     "code": 401,
                     "status": "token_revoked"
@@ -63,23 +63,20 @@ def authorize_room(joined=True):
                     "code": 403,
                     "status": "no_member"
                 }
-
             if joined and room not in rooms():
                 return {
                     "code": 403,
                     "status": "join_first"
                 }
-
             return fn(*args, **kwargs)
         return decorator
     return wrapper
 
 
-class UserSocket(namespace.Namespace):
-     pass
 
 
 class HouseholdSocket(namespace.Namespace):
+
     @socket_token()
     @authorize_room(joined=False)
     def on_join(self, data):
@@ -114,11 +111,18 @@ class HouseholdSocket(namespace.Namespace):
 
 
 class GeneralSocket(namespace.Namespace):
+
     @socket_token()
-    def on_hi(self, data):
-        username = current_user.username
-        app.logger.info(f"{username} says hi")
-        return json.dumps({"content": f"Hallo, {username}!", "status": "ok"})
+    def on_connect(self, data):
+        general_socket_sid_mapping.add(current_user.username, request.sid)
+        app.logger.info(current_user.username)
+        app.logger.info(request.sid)
+        app.logger.info("FROM CONNECT")
+
+    @socket_token()
+    def on_disconnect(self):
+        general_socket_sid_mapping.remove(current_user.username)
+
 
     @socket_token()
     def on_username(self, data):

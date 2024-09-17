@@ -1,6 +1,8 @@
 import datetime
 import uuid
 from dataclasses import dataclass
+
+from sqlalchemy.orm import Mapped
 from sqlalchemy.sql import expression
 from backend.database import db
 from backend.db.models import Product
@@ -61,7 +63,7 @@ class Household(db.Model):
             "id": self.id,
             "name": self.name,
             "creator": self.creator,
-            "members": self.members
+            #"members": self.members
         }
 
 
@@ -73,11 +75,14 @@ class HouseholdMembers(db.Model):
     invite: uuid.UUID = db.Column(db.Uuid, nullable=True)
     joined: bool = db.Column(db.Boolean, nullable=False, default=False)
 
-    household = db.relationship("Household", back_populates="members")
+    household: Mapped[Household] = db.relationship("Household", back_populates="members")
+    user: Mapped[User] = db.relationship("User", foreign_keys=[member_id])
 
     @property
     def serialize(self):
         return {
             "id": self.id,
-            "member": self.member_id,
+            "username": self.user.username if self.user else None,  # Adding username to the serialization
+            "joined": self.joined,
+            "invite": self.invite
         }

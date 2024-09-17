@@ -32,7 +32,6 @@ const emailNeeded = (value: string) => !!value || t('password_reset.rules.email_
 async function save(){
   //@ts-expect-error couldn't figure out how to type the form-ref properly
   const {valid} = await emailForm.value.validate()
-  console.log(valid)
   if(!valid){
     return
   }

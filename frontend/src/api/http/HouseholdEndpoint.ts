@@ -1,5 +1,5 @@
 import {Endpoint} from "./Endpoint.ts";
-import {Household} from "@/types";
+import {Household, HouseholdMember} from "@/types";
 
 export class HouseholdEndpoint extends Endpoint{
 
@@ -17,17 +17,22 @@ export class HouseholdEndpoint extends Endpoint{
         return []
     }
 
-    public async createHousehold(name: string): Promise<boolean> {
+    public async createHousehold(name: string): Promise<{success: boolean, household?: Household}> {
         const body = {
             name: name
         }
         const response = await this.internalAxios.post("/create", body)
         if(response.status === 200)
         {
-            return true
+            return {
+                success: true,
+                household: response.data?.household as Household
+            }
         }
         this.handleNonErrorNotifications(response)
-        return false
+        return {
+            success: false,
+        }
     }
 
     public async createInviteCode(id: number){
@@ -69,6 +74,77 @@ export class HouseholdEndpoint extends Endpoint{
         const response = await this.internalAxios.get(`/join/${invite}`)
         if(response.status === 200)
         {
+            return {
+                success: true,
+                household: response.data?.household as Household
+            }
+        }
+        this.handleNonErrorNotifications(response)
+        return {
+            success: false
+        }
+    }
+
+    public async leaveHousehold(id: number){
+        const response = await this.internalAxios.post(`/leave/${id}`)
+        if(response.status === 204){
+            return true
+        }
+        this.handleNonErrorNotifications(response)
+        return false
+    }
+
+    public async getMembers(id: number){
+        const response = await this.internalAxios.get(`/members/${id}`)
+        if(response.status === 200){
+            return {
+                success: true,
+                members: response.data?.members as Array<HouseholdMember>
+            }
+        }
+        this.handleNonErrorNotifications(response)
+        return {
+            success: false
+        }
+    }
+
+    public async deleteHousehold(id: number){
+        const response = await this.internalAxios.delete(`/${id}`)
+        if(response.status === 204){
+            return true
+        }
+        this.handleNonErrorNotifications(response)
+        return false
+    }
+
+    public async kickFromHousehold(householdId: number, id: number){
+        const response = await this.internalAxios.post(`/kick/${householdId}/${id}`)
+        if(response.status === 204){
+            return true
+        }
+        this.handleNonErrorNotifications(response)
+        return false
+    }
+
+    public async updateHousehold(householdId: number, updateData: Partial<Household>){
+        const response = await this.internalAxios.post(`/update/${householdId}`, {
+            household: updateData
+        })
+        if(response.status === 200){
+            return {
+                success: true,
+                household: response.data?.household as Household
+            }
+        }
+        this.handleNonErrorNotifications(response)
+        return {
+            success: false
+        }
+    }
+
+    public async transferHousehold(householdId: number, username: string){
+        const response = await this.internalAxios.post(`/transfer/${householdId}/${username}`)
+        if(response.status === 204){
             return true
         }
         this.handleNonErrorNotifications(response)

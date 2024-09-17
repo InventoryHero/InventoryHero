@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {useProducts, useStorage} from "@/store";
+import {useAuthStore, useProducts, useStorage} from "@/store";
 import {BoxEndpoint, LocationEndpoint, ProductEndpoint} from "@/api/http";
 import useAxios from "@/composables/useAxios.ts";
 import { TabType} from "@/types/TabType.ts";
@@ -27,6 +27,8 @@ const loading = computed(() => {
     loadingLocations: loadingLocations.value
   }
 })
+
+const authStore = useAuthStore()
 provide('loading', loading)
 
 function leave(){
@@ -43,7 +45,7 @@ function stay(){
 }
 
 onBeforeRouteLeave((to) => {
-  if(forceLeave.value)
+  if(forceLeave.value || !authStore.household)
   {
     forceLeave.value = false
     return true

@@ -4,20 +4,18 @@ from functools import wraps
 
 from flask import jsonify
 from flask_jwt_extended import current_user
+from backend.db.models.User import Household, HouseholdMembers, User
+from backend.flask_config import socketio, app
+from backend.sockets.sockets import general_socket_sid_mapping
 
-from backend.endpoints.Helper import user_in_household
-from backend.flask_config import socketio
-
-
-def auth(f):
+def require_household_member(f):
     @wraps(f)
     def decorator(*args, **kwargs):
         household_id = kwargs.get('household', None)
         if household_id is None:
             return jsonify(status="no_household_set"), 400
-
-        in_household = user_in_household(current_user.id, household_id)
-        if not in_household:
+        household_member = HouseholdMembers.query.filter_by(member_id=current_user.id, household_id=household_id).first()
+        if household_member is None:
             return jsonify(status="user_not_in_household"), 401
         return f(*args, **kwargs)
 
@@ -57,4 +55,17 @@ def admin_required():
 
         return decorator
 
+    return wrapper
+
+
+def household_owner():
+    def wrapper(fn):
+        @wraps(fn)
+        def decorator(*args, **kwargs):
+            household = kwargs.get('household', None)
+            household = Household.query.filter_by(id=household, creator=current_user.id).first()
+            if household is None:
+                return jsonify(), 403
+            return fn(*args, **kwargs)
+        return decorator
     return wrapper

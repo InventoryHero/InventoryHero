@@ -25,7 +25,7 @@ const {userName="", fromAdmin=false} = defineProps<{
   fromAdmin?: boolean
 }>()
 
-const {textFieldStyle} = useTextFieldStyle()
+const {styling: textFieldStyle} = useTextFieldStyle()
 
 const oldPassword = ref<string>("")
 const newPassword = ref<string>("")
@@ -56,13 +56,12 @@ async function savePassword(){
   resettingPassword.value = true
 
   if(fromAdmin){
-    const {success} = await adminEndpoint.resetPassword(userId.value, newPassword.value)
+    const {success} = await adminEndpoint.resetPassword(userId!.value, newPassword.value)
     saveSuccessful = success
 
   } else{
     const {success} = await userEndpoint.resetPassword(oldPassword.value, newPassword.value)
     saveSuccessful = success
-    console.log("reset from user", saveSuccessful)
   }
   resettingPassword.value = false
   if(!saveSuccessful){

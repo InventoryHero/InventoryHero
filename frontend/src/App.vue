@@ -1,8 +1,14 @@
 <script setup lang="ts">
-import {useAuthStore, useConfigStore, useGeneralSocketStore, useHouseholdSocketStore} from "@/store"
+import {
+  useAuthStore,
+  useConfigStore,
+  useGeneralSocketStore,
+  useHouseholdSocketStore,
+  useNotificationStore
+} from "@/store"
 import AppBarBottom from "@/components/ui/AppBarBottom.vue";
 import AppBar from "@/components/ui/AppBar.vue";
-import {Notifications} from "@kyvg/vue3-notification";
+import {Notifications, useNotification} from "@kyvg/vue3-notification";
 import {TabType} from "@/types/TabType.ts";
 
 // TODO the print settings look a bit clunky
@@ -18,7 +24,23 @@ const route = useRoute()
 const generalSocket = useGeneralSocketStore()
 const router = useRouter()
 const {mobile} = useDisplay()
+const notificationStore = useNotificationStore()
+
 // TODO ADMIN USER TABLE CAN BENEFIT FROM SOCKET (E.G. USER VERIFIED EMAIL)
+
+// the setup actually runs the earliest, loading content here makes sense
+// to handle this, the whole App is wrapped in a supsense
+applyStorage(getBrowserLocalStorage());
+configStore.init()
+await authStore.init()
+if(await authStore.isAuthorized())
+{
+  getAccessToken().then((token) => {
+    householdSocket.updateHeaders(token)
+    generalSocket.updateHeaders(token)
+  })
+}
+
 
 const navOpen = ref(false)
 const isAdminRoute = computed(() => {
@@ -54,24 +76,14 @@ const tab = ref(TabType.Product)
 provide("tab", tab)
 
 
-onMounted(async () => {
-  applyStorage(getBrowserLocalStorage());
-  configStore.init()
-  await authStore.init()
-  if(await authStore.isAuthorized())
-  {
-    getAccessToken().then((token) => {
-      householdSocket.updateHeaders(token)
-      generalSocket.updateHeaders(token)
-      generalSocket.bindActions()
-    })
-
-  }
+onUpdated(async () => {
+  notificationStore.triggerNotifications()
 })
+
 
 </script>
 
-<template>
+<template >
   <notifications
       v-if="!(route.meta.tokenized ?? false)"
       position="top right"
@@ -91,7 +103,7 @@ onMounted(async () => {
       width="30svh"
   />
 
-  <v-app v-if="route.meta.tokenized ?? false">
+  <template v-if="route.meta.tokenized ?? false">
     <v-app-bar
         density="compact"
     >
@@ -112,31 +124,26 @@ onMounted(async () => {
       <v-container
           :fluid="true"
           :class="{
-            'fill-height': route.meta?.fillHeight ?? false,
-          }"
+        'fill-height': route.meta?.fillHeight ?? false,
+      }"
       >
-
-
-
         <router-view v-slot="{Component}">
-          <transition :name="transition" mode="out-in" >
+          <transition name="scale" mode="out-in" >
             <component :is="Component" />
           </transition>
         </router-view>
-
       </v-container>
     </v-main>
-  </v-app>
+  </template>
 
-  <v-app
+  <template
       v-else
   >
     <app-bar
-      :nav="(!dockVisible) || isAdminRoute"
-      @toggle-nav="navOpen = !navOpen"
-      @scan-qr-code="openScanQrCodeModal"
+        :nav="(!dockVisible) || isAdminRoute"
+        @toggle-nav="navOpen = !navOpen"
+        @scan-qr-code="openScanQrCodeModal"
     />
-
     <nav-drawer
         v-if="(!dockVisible || isAdminRoute) && authorized"
         v-model="navOpen"
@@ -146,8 +153,6 @@ onMounted(async () => {
         v-if="authorized"
         v-model="dockVisible"
     />
-
-
     <v-dialog
         noClickAnimation
         class="fill-height"
@@ -158,25 +163,21 @@ onMounted(async () => {
       />
     </v-dialog>
 
-    <v-main
-        class=""
-    >
-      <v-container
-          :fluid="true"
-          :class="{
-            'fill-height': route.meta?.fillHeight ?? false,
-          }"
-      >
-
-        <router-view v-slot="{Component}">
-          <transition name="scale" mode="out-in" >
+    <v-main>
+      <router-view v-slot="{Component}">
+        <transition name="scale" mode="out-in" >
+          <v-container
+              class="fill-width"
+              :class="{
+                'fill-height': route.meta?.fillHeight ?? false,
+              }"
+          >
             <component :is="Component" />
-          </transition>
-        </router-view>
-
-      </v-container>
+          </v-container>
+        </transition>
+      </router-view>
     </v-main>
-  </v-app>
+  </template>
 </template>
 
 <style scoped lang="scss">
