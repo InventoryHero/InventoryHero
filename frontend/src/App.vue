@@ -16,6 +16,7 @@ import {TabType} from "@/types/TabType.ts";
 
 import {applyStorage, getAccessToken, getBrowserLocalStorage} from "axios-jwt";
 import useDialogConfig from "@/composables/useDialogConfig.ts";
+import {RouteLocationNormalizedGeneric} from "vue-router";
 
 const configStore = useConfigStore()
 const authStore = useAuthStore()
@@ -75,9 +76,13 @@ const {
 const tab = ref(TabType.Product)
 provide("tab", tab)
 
+function getKey(route: RouteLocationNormalizedGeneric): string{
+  return route.meta?.key?? route.path
+}
 
 onUpdated(async () => {
   notificationStore.triggerNotifications()
+  console.log(route)
 })
 
 
@@ -164,15 +169,16 @@ onUpdated(async () => {
     </v-dialog>
 
     <v-main>
-      <router-view v-slot="{Component}">
-        <transition name="scale" mode="out-in" >
+      <router-view v-slot="{Component, route}">
+        <transition name="scale">
           <v-container
-              class="fill-width"
-              :class="{
-                'fill-height': route.meta?.fillHeight ?? false,
-              }"
+              :key="getKey(route)"
+              class="fill-width fill-height"
+              fluid
           >
-            <component :is="Component" />
+            <component
+                :is="Component"
+            />
           </v-container>
         </transition>
       </router-view>
@@ -181,16 +187,8 @@ onUpdated(async () => {
 </template>
 
 <style scoped lang="scss">
+@import "@/scss/transitions/scale-transition";
 
-.scale-enter-active,
-.scale-leave-active {
-  transition: all 0.35s ease;
-}
 
-.scale-enter-from,
-.scale-leave-to {
-  opacity: 0;
-  transform: scale(0.9);
-}
 
 </style>

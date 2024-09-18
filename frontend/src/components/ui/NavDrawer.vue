@@ -56,7 +56,7 @@ export default defineComponent({
           color="primary"
       />
       <v-list-item
-          to="/storage/boxes"
+          to="/boxes"
           prepend-icon="mdi-package-variant"
           :title="$t('nav.boxes')"
           color="primary"

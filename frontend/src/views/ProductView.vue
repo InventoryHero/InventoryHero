@@ -25,6 +25,7 @@ async function getStorageMappings(id: number){
 
 
 watch(() => props.productId, (newValue) => {
+
   if(newValue === undefined){
     productStore.deselectProduct()
     return
@@ -85,10 +86,13 @@ onBeforeRouteLeave(() => {
         class=""
     >
       <router-view v-slot="{Component, route }">
-        <transition name="scale">
+        <transition
+          name="scale"
+        >
           <v-container
-            class="position-relative fill-width fill-height pa-0"
-            :key="route.path"
+              class="position-relative fill-width fill-height pa-0"
+              fluid
+              :key="route.path"
           >
             <component :is="Component"  />
           </v-container>
@@ -99,16 +103,5 @@ onBeforeRouteLeave(() => {
 </template>
 
 <style scoped lang="scss">
-.scale-enter-active,
-.scale-leave-active {
-  transition: all 0.3s ease;
-}
-
-.scale-enter-from,
-.scale-leave-to {
-  opacity: 0;
-  transform: scale(0.9);
-}
-
-
+@import "@/scss/transitions/scale-transition";
 </style>

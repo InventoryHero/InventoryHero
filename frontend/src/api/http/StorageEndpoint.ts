@@ -1,7 +1,7 @@
 import {Endpoint} from "./Endpoint";
 import {
     ApiProduct,
-    ApiStorage,
+    ApiStorage, ProductStorageMapping,
     StorageTypes
 } from "@/types";
 
@@ -232,15 +232,16 @@ export class BoxEndpoint extends StorageEndpoint{
 
     public async getContent(id: number|null){
         if(id === null){
-            console.error("TRYING TO GET NULL CONTENT")
             return {
-                products: [] as Array<ApiProduct>
+                products: [] as Array<ApiProduct>,
+                storageLocations: [] as Array<ProductStorageMapping>
             }
         }
 
         const data = await this.getStorageContent(id.toString())
         return {
-            products: (data?.products ?? []) as Array<ApiProduct>
+            products: (data?.products ?? []) as Array<ApiProduct>,
+            storageLocations: (data?.storageLocations ?? []) as Array<ProductStorageMapping>
         }
     }
 

@@ -209,13 +209,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <v-row
-    justify="center"
-  >
-    <v-col
-      lg="10"
-      cols="12"
-    >
+
       <v-dialog
         v-model="deleting"
         :persistent="true"
@@ -263,9 +257,12 @@ export default defineComponent({
         }"
       />
 
-      <v-container :fluid="true" class="pl-0 pr-0">
+      <v-container
+          :fluid="true"
+          class="pl-0 pr-0 fill-width fill-height d-flex flex-column"
+      >
           <div
-            class="mb-4 d-flex justify-end"
+            class="mb-4 fill-width d-flex justify-end"
           >
             <v-btn
               color="primary"
@@ -405,8 +402,7 @@ export default defineComponent({
 
         </v-data-table>
       </v-container>
-    </v-col>
-  </v-row>
+
 </template>
 
 <style scoped lang="scss">

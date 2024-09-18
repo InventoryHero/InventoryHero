@@ -85,79 +85,70 @@ function displayProductOverlay(item: ApiProduct){
           :title="$t('products.prefiltered', {box: filteredFrom})"
       />
     </v-card-title>
-    <v-card-text
-        class="d-flex position-relative flex-1-1"
+    <div
+      class="position-relative flex-1-1"
     >
-      <div class="wrapper">
-        <RecycleScroller
-            ref="scroller"
-            class="scroll"
-            :item-size="90"
-            :items="filteredProducts"
-            :buffer="0"
-            :emit-update="true"
-            @update="hasScrolled"
-            @visible="visible(route.fullPath, filteredProducts.length-1)"
-        >
-          <template v-slot="{ item }">
-            <v-row
-                :no-gutters="true"
-                justify="center"
-            >
-              <v-col
-                  cols="11"
-              >
-                <product-card
-                    :total-amount="item.totalAmount"
-                    :id="item.id"
-                    :creation-date="item.creationDate"
-                    :name="item.name"
-                    @expand="displayProductOverlay(item)"
-                />
-              </v-col>
-            </v-row>
-          </template>
-          <template #after>
-            <v-row
-                :no-gutters="true"
-                justify="center"
-            >
-              <v-card
-                  :elevation="0"
-              >
-                <v-card-title class="text-wrap text-center">
-                  <p
-                      class="pb-1"
-                      v-if="productsLoading"
-                  >
-                    {{ $t('products.loading')}}
-                  </p>
-                  <p
-                      class="pb-1 "
-                      v-else-if="allDisplayed"
-                  >
-                    {{ $t('products.all_displayed') }}
-                  </p>
-                  <p
-                      class="pb-1"
-                      v-else-if="filterEmpty"
-                  >
-                    {{ $t('products.no_matches')}}
-                  </p>
-                  <p
-                      class="pb-1"
-                      v-else
-                  >
-                    {{ $t('products.no_products')}}
-                  </p>
-                </v-card-title>
-              </v-card>
-            </v-row>
-          </template>
-        </RecycleScroller>
-      </div>
-    </v-card-text>
 
+      <v-card-text class="wrapper">
+          <RecycleScroller
+              ref="scroller"
+              class="scroll"
+              :item-size="85"
+              :items="filteredProducts"
+              :buffer="0"
+              :emit-update="true"
+              @update="hasScrolled"
+              @visible="visible(route.fullPath, filteredProducts.length-1)"
+          >
+            <template v-slot="{ item }">
+              <product-card
+                  :total-amount="item.totalAmount"
+                  :id="item.id"
+                  :creation-date="item.creationDate"
+                  :name="item.name"
+                  @expand="displayProductOverlay(item)"
+              />
+            </template>
+            <template #after>
+              <v-row
+                  :no-gutters="true"
+                  justify="center"
+              >
+                <v-card
+                    :elevation="0"
+                >
+                  <v-card-title class="text-wrap text-center">
+                    <p
+                        class="pb-1"
+                        v-if="productsLoading"
+                    >
+                      {{ $t('products.loading')}}
+                    </p>
+                    <p
+                        class="pb-1 "
+                        v-else-if="allDisplayed"
+                    >
+                      {{ $t('products.all_displayed') }}
+                    </p>
+                    <p
+                        class="pb-1"
+                        v-else-if="filterEmpty"
+                    >
+                      {{ $t('products.no_matches')}}
+                    </p>
+                    <p
+                        class="pb-1"
+                        v-else
+                    >
+                      {{ $t('products.no_products')}}
+                    </p>
+                  </v-card-title>
+                </v-card>
+              </v-row>
+            </template>
+          </RecycleScroller>
+        </v-card-text>
+    </div>
   </v-card>
   <app-scroll-to-top-btn
       :scrolled-down="scrolledDown"

@@ -14,12 +14,12 @@ import Join from "@/views/Join.vue";
 import {notify} from "@kyvg/vue3-notification";
 import Users from "@/components/widgets/Administration/Users.vue";
 import Overview from "@/components/widgets/Administration/Overview.vue";
-import Boxes from "@/views/Boxes.vue";
 import RouteNotFound from "@/views/RouteNotFound.vue";
 
-import passwordReset from "./routes/passwordReset.ts";
+import passwordReset from "./routes/passwordReset";
 import households from "@/router/routes/household";
 import products from "@/router/routes/products"
+import boxes from "@/router/routes/boxes.ts"
 
 
 
@@ -32,7 +32,7 @@ const vueRouter =  createRouter({
       component: Login,
       meta: {
         requiresAuth: false,
-        fillHeight: false
+        fillHeight: true
       }
     },
     {
@@ -65,36 +65,11 @@ const vueRouter =  createRouter({
       meta: {
         requiresAuth: true,
         requiresHousehold: true,
-        fillHeight: false
+        fillHeight: true
       }
     },
     products,
-    {
-      path: "/storage/boxes",
-      children:[
-        {
-          path: '',
-          name: "Boxes",
-          component: Boxes,
-        },
-        {
-          path: ':preselectedBox',
-          component: Boxes,
-          props: true
-        },
-        {
-          path: ':preselectedBox/:filteredFrom',
-          component: Boxes,
-          props: true
-        }
-      ],
-      meta: {
-        requiresAuth: true,
-        requiresHousehold: true,
-        fillHeight: true,
-        title: i18n.global.t('titles.boxes')
-      },
-    },
+    boxes,
     {
       path: "/storage/locations",
       children:[

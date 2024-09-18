@@ -78,23 +78,30 @@ export default defineStore("products", {
                 this._selectedProduct.totalAmount -= storage.amount
                 this._selectedProduct.totalAmount += updated.amount
             }
-            storage.amount = updated.amount
 
-            if(storage.storage?.id !== updated.storage?.id && this._fromStorage !== undefined){
+            if(this._fromStorage){
                 const storageStore = useStorage()
-                storageStore.moveProduct(storage.storage?.id, updated.storage?.id)
-                this._products = this._products.filter(p => p.id !== storage.productId)
+                storageStore.moveProduct(storage.storage, updated.storage)
+                if(storage.storage?.id !== updated.storage?.id) {
+                    this._products = this._products.filter(p => p.id !== storage.productId)
+                    this._storage = this._storage.filter(ps => ps.id !== productStorageId)
+                }
             }
 
+            storage.amount = updated.amount
             storage.storage = undefined
             if(updated.storage){
                 storage.storage = {
                     ...updated.storage
                 } as ApiStorage
             }
+            if(this._fromStorage === undefined){
+                this._selectedProductStorage = storage
+                return
+            }
 
 
-            this._selectedProductStorage = storage
+
         },
         setStorage(id: number){
             this._fromStorage = id

@@ -25,17 +25,13 @@ export default {
             path: 'product/:productId/detail/:productStorageId',
             name: "product detail",
             component: StoredAtDetail,
-        },
-        {
-            path: ':preselectedProduct/:filteredFrom',
-            component: Products,
-            props: true
         }
     ],
     meta: {
         requiresAuth: true,
         requiresHousehold: true,
         fillHeight: true,
-        title: i18n.global.t('titles.products')
+        title: i18n.global.t('titles.products'),
+        key: "/products"
     },
 }

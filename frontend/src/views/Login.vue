@@ -19,7 +19,7 @@ function changeCard(to: CardTypes){
 <template>
   <v-row
     justify="center"
-    class="mt-4"
+    class="mt-4 fill-height"
   >
     <v-col
       cols="12"

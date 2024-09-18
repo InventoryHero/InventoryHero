@@ -35,7 +35,8 @@ declare module 'vue-router' {
         requiresAuth?: boolean
         requiresHousehold?: boolean,
         requiresAdmin?: boolean,
-        tokenized?: boolean
+        tokenized?: boolean,
+        key?: string
     }
 }
 

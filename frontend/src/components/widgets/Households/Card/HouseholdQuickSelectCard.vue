@@ -23,7 +23,20 @@ const {
 const collapsed = ref(false)
 const loadingUserHouseholds = ref(false)
 const userHouseholds = ref<Array<Household>>([])
-const selectedHousehold = computed(() => authData.household)
+
+const updatedHousehold = ref<Household|undefined>()
+const selectedHousehold = computed({
+  get(){
+    if(updatedHousehold.value){
+      return updatedHousehold.value
+    }
+    return authData.household
+  },
+  set(value: Household){
+    updatedHousehold.value = value
+  }
+
+})
 
 const icon = computed(() =>{
   if(collapsed.value){
@@ -54,6 +67,7 @@ const saveBtnDisabled = computed(() => {
 
 function saveHouseholdChanges(){
   authData.changeHousehold(selectedHousehold.value)
+  updatedHousehold.value = undefined
 }
 function editHouseholds(){
   $router.push("/households")
@@ -120,6 +134,7 @@ onMounted(() => {
                 return-object
                 v-model="selectedHousehold"
                 :loading="loadingUserHouseholds"
+                :clearable="false"
             >
              <template v-slot:append>
                <app-icon-btn

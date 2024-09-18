@@ -5,27 +5,26 @@ import {useI18n} from "vue-i18n";
 import {ProductStorageMapping} from "@/types/api.ts";
 import useStorageTitle from "@/composables/useStorageTitle.ts";
 import useUpdateProductStoredAt from "@/composables/useModifyProductStoredAt.ts";
-import useRedirectToStorage from "@/composables/useRedirectToStorage.ts";
-
 
 const {t: $t} = useI18n()
 const productStore = useProducts()
 const {saving, deleting, updateStoredAt, deleteStoredAt} = useUpdateProductStoredAt()
-const {redirect} = useRedirectToStorage()
+
 
 
 const emit = defineEmits<{
   (e: 'showStoredAtDetail'): void,
-  (e: 'deleted', id: number, amount: number): void
+  (e: 'deleted'): void,
+  (e: 'redirect'): void
 }>()
 
 const props = defineProps<{
-  storage?: ProductStorageMapping
+  storage?: ProductStorageMapping,
+  fromStorage?: boolean,
+  productName?: string
 }>()
 
-const productName = computed(() => {
-  return productStore.selectedProduct?.name
-})
+const fromStorage = computed(() => props.fromStorage ?? false)
 
 const productStorage = computed(() => {
   return props.storage!
@@ -35,6 +34,20 @@ const productStoredAt = computed(() => {
 })
 
 const {name, icon} = useStorageTitle(productStoredAt)
+const title = computed(() => {
+  if(fromStorage.value){
+    const productName = productStore.products.find(p => p.id === productStorage.value?.productId)?.name ?? ''
+    return {
+      name: productName,
+      icon: "mdi-cart"
+    }
+  }
+
+  return {
+    name: name.value,
+    icon: icon.value
+  }
+})
 
 
 function deleteMe(){
@@ -43,7 +56,7 @@ function deleteMe(){
     if(!success){
       return
     }
-    emit('deleted', productStorage.value.id, productStorage.value.amount)
+    emit('deleted')
   })
 }
 
@@ -61,63 +74,59 @@ function showStoredAtDetail(){
 </script>
 
 <template>
-  <v-row
-      :no-gutters="true"
-      justify="space-between"
-      v-bind="$attrs"
+
+  <v-card
+    elevation="0"
+    density="compact"
   >
-    <v-col
-        class="d-flex justify-start align-center"
+    <v-card-text
+      class="pb-0 mb-0 pt-3 mt-0"
     >
+      <v-row
+        dense
+      >
         <app-storage-title
-            :icon="icon"
+            :icon="title.icon"
+            :title="title.name"
             color="primary"
-            :title="name"
             variant="tonal"
-            @click="redirect(productStoredAt, productName ?? '')"
+            @click="emit('redirect')"
         />
-    </v-col>
-  </v-row>
-  <v-row
-      :no-gutters="true"
-      justify="space-between"
+      </v-row>
+      <v-row
+          dense
+          justify="space-between"
+      >
+        <span>
+          {{ $t("products.product.amount") }}
+        </span>
+        <span>
+          {{ productStorage.amount }}
+        </span>
+      </v-row>
+      <v-row
+          dense
+          justify="space-between"
+      >
+        <span
+        >
+          {{ $t('products.product.last_used')}}
+        </span>
+        <span>
+          {{ $d(new Date(productStorage.updatedAt)) }}
+        </span>
+      </v-row>
+      <quick-actions
+          :request-in-progress="saving || deleting"
+          @delete-me="deleteMe()"
+          @update-amount="adjustAmount"
+          @show-details="showStoredAtDetail"
+      />
+    </v-card-text>
 
-  >
-    <v-col
-    >
-      {{ $t("products.product.amount") }}
-    </v-col>
-    <v-col
-        cols="2"
-        class="d-flex justify-end"
-    >
-      {{ productStorage.amount }}
-    </v-col>
-  </v-row>
-  <v-row
-      :no-gutters="true"
-      justify="space-between"
 
-  >
-    <v-col
-    >
-      {{ $t('products.product.last_used')}}
-    </v-col>
-    <v-col
-        cols="2"
-        class="d-flex justify-end"
-    >
-      {{ $d(new Date(productStorage.updatedAt)) }}
-    </v-col>
-  </v-row>
-  <quick-actions
-      :request-in-progress="saving || deleting"
-      @delete-me="deleteMe()"
-      @update-amount="adjustAmount"
-      @show-details="showStoredAtDetail"
-  />
-
-  <v-divider color="primary" class="border-opacity-75"/>
+    <v-divider color="primary" class="border-opacity-75"/>
+  </v-card>
 </template>
 
 <style scoped lang="scss">

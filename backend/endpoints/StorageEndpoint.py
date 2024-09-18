@@ -83,11 +83,19 @@ class StorageEndpoint(Blueprint):
                 self.db.session.query(Product)
                 .join(ProductContainerMapping, Product.mappings)
                 .filter(ProductContainerMapping.storage_id == storage.id, Product.household_id == household)
-                .options(contains_eager(Product.mappings))
+                #.options(contains_eager(Product.mappings))
                 .all()
             )
+            mappings = (
+                self.db.session.query(ProductContainerMapping)
+                .filter_by(storage_id=storage.id)
+                .all()
+            )
+
+            self.app.logger.info(filtered_products)
             return jsonify(content={
-                "products": filtered_products
+                "products": filtered_products,
+                "storageLocations": mappings
             }), 200
 
         @self.route("/location/content/<int:id>", methods=["GET"])

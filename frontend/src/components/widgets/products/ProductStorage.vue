@@ -8,7 +8,6 @@ import {ApiStorage} from "@/types/api.ts";
 import useUpdateProductStoredAt from "@/composables/useModifyProductStoredAt.ts";
 import useRedirectToStorage from "@/composables/useRedirectToStorage.ts";
 import useEditBtnStyle from "@/composables/useEditBtnStyle.ts";
-import useGoBackOneLevel from "@/composables/useGoBackOneLevel.ts";
 import {useNotification} from "@kyvg/vue3-notification";
 
 
@@ -16,10 +15,9 @@ const productStore = useProducts()
 const {axios: storageEndpoint} = useAxios<StorageEndpoint>("storage")
 const {saving, deleting, updateStoredAt, deleteStoredAt} = useUpdateProductStoredAt()
 const {redirect} = useRedirectToStorage()
-const {editClicked, editBtnStyle} = useEditBtnStyle()
-const {goBackOneLevel} = useGoBackOneLevel({hasId: true})
 const {notify} = useNotification()
 const {t} = useI18n()
+const router = useRouter()
 
 
 
@@ -27,6 +25,7 @@ const loading = computed(() => productStore.loadingProducts || productStore.load
 const loadingStorage = ref(false)
 const allStorage = ref<Array<ApiStorage>>([])
 const newStorage = ref<ApiStorage | undefined>(undefined)
+const editClicked = ref(false)
 
 
 const product = computed(() => {
@@ -58,13 +57,9 @@ const storage = computed({
 const {name, icon} = useStorageTitle(storage)
 
 function close(){
-  goBackOneLevel()
-
+  router.back()
 }
 
-function clickEditBtn(){
-  editClicked.value = true
-}
 
 
 function cancelEdit(){
@@ -82,23 +77,25 @@ function saveChanges(){
   })
 }
 
+
 function deleteCurrent(){
+
   const id = currProductAt.value!.id
   const value = currProductAt.value!.amount
   deleteStoredAt(currProductAt.value!).then((success) => {
     if(!success){
       return
     }
+    productStore.deleteProductAt(id, value)
+    router.back()
     notify({
       title: t('toasts.titles.success.deleted_detail'),
       text: t('toasts.text.success.deleted_detail'),
       type: "success"
     })
-    goBackOneLevel().then(() => {
-      productStore.deleteProductAt(id, value)
-    })
   })
 }
+
 
 onMounted(() => {
   loadingStorage.value = true
@@ -123,30 +120,12 @@ onMounted(() => {
     </template>
 
     <template v-if="!loading">
-      <v-card-title
-          class="d-flex align-center justify-space-between"
-      >
-        <div>
-          {{ productName }}
-        </div>
-        <div
-            class="ms-4"
-        >
-          <app-icon-btn
-              icon="mdi-pencil"
-              v-bind="editBtnStyle"
-              :disabled="saving"
-              @click="clickEditBtn"
-
-          />
-          <app-icon-btn
-              icon="mdi-close"
-              :disabled="saving"
-              @click="close()"
-          />
-
-        </div>
-      </v-card-title>
+      <app-content-title
+          v-model:title="productName"
+          v-model:edit="editClicked"
+          :disabled="saving||deleting||loading"
+          @close="close()"
+      />
       <v-card-subtitle >
         <app-storage-title
             :icon="icon"

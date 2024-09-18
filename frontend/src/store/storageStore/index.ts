@@ -2,11 +2,11 @@ import {defineStore} from "pinia";
 import {ApiStorage, StorageTypes} from "@/types";
 
 interface StorageMap {
-    [key: string]: Array<ApiStorage>; // Maps storageStore type to an array of storages
+    [key: number]: Array<ApiStorage>; // Maps storageStore type to an array of storages
 }
 
 interface SelectedStorageMap {
-    [key: string]: ApiStorage | undefined; // Maps storageStore type to a single selected storageStore
+    [key: number]: ApiStorage | undefined; // Maps storageStore type to a single selected storageStore
 }
 
 
@@ -16,20 +16,22 @@ export default defineStore("storage", {
         return {
             _storage: {} as StorageMap,
             _selectedStorage: {} as SelectedStorageMap,
-            _printSelection: [] as Array<number>
+            _printSelection: [] as Array<number>,
+            _loadingStorage: false,
+            _loadingContent: false,
         }
     },
     actions: {
-        _storeStorage(storage: Array<ApiStorage>, type: string){
+        _storeStorage(storage: Array<ApiStorage>, type: StorageTypes){
             this._storage[type] = storage
         },
-        _selectStorage(storage: ApiStorage, type: string){
-            this._selectedStorage[type] = storage
+        _selectStorage(id: number, type: StorageTypes){
+            this._selectedStorage[type] = this._storage[type]?.find(s => s.id === id)
         },
-        _deselectStorage(type: string){
+        _deselectStorage(type: StorageTypes){
             this._selectedStorage[type] = undefined
         },
-        _updateStorage(updated: ApiStorage, type: string) {
+        _updateStorage(updated: ApiStorage, type: StorageTypes) {
             const storage = this._storage[type]?.find(s => s.id === updated.id)
             if(!storage){
                 return
@@ -37,9 +39,9 @@ export default defineStore("storage", {
 
             storage.name = updated.name
 
-            if(type === "box" && updated.storageId !== storage.storageId){
-                const location = this._storage["location"].find(l => l.id === updated.storageId)
-                const oldLocation = this._storage["location"].find(l => l.id === storage.storageId)
+            if(type === StorageTypes.Box && updated.storageId !== storage.storageId){
+                const location = this._storage[StorageTypes.Location]?.find(l => l.id === updated.storageId)
+                const oldLocation = this._storage[StorageTypes.Location]?.find(l => l.id === storage.storageId)
                 if(location){
                     let currentAmount = location.boxAmount ?? 0
                     location.boxAmount = currentAmount++;
@@ -61,11 +63,11 @@ export default defineStore("storage", {
             if(this._selectedStorage[type]?.id === storage.id){
                 //this._selectedBox = undefined
                 //this._selectedBox = box
-                this._selectStorage(storage, type)
+                this._selectStorage(storage.id, type)
             }
         },
-        _deleteStorage(id: number, type: string){
-            const storage = this._storage[type].find(s => s.id === id)
+        _deleteStorage(id: number, type: StorageTypes){
+            const storage = this._storage[type]?.find(s => s.id === id)
             if(!storage){
                 return
             }
@@ -73,100 +75,103 @@ export default defineStore("storage", {
                 //this._selectedBox = undefined
                 this._deselectStorage(type)
             }
-            this._storage[type] = this._storage[type].filter(s => s.id !== storage.id)
+            this._storage[type] = this._storage[type]?.filter(s => s.id !== storage.id)
         },
-        _removeProductFromStorage(id: number, type: string){
-            const storage = this._storage[type].find(s => s.id === id)
+        _removeProductFromStorage(id: number, type: StorageTypes){
+            if(type === undefined){
+                return false
+            }
+
+            const storage = this._storage[type]?.find(s => s.id === id)
             if(storage){
                 storage.productAmount--
                 return true
             }
             return false
         },
-        _moveProductToStorage(id: number, type: string){
-            const storage = this._storage[type].find(s => s.id === id)
+        _moveProductToStorage(id: number, type: StorageTypes){
+            const storage = this._storage[type]?.find(s => s.id === id)
             if(storage){
                 storage.productAmount++
                 return true
             }
             return false
         },
-        _addStorage(storage: ApiStorage, type: string){
+        _addStorage(storage: ApiStorage, type: StorageTypes){
             if(this._storage[type]){
-                this._storage[type].push(storage)
+                this._storage[type]?.push(storage)
             } else{
                 this._addStorage(storage, type)
             }
         },
 
 
-        selectBox(box: ApiStorage){
-            this._selectStorage(box, "box")
+        selectBox(id: number){
+            this._selectStorage(id, StorageTypes.Box)
         },
         deselectBox(){
-            this._deselectStorage("box")
+            this._deselectStorage(StorageTypes.Box)
+            this._printSelection = []
         },
         storeBoxes(boxes: Array<ApiStorage>){
-            this._storeStorage(boxes, 'box')
+            this._storeStorage(boxes, StorageTypes.Box)
         },
         updateBox(updatedBox: ApiStorage){
             //const box =
-            this._updateStorage(updatedBox, "box")
+            this._updateStorage(updatedBox, StorageTypes.Box)
         },
         deleteBox(id: number){
-            this._deleteStorage(id, "box")
+            this._deleteStorage(id, StorageTypes.Box)
         },
-        moveProduct(oldStorageId: number|undefined, newStorageId: number|undefined){
-            if(!this._removeProductFromStorage(oldStorageId ?? -1, 'box')){
-                this._removeProductFromStorage(oldStorageId ?? -1, 'location')
+        moveProduct(oldStorage?: ApiStorage, newStorage?: ApiStorage){
+            if(oldStorage){
+                this._removeProductFromStorage(oldStorage.id, oldStorage.type)
             }
-            if(!this._moveProductToStorage(newStorageId ?? -1, 'box')){
-                this._moveProductToStorage(newStorageId ?? -1, 'location')
+            if(newStorage){
+                this._moveProductToStorage(newStorage.id, newStorage.type)
             }
-
         },
         removeProductfromBox(id: number){
-            this._removeProductFromStorage(id, "box")
+            this._removeProductFromStorage(id, StorageTypes.Box)
         },
         addBox(newBox: ApiStorage){
-          this._addStorage(newBox, "box")
+          this._addStorage(newBox, StorageTypes.Box)
         },
 
 
         storeLocations(locations: Array<ApiStorage>){
-            this._storeStorage(locations, "location")
+            this._storeStorage(locations, StorageTypes.Location)
         },
         selectLocation(location: ApiStorage){
-            this._selectStorage(location, "location")
+            this._selectStorage(location, StorageTypes.Location)
         },
         deselectLocation(){
-            this._selectedStorage["location"] = undefined
+            this._selectedStorage[StorageTypes.Location] = undefined
         },
         updateLocation(updated: ApiStorage){
-            this._updateStorage(updated, "location")
+            this._updateStorage(updated, StorageTypes.Location)
         },
         deleteLocation(id: number){
-            this._deleteStorage(id, "location")
+            this._deleteStorage(id, StorageTypes.Location)
         },
         removeProductFromLocation(id: number){
-            this._removeProductFromStorage(id, "location")
+            this._removeProductFromStorage(id, StorageTypes.Location)
         },
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         removeBoxFromLocation(locationId: number, boxId: number){
-            if(this._selectedStorage["location"]?.id === locationId){
-                this._storage["box"] = this._storage["box"].filter(s => s.id !== locationId)
+            if(this._selectedStorage[StorageTypes.Location]?.id === locationId){
+                this._storage[StorageTypes.Box] = this._storage[StorageTypes.Box].filter(s => s.id !== locationId)
             }
         },
         addLocation(newLocation: ApiStorage){
-          this._addStorage(newLocation, "location")
+          this._addStorage(newLocation, StorageTypes.Location)
         },
-
         getStorage(type: StorageTypes){
             if(type === StorageTypes.Box){
-                return this._storage["box"]
+                return this._storage[StorageTypes.Box]
             }
             if(type === StorageTypes.Location){
-                return this._storage["location"]
+                return this._storage[StorageTypes.Location]
             }
             return []
         },
@@ -181,20 +186,30 @@ export default defineStore("storage", {
         deselectAllFromPrinting(){
           this._printSelection = []
         },
-        reset(){
+        reset() {
             this._storage = {}
             this._selectedStorage = {}
             this._printSelection = []
+            this._loadingStorage = false
+        },
+        setLoadingStorage(value: boolean){
+            this._loadingStorage = value
+        },
+        setLoadingContent(value: boolean) {
+            this._loadingContent = value
+        },
+        clearPrintSelection(){
+            this._printSelection = []
         }
-
 
     },
     getters:  {
-        boxes: state =>  state._storage.box ?? [],
-        selectedBox: state => state._selectedStorage.box,
-        locations: state =>  state._storage.location ?? [],
-        selectedLocation: state => state._selectedStorage.location,
-        printSelection: state => state._printSelection
-
+        boxes: state =>  state._storage[StorageTypes.Box] ?? [],
+        selectedBox: state => state._selectedStorage[StorageTypes.Box],
+        locations: state =>  state._storage[StorageTypes.Location] ?? [],
+        selectedLocation: state => state._selectedStorage[StorageTypes.Location],
+        printSelection: state => state._printSelection,
+        loadingStorage: state => state._loadingStorage,
+        loadingContent: state => state._loadingContent
     }
 })

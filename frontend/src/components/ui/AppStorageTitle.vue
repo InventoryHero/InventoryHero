@@ -1,63 +1,41 @@
-<script lang="ts">
-import {defineComponent} from 'vue'
-
-export default defineComponent({
-  name: "AppStorageTitle",
-  props:{
-    icon: {
-      type: String,
-      default: ""
-    },
-    title: {
-      type: String,
-      default: ""
-    },
-    color:{
-      type: String,
-      default: ""
-    },
-    variant: {
-      type: String,
-      default: "tonal"
-    },
-    disabled:{
-      type: Boolean,
-      default: false
-    }
-  },
-  computed:{
-    btnDisabled(){
-      return this.color === "" || this.disabled
-    },
-    btnVariant(){
-      if(this.btnDisabled)
-      {
-        return 'elevated'
-      }
-      return this.variant
-    }
-  }
-
+<script setup lang="ts">
+defineOptions({
+  inheritAttrs: false
 })
+
+const {
+  icon,
+  title="",
+} = defineProps<{
+  icon?: string,
+  title?: string
+}>()
 </script>
 
 <template>
-  <v-btn
+  <v-card
     density="compact"
-    :prepend-icon="icon"
-    :color="color"
-    :variant="btnVariant"
-    class="mb-1 text-truncate"
-    :disabled="btnDisabled"
+    max-width="100%"
+    width="fit-content"
+    v-bind="$attrs"
+    class="pa-0 ma-0"
   >
-    {{ title }}
-  </v-btn>
-
+    <v-card-text
+      class="pb-1 pt-1 d-flex align-center"
+    >
+      <v-icon
+        :icon="icon"
+        size="small"
+      />
+      <span
+        v-if="title"
+        class="ms-2 d-inline-block text-truncate"
+      >
+        {{ title }}
+    </span>
+    </v-card-text>
+  </v-card>
 </template>
 
 <style scoped lang="scss">
-.hovering{
-  color: rgba(var(--v-theme-primary), 0.65) !important;
-  cursor: pointer;
-}
 </style>

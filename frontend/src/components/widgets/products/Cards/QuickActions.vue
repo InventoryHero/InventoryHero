@@ -16,12 +16,9 @@ const {requestInProgress=false, disabled=false} = defineProps<{
 
 <template>
   <v-row
-      :no-gutters="true"
-      justify="space-evenly"
-      class="product-actions mt-2 mb-1 position-relative"
-      :class="{
-        'request': requestInProgress
-      }"
+    dense
+    justify="space-evenly"
+    class="position-relative"
   >
     <v-overlay
         :contained="true"

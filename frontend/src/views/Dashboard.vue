@@ -4,10 +4,14 @@
 
 <template>
 
-  <household-quick-select-card
-    :collapsible="true"
-    class="fill-width"
-  />
+  <div
+    class="fill-height"
+  >
+    <household-quick-select-card
+        :collapsible="true"
+        class="fill-width"
+    />
+  </div>
 
 </template>
 

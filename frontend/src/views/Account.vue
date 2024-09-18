@@ -15,8 +15,9 @@ export default{
 
 <template>
 <v-row
+  class="fill-height"
   justify="center"
-  :no-gutters="true"
+  dense
 >
   <v-col
     cols="12"
@@ -27,7 +28,6 @@ export default{
 
     <!-- household card -->
     <household-quick-select-card />
-
   </v-col>
 </v-row>
 </template>

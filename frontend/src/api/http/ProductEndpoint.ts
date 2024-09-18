@@ -11,7 +11,6 @@ export class ProductEndpoint extends Endpoint{
     public async getProducts({
         id = undefined as (undefined|string)
     } = {}): Promise<Array<ApiProduct>>{
-
         let url = ""
         if(id !== undefined){
             url += `/${id}`
