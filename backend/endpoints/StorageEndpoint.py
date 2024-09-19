@@ -40,7 +40,7 @@ class StorageEndpoint(Blueprint):
         @jwt_required()
         @require_household_member
         def get_all(household):
-            self.app.logger.info("motherfucker")
+
             storage_container, code = get_storage_helper(ContainerTypes.All, household)
             return jsonify(storage_container), code
 
@@ -49,10 +49,7 @@ class StorageEndpoint(Blueprint):
         @jwt_required()
         @require_household_member
         def get_boxes(household, box_id):
-            self.app.logger.info(box_id)
             result, code = get_storage_helper(ContainerTypes.Box, household, box_id)
-            self.app.logger.info(code)
-            self.app.logger.warn(result)
             if code != 200:
                 return result, code
             return jsonify(result), 200
@@ -65,7 +62,6 @@ class StorageEndpoint(Blueprint):
             result, code = get_storage_helper(ContainerTypes.Location, household, location_id)
             if code != 200:
                 return result, code
-            self.app.logger.info(result)
             return jsonify(result), 200
 
         @self.route("/box/content/<int:id>", methods=["GET"])
@@ -92,7 +88,6 @@ class StorageEndpoint(Blueprint):
                 .all()
             )
 
-            self.app.logger.info(filtered_products)
             return jsonify(content={
                 "products": filtered_products,
                 "storageLocations": mappings
@@ -251,7 +246,6 @@ class StorageEndpoint(Blueprint):
                 box.storage_id = new_storage
 
             self.db.session.commit()
-            self.app.logger.warning(box)
             box = Storage.query.filter_by(id=box.id).first()
             return jsonify(updated=box), 200
 
@@ -273,7 +267,6 @@ class StorageEndpoint(Blueprint):
             # TO MERGE PROPERLY
             self.db.session.delete(location)
             self.db.session.commit()
-            self.app.logger.info(f"DELETED BOX {location.name}")
             return {}, 204
 
         @self.route("/location/<int:location_id>", methods=["POST"])

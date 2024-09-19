@@ -144,7 +144,7 @@ class User(Blueprint):
         def logout():
             refresh_token = request.json["refreshToken"]
             refresh_token = decode_token(refresh_token)
-            self.app.logger.info(refresh_token)
+
             self.blacklist_token(refresh_token)
             self.blacklist_token(get_jwt())
 
@@ -193,7 +193,6 @@ class User(Blueprint):
 
             if existing is not None:
                 return jsonify(status="username_or_email_already_exists"), 400
-            self.app.logger.info(firstname)
             if username is not None:
                 result = validate_username(username)
                 if result is not True:
@@ -355,7 +354,7 @@ class User(Blueprint):
             )
             self.db.session.add(reset_request)
             self.db.session.commit()
-            self.app.logger.info(reset_id)
+
 
             return jsonify(status="success_24h_time"), 200
 
@@ -399,7 +398,6 @@ class User(Blueprint):
 
         @self.route("/reset-password/<string:code>", methods=["PUT"])
         def reset_password_preflight(code):
-            self.app.logger.error("OPTIONS")
             is_valid, msg, _ = is_reset_token_valid(code)
             if not is_valid:
                 return jsonify(status=msg), 400
@@ -408,7 +406,6 @@ class User(Blueprint):
         def is_reset_token_valid(code):
             reset_hash = sha256(code.encode('utf-8')).hexdigest()
             reset_request = PasswordResetRequest.query.filter_by(password_reset_hash=reset_hash).first()
-            self.app.logger.info(reset_request)
             if reset_request is None:
                 return False, "invalid_token", None
             if reset_request.password_reset_time + timedelta(hours=24) < datetime.now(UTC):

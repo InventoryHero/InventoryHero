@@ -49,7 +49,6 @@ class AdminEndpoint(Blueprint):
         @admin_required()
         def reset_password(user_id):
             password = request.json.get('password', None)
-            self.app.logger.info(f"Resetting password for user {user_id}: {password}")
             salt = bcrypt.gensalt()
             password = password.encode('utf-8')
             password = bcrypt.hashpw(password, salt)

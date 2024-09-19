@@ -35,7 +35,6 @@ socketio.on_namespace(GeneralSocket("/general"))
 
 @app.route("/api/v1/smtp-enabled")
 def check_smtp():
-    app.logger.info(app.config['SMTP'].values())
     smtp_configured = all(app.config['SMTP'].values())
     return jsonify(enabled=smtp_configured), 200
 
