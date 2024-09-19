@@ -156,7 +156,7 @@ const afterText = computed(() => {
 
 <template>
   <confirmation-dialog
-      :dialog-opened="deleteConfirmDialog"
+      v-model:dialog-opened="deleteConfirmDialog"
       :title="t('products.delete_product.title')"
       :text="t('products.delete_product.text')"
       :cancel-text="t('products.delete_product.cancel')"

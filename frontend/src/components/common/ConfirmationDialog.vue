@@ -2,13 +2,14 @@
 
 import {useNotification} from "@kyvg/vue3-notification";
 
+const dialogOpened = defineModel<boolean>("dialogOpened");
+
 const {
   title="",
   text="",
   cancelText="",
   confirmText="",
   cancelIcon="mdi-cancel",
-  dialogOpened=false,
   onConfirm,
   onCancel
 } = defineProps<{
@@ -18,7 +19,6 @@ const {
   confirmText?: string,
   cancelIcon?: string,
   confirmIcon?: string,
-  dialogOpened?: boolean,
   onConfirm?: () => void,
   onCancel?: () => void
 }>()
@@ -27,13 +27,11 @@ const {notify} = useNotification()
 const {t} = useI18n()
 
 onBeforeRouteLeave(()=> {
-  if(dialogOpened){
-    notify({
-      title: t("toasts.titles.info.close_dialog_first"),
-      text: t("toasts.text.info.close_dialog_first"),
-      type: "info"
-    })
-    return false
+  if(dialogOpened.value){
+    if(onCancel){
+      onCancel()
+    }
+    dialogOpened.value = false
   }
 })
 

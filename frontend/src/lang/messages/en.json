@@ -503,8 +503,7 @@
         "some_deleted": "Not all users could be deleted properly",
         "household_kick": "\uD83D\uDEAA Kicked from Household",
         "household_deleted": "❌ Household Deleted",
-        "no_storage_selected": "No storage selected",
-        "close_dialog_first": "Close the dialog first"
+        "no_storage_selected": "No storage selected"
       },
       "error": {
         "invalid_request": "Invalid request",
@@ -604,8 +603,7 @@
         "some_deleted": "",
         "household_kick": "You have been removed from the household {name}",
         "household_deleted": "The household {name} you were part of has been deleted",
-        "no_storage_selected": "To print qr codes, please select a storage",
-        "close_dialog_first": ""
+        "no_storage_selected": "To print qr codes, please select a storage"
       },
       "error": {
         "invalid_request": "",

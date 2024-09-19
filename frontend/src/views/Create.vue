@@ -97,7 +97,7 @@ function stay(){
       class="pa-0 fill-height fill-width"
   >
     <confirmation-dialog
-      :dialog-opened="confirm"
+      v-model:dialog-opened="confirm"
       :title="$t('confirm.leave.title')"
       :text="$t('confirm.leave.text')"
       cancel-icon="mdi-cancel"

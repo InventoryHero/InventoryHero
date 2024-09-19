@@ -100,7 +100,7 @@ function leaveHousehold(){
 <template>
 
   <confirmation-dialog
-      :dialog-opened="confirmLeaveDialogVisible"
+      v-model:dialog-opened="confirmLeaveDialogVisible"
       :text="t('households.leave.confirm.text')"
       :cancel-text="t('households.leave.confirm.stay')"
       :confirm-text="t('households.leave.confirm.leave')"
