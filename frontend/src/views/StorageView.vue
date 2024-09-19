@@ -1,41 +1,72 @@
 <script setup lang="ts">
-import {useProducts, useStorage} from "@/store";
+import {useConfigStore, useProducts, useStorage} from "@/store";
 import useAxios from "@/composables/useAxios.ts";
-import {BoxEndpoint, ProductEndpoint} from "@/api/http";
+import {BoxEndpoint, LocationEndpoint} from "@/api/http";
 import {onMounted} from "vue";
+import useRouteTransition from "@/composables/useRouteTransition.ts";
 
 const productStore = useProducts()
 const storageStore = useStorage()
-const {axios: productEndpoint} = useAxios<ProductEndpoint>('product')
+const configStore = useConfigStore()
 const {axios: boxEndpoint} = useAxios<BoxEndpoint>("box")
+const {axios: locationEndpoint} = useAxios<LocationEndpoint>("location")
 const route = useRoute()
 
 const props = defineProps<{
   boxId?: string,
-  productStorageId?: string
+  productStorageId?: string,
+  locationId?: string
 }>()
 
 
-async function getStorageContent(id: number){
+async function getBoxContent(id: number){
   storageStore.setLoadingContent(true)
-  boxEndpoint.getContent(id).then(({products, storageLocations}) => {
-    storageStore.selectBox(id)
-    productStore.storeProducts(products)
-    productStore.storeProductStorage(storageLocations)
-    productStore.setStorage(id)
-    storageStore.selectForPrinting(id)
-    storageStore.setLoadingContent(false)
-  })
+  storageStore.selectBox(id)
+  const {products, storageLocations} = await boxEndpoint.getContent(id)
+  productStore.storeProducts(products)
+  productStore.storeProductStorage(storageLocations)
+  productStore.setStorage(id)
+  storageStore.selectForPrinting(id)
+  storageStore.setLoadingContent(false)
+
 }
 
+
+async function getLocationContent(id: number){
+  storageStore.setLoadingContent(true)
+  storageStore.setFromStorage(id)
+  const {boxes, products, storageLocations} = await locationEndpoint.getContent(id)
+  storageStore.selectLocation(id)
+  storageStore.storeBoxes(boxes)
+  productStore.storeProducts(products)
+  productStore.storeProductStorage(storageLocations)
+  productStore.setStorage(id)
+  storageStore.selectForPrinting(id)
+  storageStore.setLoadingContent(false)
+}
+
+
+
+watch(() => props.locationId, (newValue) => {
+  if(!newValue){
+    productStore.reset()
+    storageStore.deselectLocation()
+    return
+  }
+
+  getLocationContent(parseInt(newValue))
+})
 
 watch(() => props.boxId, (newValue) => {
   if(newValue === undefined){
     productStore.reset()
+    if(props.locationId){
+      getLocationContent(parseInt(props.locationId))
+    }
     storageStore.deselectBox()
     return
   }
-  getStorageContent(parseInt(newValue))
+  getBoxContent(parseInt(newValue))
 })
 
 watch(() => props.productStorageId, (newValue) => {
@@ -48,6 +79,8 @@ watch(() => props.productStorageId, (newValue) => {
 })
 
 
+
+
 async function loadBoxes(){
   storageStore.setLoadingStorage(true)
   const response = await boxEndpoint.getBoxes();
@@ -58,32 +91,56 @@ async function loadBoxes(){
     return
   }
 
-  await getStorageContent(parseInt(props.boxId))
+  await getBoxContent(parseInt(props.boxId))
+  if(!props.productStorageId){
+    return
+  }
+  productStore.selectProductStoredAt(parseInt(props.productStorageId))
+  productStore.selectProduct(productStore.selectedProductStorage?.productId ?? -1)
 }
 
 async function loadLocations(){
+  storageStore.setLoadingStorage(true)
+  const response = await locationEndpoint.getLocations()
+  storageStore.storeLocations(response)
+  storageStore.setLoadingStorage(false)
 
+  if(!props.locationId){
+    return
+  }
+
+  storageStore.selectLocation(parseInt(props.locationId))
+  if(!props.boxId){
+    await getLocationContent(parseInt(props.locationId))
+  } else{
+    storageStore.setLoadingStorage(true)
+    const response = await boxEndpoint.getBoxes({id: props.boxId});
+    storageStore.storeBoxes(response)
+    storageStore.setLoadingStorage(false)
+    storageStore.setFromStorage(parseInt(props.locationId))
+    await getBoxContent(parseInt(props.boxId))
+  }
+
+  if(props.productStorageId){
+    productStore.selectProductStoredAt(parseInt(props.productStorageId))
+    productStore.selectProduct(productStore.selectedProductStorage?.productId ?? -1)
+  }
 }
 
-onMounted(async () => {
+const {transitionDirection} = useRouteTransition()
+const animation = computed(() =>{
+  if(configStore.transitions){
+    return "scale-slide-" + transitionDirection.value
+  }
+  return ""
+})
 
+onMounted(async () => {
   if(route.fullPath.startsWith("/box")){
     await loadBoxes()
   } else{
     await loadLocations()
   }
-  console.log("hello")
-
-  /*if(!props.productId){
-    return
-  }
-  const productId = parseInt(props.productId)
-  await getStorageMappings(productId)
-
-  if(!props.productStorageId){
-    return
-  }
-  productStore.selectProductStoredAt(parseInt(props.productStorageId))*/
 })
 
 onBeforeRouteLeave(() => {
@@ -91,31 +148,42 @@ onBeforeRouteLeave(() => {
   productStore.reset()
 })
 </script>
-
 <template>
   <v-row
-      :no-gutters="true"
+      dense
       justify="center"
-      class="fill-height fill-width"
+      class="fill-height"
   >
     <v-col
         cols="12"
+        md="10"
         lg="8"
-        class="fill-width"
     >
-      <router-view v-slot="{Component, route }">
-        <v-container
-            class="position-relative fill-width fill-height pa-0"
-            :key="route.path"
-            fluid
-        >
-          <component :is="Component"  />
-        </v-container>
-      </router-view>
+
+      <v-container
+        class="position-relative fill-height fill-width pa-0"
+        fluid
+      >
+        <router-view v-slot="{Component, route }">
+          <transition
+              :name="animation"
+          >
+            <v-container
+                class="fill-height fill-width pa-0"
+                fluid
+                :key="route.path"
+            >
+              <component :is="Component"  />
+            </v-container>
+
+          </transition>
+        </router-view>
+      </v-container>
     </v-col>
   </v-row>
 </template>
 
 <style scoped lang="scss">
+@import "@/scss/transitions/scale-slide";
 
 </style>

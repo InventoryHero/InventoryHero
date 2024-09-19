@@ -8,7 +8,7 @@ import productStore from "./productStore"
 import storageStore from "./storageStore"
 import printSettings from "@/store/printSettings";
 import notifications from "@/store/notifications";
-import scroll from "@/store/scroll"
+import contentFilter from "@/store/contentFilter"
 
 
 const pinia = createPinia()
@@ -23,5 +23,5 @@ export {
     storageStore as useStorage,
     printSettings as usePrintSettings,
     notifications as useNotificationStore,
-    scroll as useScrollPositionStore
+    contentFilter as useContentFilterStore
 }

@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import {useProducts} from "@/store";
+import {useConfigStore, useProducts} from "@/store";
 import useAxios from "@/composables/useAxios.ts";
 import {ProductEndpoint} from "@/api/http";
 import {onMounted} from "vue";
+import useRouteTransition from "@/composables/useRouteTransition.ts";
 
 const productStore = useProducts()
+const configStore = useConfigStore()
 const {axios: productEndpoint} = useAxios<ProductEndpoint>('product')
 
 
@@ -68,6 +70,14 @@ onMounted(async () => {
   productStore.selectProductStoredAt(parseInt(props.productStorageId))
 })
 
+const {transitionDirection} = useRouteTransition()
+const animation = computed(() =>{
+  if(configStore.transitions){
+    return "scale-slide-" + transitionDirection.value
+  }
+  return ""
+})
+
 onBeforeRouteLeave(() => {
   productStore.reset()
 })
@@ -78,30 +88,36 @@ onBeforeRouteLeave(() => {
   <v-row
       :no-gutters="true"
       justify="center"
-      class="fill-height"
+      class="fill-height fill-width"
   >
     <v-col
         cols="12"
-        lg="6"
-        class=""
+        md="10"
+        lg="8"
     >
-      <router-view v-slot="{Component, route }">
-        <transition
-          name="scale"
-        >
-          <v-container
-              class="position-relative fill-width fill-height pa-0"
-              fluid
-              :key="route.path"
+      <v-container
+          class="position-relative fill-height fill-width pa-0"
+          fluid
+      >
+        <router-view v-slot="{Component, route }">
+          <transition
+              :name="animation"
           >
-            <component :is="Component"  />
-          </v-container>
-        </transition>
-      </router-view>
+            <v-container
+                class="fill-height fill-width pa-0"
+                fluid
+                :key="route.path"
+            >
+              <component :is="Component"  />
+            </v-container>
+
+          </transition>
+        </router-view>
+      </v-container>
     </v-col>
   </v-row>
 </template>
 
 <style scoped lang="scss">
-@import "@/scss/transitions/scale-transition";
+@import "@/scss/transitions/scale-slide";
 </style>

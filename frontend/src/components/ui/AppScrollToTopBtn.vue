@@ -18,7 +18,6 @@ const {scrolledDown=false} = defineProps<{
       location="bottom right"
       variant="elevated"
       border="md"
-      size="large"
       absolute
       v-bind="{
         density: 'comfortable',
@@ -28,7 +27,6 @@ const {scrolledDown=false} = defineProps<{
     <template v-slot:default>
       <v-icon
           color="primary"
-          size="large"
       />
     </template>
 

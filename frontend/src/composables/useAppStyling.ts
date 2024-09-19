@@ -10,7 +10,8 @@ export default () => {
             persistentClear: true,
             hideDetails: "auto",
             disabled: false,
-            density: "comfortable"
+            density: "comfortable",
+            'class': 'align-center'
         } as Partial<object>
     })
 

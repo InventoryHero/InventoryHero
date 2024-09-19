@@ -14,7 +14,6 @@ const text = defineModel<string>("title")
 const edit = defineModel<boolean>("edit")
 
 const editClicked = computed(() => edit.value)
-console.log(edit)
 const {
   disabled=false,
   editTogglesTextfield=false
@@ -41,7 +40,7 @@ const editBtnColor = computed(() => {
 
 <template>
   <v-card-title
-      class="pb-0 d-flex align-center justify-space-between"
+      class="pb-0 d-flex align-center"
   >
     <v-text-field
         v-if="textfieldVisible"
@@ -63,22 +62,20 @@ const editBtnColor = computed(() => {
       </div>
     </template>
 
-    <div
-      class="ms-2"
-    >
-      <app-icon-btn
-          icon="mdi-pencil"
-          :color="editBtnColor"
-          :disabled="disabled"
-          @click="edit=true"
+    <v-spacer v-if="!textfieldVisible" />
+    <app-icon-btn
+        icon="mdi-pencil"
+        :color="editBtnColor"
+        :disabled="disabled"
+        @click="edit=true"
 
-      />
-      <app-icon-btn
-          icon="mdi-close"
-          :disabled="disabled"
-          @click="emit('close')"
-      />
-    </div>
+    />
+    <app-icon-btn
+        icon="mdi-close"
+        :disabled="disabled"
+        @click="emit('close')"
+    />
+
 
   </v-card-title>
 </template>

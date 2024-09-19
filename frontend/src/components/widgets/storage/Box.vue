@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {useProducts, useStorage} from "@/store";
+import {useContentFilterStore, useProducts, useStorage} from "@/store";
 import useStorageTitle from "@/composables/useStorageTitle.ts";
 import {computed, onMounted, ref} from "vue";
 import useRedirectToStorage from "@/composables/useRedirectToStorage.ts";
@@ -8,21 +8,25 @@ import {BoxEndpoint, LocationEndpoint} from "@/api/http";
 import {ApiProduct, ApiStorage, StorageTypes} from "@/types";
 import {useI18n} from "vue-i18n";
 import ProductStorageCard from "@/components/widgets/products/Cards/ProductStorageCard.vue";
+import useScrollToTop from "@/composables/useScrollToTop.ts";
+import ConfirmationDialog from "@/components/common/ConfirmationDialog.vue";
+import useConfirmationSetup from "@/composables/useConfirmationSetup.ts";
 
 const storageStore = useStorage()
 const productStore = useProducts()
+const contentFilterStore = useContentFilterStore()
 const {redirect} = useRedirectToStorage()
 const {axios: locationEndpoint} = useAxios<LocationEndpoint>("location")
 const {axios: boxEndpoint} = useAxios<BoxEndpoint>("box")
 const {t} = useI18n()
 const router = useRouter()
 const route = useRoute()
+const {goBackOneLevel} = useGoBackOneLevel()
 
 provide("storageType", StorageTypes.Box)
 
 
 const box = computed(() => {
-  console.log(storageStore.selectedBox)
   return storageStore.selectedBox ?? ({} as ApiStorage)
 })
 const boxName = computed({
@@ -30,7 +34,6 @@ const boxName = computed({
     if(newName.value !== undefined){
       return newName.value
     }
-    console.log(storageStore.selectedBox)
     return storageStore.selectedBox?.name
   },
   set(value: string){
@@ -56,6 +59,12 @@ const productsStoredInBox = computed(() => {
 
 
 const {name, icon} = useStorageTitle(boxStoredAt)
+const {
+  scrolledDown,
+  scrollToTop,
+  hasScrolled,
+  visible
+} = useScrollToTop('scroller')
 
 const loadingStorage = ref(false)
 const locations = ref<Array<ApiStorage>>([])
@@ -65,6 +74,7 @@ const newStorage = ref<ApiStorage|undefined>(undefined)
 const saving = ref(false)
 const deleting = ref(false)
 const editClicked = ref(false)
+const scrollToTopHidden = ref(false)
 
 const loadingProducts = computed(() => storageStore.loadingContent)
 const loadingBox = computed(() => storageStore.loadingStorage || loadingStorage.value)
@@ -77,11 +87,20 @@ function cancelEdit(){
 
 function close(){
   editClicked.value = false
-  router.back()
+  goBackOneLevel()
+}
+
+function displayProductOverlay(item: ApiProduct){
+  contentFilterStore.pushPosition(route.fullPath, productsStoredInBox.value.findIndex(p => p.id === item.id))
+  router.push(`${route.fullPath}/product/${item.id}`)
+}
+
+function deleteProduct(productId: number, productStorageId: number, amount: number){
+  productStore.deleteProductAt(productStorageId, amount)
+  productStore.deleteProduct(productId)
 }
 
 function saveChanges(){
-
   if(newName.value === ''){
     return
   }
@@ -98,27 +117,29 @@ function saveChanges(){
   })
 }
 
+
 function deleteBox(){
+  const id = box.value.id
   deleting.value = true
   boxEndpoint.deleteStorage(box.value.id).then((success) => {
     if(!success){
       return
     }
-    router.back()
-    deleting.value = false
-    storageStore.deleteBox(box.value.id)
+    goBackOneLevel().then(() => {
+      deleting.value = false
+      storageStore.deleteBox(id)
+    })
   })
 }
+const {
+  confirmationDialog,
+  saveAction: saveDelete,
+  reallyDo
+} = useConfirmationSetup(deleteBox)
 
-function displayProductOverlay(item: ApiProduct){
- // scrollStore.pushPosition(route.fullPath, storedAt.value.findIndex(p => p.id === item.id))
-  router.push(`${route.fullPath}/product/${item.id}`)
-}
 
-
-function deleteProduct(productId: number, productStorageId: number, amount: number){
-  productStore.deleteProductAt(productStorageId, amount)
-  productStore.deleteProduct(productId)
+function redirectToProduct(productId: number){
+  router.push(`/products/product/${productId}`)
 }
 
 onMounted(() => {
@@ -127,14 +148,31 @@ onMounted(() => {
     locations.value = loc
     loadingStorage.value = false
   })
-
 })
+
+const afterText = computed(() => {
+  if(loadingProducts.value){
+    return t('boxes.box.loading')
+  }
+  return t("boxes.box.all_displayed")
+})
+
 </script>
 
 <template>
+  <confirmation-dialog
+    :dialog-opened="confirmationDialog"
+    :title="t('boxes.confirm_delete.title')"
+    :text="t('boxes.confirm_delete.text')"
+    :confirm-text="t('boxes.confirm_delete.confirm')"
+    :cancel-text="t('boxes.confirm_delete.cancel')"
+    confirm-icon="mdi-delete-outline"
+    cancel-icon="mdi-cancel"
+    :on-cancel="() => confirmationDialog = false"
+    :on-confirm="reallyDo"
+  />
   <v-card
       class="position-relative d-flex flex-column fill-height fill-width"
-      :disabled="loadingBox || deleting"
   >
     <template v-slot:loader>
       <v-progress-linear
@@ -143,12 +181,12 @@ onMounted(() => {
         color="primary"
       />
     </template>
-    <template v-if="!loadingBox && !deleting">
+    <template v-if="!loadingBox">
       <app-content-title
           v-model:title="boxName"
           v-model:edit="editClicked"
           :rules="[nameRequiredRule]"
-          :disabled="saving||deleting||loadingBox"
+          :disabled="saving||deleting"
           @close="close()"
           edit-toggles-textfield
       />
@@ -169,19 +207,21 @@ onMounted(() => {
             v-else
         />
       </v-card-subtitle>
-
       <div
         class="flex-1-1 position-relative"
       >
         <v-card-text
-          class="wrapper pt-0"
+          class="wrapper"
         >
           <RecycleScroller
-
-            class="scroll"
             ref="scroller"
+            class="scroll"
+            :buffer="0"
+            :emit-update="true"
+            @update="hasScrolled"
+            @visible="visible(route.fullPath, productsStoredInBox.length-1)"
             :items="productsStoredInBox"
-            :item-size="104"
+            :item-size="90"
           >
             <template v-slot="{item}">
 
@@ -191,87 +231,50 @@ onMounted(() => {
 
                 @show-stored-at-detail="displayProductOverlay(item)"
                 @deleted="deleteProduct(item.productId, item.id, item.amount)"
-                @redirect="console.log('lets go to products')"
+                @redirect="redirectToProduct(item.productId)"
 
               />
             </template>
             <template #after>
-              <v-row
-                  dense
-                  justify="center"
-                  class="mt-2"
-              >
-                <span
-                    v-if="loadingProducts"
-                >
-                  {{ t('boxes.loading_content') }}
-                </span>
-                <span
-                  v-else
-                >
-                  {{ $t("boxes.box.all_displayed")}}
-                </span>
-              </v-row>
+              <app-content-scroll-after
+                :text="afterText"
+              />
             </template>
           </RecycleScroller>
         </v-card-text>
       </div>
+      <app-content-actions
+        :active="editClicked"
+        :deleting="deleting"
+        :saving="saving"
+        @cancel="cancelEdit"
+        @delete="saveDelete"
+        @save="saveChanges"
+      />
       <v-card-actions
-          v-if="editClicked"
-          class="d-flex justify-space-between"
+          v-if="!editClicked"
+          class="pb-0 pt-0 mt-0 mb-0"
       >
-        <v-btn
-            prepend-icon="mdi-cancel"
-            @click="cancelEdit"
-            :text="$t('cancel')"
-            :disabled="saving||deleting"
-        />
-        <div>
-          <app-confirm-button
-              :title="$t('boxes.confirm.delete.title')"
-              :body="$t('boxes.confirm.delete.body')"
-              :confirm-text="$t('confirm.actions.proceed')"
-              :refuse-text="$t('confirm.actions.abort')"
-              :text="$t('delete')"
-              prepend-icon="mdi-trash-can"
-              variant="outlined"
-              color="red"
-              class="me-2"
-              :disabled="saving"
-              :loading="deleting"
-              @consent="deleteBox"
-
-          />
-          <app-confirm-button
-              :title="$t('boxes.confirm.save.title')"
-              :body="$t('boxes.confirm.save.body')"
-              :confirm-text="$t('confirm.actions.proceed')"
-              :refuse-text="$t('confirm.actions.abort')"
-              :text="$t('save')"
-              prepend-icon="mdi-content-save-all"
-              color="primary"
-              variant="elevated"
-              :loading="saving"
-              :disabled="deleting"
-              @consent="saveChanges"
-          />
-        </div>
-      </v-card-actions>
-      <v-card-actions v-else>
         <app-storage-qr-code-btn
             color="primary"
             use-preselected
-        /></v-card-actions>
+            v-model:active="scrollToTopHidden"
+        />
+
+      </v-card-actions>
     </template>
-    <v-row
-        v-else
-        dense
-        justify="center"
-        class="align-center"
-    >
-      {{ t('boxes.loading_box' )}}
-    </v-row>
+    <app-content-scroll-after
+      v-else
+      class="mt-2"
+      :text="t('boxes.loading' )"
+    />
+
   </v-card>
+  <app-scroll-to-top-btn
+      v-if="!editClicked && !scrollToTopHidden"
+      :scrolled-down="scrolledDown"
+      @click.stop="scrollToTop"
+  />
 </template>
 
 <style scoped lang="scss">

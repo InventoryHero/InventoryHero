@@ -113,9 +113,16 @@ class StorageEndpoint(Blueprint):
                 self.db.session.query(Product)
                 .join(ProductContainerMapping, Product.mappings)
                 .filter(ProductContainerMapping.storage_id == storage.id, Product.household_id == household)
-                .options(contains_eager(Product.mappings))
+                #.options(contains_eager(Product.mappings))
                 .all()
             )
+
+            mappings = (
+                self.db.session.query(ProductContainerMapping)
+                .filter_by(storage_id=storage.id)
+                .all()
+            )
+
             filtered_boxes = (
                 self.db.session.query(Storage)
                 .filter(Storage.storage_id == storage.id, Storage.household_id == household)
@@ -124,7 +131,8 @@ class StorageEndpoint(Blueprint):
             )
             return jsonify(content={
                 "boxes": filtered_boxes,
-                "products": filtered_products
+                "products": filtered_products,
+                "storageLocations": mappings
             }), 200
 
         @self.route("/box/add", methods=["POST"])

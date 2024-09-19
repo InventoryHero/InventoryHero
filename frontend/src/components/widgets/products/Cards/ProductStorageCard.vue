@@ -5,6 +5,8 @@ import {useI18n} from "vue-i18n";
 import {ProductStorageMapping} from "@/types/api.ts";
 import useStorageTitle from "@/composables/useStorageTitle.ts";
 import useUpdateProductStoredAt from "@/composables/useModifyProductStoredAt.ts";
+import ConfirmationDialog from "@/components/common/ConfirmationDialog.vue";
+import useConfirmationSetup from "@/composables/useConfirmationSetup.ts";
 
 const {t: $t} = useI18n()
 const productStore = useProducts()
@@ -32,6 +34,7 @@ const productStorage = computed(() => {
 const productStoredAt = computed(() => {
   return productStorage.value.storage
 })
+const productAmount = computed(() => productStorage.value.amount)
 
 const {name, icon} = useStorageTitle(productStoredAt)
 const title = computed(() => {
@@ -49,9 +52,7 @@ const title = computed(() => {
   }
 })
 
-
 function deleteMe(){
-  // TODO CONFIRMATION MODAL
   deleteStoredAt(productStorage.value).then((success) => {
     if(!success){
       return
@@ -59,6 +60,11 @@ function deleteMe(){
     emit('deleted')
   })
 }
+const {
+  confirmationDialog: deleteConfirmDialog,
+  saveAction: saveDelete,
+  reallyDo: reallyDelete
+} = useConfirmationSetup(deleteMe)
 
 function adjustAmount(increment: number){
   updateStoredAt(productStorage.value, {
@@ -75,6 +81,17 @@ function showStoredAtDetail(){
 
 <template>
 
+  <confirmation-dialog
+      :dialog-opened="deleteConfirmDialog"
+      :title="$t('products.delete_detail.title', {storage: storage?.storage?.name ?? 'void'})"
+      :text="$t('products.delete_detail.text')"
+      :cancel-text="$t('products.delete_detail.cancel')"
+      :confirm-text="$t('products.delete_detail.confirm')"
+      confirm-icon="mdi-delete-outline"
+      cancel-icon="mdi-cancel"
+      :on-cancel="() => deleteConfirmDialog = false"
+      :on-confirm="reallyDelete"
+  />
   <v-card
     elevation="0"
     density="compact"
@@ -93,20 +110,11 @@ function showStoredAtDetail(){
             @click="emit('redirect')"
         />
       </v-row>
+
       <v-row
           dense
           justify="space-between"
-      >
-        <span>
-          {{ $t("products.product.amount") }}
-        </span>
-        <span>
-          {{ productStorage.amount }}
-        </span>
-      </v-row>
-      <v-row
-          dense
-          justify="space-between"
+          class="pt-1"
       >
         <span
         >
@@ -118,9 +126,10 @@ function showStoredAtDetail(){
       </v-row>
       <quick-actions
           :request-in-progress="saving || deleting"
-          @delete-me="deleteMe()"
+          @delete-me="saveDelete"
           @update-amount="adjustAmount"
           @show-details="showStoredAtDetail"
+          :amount="productAmount"
       />
     </v-card-text>
 

@@ -47,18 +47,18 @@ const icon = computed(() =>{
 
 const noDataText = computed(() => {
   if(loadingUserHouseholds.value){
-    return $t('account.household_card.loading_households')
+    return $t('households.household_card.loading_households')
   }
-  return $t('account.household_card.create_new_household')
+  return $t('households.household_card.create_new_household')
 })
 
 const placeholderText = computed(() => {
   if(loadingUserHouseholds.value){
-    return $t('account.household_card.loading_households')
+    return $t('households.household_card.loading_households')
   } else if(userHouseholds.value.length === 0){
-    return $t('account.household_card.create_new_household')
+    return $t('households.household_card.create_new_household')
   }
-  return $t('account.household_card.select_household')
+  return $t('households.household_card.select_household')
 })
 
 const saveBtnDisabled = computed(() => {
@@ -89,11 +89,7 @@ onMounted(() => {
 
 <template>
 
-  <v-row
-    no-gutters
-    class="mt-2"
-  >
-    <v-col>
+
       <v-card
           v-bind="$attrs"
           density="compact"
@@ -102,7 +98,7 @@ onMounted(() => {
         <v-card-title
             class="d-flex justify-space-between align-center"
         >
-          {{ $t('account.household_card.title') }}
+          {{ $t('households.household_card.title') }}
           <div>
             <app-icon-btn
               icon="mdi-store-edit"
@@ -149,8 +145,7 @@ onMounted(() => {
           </v-container>
         </v-slide-y-transition>
       </v-card>
-    </v-col>
-  </v-row>
+
 
 
 

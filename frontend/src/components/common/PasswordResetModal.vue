@@ -25,7 +25,7 @@ const {userName="", fromAdmin=false} = defineProps<{
   fromAdmin?: boolean
 }>()
 
-const {styling: textFieldStyle} = useTextFieldStyle()
+const {styling: textFieldStyle} = useAppStyling()
 
 const oldPassword = ref<string>("")
 const newPassword = ref<string>("")
@@ -152,8 +152,7 @@ onMounted(() => {
               >
                 {{ $t('account.password_reset.title') }}
               </span>
-              <v-btn
-                  density="compact"
+              <app-icon-btn
                   icon="mdi-close"
                   @click="closeModal"
               />
@@ -194,30 +193,23 @@ onMounted(() => {
               </v-form>
             </v-card-text>
             <v-card-actions
-              class="justify-space-between"
+                class="overflow-x-auto"
             >
               <v-btn
-                  prepend-icon="mdi-cancel"
-                  :text="$t('administration.users.password_reset.cancel')"
-                  @click="closeModal"
-                  :disabled="resettingPassword"
-              />
-              <div>
-                <v-btn
-                    prepend-icon="mdi-content-save"
-                    :text="resetEmailText"
-                    @click="sendEmail"
-                    :disabled="resettingPassword || checkingSmtpConfig || !smtpEnabled"
+                  prepend-icon="mdi-lock-reset"
+                  :text="resetEmailText"
+                  @click="sendEmail"
+                  :disabled="resettingPassword || checkingSmtpConfig || !smtpEnabled"
 
-                />
-                <v-btn
-                    prepend-icon="mdi-content-save"
-                    :text="$t('administration.users.password_reset.save')"
-                    @click="savePassword"
-                    :disabled="resettingPassword"
-                    :loading="resettingPassword"
-                />
-              </div>
+              />
+              <v-spacer />
+              <v-btn
+                  prepend-icon="mdi-content-save"
+                  :text="$t('administration.users.password_reset.save')"
+                  @click="savePassword"
+                  :disabled="resettingPassword"
+                  :loading="resettingPassword"
+              />
 
             </v-card-actions>
           </v-card>

@@ -4,6 +4,7 @@ import useDialogConfig from "@/composables/useDialogConfig.ts";
 import {useStorage} from "@/store";
 import {useNotification} from "@kyvg/vue3-notification";
 
+
 const storageStore = useStorage()
 const {t} = useI18n()
 const {notify} = useNotification()
@@ -11,6 +12,8 @@ const {notify} = useNotification()
 defineOptions({
   inheritAttrs: false
 })
+
+const active = defineModel<boolean>("active")
 
 const {
   isVisible: selectionDialogVisible,
@@ -36,28 +39,33 @@ function printSelection(){
     openPrintConfigDialog()
   } else {
     notify({
-      title: t("toasts.title.info.no_storage_selected"),
+      title: t("toasts.titles.info.no_storage_selected"),
       text: t("toasts.text.info.no_storage_selected"),
       type: "info"
     })
   }
-  closeSelectionDialog()
 }
 
 function openSelection(){
-
+  active.value = true
   if(usePreselected){
     printSelection()
   } else {
+    storageStore.clearPrintSelection()
     openSelectionDialog()
   }
 }
 
 const {usePreselected=false} = defineProps<{usePreselected?: boolean}>()
 
+
+
 onBeforeRouteLeave(()=> {
-  closeSelectionDialog()
-  closePrintConfigDialog()
+  if(printConfigDialogVisible.value || selectionDialogVisible.value){
+    closeSelectionDialog()
+    closePrintConfigDialog()
+    return false
+  }
 })
 
 </script>
@@ -70,8 +78,8 @@ onBeforeRouteLeave(()=> {
     <storage-selection-modal
         class="included"
         @close="() => {
-          storageStore.clearPrintSelection()
           closeSelectionDialog()
+          active = false
         }"
         @selection-confirmed="printSelection"
     />
@@ -83,8 +91,8 @@ onBeforeRouteLeave(()=> {
   >
     <print-qr-codes-modal
         @close="() => {
-          storageStore.clearPrintSelection()
           closePrintConfigDialog()
+          active = false
         }"
     />
   </v-dialog>

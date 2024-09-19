@@ -15,6 +15,7 @@ const authStore = useAuthStore()
 const generalSocket = useGeneralSocketStore()
 const {axios: userEndpoint} = useAxios<UserEndpoint>("user")
 const {notify} = useNotification()
+const {styling} = useAppStyling()
 
 const editedData = ref<Partial<User>>({})
 const isValid = ref(false)
@@ -32,6 +33,9 @@ const {
   validateField: emailNotTakenValidator
 } = useFieldIsNotTakenValidator($t('administration.users.rules.email_taken'))
 
+const {isValidEmailRule} = useEmailRule()
+const {usernameCharacterRule} = useUserNameCharacterRule()
+
 const notEmpty = (value: string) => !!value || $t('administration.users.rules.field_required')
 
 const username = computed({
@@ -43,7 +47,6 @@ const username = computed({
   },
   set(value: string){
     editedData.value.username = value
-    // TODO HANDLE ERRORS (SOCKET REFACTOR)
     generalSocket.isUserNameTaken(value ?? '').then((isTaken: boolean) => {
       if(value === authStore.user?.username){
         usernameTaken.value = false
@@ -121,7 +124,9 @@ async function saveUpdatedUserdata(){
     if(!success){
       return
     }
+
     authStore.updateUser(user)
+    editedData.value = {}
     notify({
       title: $t(`toasts.titles.success.${msg}`),
       text: $t(`toasts.text.success.${msg}`),
@@ -130,6 +135,10 @@ async function saveUpdatedUserdata(){
   })
 
 }
+
+onBeforeRouteLeave(() => {
+  resetPassword.value = false
+})
 
 </script>
 
@@ -161,46 +170,51 @@ async function saveUpdatedUserdata(){
         :disabled="saving"
         @submit.prevent=""
       >
-        <v-text-field
-            :label="$t('account.profile_card.username')"
-            density="compact"
-            variant="outlined"
-            v-model="username"
-            :rules="[notEmpty, usernameNotTakenValidator]"
-            clearable
-            class="mb-2"
-        />
+        <v-row dense>
+          <v-col>
+            <v-text-field
+                :label="$t('account.profile_card.username')"
+                v-model="username"
+                :rules="[notEmpty, usernameNotTakenValidator, usernameCharacterRule]"
+                v-bind="styling"
+            />
+          </v-col>
+        </v-row>
 
-        <v-text-field
-            :label="$t('account.profile_card.email')"
-            variant="outlined"
-            density="compact"
-            :rules="[notEmpty, emailNotTakenValidator]"
-            v-model="email"
-            class="mb-2"
-        />
+        <v-row dense>
+          <v-col>
+            <v-text-field
+                :label="$t('account.profile_card.email')"
+                :rules="[notEmpty, emailNotTakenValidator, isValidEmailRule]"
+                v-model="email"
+                v-bind="styling"
+            />
+          </v-col>
+        </v-row>
 
-        <v-text-field
-            :label="$t('account.profile_card.firstname')"
-            :placeholder="$t('account.profile_card.firstname')"
-            variant="outlined"
-            density="compact"
-            v-model="firstname"
-            class="mb-2"
-        />
+        <v-row dense>
+          <v-col>
+            <v-text-field
+                :label="$t('account.profile_card.firstname')"
+                :placeholder="$t('account.profile_card.firstname')"
+                v-model="firstname"
+                v-bind="styling"
+            />
+          </v-col>
+        </v-row>
 
-        <v-text-field
-            :label="$t('account.profile_card.lastname')"
-            variant="outlined"
-            density="compact"
-            v-model="lastname"
-            class="mb-2"
-        />
+        <v-row dense>
+          <v-col>
+            <v-text-field
+                :label="$t('account.profile_card.lastname')"
+                v-model="lastname"
+                v-bind="styling"
+            />
+          </v-col>
+        </v-row>
       </v-form>
     </v-card-text>
-    <v-card-actions
-        class="justify-space-between"
-    >
+    <v-card-actions>
       <v-btn
           variant="elevated"
           rounded="sm"
@@ -209,6 +223,7 @@ async function saveUpdatedUserdata(){
           color="primary"
           @click="resetPassword=true"
       />
+      <v-spacer />
       <v-btn
           variant="elevated"
           rounded="sm"

@@ -19,6 +19,7 @@ export default defineStore("storage", {
             _printSelection: [] as Array<number>,
             _loadingStorage: false,
             _loadingContent: false,
+            _fromStorage: undefined as number|undefined
         }
     },
     actions: {
@@ -77,7 +78,7 @@ export default defineStore("storage", {
             }
             this._storage[type] = this._storage[type]?.filter(s => s.id !== storage.id)
         },
-        _removeProductFromStorage(id: number, type: StorageTypes){
+        removeProductFromStorage(id: number, type: StorageTypes){
             if(type === undefined){
                 return false
             }
@@ -121,18 +122,19 @@ export default defineStore("storage", {
             this._updateStorage(updatedBox, StorageTypes.Box)
         },
         deleteBox(id: number){
+            this.removeBoxFromLocation(this._fromStorage ?? -1, id)
             this._deleteStorage(id, StorageTypes.Box)
         },
         moveProduct(oldStorage?: ApiStorage, newStorage?: ApiStorage){
             if(oldStorage){
-                this._removeProductFromStorage(oldStorage.id, oldStorage.type)
+                this.removeProductFromStorage(oldStorage.id, oldStorage.type)
             }
             if(newStorage){
                 this._moveProductToStorage(newStorage.id, newStorage.type)
             }
         },
         removeProductfromBox(id: number){
-            this._removeProductFromStorage(id, StorageTypes.Box)
+            this.removeProductFromStorage(id, StorageTypes.Box)
         },
         addBox(newBox: ApiStorage){
           this._addStorage(newBox, StorageTypes.Box)
@@ -142,11 +144,12 @@ export default defineStore("storage", {
         storeLocations(locations: Array<ApiStorage>){
             this._storeStorage(locations, StorageTypes.Location)
         },
-        selectLocation(location: ApiStorage){
+        selectLocation(location: number){
             this._selectStorage(location, StorageTypes.Location)
         },
         deselectLocation(){
             this._selectedStorage[StorageTypes.Location] = undefined
+            this._fromStorage = undefined
         },
         updateLocation(updated: ApiStorage){
             this._updateStorage(updated, StorageTypes.Location)
@@ -155,7 +158,7 @@ export default defineStore("storage", {
             this._deleteStorage(id, StorageTypes.Location)
         },
         removeProductFromLocation(id: number){
-            this._removeProductFromStorage(id, StorageTypes.Location)
+            this.removeProductFromStorage(id, StorageTypes.Location)
         },
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         removeBoxFromLocation(locationId: number, boxId: number){
@@ -191,6 +194,7 @@ export default defineStore("storage", {
             this._selectedStorage = {}
             this._printSelection = []
             this._loadingStorage = false
+            this._fromStorage = undefined
         },
         setLoadingStorage(value: boolean){
             this._loadingStorage = value
@@ -200,6 +204,9 @@ export default defineStore("storage", {
         },
         clearPrintSelection(){
             this._printSelection = []
+        },
+        setFromStorage(id: number){
+            this._fromStorage = id
         }
 
     },
@@ -210,6 +217,7 @@ export default defineStore("storage", {
         selectedLocation: state => state._selectedStorage[StorageTypes.Location],
         printSelection: state => state._printSelection,
         loadingStorage: state => state._loadingStorage,
-        loadingContent: state => state._loadingContent
+        loadingContent: state => state._loadingContent,
+        fromStorage: state => state._fromStorage
     }
 })

@@ -57,10 +57,23 @@ const dockVisible = computed(() =>{
   return configStore.dock
 })
 
+const transition = computed(() => {
+  if(configStore.transitions){
+    return {
+      name: "scale",
+      mode: "out-in"
+    }
+  }
+  return {
+    name: "", mode: ""
+  }
+})
 
 const authorized = computed(() => {
   return authStore.authorized
 })
+
+const tokenized = computed(() => route.meta.tokenized ?? false)
 
 
 function reloadContent(){
@@ -82,21 +95,18 @@ function getKey(route: RouteLocationNormalizedGeneric): string{
 
 onUpdated(async () => {
   notificationStore.triggerNotifications()
-  console.log(route)
 })
-
-
 </script>
 
 <template >
   <notifications
-      v-if="!(route.meta.tokenized ?? false)"
+      v-if="!tokenized"
       position="top right"
       classes="vue-notification mt-2 me-8"
       :max="2"
   />
   <notifications
-      v-if="!(route.meta.tokenized ?? false)"
+      v-if="!tokenized && authorized"
       position="bottom right"
       style="bottom: 40px"
       classes="vue-notification me-2"
@@ -108,58 +118,39 @@ onUpdated(async () => {
       width="30svh"
   />
 
-  <template v-if="route.meta.tokenized ?? false">
-    <v-app-bar
-        density="compact"
-    >
-      <v-toolbar-title>
-        <v-card
-            hover
-            style="width: 130px"
-            color="dark-grey"
-            @click="router.push('/')"
-        >
-          {{ $t('app.title') }}
-        </v-card>
-      </v-toolbar-title>
-    </v-app-bar>
-    <v-main
-        class=""
-    >
-      <v-container
-          :fluid="true"
-          :class="{
-        'fill-height': route.meta?.fillHeight ?? false,
-      }"
-      >
-        <router-view v-slot="{Component}">
-          <transition name="scale" mode="out-in" >
-            <component :is="Component" />
-          </transition>
-        </router-view>
-      </v-container>
-    </v-main>
-  </template>
-
-  <template
-      v-else
+  <v-app-bar
+      density="compact"
+      v-if="tokenized"
   >
-    <app-bar
-        :nav="(!dockVisible) || isAdminRoute"
-        @toggle-nav="navOpen = !navOpen"
-        @scan-qr-code="openScanQrCodeModal"
-    />
+    <v-toolbar-title>
+      <v-card
+          hover
+          style="width: 130px"
+          color="dark-grey"
+          @click="router.push('/')"
+      >
+        {{ $t('app.title') }}
+      </v-card>
+    </v-toolbar-title>
+  </v-app-bar>
+  <app-bar
+      v-else
+      :nav="(!dockVisible) || isAdminRoute"
+      @toggle-nav="navOpen = !navOpen"
+      @scan-qr-code="openScanQrCodeModal"
+  />
+  <template v-if="authorized && !tokenized">
     <nav-drawer
-        v-if="(!dockVisible || isAdminRoute) && authorized"
+        v-if="(!dockVisible || isAdminRoute)"
         v-model="navOpen"
     />
 
     <app-bar-bottom
-        v-if="authorized"
         v-model="dockVisible"
     />
+
     <v-dialog
-        noClickAnimation
+        no-click-animation
         class="fill-height"
         v-model="scanQrCodeModalVisible"
     >
@@ -167,28 +158,32 @@ onUpdated(async () => {
           @close="closeScanQrCodeModal"
       />
     </v-dialog>
-
-    <v-main>
-      <router-view v-slot="{Component, route}">
-        <transition name="scale">
-          <v-container
-              :key="getKey(route)"
-              class="fill-width fill-height"
-              fluid
-          >
-            <component
-                :is="Component"
-            />
-          </v-container>
-        </transition>
-      </router-view>
-    </v-main>
   </template>
+
+  <v-main>
+    <router-view v-slot="{Component, route}">
+      <transition
+          :name="transition.name"
+          :mode="transition.mode"
+      >
+        <v-container
+            :key="getKey(route)"
+            class="fill-width"
+            :class="{
+              'fill-height': route.meta?.fillHeight ?? false,
+            }"
+            fluid
+        >
+          <component
+              :is="Component"
+          />
+        </v-container>
+      </transition>
+    </router-view>
+  </v-main>
+
 </template>
 
 <style scoped lang="scss">
 @import "@/scss/transitions/scale-transition";
-
-
-
 </style>

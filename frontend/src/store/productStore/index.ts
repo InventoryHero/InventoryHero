@@ -63,7 +63,7 @@ export default defineStore("products", {
 
                 const storageStore = useStorage()
 
-                storageStore.removeProductfromBox(storage.storage.id)
+                storageStore.removeProductFromStorage(storage.storage.id, storage.storage?.type)
             }
             this._storage = this._storage.filter(productStorage => productStorage.id !== productStorageId)
 
@@ -99,9 +99,6 @@ export default defineStore("products", {
                 this._selectedProductStorage = storage
                 return
             }
-
-
-
         },
         setStorage(id: number){
             this._fromStorage = id
@@ -129,6 +126,7 @@ export default defineStore("products", {
             this._storage = []
             this._loadingProducts = false
             this._loadingProductStorage = false
+
         }
     },
     getters: {

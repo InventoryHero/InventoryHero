@@ -22,7 +22,7 @@ const {
 } = useHint(t(`add.product.hints.combobox`))
 
 const rules = ref({
-  needName: (value: string) => value !== "" || t('add.location.hints.locationName')
+  needName: (value: string) => value !== "" || t('add.location.rules.name_needed')
 })
 
 const location = ref<string>("")

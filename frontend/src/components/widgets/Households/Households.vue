@@ -3,7 +3,7 @@ import {useAuthStore} from "@/store";
 
 
 const authStore = useAuthStore();
-const {t: $t} = useI18n()
+const {t} = useI18n()
 
 const households = computed(() => authStore.households)
 const collapsed = ref(true)
@@ -14,6 +14,10 @@ const createHouseholdCollapsed = computed({
   set(value: boolean){
     collapsed.value = value
   }
+})
+
+const afterText = computed(() => {
+  return t('households.all_displayed')
 })
 
 
@@ -75,16 +79,9 @@ const createHouseholdCollapsed = computed({
                 </DynamicScrollerItem>
               </template>
               <template #after>
-                <v-card
-                    density="comfortable"
-                    elevation="0"
-                >
-                  <v-card-text
-                      class="d-flex justify-center align-center"
-                  >
-                    {{ $t('households.all_displayed') }}
-                  </v-card-text>
-                </v-card>
+                <app-content-scroll-after
+                  :text="afterText"
+                />
               </template>
             </DynamicScroller>
           </div>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import {useProducts, useScrollPositionStore} from "@/store"
+import {useProducts, useContentFilterStore} from "@/store"
 import useAxios from "@/composables/useAxios.ts";
 import {ProductEndpoint} from "@/api/http";
 import {ProductStorageMapping} from "@/types/api.ts";
@@ -9,15 +9,18 @@ import {useI18n} from "vue-i18n";
 import {useNotification} from "@kyvg/vue3-notification";
 import useScrollToTop from "@/composables/useScrollToTop.ts";
 import useRedirectToStorage from "@/composables/useRedirectToStorage.ts";
+import ConfirmationDialog from "@/components/common/ConfirmationDialog.vue";
+import useConfirmationSetup from "@/composables/useConfirmationSetup.ts";
 
 const productStore = useProducts()
-const scrollStore = useScrollPositionStore()
+const scrollStore = useContentFilterStore()
 const {axios: productEndpoint} = useAxios<ProductEndpoint>("product")
 const {t} = useI18n()
 const {notify} = useNotification();
 const router = useRouter()
 const route = useRoute();
 const {redirect} = useRedirectToStorage()
+const {goBackOneLevel} = useGoBackOneLevel()
 
 const {
   scrolledDown,
@@ -58,7 +61,7 @@ const saving = ref(false)
 const deleting = ref(false)
 
 function close(){
-  router.back()
+  goBackOneLevel()
 }
 
 function cancelEdit(){
@@ -99,6 +102,7 @@ async function saveChanges(){
   return success
 }
 
+
 function deleteProduct(){
   const id = product.value!.id
   deleting.value = true
@@ -107,15 +111,24 @@ function deleteProduct(){
     if(!success){
       return
     }
-    productStore.deleteProduct(id)
-    router.back()
-    notify({
-      title: t('toasts.titles.success.deleted_product'),
-      text: t('toasts.text.success.deleted_product'),
-      type: "success"
+    goBackOneLevel().then(() => {
+      productStore.deleteProduct(id)
+      notify({
+        title: t('toasts.titles.success.deleted_product'),
+        text: t('toasts.text.success.deleted_product'),
+        type: "success"
+      })
     })
+
   })
 }
+const {
+  confirmationDialog: deleteConfirmDialog,
+  saveAction: saveDelete,
+  reallyDo: reallyDelete
+} = useConfirmationSetup(deleteProduct)
+
+
 
 function deleteSelected(id: number, amount: number){
   productStore.deleteProductAt(id, amount)
@@ -131,9 +144,28 @@ function showProductDetail(item: ProductStorageMapping){
   scrollStore.pushPosition(route.fullPath, storedAt.value.findIndex(p => p.id === item.id))
   router.push(`${route.fullPath}/detail/${item.id}`)
 }
+
+const afterText = computed(() => {
+  if(loadingProductStorage.value){
+    return t("products.product.loading")
+  }
+  return t("products.product.all_displayed")
+})
+
 </script>
 
 <template>
+  <confirmation-dialog
+      :dialog-opened="deleteConfirmDialog"
+      :title="t('products.delete_product.title')"
+      :text="t('products.delete_product.text')"
+      :cancel-text="t('products.delete_product.cancel')"
+      :confirm-text="t('products.delete_product.confirm')"
+      confirm-icon="mdi-delete-outline"
+      cancel-icon="mdi-cancel"
+      :on-cancel="() => deleteConfirmDialog = false"
+      :on-confirm="reallyDelete"
+  />
   <v-card
       class="d-flex flex-column fill-height fill-width"
   >
@@ -159,7 +191,7 @@ function showProductDetail(item: ProductStorageMapping){
               class="scroll"
               ref="scroller"
               :items="storedAt"
-              :item-size="104"
+              :item-size="90"
               :buffer="0"
               :emit-update="true"
               @update="hasScrolled"
@@ -174,84 +206,33 @@ function showProductDetail(item: ProductStorageMapping){
               />
             </template>
             <template #after>
-              <v-row
-                dense
-                justify="center"
-                class="mt-2"
-              >
-                <p
-                    v-if="!loadingProductStorage"
-                    class="text-center"
-                >
-                  {{ $t("products.locations.all_displayed")}}
-                </p>
-                <p
-                    v-else
-                    class="text-center"
-                >
-                  {{ $t("products.locations.loading")}}
-                </p>
-              </v-row>
+              <app-content-scroll-after
+                :text="afterText"
+              />
             </template>
           </RecycleScroller>
         </v-card-text>
       </div>
-      <v-card-actions
-          v-if="editClicked"
-          class="d-flex justify-space-between flex-0-0"
-      >
-        <v-btn
-            prepend-icon="mdi-cancel"
-            @click="cancelEdit"
-            :text="$t('cancel')"
-            :disabled="saving||deleting"
-        />
-        <div>
-          <app-confirm-button
-              :title="$t('products.confirm.product.delete.title')"
-              :body="$t('products.confirm.product.delete.body')"
-              :confirm-text="$t('confirm.actions.proceed')"
-              :refuse-text="$t('confirm.actions.abort')"
-              :text="$t('delete')"
-              prepend-icon="mdi-trash-can"
-              variant="outlined"
-              color="red"
-              class="me-2"
-              :disabled="saving"
-              :loading="deleting"
-              @consent="deleteProduct"
+      <app-content-actions
+        :active="editClicked"
+        @cancel="cancelEdit"
+        @delete="saveDelete"
+        @save="saveChanges"
+        :saving="saving"
+        :deleting="deleting"
+      />
 
-          />
-          <app-confirm-button
-              :title="$t('products.confirm.product.save.title')"
-              :body="$t('products.confirm.product.save.body')"
-              :confirm-text="$t('confirm.actions.proceed')"
-              :refuse-text="$t('confirm.actions.abort')"
-              :text="$t('save')"
-              prepend-icon="mdi-content-save-all"
-              color="primary"
-              variant="elevated"
-              :loading="saving"
-              :disabled="deleting"
-              @consent="saveChanges"
-          />
-        </div>
-
-      </v-card-actions>
     </template>
-    <v-row
+    <app-content-scroll-after
+      class="mt-2"
       v-else
-      dense
-      justify="center"
-      class="align-center"
-    >
-      {{ $t('products.loading')}}
-    </v-row>
+      :text="$t('products.loading')"
+    />
   </v-card>
   <app-scroll-to-top-btn
+      v-if="!editClicked"
       :scrolled-down="scrolledDown"
       @click.stop="scrollToTop"
-      density="compact"
   />
 </template>
 

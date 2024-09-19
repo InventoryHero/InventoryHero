@@ -15,6 +15,7 @@ import bcrypt
 from backend.flask_config import jwt
 from backend.decorators import admin_required
 
+from backend.utils.validation import validate_username, validate_email
 from hashlib import sha256
 
 
@@ -51,18 +52,20 @@ class User(Blueprint):
         def register():
             username = request.json.get("username", None)
             if username is None:
-                self.app.logger.error("No or invalid username provided")
                 return {"status": "no_username"}, 400
+            result = validate_username(username)
+            if result is not True:
+                return jsonify(status="username_invalid"), 400
 
             password = request.json.get("password", None)
             if password is None:
-                self.app.logger.error("No password provided")
                 return {"status": "no_password"}, 400
 
             email = request.json.get("email", None)
             if email is None:
-                self.app.logger.error("No or invalid email provided")
                 return {"status": "no_email"}, 400
+            if not validate_email(email):
+                return jsonify(status="email_invalid"), 400
 
             salt = bcrypt.gensalt()
             password = password.encode('utf-8')
@@ -181,23 +184,28 @@ class User(Blueprint):
                 return jsonify(status="user_not_found"), 400
 
             username = request.json.get("username", None)
+
             firstname = request.json.get("firstName", None)
             lastname = request.json.get("lastName", None)
             email = request.json.get("email", None)
             is_admin = request.json.get("isAdmin", None)
-
             existing = ApplicationUser.query.filter((ApplicationUser.username == username) | (ApplicationUser.email == email)).first()
 
             if existing is not None:
                 return jsonify(status="username_or_email_already_exists"), 400
             self.app.logger.info(firstname)
             if username is not None:
+                result = validate_username(username)
+                if result is not True:
+                    return jsonify(status="username_invalid"), 400
                 to_update.username = username
             if firstname is not None:
                 to_update.first_name = firstname
             if lastname is not None:
                 to_update.last_name = lastname
             if email is not None:
+                if not validate_email(email):
+                    return jsonify(status="email_invalid"), 400
                 to_update.email = email
                 # TODO RESEND EMAIL NOTIFICATION HERE
 

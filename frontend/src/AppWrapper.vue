@@ -21,12 +21,12 @@ const {t} = useI18n()
           >
             <v-col
                 cols="12"
-                lg="3"
+                md="10"
+                lg="8"
                 class="pb-16"
             >
               <v-card
                   class="fill-width"
-
               >
                 <template v-slot:loader>
                   <v-progress-linear

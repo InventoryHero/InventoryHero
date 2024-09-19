@@ -11,6 +11,7 @@ import { I18n } from "vue-i18n";
 export {}
 
 declare module 'vue-qr/src/packages/vue-qr.vue';
+declare module 'validator';
 
 declare module 'vue'{
     export interface GlobalComponents {

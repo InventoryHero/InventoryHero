@@ -14,22 +14,34 @@ export default{
 </script>
 
 <template>
-<v-row
-  class="fill-height"
-  justify="center"
-  dense
->
-  <v-col
-    cols="12"
-    md="10"
-    lg="6"
+  <v-row
+      justify="center"
+      dense
+      class="fill-width"
   >
-    <profile-card />
+    <v-col
+        cols="12"
+        md="10"
+        lg="8"
+    >
+      <profile-card />
 
-    <!-- household card -->
-    <household-quick-select-card />
-  </v-col>
-</v-row>
+    </v-col>
+  </v-row>
+  <v-row
+      class="fill-width"
+      justify="center"
+      dense
+  >
+    <v-col
+        cols="12"
+        md="10"
+        lg="8"
+    >
+      <household-quick-select-card />
+    </v-col>
+  </v-row>
+
 </template>
 
 <style scoped>

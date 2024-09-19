@@ -1,5 +1,5 @@
 import Boxes from "@/components/widgets/storage/Boxes.vue";
-import BoxOverlay from "@/components/widgets/storage/Box.vue";
+import Box from "@/components/widgets/storage/Box.vue";
 import ProductStorage from "@/components/widgets/products/ProductStorage.vue";
 import {i18n} from "@/lang";
 import StorageView from "@/views/StorageView.vue";
@@ -21,7 +21,7 @@ export default {
         {
             path: 'box/:boxId',
             name: "Box",
-            component: BoxOverlay,
+            component: Box,
             meta: {
                 title: i18n.global.t('titles.boxes')
             }

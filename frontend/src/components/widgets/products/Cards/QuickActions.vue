@@ -6,9 +6,10 @@ const $emit = defineEmits<{
   (e: 'showDetails'): void
 }>()
 
-const {requestInProgress=false, disabled=false} = defineProps<{
+const {requestInProgress=false, disabled=false, amount=0} = defineProps<{
   requestInProgress: boolean,
   disabled?: boolean,
+  amount?: number
 }>()
 
 
@@ -46,6 +47,9 @@ const {requestInProgress=false, disabled=false} = defineProps<{
           icon="mdi-minus"
           @click="$emit('updateAmount', -1)"
       />
+    </v-col>
+    <v-col>
+      <p class="text-primary">{{ amount }}</p>
     </v-col>
     <v-col>
       <app-icon-btn

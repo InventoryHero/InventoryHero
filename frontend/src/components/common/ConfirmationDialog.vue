@@ -1,5 +1,7 @@
 <script setup lang="ts">
 
+import {useNotification} from "@kyvg/vue3-notification";
+
 const {
   title="",
   text="",
@@ -20,6 +22,20 @@ const {
   onConfirm?: () => void,
   onCancel?: () => void
 }>()
+
+const {notify} = useNotification()
+const {t} = useI18n()
+
+onBeforeRouteLeave(()=> {
+  if(dialogOpened){
+    notify({
+      title: t("toasts.titles.info.close_dialog_first"),
+      text: t("toasts.text.info.close_dialog_first"),
+      type: "info"
+    })
+    return false
+  }
+})
 
 </script>
 
@@ -53,14 +69,19 @@ const {
             class="overflow-auto"
           >
             <v-btn
+                variant="tonal"
                 :prepend-icon="cancelIcon"
                 :text="cancelText"
                 @click="onCancel"
+                color="blue-grey-lighten-1"
             />
+            <v-spacer />
             <v-btn
+                variant="tonal"
                 :prepend-icon="confirmIcon"
                 :text="confirmText"
                 @click="onConfirm"
+                color="red-accent-2"
             />
           </v-card-actions>
         </v-card>

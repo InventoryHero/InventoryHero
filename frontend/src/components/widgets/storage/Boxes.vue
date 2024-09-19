@@ -1,57 +1,67 @@
 <script setup lang="ts">
 
-import {computed, onMounted, ref, watch} from "vue";
+import {computed, ref} from "vue";
 import {ApiStorage, StorageTypes} from "@/types/api.ts";
-import {useStorage} from "@/store";
-import useAxios from "@/composables/useAxios.ts";
-import {BoxEndpoint} from "@/api/http";
+import {useContentFilterStore, useStorage} from "@/store";
 import useScrollToTop from "@/composables/useScrollToTop.ts";
-import useDialogConfig from "@/composables/useDialogConfig.ts";
-import {onBeforeRouteLeave} from "vue-router";
 
 const storageStore = useStorage()
-const {axios: boxEndpoint} = useAxios<BoxEndpoint>("box")
+const contentFilterStore = useContentFilterStore()
 const {t: $t} = useI18n()
 const router = useRouter()
 const route = useRoute()
+const {styling} = useAppStyling()
 
 provide('storageType', StorageTypes.Box)
 
-const {scrolledDown, scrollToTop, hasScrolled} = useScrollToTop('scroller')
-const { isVisible: boxOverlayVisible, openDialog, closeDialog, dialogProps } = useDialogConfig()
+const {
+  scrolledDown,
+  scrollToTop,
+  hasScrolled,
+  visible
+} = useScrollToTop('scroller')
+
 
 const filteredBoxes = computed(() => {
-  if(search.value === "")
+  if(search.value === null)
   {
     return storageStore.boxes
   }
-  return storageStore.boxes.filter(box => box.name.toLowerCase().includes(search.value.toLowerCase()))
+  return storageStore.boxes.filter(box => box.name.toLowerCase().includes(search.value?.toLowerCase() ?? ''))
 })
 
 const allBoxes = computed(() => {
   return storageStore.boxes
 })
 
-const {preselectedBox=undefined, filteredFrom=undefined} = defineProps<{
-  preselectedBox?: string,
-  filteredFrom?: string,
-}>()
 
 const loadingBoxes = computed(() => storageStore.loadingStorage)
-const search = ref("")
+const search = ref<string|null>(null)
+const hideScrollToTop = ref(false)
+
 
 function showBoxContent(item: ApiStorage){
-  storageStore.selectBox(item)
-  //openDialog()
+  storageStore.selectBox(item.id)
+  contentFilterStore.pushConfig(route.fullPath, filteredBoxes.value.findIndex(p => p.id === item.id), search.value)
   router.push(`${route.fullPath}/box/${item.id}`)
 }
 
+onMounted(() => {
+  search.value = contentFilterStore.popFilter(route.fullPath)
+})
 
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-watch(() => preselectedBox, (_: string|undefined, __: string|undefined) =>{
-  //loadBoxes()
-});
+const afterText = computed(() => {
+  if(loadingBoxes.value){
+    return $t('boxes.loading')
+  }
+  if(allBoxes.value.length !== 0 && filteredBoxes.value.length !== 0){
+    return $t('boxes.all_displayed')
+  }
+  if(allBoxes.value.length !== 0 && filteredBoxes.value.length === 0){
+    return $t('boxes.no_matches')
+  }
+  return $t('boxes.no_boxes')
+})
 
 </script>
 
@@ -69,19 +79,25 @@ watch(() => preselectedBox, (_: string|undefined, __: string|undefined) =>{
     <v-card-title
         class="flex-0-1"
     >
-      <qr-code-filter
-          :pre-selected="preselectedBox !== undefined"
-          v-model:search="search"
-          pre-selection-close-action="/boxes"
-          :pre-selection-title="$t('boxes.prefiltered', {box: filteredFrom ?? $t('scan.from')})"
-          @qr-selection-toggled="scrollToTop"
-      />
+      <v-text-field
+        v-model="search"
+        v-bind="styling"
+        density="compact"
+
+        :placeholder="$t('boxes.filter')"
+      >
+        <template v-slot:append>
+          <app-storage-qr-code-btn
+              v-model:active="hideScrollToTop"
+          />
+        </template>
+      </v-text-field>
     </v-card-title>
     <div
       class="flex-1-1 position-relative"
     >
       <v-card-text
-          class="wrapper"
+          class="pt-0 wrapper"
       >
         <recycle-scroller
               ref="scroller"
@@ -91,6 +107,7 @@ watch(() => preselectedBox, (_: string|undefined, __: string|undefined) =>{
               :items="filteredBoxes"
               :emit-update="true"
               @update="hasScrolled"
+              @visible="visible(route.fullPath, filteredBoxes.length-1)"
           >
             <template v-slot="{item}">
               <storage-card
@@ -100,83 +117,18 @@ watch(() => preselectedBox, (_: string|undefined, __: string|undefined) =>{
               >
               </storage-card>
             </template>
-            <template #after v-if="preselectedBox === undefined">
-              <v-row
-                  :no-gutters="true"
-                  justify="center"
-              >
-
-                <v-col
-                    cols="11"
-                >
-                  <v-card
-                      :elevation="0"
-                  >
-                    <v-card-title
-                        class="text-center text-wrap"
-                    >
-                      <p
-                          class="pb-1"
-                          v-if="loadingBoxes"
-                      >
-                        {{ $t('boxes.loading') }}
-                      </p>
-                      <p
-                          class="pb-1"
-                          v-else-if="allBoxes.length !== 0 && filteredBoxes.length !== 0"
-                      >
-                        {{ $t('boxes.all_displayed') }}
-                      </p>
-                      <p
-                          class="pb-1"
-                          v-else-if="allBoxes.length !== 0 && filteredBoxes.length === 0"
-                      >
-                        {{ $t('boxes.no_matches')}}
-                      </p>
-                      <p
-                          class="pb-1"
-                          v-else
-                      >
-                        {{ $t('boxes.no_boxes')}}
-                      </p>
-                    </v-card-title>
-                  </v-card>
-                </v-col>
-              </v-row>
-            </template>
-            <template #after v-else>
-              <v-row
-                  :no-gutters="true"
-                  justify="center"
-              >
-
-                <v-col
-                    cols="11"
-                >
-                  <v-card
-                      :elevation="0"
-                  >
-                    <v-card-title
-                        class="text-center text-wrap"
-                    >
-                      <p
-                          class="pb-1"
-                          v-if="allBoxes.length === 0 && !loadingBoxes"
-                      >
-                        {{ $t('boxes.no_matches') }}
-                      </p>
-                    </v-card-title>
-                  </v-card>
-                </v-col>
-              </v-row>
+            <template #after >
+              <app-content-scroll-after
+                :text="afterText"
+              />
             </template>
           </recycle-scroller>
-
       </v-card-text>
 
     </div>
   </v-card>
   <app-scroll-to-top-btn
+    v-if="!hideScrollToTop"
     :scrolled-down="scrolledDown"
     @click.stop="scrollToTop"
   />

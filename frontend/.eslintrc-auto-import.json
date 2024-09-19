@@ -84,6 +84,11 @@
     "useStorageTitle": true,
     "useUpdateStorage": true,
     "useShareMethods": true,
-    "useGoBackOneLevel": true
+    "useGoBackOneLevel": true,
+    "useRouteTransition": true,
+    "useConfirmationSetup": true,
+    "useUserNameCharacterRule": true,
+    "useEmailRule": true,
+    "useStrongPasswordRule": true
   }
 }

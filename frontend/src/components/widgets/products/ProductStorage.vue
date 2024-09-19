@@ -7,8 +7,9 @@ import {StorageEndpoint} from "@/api/http";
 import {ApiStorage} from "@/types/api.ts";
 import useUpdateProductStoredAt from "@/composables/useModifyProductStoredAt.ts";
 import useRedirectToStorage from "@/composables/useRedirectToStorage.ts";
-import useEditBtnStyle from "@/composables/useEditBtnStyle.ts";
 import {useNotification} from "@kyvg/vue3-notification";
+import ConfirmationDialog from "@/components/common/ConfirmationDialog.vue";
+import useConfirmationSetup from "@/composables/useConfirmationSetup.ts";
 
 
 const productStore = useProducts()
@@ -17,7 +18,7 @@ const {saving, deleting, updateStoredAt, deleteStoredAt} = useUpdateProductStore
 const {redirect} = useRedirectToStorage()
 const {notify} = useNotification()
 const {t} = useI18n()
-const router = useRouter()
+const {goBackOneLevel} = useGoBackOneLevel()
 
 
 
@@ -57,7 +58,8 @@ const storage = computed({
 const {name, icon} = useStorageTitle(storage)
 
 function close(){
-  router.back()
+  // TODO NOT BACK FOR ALL THE ROUTES; IS CONFUSING WHEN BEING REDIRECTED FROM SOMEWHERE
+  goBackOneLevel()
 }
 
 
@@ -77,24 +79,29 @@ function saveChanges(){
   })
 }
 
-
 function deleteCurrent(){
-
   const id = currProductAt.value!.id
   const value = currProductAt.value!.amount
   deleteStoredAt(currProductAt.value!).then((success) => {
     if(!success){
       return
     }
-    productStore.deleteProductAt(id, value)
-    router.back()
-    notify({
-      title: t('toasts.titles.success.deleted_detail'),
-      text: t('toasts.text.success.deleted_detail'),
-      type: "success"
+    goBackOneLevel().then(() => {
+      productStore.deleteProductAt(id, value)
+      notify({
+        title: t('toasts.titles.success.deleted_detail'),
+        text: t('toasts.text.success.deleted_detail'),
+        type: "success"
+      })
     })
+
   })
 }
+const {
+  confirmationDialog: deleteConfirmDialog,
+  saveAction: saveDelete,
+  reallyDo: reallyDelete
+} = useConfirmationSetup(deleteCurrent)
 
 
 onMounted(() => {
@@ -108,6 +115,17 @@ onMounted(() => {
 </script>
 
 <template>
+  <confirmation-dialog
+      :dialog-opened="deleteConfirmDialog"
+      :title="$t('products.delete_detail.title', {storage: storage?.storage?.name ?? 'void'})"
+      :text="$t('products.delete_detail.text')"
+      :cancel-text="$t('products.delete_detail.cancel')"
+      :confirm-text="$t('products.delete_detail.confirm')"
+      confirm-icon="mdi-delete-outline"
+      cancel-icon="mdi-cancel"
+      :on-cancel="() => deleteConfirmDialog = false"
+      :on-confirm="reallyDelete"
+  />
   <v-card
       class="position-relative d-flex flex-column fill-width fill-height"
   >
@@ -146,54 +164,21 @@ onMounted(() => {
       <v-card-text class="flex-1-1 pt-0 pl-4 pr-4 overflow-hidden">
         <!-- TODO amount adjustment needs to be handled here -->
       </v-card-text>
-      <v-card-actions
-          v-if="editClicked"
-          class="d-flex justify-space-between"
-      >
-        <v-btn
-            prepend-icon="mdi-cancel"
-            @click="cancelEdit"
-            :text="$t('cancel')"
-            :disabled="saving"
-        />
-        <div>
-          <app-confirm-button
-              :title="$t('products.confirm.product.delete.title')"
-              :body="$t('products.confirm.product.delete.body')"
-              :confirm-text="$t('confirm.actions.proceed')"
-              :refuse-text="$t('confirm.actions.abort')"
-              :text="$t('delete')"
-              prepend-icon="mdi-trash-can"
-              variant="outlined"
-              color="red"
-              class="me-2"
-              :disabled="saving"
-              :loading="deleting"
-              @consent="deleteCurrent"
+      <app-content-actions
+          :active="editClicked"
+          @cancel="cancelEdit"
+          @delete="saveDelete"
+          @save="saveChanges"
+          :saving="saving"
+          :deleting="deleting"
+      />
 
-          />
-          <app-confirm-button
-              :title="$t('products.confirm.product.save.title')"
-              :body="$t('products.confirm.product.save.body')"
-              :confirm-text="$t('confirm.actions.proceed')"
-              :refuse-text="$t('confirm.actions.abort')"
-              :text="$t('save')"
-              prepend-icon="mdi-content-save-all"
-              color="primary"
-              variant="elevated"
-              :loading="saving"
-              :disabled="deleting"
-              @consent="saveChanges"
-          />
-        </div>
-
-      </v-card-actions>
     </template>
-    <v-card-text
-        v-else
-    >
-      {{ $t('products.loading') }}
-    </v-card-text>
+    <app-content-scroll-after
+      class="mt-2"
+      v-else
+      :text="$t('products.loading')"
+    />
   </v-card>
 
 </template>

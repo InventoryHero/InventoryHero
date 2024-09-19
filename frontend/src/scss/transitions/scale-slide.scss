@@ -1,0 +1,61 @@
+.scale-slide-forward-enter-active,
+.scale-slide-forward-leave-active {
+  position: absolute;
+  transition: all 0.85s ease;
+}
+
+.scale-slide-forward-enter-from {
+  bottom: -100%;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.scale-slide-forward-enter-to {
+  bottom: 0%;
+  background: rgba(0, 0, 0, 0);
+}
+
+.scale-slide-forward-leave-from {
+  transform: scale(1);
+  filter: blur(0);
+  background: rgba(0, 0, 0, 0);
+  opacity: 1;
+}
+
+.scale-slide-forward-leave-to {
+  transform: scale(0.8);
+  filter: blur(1px);
+  background: rgba(0, 0, 0, 0.4);
+  opacity: 0.5;
+}
+
+
+.scale-slide-backward-enter-active,
+.scale-slide-backward-leave-active {
+  position: absolute;
+  transition: all 0.85s ease;
+}
+
+.scale-slide-backward-enter-from {
+  bottom: 100%;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.scale-slide-backward-enter-to {
+  bottom: 0%;
+  background: rgba(0, 0, 0, 0);
+}
+
+.scale-slide-backward-leave-from {
+  transform: scale(1);
+  filter: blur(0);
+  background: rgba(0, 0, 0, 0);
+  opacity: 1;
+}
+
+.scale-slide-backward-leave-to {
+  transform: scale(0.8);
+  filter: blur(1px);
+  background: rgba(0, 0, 0, 0.4);
+  opacity: 0.5;
+}
+

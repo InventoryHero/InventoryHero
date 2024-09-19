@@ -169,7 +169,8 @@ export class LocationEndpoint extends StorageEndpoint{
         const data = await this.getStorageContent(id.toString())
         return {
             boxes: data.boxes,
-            products: data.products
+            products: data.products,
+            storageLocations: data.storageLocations
         }
     }
 

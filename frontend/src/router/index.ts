@@ -6,7 +6,6 @@ import {useAuthStore, useNotificationStore} from "@/store";
 import Settings from "@/views/Settings.vue";
 import Account from "@/views/Account.vue";
 import Create from "@/views/Create.vue";
-import Locations from "@/views/Locations.vue";
 import Logout from "@/views/Logout.vue";
 import {i18n} from "@/lang";
 import Confirmation from "@/views/Confirmation.vue";
@@ -20,6 +19,7 @@ import passwordReset from "./routes/passwordReset";
 import households from "@/router/routes/household";
 import products from "@/router/routes/products"
 import boxes from "@/router/routes/boxes.ts"
+import locations from "@/router/routes/locations.ts";
 
 
 
@@ -65,37 +65,12 @@ const vueRouter =  createRouter({
       meta: {
         requiresAuth: true,
         requiresHousehold: true,
-        fillHeight: true
+        fillHeight: false
       }
     },
     products,
     boxes,
-    {
-      path: "/storage/locations",
-      children:[
-        {
-          path: '',
-          name: "Locations",
-          component: Locations,
-        },
-        {
-          path: ':preselectedLocation/:filteredFrom',
-          component: Locations,
-          props: true
-        },
-        {
-          path: ':preselectedLocation',
-          component: Locations,
-          props: true
-        }
-      ],
-      meta: {
-        requiresAuth: true,
-        requiresHousehold: true,
-        fillHeight: true,
-        title: i18n.global.t('titles.locations')
-      }
-    },
+    locations,
     {
       path: "/settings",
       name: "settings",
@@ -125,7 +100,6 @@ const vueRouter =  createRouter({
         requiresAuth: true,
         requiresHousehold: true,
         fillHeight: true,
-        transition: 'slide',
         title: i18n.global.t('titles.create')
       }
     },
@@ -157,7 +131,6 @@ const vueRouter =  createRouter({
         requiresAuth: true,
         requiresAdmin: true,
         fillHeight: false,
-        transition: 'slide',
         title: i18n.global.t('titles.administration')
       }
     },
@@ -171,7 +144,6 @@ const vueRouter =  createRouter({
         requiresAuth: false,
         requiresAdmin: false,
         requiresHousehold: false,
-        transition: 'slide'
       }
     },
     {
