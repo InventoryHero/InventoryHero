@@ -56,13 +56,13 @@ export default defineComponent({
           color="primary"
       />
       <v-list-item
-          to="/storage/boxes"
+          to="/boxes"
           prepend-icon="mdi-package-variant"
           :title="$t('nav.boxes')"
           color="primary"
       />
       <v-list-item
-          to="/storage/locations"
+          to="/locations"
           prepend-icon="mdi-archive-marker"
           :title="$t('nav.location')"
           color="primary"
@@ -85,7 +85,7 @@ export default defineComponent({
       <v-list-item
           to="/administration/users"
           prepend-icon="mdi-account-group"
-          :title="$t('nav.admin.overview')"
+          :title="$t('nav.admin.users')"
           color="primary"
           :exact="true"
       />

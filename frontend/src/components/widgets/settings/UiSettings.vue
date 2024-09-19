@@ -1,8 +1,31 @@
-<script lang="ts">
-import {defineComponent} from "vue";
+<script setup lang="ts">
+
 import {useConfigStore} from "@/store";
 
-export default defineComponent({
+const configStore = useConfigStore()
+const {mobile} = useDisplay()
+
+const theme = computed(() => configStore.theme)
+function changeTheme(){
+  configStore.themeChange({
+    dark: !theme.value
+  })
+}
+
+const dock = computed(() => configStore.dock)
+function useDock(){
+  configStore.toggleDock(!dock.value)
+}
+
+const transitions = computed(() => configStore.transitions)
+function toggleTransitions(){
+  configStore.toggleTransitions(!transitions.value)
+}
+
+function reset(){
+  configStore.reset()
+}
+/*export default defineComponent({
   name: "UiSettings",
   setup(){
     const config = useConfigStore();
@@ -32,7 +55,7 @@ export default defineComponent({
       this.config.toggleDock(!this.dock)
     },
   }
-})
+})*/
 </script>
 
 <template>
@@ -68,18 +91,34 @@ export default defineComponent({
       />
     </app-setting>
     <v-divider/>
+    <template v-if="mobile">
+      <app-setting
+          :title="$t('settings.ui.use_dock')"
+
+      >
+        <v-switch
+            class="d-inline-flex"
+            color="primary"
+            :hide-details="true"
+            density="compact"
+            v-model="dock"
+            @click.stop
+            @click="useDock"
+        />
+      </app-setting>
+      <v-divider/>
+    </template>
     <app-setting
-        :title="$t('settings.ui.use_dock')"
-        v-if="mobile"
+        :title="$t('settings.ui.transitions')"
     >
       <v-switch
           class="d-inline-flex"
           color="primary"
           :hide-details="true"
           density="compact"
-          v-model="dock"
+          v-model="transitions"
           @click.stop
-          @click="useDock"
+          @click="toggleTransitions"
       />
     </app-setting>
     <v-divider/>

@@ -247,8 +247,8 @@ function reset(){
               variant="tonal"
               to="/households"
           />
+          <v-spacer />
           <v-btn
-
               prepend-icon="mdi-trash-can"
               :text="t('households.edit.delete_household')"
               variant="tonal"

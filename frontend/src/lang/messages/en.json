@@ -42,6 +42,7 @@
       "reset": "Reset",
       "theme": "Dark mode",
       "use_dock": "Mobile Dock",
+      "transitions": "Transitions",
       "colors": {
         "r": "R",
         "g": "G",
@@ -101,7 +102,8 @@
       },
       "rules": {
         "need_product": "A name must be supplied",
-        "amount_nan": "Please enter an amount (at least 0)."
+        "amount_nan": "Please enter an amount (at least 0).",
+        "amount_negative": "@:add.product.rules.amount_nan"
       }
     },
     "box": {
@@ -136,95 +138,92 @@
     "save": "Save item",
     "clear": "Clear input"
   },
-  "product": "product {name}",
   "products": {
-    "loading": "Loading your products...",
-    "prefiltered": "Prefiltered from {box}",
-    "confirm": {
-      "detail": {
-        "delete": {
-          "title": "Delete product | Delete product at {storage}",
-          "body": "This is a destructive operation and will lead to all data of this product in the storage container be deleted. Are you sure you want to proceed?"
-        },
-        "save": {
-          "title": "Update product",
-          "body": "This will update the changed fields of the currently opened product. Are you sure you want to proceed?"
-        }
-      },
-      "product": {
-        "delete": {
-          "title": "Delete product",
-          "body": "This will delete ALL occurrences of the product at every location. This is destructive and cannot be undone. Do you want to proceed?"
-        },
-        "save": {
-          "title": "Save product",
-          "body": "This will update the changed fields of the product. Do you want to proceed?"
-        }
-      }
+    "loading": "Loading your products",
+    "filter": "Filter",
+    "delete_detail": {
+      "title": "\uD83D\uDDD1\uFE0F Confirm Deletion at {storage}",
+      "text": "You are about to delete all instances of this product at the specified storage. This action cannot be undone. Are you sure you want to proceed?",
+      "confirm": "Yes, delete",
+      "cancel": "Cancel"
+    },
+    "delete_product": {
+      "title": "\uD83D\uDDD1\uFE0F Confirm Product Deletion",
+      "text": "You are about to delete this product from every storage. This action will remove the product entirely and cannot be undone. Are you sure you want to proceed?",
+      "confirm": "@:products.delete_detail.confirm",
+      "cancel": "@:products.delete_detail.cancel"
     },
     "product": {
       "created": "Created at",
       "amount": "Amount stored",
       "last_used": "Last used at",
-      "no_container": "",
-      "updated": "Updated at"
-    },
-    "locations": {
-      "all_displayed": "Every storage location of this product has been displayed."
+      "all_displayed": "Every storage location of this product has been displayed.",
+      "loading": "Loading details",
+      "rules": {
+        "new_name_empty": "Name cannot be empty!"
+      }
     },
     "all_displayed": "You've reached the end. No more products to see here.",
     "no_matches": "No products match the current filter.",
     "no_products": "Nothing there..."
   },
-  "box": "box {name}",
   "boxes": {
-    "loading": "Loading your boxes...",
-    "confirm": {
-      "delete": {
-        "title": "Delete box",
-        "body": "This will delete this box. Content will be moved to the default storage ('void'). This is destructive and cannot be undone. Do you want to proceed?"
-      },
-      "save": {
-        "title": "Save box",
-        "body": "This will update the changed fields of the box. Do you want to proceed?"
-      }
+    "filter": "Filter",
+    "loading": "Loading your boxes",
+    "confirm_delete": {
+      "title": "Delete box",
+      "text": "This will delete this box. Content will be moved to the default storage ('void'). This is destructive and cannot be undone. Do you want to proceed?",
+      "cancel": "Cancel",
+      "confirm": "Yes delete"
     },
     "box": {
       "created": "Created at",
       "product_amount": "Products in box",
-      "all_displayed": "No more items left in box to display"
+      "all_displayed": "No more items left in box to display",
+      "loading": "Loading products in box",
+      "rules": {
+        "new_name_empty": "Name cannot be empty!"
+      }
     },
-    "prefiltered": "Prefiltered from {box}",
     "all_displayed": "You've reached the end. No more boxes to see here.",
     "no_matches": "No boxes match the current filter.",
     "no_boxes": "Nothing there..."
   },
   "locations": {
-    "loading": "Loading your locations...",
-    "confirm": {
-      "delete": {
-        "title": "Delete location",
-        "body": "This will delete this location. Content will be moved to the default storage ('void'). This is destructive and cannot be undone. Do you want to proceed?"
-      },
-      "save": {
-        "title": "Save location",
-        "body": "This will update the changed fields of the location. Do you want to proceed?"
-      }
+    "filter": "Filter",
+    "tabs": {
+      "box": "Boxes",
+      "product": "Products"
+    },
+    "loading": "Loading your locations",
+    "confirm_delete": {
+      "title": "Delete location",
+      "text": "This will delete this location. Content will be moved to the default storage ('void'). This is destructive and cannot be undone. Do you want to proceed?",
+      "cancel": "Cancel",
+      "confirm": "Yes delete"
     },
     "location": {
       "created": "Created at",
       "product_amount": "Products in location",
       "boxes_amount": "Boxes in location",
-      "all_displayed": "No more items left at location to display"
+      "all_displayed": "No more items left at location to display",
+      "loading_content": "Loading boxes and products",
+      "rules": {
+        "new_name_empty": "Name cannot be empty!"
+      }
     },
-    "prefiltered": "Prefiltered from {prefilter}",
     "all_displayed": "You've reached the end. No more locations to see here.",
     "no_matches": "No locations match the current filter.",
     "no_locations": "Nothing there..."
   },
   "households": {
+    "household_card": {
+      "title": "Current household",
+      "select_household": "Select a household",
+      "create_new_household": "Create a new household",
+      "loading_households": "@:households.loading_households"
+    },
     "all_displayed": "All households have been displayed!",
-    "loading_households": "Loading your households...",
     "create_new": {
       "title": "Create new household",
       "labels": {
@@ -301,14 +300,6 @@
       "lastname": "Surname",
       "firstname": "First name"
     },
-    "household_card": {
-      "title": "Current household",
-      "edit_households": "Edit households",
-      "save_changes": "Save",
-      "select_household": "Select a household",
-      "create_new_household": "Create a new household",
-      "loading_households": "@:households.loading_households"
-    },
     "password_reset": {
       "forgot_password": "@:login.login.forgot_password_btn",
       "old_password": "Old password",
@@ -316,6 +307,8 @@
     }
   },
   "rules": {
+    "valid_email": "Please enter a valid email address.",
+    "username_fmt_rule": "Username must be 3-25 characters long and can only include letters, numbers, dots, hyphens, and underscores.",
     "min_password_length": "The password needs to have at least 8 characters"
   },
   "login": {
@@ -347,7 +340,6 @@
   },
   "storage_selection": {
     "select_all": "Select all",
-    "select_storage": "Select Storage",
     "deselect_all": "Deselect all",
     "select_ok": "Ok",
     "title": "Select to print QR-Codes"
@@ -388,17 +380,10 @@
       "scale": "Scale of the preview",
       "print": "Print",
       "save_img": "Save as PNG"
-    },
-    "show_preview": "Show print preview",
-    "close_preview": "Close print preview",
-
-    "example_storage": "Example Storage"
+    }
   },
   "scan": {
-    "from": "scanned QR Code",
-    "qr_code": {
-      "title": "Scan Storage QR Code"
-    },
+    "title": "Scan Storage QR Code",
     "go_to": "Go to {name}",
     "select_camera": "Please select your camera to proceed",
     "camera_paused": "The camera feed is currently paused, to scan different codes, click here",
@@ -434,7 +419,6 @@
     "redirect_in": "Redirect in {seconds}",
     "email_confirmed": "Email verified, thank you 😊",
     "activated": "@:toasts.text.success.register",
-    "redirect_now": "Go now!",
     "failure": "Failure while verifying email",
     "invalid_code": "This email address was already verified, try logging in please",
     "go_to_login": "Go to login"
@@ -472,9 +456,13 @@
       "delete_confirm_body_single": "Are you sure you want to delete the user {name}?",
       "delete_confirm_title_multiple": "Delete Users",
       "delete_confirm_body_multiple": "{count} users will be deleted. Are you sure?",
+      "delete": "Delete",
+      "cancel": "cancel",
       "deleting": "Deleting ...",
       "selected": "{count} User(s) selected",
       "reset": "Reset",
+      "resetting_password": "Password reset in progress",
+      "search": "Search for user",
       "table": {
         "title": "Users",
         "headers": {
@@ -493,13 +481,6 @@
         "email_taken": "This email is already in use",
         "field_required": "This field is required"
       },
-      "edit": {
-        "resend_confirmation": "Resend Confirmation",
-        "delete_user": "Delete",
-        "save_user": "Save",
-        "title": "Edit user",
-        "reset": "Reset"
-      },
       "password_reset": {
         "title": "Reset password of {username}",
         "password_needed": "@:login.login.password_needed",
@@ -509,7 +490,6 @@
         "email_or_direct": "Either reset the user's password by clicking the \" @:administration.users.password_reset.send_email \" button or do it manually. If you are doing manually you need to notify your user to reset their password afterwards!",
         "password": "@:administration.users.password",
         "password_repeat": "@:login.register.repeat_password",
-        "cancel": "@:cancel",
         "save": "@:save"
       }
     }
@@ -522,7 +502,9 @@
         "edit_household": "Editing this household will soon be possible",
         "some_deleted": "Not all users could be deleted properly",
         "household_kick": "\uD83D\uDEAA Kicked from Household",
-        "household_deleted": "❌ Household Deleted"
+        "household_deleted": "❌ Household Deleted",
+        "no_storage_selected": "No storage selected",
+        "close_dialog_first": "Close the dialog first"
       },
       "error": {
         "invalid_request": "Invalid request",
@@ -621,7 +603,9 @@
         "no_households": "Please create a new household to get started with InventoryHero 😊",
         "some_deleted": "",
         "household_kick": "You have been removed from the household {name}",
-        "household_deleted": "The household {name} you were part of has been deleted"
+        "household_deleted": "The household {name} you were part of has been deleted",
+        "no_storage_selected": "To print qr codes, please select a storage",
+        "close_dialog_first": ""
       },
       "error": {
         "invalid_request": "",

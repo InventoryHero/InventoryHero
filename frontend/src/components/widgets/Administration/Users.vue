@@ -19,7 +19,7 @@ export default defineComponent({
       mobile,
       adminEndpoint: adminEndpoint.axios as AdministrationEndpoint,
       userEndpoint: userEndpoint.axios as UserEndpoint,
-      generalEndpoint: generalEndpoint.axios as GeneralEndpoint
+      generalEndpoint: generalEndpoint.axios as GeneralEndpoint,
     }
   },
   computed:{
@@ -209,13 +209,7 @@ export default defineComponent({
 </script>
 
 <template>
-  <v-row
-    justify="center"
-  >
-    <v-col
-      lg="10"
-      cols="12"
-    >
+
       <v-dialog
         v-model="deleting"
         :persistent="true"
@@ -245,12 +239,15 @@ export default defineComponent({
         v-model="createModalActive"
         @created:user="userCreated"
       />
-      <app-confirm-modal
+      <confirmation-dialog
         :title="deleteConfirmationTitle"
-        :body="deleteConfirmationBody"
-        :dialog="deleteModalActive"
-        @accept="deleteUser"
-        @deny="abortDeletion"
+        :text="deleteConfirmationBody"
+        :confirm-text="$t('administration.users.delete')"
+        :cancel-text="$t('administration.users.cancel')"
+        confirm-icon="mdi-delete"
+        :dialog-opened="deleteModalActive"
+        :on-confirm="deleteUser"
+        :on-cancel="abortDeletion"
       />
       <password-reset-modal
         v-model:active="passwordResetModalActive"
@@ -263,9 +260,12 @@ export default defineComponent({
         }"
       />
 
-      <v-container :fluid="true" class="pl-0 pr-0">
+      <v-container
+          :fluid="true"
+          class="pl-0 pr-0 fill-width fill-height d-flex flex-column"
+      >
           <div
-            class="mb-4 d-flex justify-end"
+            class="mb-4 fill-width d-flex justify-end"
           >
             <v-btn
               color="primary"
@@ -322,27 +322,26 @@ export default defineComponent({
               <template
                   v-if="!usersSelected"
               >
+                <v-slide-x-reverse-transition>
+                  <v-text-field
+                      v-if="!searchShown"
+                      v-model="search"
+                      :label="$t('administration.users.search')"
+                      density="compact"
+                      variant="outlined"
+                      class="align-center"
+                      color="grey darken-4"
+                      :hide-details="true"
+                      :single-line="true"
+                  >
+                  </v-text-field>
+                </v-slide-x-reverse-transition>
                 <v-btn
+
                     icon="mdi-magnify"
-                    @click="searchShown = true"
-                    v-if="!searchShown"
+                    @click="searchShown = !searchShown"
                 />
-                <v-text-field
-                    v-model="search"
-                    :label="$t('administration.users.search')"
-                    density="compact"
-                    color="grey darken-4"
-                    :hide-details="true"
-                    :single-line="true"
-                    v-else
-                >
-                  <template v-slot:prepend-inner>
-                    <v-btn
-                        icon="mdi-magnify"
-                        @click="searchShown = false"
-                    />
-                  </template>
-                </v-text-field>
+
               </template>
               <template
                   v-else
@@ -405,8 +404,7 @@ export default defineComponent({
 
         </v-data-table>
       </v-container>
-    </v-col>
-  </v-row>
+
 </template>
 
 <style scoped lang="scss">

@@ -22,7 +22,7 @@ def socket_token():
                 verify_jwt_in_request()
                 return fn(*args, **kwargs)
             except NoAuthorizationError as e:
-                return "fml", 401
+                return "no_authorization", 401
             except ExpiredSignatureError as e:
                 return {
                     "code": 401,
@@ -40,7 +40,7 @@ def socket_token():
                 }
             except Exception as e:
                 print(e)
-                return "error fml", 500
+                return "error", 500
 
         return decorator
     return wrapper
@@ -83,8 +83,6 @@ class HouseholdSocket(namespace.Namespace):
         room = data.pop("household", None)
         if room is None:
             return 403, json.dumps({"status": "error"})
-        username = current_user.username
-        app.logger.info(f"HALLO HERE I AM {username}, {room}")
         join_room(room)
         return True, json.dumps({"status": "success"})
 
@@ -105,7 +103,6 @@ class HouseholdSocket(namespace.Namespace):
         room = data.pop("household", None)
         if room is None:
             return 400, json.dumps({"status": "error"})
-        app.logger.info("SAYS HI")
         emit("hi", f"{username} says hi", to=room, include_self=False)
         return "ok"
 
@@ -115,9 +112,6 @@ class GeneralSocket(namespace.Namespace):
     @socket_token()
     def on_connect(self, data):
         general_socket_sid_mapping.add(current_user.username, request.sid)
-        app.logger.info(current_user.username)
-        app.logger.info(request.sid)
-        app.logger.info("FROM CONNECT")
 
     @socket_token()
     def on_disconnect(self):
@@ -126,7 +120,6 @@ class GeneralSocket(namespace.Namespace):
 
     @socket_token()
     def on_username(self, data):
-        app.logger.info(data)
         result = User.query.filter_by(username=data["username"]).first()
         if result is None:
             return {"status": "username_free"}
@@ -134,9 +127,7 @@ class GeneralSocket(namespace.Namespace):
 
     @socket_token()
     def on_email(self, data):
-        app.logger.info(data)
         result = User.query.filter_by(email=data["email"]).first()
-        app.logger.info(result)
         if result is None:
             return {"status": "email_free"}
         return {"status": "email_taken"}

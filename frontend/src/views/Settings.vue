@@ -23,12 +23,13 @@ export default defineComponent({
 
 <template>
   <v-row
-    :no-gutters="true"
+    class="fill-height"
+    dense
     justify="center"
   >
     <v-col
       cols="12"
-      lg="6"
+      lg="8"
     >
       <general-settings />
       <ui-settings />

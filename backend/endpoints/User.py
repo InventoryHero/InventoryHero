@@ -15,6 +15,7 @@ import bcrypt
 from backend.flask_config import jwt
 from backend.decorators import admin_required
 
+from backend.utils.validation import validate_username, validate_email
 from hashlib import sha256
 
 
@@ -51,18 +52,20 @@ class User(Blueprint):
         def register():
             username = request.json.get("username", None)
             if username is None:
-                self.app.logger.error("No or invalid username provided")
                 return {"status": "no_username"}, 400
+            result = validate_username(username)
+            if result is not True:
+                return jsonify(status="username_invalid"), 400
 
             password = request.json.get("password", None)
             if password is None:
-                self.app.logger.error("No password provided")
                 return {"status": "no_password"}, 400
 
             email = request.json.get("email", None)
             if email is None:
-                self.app.logger.error("No or invalid email provided")
                 return {"status": "no_email"}, 400
+            if not validate_email(email):
+                return jsonify(status="email_invalid"), 400
 
             salt = bcrypt.gensalt()
             password = password.encode('utf-8')
@@ -141,7 +144,7 @@ class User(Blueprint):
         def logout():
             refresh_token = request.json["refreshToken"]
             refresh_token = decode_token(refresh_token)
-            self.app.logger.info(refresh_token)
+
             self.blacklist_token(refresh_token)
             self.blacklist_token(get_jwt())
 
@@ -181,23 +184,27 @@ class User(Blueprint):
                 return jsonify(status="user_not_found"), 400
 
             username = request.json.get("username", None)
+
             firstname = request.json.get("firstName", None)
             lastname = request.json.get("lastName", None)
             email = request.json.get("email", None)
             is_admin = request.json.get("isAdmin", None)
-
             existing = ApplicationUser.query.filter((ApplicationUser.username == username) | (ApplicationUser.email == email)).first()
 
             if existing is not None:
                 return jsonify(status="username_or_email_already_exists"), 400
-            self.app.logger.info(firstname)
             if username is not None:
+                result = validate_username(username)
+                if result is not True:
+                    return jsonify(status="username_invalid"), 400
                 to_update.username = username
             if firstname is not None:
                 to_update.first_name = firstname
             if lastname is not None:
                 to_update.last_name = lastname
             if email is not None:
+                if not validate_email(email):
+                    return jsonify(status="email_invalid"), 400
                 to_update.email = email
                 # TODO RESEND EMAIL NOTIFICATION HERE
 
@@ -347,7 +354,7 @@ class User(Blueprint):
             )
             self.db.session.add(reset_request)
             self.db.session.commit()
-            self.app.logger.info(reset_id)
+
 
             return jsonify(status="success_24h_time"), 200
 
@@ -391,7 +398,6 @@ class User(Blueprint):
 
         @self.route("/reset-password/<string:code>", methods=["PUT"])
         def reset_password_preflight(code):
-            self.app.logger.error("OPTIONS")
             is_valid, msg, _ = is_reset_token_valid(code)
             if not is_valid:
                 return jsonify(status=msg), 400
@@ -400,7 +406,6 @@ class User(Blueprint):
         def is_reset_token_valid(code):
             reset_hash = sha256(code.encode('utf-8')).hexdigest()
             reset_request = PasswordResetRequest.query.filter_by(password_reset_hash=reset_hash).first()
-            self.app.logger.info(reset_request)
             if reset_request is None:
                 return False, "invalid_token", None
             if reset_request.password_reset_time + timedelta(hours=24) < datetime.now(UTC):

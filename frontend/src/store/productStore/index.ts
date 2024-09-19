@@ -9,7 +9,9 @@ export default defineStore("products", {
             _storage: [] as Array<ProductStorageMapping>,
             _selectedProduct: undefined as ApiProduct | undefined,
             _selectedProductStorage: undefined as ProductStorageMapping | undefined,
-            _fromStorage: undefined as number|undefined
+            _fromStorage: undefined as number|undefined,
+            _loadingProducts: false,
+            _loadingProductStorage: false
         }
     },
     actions: {
@@ -19,11 +21,11 @@ export default defineStore("products", {
         storeProductStorage(storage: Array<ProductStorageMapping>){
             this._storage = [...storage]
         },
-        selectProduct(product: ApiProduct){
-            this._selectedProduct = product
+        selectProduct(id: number){
+            this._selectedProduct = this._products.find(p => p.id === id)
         },
-        selectProductStoredAt(productStorage: ProductStorageMapping){
-          this._selectedProductStorage = productStorage
+        selectProductStoredAt(id: number){
+          this._selectedProductStorage = this._storage.find(p => p.id === id)
         },
         deselectProduct(){
             this._selectedProduct = undefined
@@ -61,7 +63,7 @@ export default defineStore("products", {
 
                 const storageStore = useStorage()
 
-                storageStore.removeProductfromBox(storage.storage.id)
+                storageStore.removeProductFromStorage(storage.storage.id, storage.storage?.type)
             }
             this._storage = this._storage.filter(productStorage => productStorage.id !== productStorageId)
 
@@ -76,23 +78,27 @@ export default defineStore("products", {
                 this._selectedProduct.totalAmount -= storage.amount
                 this._selectedProduct.totalAmount += updated.amount
             }
-            storage.amount = updated.amount
 
-            if(storage.storage?.id !== updated.storage?.id && this._fromStorage !== undefined){
+            if(this._fromStorage){
                 const storageStore = useStorage()
-                storageStore.moveProduct(storage.storage?.id, updated.storage?.id)
-                this._products = this._products.filter(p => p.id !== storage.productId)
+                storageStore.moveProduct(storage.storage, updated.storage)
+                if(storage.storage?.id !== updated.storage?.id) {
+                    this._products = this._products.filter(p => p.id !== storage.productId)
+                    this._storage = this._storage.filter(ps => ps.id !== productStorageId)
+                }
             }
 
+            storage.amount = updated.amount
             storage.storage = undefined
             if(updated.storage){
                 storage.storage = {
                     ...updated.storage
                 } as ApiStorage
             }
-
-
-            this._selectedProductStorage = storage
+            if(this._fromStorage === undefined){
+                this._selectedProductStorage = storage
+                return
+            }
         },
         setStorage(id: number){
             this._fromStorage = id
@@ -106,12 +112,21 @@ export default defineStore("products", {
         addProduct(product: ApiProduct){
             this._products.push(product)
         },
+        setLoadingProducts(value: boolean){
+            this._loadingProducts = value
+        },
+        setLoadingProductStorage(value: boolean){
+            this._loadingProductStorage = value
+        },
         reset(){
             this._products = []
             this._selectedProduct = undefined
             this._fromStorage = undefined
             this._selectedProductStorage = undefined
             this._storage = []
+            this._loadingProducts = false
+            this._loadingProductStorage = false
+
         }
     },
     getters: {
@@ -121,6 +136,8 @@ export default defineStore("products", {
         selectedProduct: state => state._selectedProduct,
         selectedProductStorage: state => state._selectedProductStorage,
         calledFromStorage: state => state._fromStorage !== undefined,
-        storedAt: state => state._fromStorage
+        storedAt: state => state._fromStorage,
+        loadingProducts: state => state._loadingProducts,
+        loadingProductStorage: state => state._loadingProductStorage
     }
 })

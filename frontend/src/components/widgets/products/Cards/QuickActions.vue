@@ -6,9 +6,10 @@ const $emit = defineEmits<{
   (e: 'showDetails'): void
 }>()
 
-const {requestInProgress=false, disabled=false} = defineProps<{
+const {requestInProgress=false, disabled=false, amount=0} = defineProps<{
   requestInProgress: boolean,
   disabled?: boolean,
+  amount?: number
 }>()
 
 
@@ -16,12 +17,9 @@ const {requestInProgress=false, disabled=false} = defineProps<{
 
 <template>
   <v-row
-      :no-gutters="true"
-      justify="space-evenly"
-      class="product-actions mt-2 mb-1 position-relative"
-      :class="{
-        'request': requestInProgress
-      }"
+    dense
+    justify="space-evenly"
+    class="position-relative"
   >
     <v-overlay
         :contained="true"
@@ -49,6 +47,9 @@ const {requestInProgress=false, disabled=false} = defineProps<{
           icon="mdi-minus"
           @click="$emit('updateAmount', -1)"
       />
+    </v-col>
+    <v-col>
+      <p class="text-primary">{{ amount }}</p>
     </v-col>
     <v-col>
       <app-icon-btn

@@ -1,6 +1,7 @@
 import {Endpoint} from "./Endpoint.ts";
 import {ApiProduct, ProductStorageMapping} from "@/types";
 
+
 export class ProductEndpoint extends Endpoint{
 
     constructor(){
@@ -10,13 +11,11 @@ export class ProductEndpoint extends Endpoint{
     public async getProducts({
         id = undefined as (undefined|string)
     } = {}): Promise<Array<ApiProduct>>{
-
         let url = ""
         if(id !== undefined){
             url += `/${id}`
         }
         const response = await this.internalAxios.get(url)
-
         if(response.status === 200){
             return response.data as Array<ApiProduct>
         }

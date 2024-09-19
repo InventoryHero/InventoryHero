@@ -11,6 +11,7 @@ import { I18n } from "vue-i18n";
 export {}
 
 declare module 'vue-qr/src/packages/vue-qr.vue';
+declare module 'validator';
 
 declare module 'vue'{
     export interface GlobalComponents {
@@ -35,7 +36,8 @@ declare module 'vue-router' {
         requiresAuth?: boolean
         requiresHousehold?: boolean,
         requiresAdmin?: boolean,
-        tokenized?: boolean
+        tokenized?: boolean,
+        key?: string
     }
 }
 

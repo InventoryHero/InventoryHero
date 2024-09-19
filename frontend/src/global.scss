@@ -55,6 +55,7 @@ input[type=number] {
 
 
 .wrapper {
+    padding-top: 0 !important;
     overflow: hidden;
     position: absolute;
     top: 0;
@@ -63,5 +64,6 @@ input[type=number] {
     right: 0;
     .scroll{
         height: 100%;
+        scroll-behavior: smooth;
     }
 }

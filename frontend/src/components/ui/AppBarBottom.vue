@@ -30,13 +30,13 @@ const active = defineModel<boolean>();
       variant="text"
   />
   <v-btn
-      to="/storage/boxes"
+      to="/boxes"
       icon="mdi-package-variant"
       active-color="primary"
       variant="text"
   />
   <v-btn
-      to="/storage/locations"
+      to="/locations"
       icon="mdi-archive-marker"
       active-color="primary"
       variant="text"

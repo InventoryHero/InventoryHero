@@ -6,7 +6,6 @@ import {useAuthStore, useNotificationStore} from "@/store";
 import Settings from "@/views/Settings.vue";
 import Account from "@/views/Account.vue";
 import Create from "@/views/Create.vue";
-import Locations from "@/views/Locations.vue";
 import Logout from "@/views/Logout.vue";
 import {i18n} from "@/lang";
 import Confirmation from "@/views/Confirmation.vue";
@@ -14,12 +13,13 @@ import Join from "@/views/Join.vue";
 import {notify} from "@kyvg/vue3-notification";
 import Users from "@/components/widgets/Administration/Users.vue";
 import Overview from "@/components/widgets/Administration/Overview.vue";
-
-import passwordReset from "./routes/passwordReset.ts";
-import Products from "@/views/Products.vue";
-import Boxes from "@/views/Boxes.vue";
 import RouteNotFound from "@/views/RouteNotFound.vue";
-import {householdsOverview, editHousehold} from "@/router/routes/household.ts";
+
+import passwordReset from "./routes/passwordReset";
+import households from "@/router/routes/household";
+import products from "@/router/routes/products"
+import boxes from "@/router/routes/boxes.ts"
+import locations from "@/router/routes/locations.ts";
 
 
 
@@ -32,7 +32,7 @@ const vueRouter =  createRouter({
       component: Login,
       meta: {
         requiresAuth: false,
-        fillHeight: false
+        fillHeight: true
       }
     },
     {
@@ -68,79 +68,9 @@ const vueRouter =  createRouter({
         fillHeight: false
       }
     },
-    {
-      path: "/products",
-      children:[
-        {
-          path: '',
-          name: "products",
-          component: Products,
-        },
-        {
-          path: ':preselectedProduct/:filteredFrom',
-          component: Products,
-          props: true
-        }
-      ],
-      meta: {
-        requiresAuth: true,
-        requiresHousehold: true,
-        fillHeight: true,
-        title: i18n.global.t('titles.products')
-      },
-    },
-    {
-      path: "/storage/boxes",
-      children:[
-        {
-          path: '',
-          name: "Boxes",
-          component: Boxes,
-        },
-        {
-          path: ':preselectedBox',
-          component: Boxes,
-          props: true
-        },
-        {
-          path: ':preselectedBox/:filteredFrom',
-          component: Boxes,
-          props: true
-        }
-      ],
-      meta: {
-        requiresAuth: true,
-        requiresHousehold: true,
-        fillHeight: true,
-        title: i18n.global.t('titles.boxes')
-      },
-    },
-    {
-      path: "/storage/locations",
-      children:[
-        {
-          path: '',
-          name: "Locations",
-          component: Locations,
-        },
-        {
-          path: ':preselectedLocation/:filteredFrom',
-          component: Locations,
-          props: true
-        },
-        {
-          path: ':preselectedLocation',
-          component: Locations,
-          props: true
-        }
-      ],
-      meta: {
-        requiresAuth: true,
-        requiresHousehold: true,
-        fillHeight: true,
-        title: i18n.global.t('titles.locations')
-      }
-    },
+    products,
+    boxes,
+    locations,
     {
       path: "/settings",
       name: "settings",
@@ -162,8 +92,7 @@ const vueRouter =  createRouter({
         title: i18n.global.t('titles.account')
       }
     },
-    householdsOverview,
-    editHousehold,
+    households,
     {
       path: "/create",
       component: Create,
@@ -171,7 +100,6 @@ const vueRouter =  createRouter({
         requiresAuth: true,
         requiresHousehold: true,
         fillHeight: true,
-        transition: 'slide',
         title: i18n.global.t('titles.create')
       }
     },
@@ -203,7 +131,6 @@ const vueRouter =  createRouter({
         requiresAuth: true,
         requiresAdmin: true,
         fillHeight: false,
-        transition: 'slide',
         title: i18n.global.t('titles.administration')
       }
     },
@@ -217,7 +144,6 @@ const vueRouter =  createRouter({
         requiresAuth: false,
         requiresAdmin: false,
         requiresHousehold: false,
-        transition: 'slide'
       }
     },
     {

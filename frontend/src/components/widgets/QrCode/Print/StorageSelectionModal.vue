@@ -9,7 +9,7 @@ const {t} = useI18n()
 
 const storageType = inject('storageType') as StorageTypes
 const storage = computed(() => {
-  return storageStore.getStorage(storageType)
+  return storageStore.getStorage(storageType) ?? []
 })
 
 const selected = computed(() => {
@@ -45,6 +45,7 @@ function toggleAll(){
     storageStore.selectForPrinting(s.id, true)
   })
 }
+
 
 onBeforeMount(() => {
   storageStore.deselectAllFromPrinting()

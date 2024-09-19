@@ -46,7 +46,8 @@ async function onDetect(detectedCodes) {
   }
   paused.value = true
   parsingScans.value = true
-  const baseUrlRegex = new RegExp(`^${window.location.origin}/storage/(locations|boxes)/(\\d+)$`);
+  const baseUrlRegex = new RegExp(`^${window.location.origin}/(boxes/box|locations/location)/(\\d+)$`)
+
 
   const scanned =  detectedCodes
       .filter((code) => {
@@ -69,9 +70,9 @@ async function onDetect(detectedCodes) {
   for(let i = 0; i < scanned.length; i++){
     const scan = scanned[i]
     let result = {success: false};
-    if(scan.type === "boxes"){
+    if(scan.type === "box"){
       result = await boxEndpoint.getBoxName(scan.id)
-    } else if(scan.type === "locations"){
+    } else if(scan.type === "location"){
       result = await locationEndpoint.getLocationName(scan.id)
     }
     if(!result.success){
@@ -128,6 +129,8 @@ onMounted(async () => {
   )
   loadingDevices.value = false
 })
+
+
 </script>
 
 <template>
@@ -138,7 +141,7 @@ onMounted(async () => {
   <v-card-title
     class="flex-0-0 d-flex justify-space-between align-center"
   >
-    {{ $t('scan.qr_code.title')}}
+    {{ $t('scan.title')}}
     <app-icon-btn
         icon="mdi-close"
         size="large"
@@ -246,8 +249,8 @@ onMounted(async () => {
           <v-btn
               variant="elevated"
               color="primary"
-              @click="emit('close')"
               :to="storage.url"
+              @click="emit('close')"
           >
             <p>
               {{t('scan.go_to', {name: storage.name})}}

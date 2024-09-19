@@ -47,9 +47,6 @@ class HouseholdEndpoint(Blueprint):
         @jwt_required()
         def get_households():
             households = HouseholdMembers.query.filter_by(member_id=current_user.id).all()
-
-            self.app.logger.info(households)
-
             households = (
                 self.db.session.query(Household)
                 .join(HouseholdMembers, Household.members)

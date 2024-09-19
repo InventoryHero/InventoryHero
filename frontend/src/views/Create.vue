@@ -39,10 +39,7 @@ function leave(){
   router.push(destination.value)
 }
 
-function stay(){
-  confirm.value = false
-  destination.value = "/"
-}
+
 
 onBeforeRouteLeave((to) => {
   if(forceLeave.value || !authStore.household)
@@ -87,30 +84,32 @@ function swipeTabs (direction: number = 0) {
   tab.value = tabs.value[index]
 }
 
+function stay(){
+  confirm.value = false
+  destination.value = "/"
+}
+
+
 </script>
 
 <template>
   <v-container
       class="pa-0 fill-height fill-width"
   >
-    <app-confirm-modal
-        :dialog="confirm"
-        :title="$t('confirm.leave.title')"
-        :body="$t('confirm.leave.text')"
-    >
-      <v-btn
-          prepend-icon="mdi-cancel"
-          @click="stay()"
-      >
-        {{ $t('confirm.leave.deny') }}
-      </v-btn>
-      <v-btn
-          prepend-icon="mdi-check-circle"
-          @click="leave()"
-      >
-        {{ $t('confirm.leave.accept') }}
-      </v-btn>
-    </app-confirm-modal>
+    <confirmation-dialog
+      :dialog-opened="confirm"
+      :title="$t('confirm.leave.title')"
+      :text="$t('confirm.leave.text')"
+      cancel-icon="mdi-cancel"
+      confirm-icon="mdi-check-circle"
+      :confirm-text="$t('confirm.leave.accept')"
+      :cancel-text="$t('confirm.leave.deny')"
+      :on-cancel="stay"
+      :on-confirm="leave"
+
+    />
+
+
 
     <v-tabs-window
         v-model="tab"

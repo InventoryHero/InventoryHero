@@ -15,18 +15,18 @@ const {scrolledDown=false} = defineProps<{
   <v-fab
       :active="scrolledDown"
       icon="mdi-chevron-double-up"
-      density="comfortable"
-      location="bottom end"
+      location="bottom right"
       variant="elevated"
       border="md"
-      size="large"
       absolute
-      v-bind="$attrs"
+      v-bind="{
+        density: 'comfortable',
+        ...$attrs
+      }"
   >
     <template v-slot:default>
       <v-icon
           color="primary"
-          size="large"
       />
     </template>
 
@@ -35,7 +35,7 @@ const {scrolledDown=false} = defineProps<{
 
 <style scoped lang="scss">
 .v-fab{
-  margin-top: -5px;
-  margin-right: 5px;
+  bottom: 8px;
+  right: 8px;
 }
 </style>

@@ -1,5 +1,5 @@
 from backend.database import db
-from datetime import datetime
+import datetime
 from dataclasses import dataclass
 from sqlalchemy.orm import Mapped
 
@@ -13,7 +13,7 @@ class Product(db.Model):
     name: str = db.Column(db.String(65535), nullable=False)
     household_id: int = db.Column(db.Integer, db.ForeignKey("household.id", ondelete="CASCADE"), nullable=False)
     starred: bool = db.Column(db.Boolean, nullable=False, default=False)
-    creation_date: datetime = db.Column(db.DateTime, default=datetime.utcnow())
+    creation_date: datetime = db.Column(db.DateTime, default=datetime.datetime.now(datetime.UTC))
     mappings = db.relationship("ProductContainerMapping", back_populates="product", cascade="all, delete-orphan")
     household = db.relationship("Household", back_populates="products")
 
@@ -39,7 +39,7 @@ class ProductContainerMapping(db.Model):
     product_id: int = db.Column(db.Integer, db.ForeignKey("products.id", ondelete="CASCADE"), nullable=False)
     storage_id: int = db.Column(db.Integer, db.ForeignKey("storage.id", ondelete="SET NULL"), nullable=True)
     amount: int = db.Column(db.Integer, nullable=False, default=0)
-    updated_at: datetime = db.Column(db.DateTime, default=datetime.utcnow())
+    updated_at: datetime = db.Column(db.DateTime, default=datetime.datetime.now(datetime.UTC))
     storage: Mapped[Storage] = db.relationship("Storage", back_populates="product_mappings")
     product = db.relationship("Product", back_populates="mappings")
 

@@ -19,7 +19,7 @@ function changeCard(to: CardTypes){
 <template>
   <v-row
     justify="center"
-    class="mt-4"
+    class="fill-height"
   >
     <v-col
       cols="12"
@@ -27,34 +27,36 @@ function changeCard(to: CardTypes){
     >
       <v-card
           elevation="5"
+          min-height="40svh"
+          height="fit-content"
+          max-height="80svh"
+          class="d-flex flex-column"
       >
         <v-card-title
-          class="d-flex justify-space-between shadowed mb-3"
-          v-if="!forgotPassword"
+          class="d-flex shadowed mb-3"
         >
-            <v-btn
-                :color="isRegisterCard ? undefined : 'primary'"
-                variant="outlined"
-                rounded="xl"
-                :text="$t('login.login.title')"
-                class="me-5"
-                @click="changeCard('login')"
-            />
-            <v-btn
-                @click="changeCard('register')"
-                :color="isRegisterCard ? 'primary' : undefined"
-                variant="outlined"
-                rounded="xl"
-                :text="$t('login.register.title')"
-            />
+            <template v-if="!forgotPassword">
+              <v-btn
+                  :color="isRegisterCard ? undefined : 'primary'"
+                  variant="tonal"
+                  rounded="xl"
+                  :text="$t('login.login.title')"
+                  class="me-5"
+                  @click="changeCard('login')"
+              />
+              <v-spacer />
+              <v-btn
+                  @click="changeCard('register')"
+                  :color="isRegisterCard ? 'primary' : undefined"
+                  variant="tonal"
+                  rounded="xl"
+                  :text="$t('login.register.title')"
+              />
+            </template>
+            <template v-else >
+              {{ $t('password_reset.reset_password') }}
+            </template>
         </v-card-title>
-        <v-card-title
-            v-else
-            class="shadowed mb-4"
-        >
-          {{ $t('password_reset.reset_password') }}
-        </v-card-title>
-
 
         <forgot-password-card
             v-if="forgotPassword"
@@ -79,12 +81,7 @@ function changeCard(to: CardTypes){
 </template>
 
 <style scoped lang="scss">
-:deep(.v-card-text){
-  min-height: calc(100svh * 0.3);
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
+
 
 
 </style>

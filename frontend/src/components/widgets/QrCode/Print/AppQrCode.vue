@@ -126,14 +126,14 @@ const qrCodePayload = computed(() => {
 
   let route = "example"
   if(storageType ===StorageTypes.Box){
-    route = "boxes"
+    route = "boxes/box"
   } else if(storageType === StorageTypes.Location){
-    route = "locations"
+    route = "locations/location"
   }
   if(isPreview){
-    return `${window.location.origin}/storage/${route}/example`
+    return `${window.location.origin}/${route}/example`
   }
-  return `${window.location.origin}/storage/${route}/${storage?.id ?? ''}`
+  return `${window.location.origin}/${route}/${storage?.id ?? ''}`
 })
 
 

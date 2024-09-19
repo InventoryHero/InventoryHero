@@ -94,7 +94,6 @@ class ProductEndpoint(Blueprint):
         @require_household_member
         @emit_update()
         def add_existing_product(household, product_id):
-            self.app.logger.info(request.json)
             amount = request.json.get("amount", None)
             storage_id = request.json.get("storageId", None)
             starred = request.json.get("starred", None)
@@ -128,7 +127,6 @@ class ProductEndpoint(Blueprint):
         @emit_update()
         def create_product(household):
             product_name = request.json.get("name", None)
-            self.app.logger.info(request.json)
             if product_name is None:
                 return jsonify(status="create_product_invalid_data"), 400
             product = Product.query.filter_by(name=product_name, household_id=household).first()
@@ -165,7 +163,6 @@ class ProductEndpoint(Blueprint):
 
             self.db.session.add(mapping)
             self.db.session.commit()
-            self.app.logger.info(product)
             return jsonify(product), 200
 
         @self.route("/<int:product_id>", methods=["GET"])
@@ -200,7 +197,6 @@ class ProductEndpoint(Blueprint):
             if stored_at is None:
                 return jsonify(product.mappings), 200
             mappings = ProductContainerMapping.query.filter_by(product_id=product.id, storage_id=stored_at).all()
-            self.app.logger.warning(f"LOOKING FOR PRODUCTS IN {stored_at}, {mappings}")
 
             return jsonify(mappings), 200
 
@@ -234,7 +230,6 @@ class ProductEndpoint(Blueprint):
             product.name = new_name
 
             self.db.session.commit()
-            self.app.logger.info(f"UPDATED PRODUCT {product.name}")
             return jsonify(updated=product), 200
 
         @self.route("/stored/<int:mapping_id>", methods=["POST"])
@@ -244,7 +239,6 @@ class ProductEndpoint(Blueprint):
         def update_product_mapping(mapping_id, household):
             new_amount = request.json.get("amount", None)
             storage = request.json.get("storage", None)
-            self.app.logger.info(storage)
             mapping = ProductContainerMapping.query.filter_by(id=mapping_id).first()
             product_id = (mapping.product_id if mapping is not None else None)
             product = Product.query.filter_by(id=product_id, household_id=household).first()
@@ -266,16 +260,12 @@ class ProductEndpoint(Blueprint):
                 return storage_error
 
             storage_merge_with: Optional[ProductContainerMapping] = storage_check.get('merge_with', None)
-            self.app.logger.warning(f"merge with {storage_merge_with}")
             deleted = None
             if storage_merge_with is not None:
-                self.app.logger.info(storage_merge_with)
-                self.app.logger.info(mapping)
                 update |= True
                 mapping.amount += storage_merge_with.amount
                 mapping.storage_id = storage_merge_with.storage_id
                 deleted = storage_merge_with
-                self.db.session.delete(deleted)
             elif storage_check.get('update', False):
                 update |= True
                 mapping.storage_id = storage_check.get('storage_id', None)

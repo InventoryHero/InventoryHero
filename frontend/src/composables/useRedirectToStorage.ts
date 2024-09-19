@@ -8,15 +8,16 @@ export default () => {
     const { t } = useI18n(); // `t` is the translation function from vue-i18n
 
     const redirect = (storage: ApiStorage | undefined, redirectedFromName: string, redirectedFrom: string = "product") => {
-        if (!storage) return;
-
+        if (!storage) {
+            return
+        }
         switch (storage.type ?? -1) {
             case StorageTypes.Location:
-                return router.push(`/storage/locations/${storage.id}/${t(redirectedFrom, { name: redirectedFromName })}`);
+                return router.push(`/locations/location/${storage.id}`)
             case StorageTypes.Box:
-                return router.push(`/storage/boxes/${storage.id}/${t(redirectedFrom, { name: redirectedFromName })}`);
+                return router.push(`/boxes/box/${storage.id}`) /*/${t(redirectedFrom, { name: redirectedFromName })}*/
             default:
-                return;
+                return
         }
     };
 

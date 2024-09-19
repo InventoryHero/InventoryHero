@@ -115,7 +115,6 @@ class CamelCaseJSONEncoder(DefaultJSONProvider):
 app = Flask(__name__)
 app.json = CamelCaseJSONEncoder(app)
 app.config.from_object(get_config())
-app.logger.error(app.config)
 jwt = JWTManager(app)
 
 socketio = SocketIO(app, cors_allowed_origins=app.config["ALLOWED_ORIGINS"])

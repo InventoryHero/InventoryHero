@@ -6,6 +6,7 @@ import {computed, ref, useTemplateRef} from "vue";
 import useAxios from "@/composables/useAxios.ts";
 import {UserEndpoint} from "@/api/http";
 import {useNotification} from "@kyvg/vue3-notification";
+import useAppStyling from "@/composables/useAppStyling.ts";
 
 const {t} = useI18n()
 const {axios: userEndpoint} = useAxios<UserEndpoint>("user")
@@ -14,7 +15,7 @@ const emit = defineEmits<{
   (e: 'close'): void
 }>()
 
-const {textFieldStyle} = useTextFieldStyle()
+const {styling} = useAppStyling()
 const email = ref("")
 const valid = ref(false)
 const emailForm = useTemplateRef("emailForm")
@@ -62,14 +63,19 @@ function close(){
     <v-form
         ref="emailForm"
         v-model="valid"
+        class="mb-2"
     >
-      <v-text-field
-          v-bind="textFieldStyle"
-          :placeholder="t('password_reset.email_placeholder')"
-          :label="t('password_reset.email_label')"
-          v-model="email"
-          :rules="[emailNeeded]"
-      />
+      <v-row>
+        <v-col>
+          <v-text-field
+              v-bind="styling"
+              :placeholder="t('password_reset.email_placeholder')"
+              :label="t('password_reset.email_label')"
+              v-model="email"
+              :rules="[emailNeeded]"
+          />
+        </v-col>
+      </v-row>
     </v-form>
     <v-sheet
         class="pa-4 mb-2 d-flex justify-center"
@@ -81,10 +87,9 @@ function close(){
 
   </v-card-text>
   <v-card-actions
-    class="d-flex justify-space-between"
   >
     <v-btn
-      variant="outlined"
+      variant="tonal"
       color="red-accent-1"
       prepend-icon="mdi-cancel"
       @click.stop="close"
@@ -92,6 +97,7 @@ function close(){
     >
       {{ t('cancel') }}
     </v-btn>
+    <v-spacer />
     <v-btn
       variant="elevated"
       color="primary"
