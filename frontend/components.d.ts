@@ -81,7 +81,7 @@ declare module 'vue' {
     ProductStorageCard: typeof import('./src/components/widgets/products/Cards/ProductStorageCard.vue')['default']
     ProfileCard: typeof import('./src/components/widgets/Account/ProfileCard.vue')['default']
     QrCodeFilter: typeof import('./src/components/common/QrCodeFilter.vue')['default']
-    QrScanner: typeof import('./src/components/widgets/QrCode/Scan/QrScanner.vue')['default']
+    QrScanner: typeof import('@/views/QrScanner.vue')['default']
     QuickActions: typeof import('./src/components/widgets/products/Cards/QuickActions.vue')['default']
     RegisterCard: typeof import('./src/components/widgets/Login/RegisterCard.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

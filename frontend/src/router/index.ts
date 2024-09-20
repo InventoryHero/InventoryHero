@@ -20,6 +20,7 @@ import households from "@/router/routes/household";
 import products from "@/router/routes/products"
 import boxes from "@/router/routes/boxes.ts"
 import locations from "@/router/routes/locations.ts";
+import QrScanner from "@/views/QrScanner.vue";
 
 
 
@@ -135,6 +136,15 @@ const vueRouter =  createRouter({
       }
     },
     passwordReset,
+    {
+      path: "/scan-qr",
+      name: "QrCodeScanner",
+      component: QrScanner,
+      meta: {
+        fillHeight: true,
+        title: i18n.global.t('titles.qr_code_scanner')
+      }
+    },
     {
       path: '/not-found',
       component: RouteNotFound,

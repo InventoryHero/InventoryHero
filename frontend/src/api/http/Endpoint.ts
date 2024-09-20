@@ -52,7 +52,7 @@ export class Endpoint {
                             type: 'error'
                         })
                     }
-                    await this.authStore.destroy();
+                    await this.authStore.destroy()
                     break
                 case 403:
                     if(error.response.data?.status !== null && error.response.data?.status !== undefined) {

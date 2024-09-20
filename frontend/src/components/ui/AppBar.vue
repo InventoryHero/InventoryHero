@@ -63,7 +63,7 @@ function toggleNav(){
         v-if="isAuthorized"
         icon="mdi-qrcode-scan"
         color="primary"
-        @click="emit('scanQrCode')"
+        to="/scan-qr"
       />
       <app-bar-overflow-menu
           v-if="isAuthorized"

@@ -38,6 +38,7 @@ export const useAuthStore = defineStore('auth', {
     actions: {
         async reset() {
             this._user = {};
+            this._households = [];
             this.permissions = {}
             this.returnUrl = null
             await clearAuthTokens()
@@ -49,6 +50,8 @@ export const useAuthStore = defineStore('auth', {
         },
         async login(username: string, password: string)
         {
+            // reset auth store, to prevent any poisoning
+            await this.reset()
             const loginSuccess = await this.userEndpoint.axios.login({
                 username: username,
                 password: password
@@ -112,6 +115,8 @@ export const useAuthStore = defineStore('auth', {
         async destroy(){
             const socketStore = useHouseholdSocketStore()
             socketStore.leaveHousehold()
+            const generalSocketStore = useGeneralSocketStore()
+            generalSocketStore.leave()
             await this.reset()
             await this.$router.push("/login")
 
@@ -126,7 +131,9 @@ export const useAuthStore = defineStore('auth', {
             return await this.userEndpoint.axios.register(data)
         },
         async isAuthorized(){
-            return await isLoggedIn();
+            const loggedIn = await isLoggedIn()
+            this._user!.authorized = loggedIn
+            return loggedIn
         },
         setReturnUrl(url: string)
         {
@@ -145,9 +152,10 @@ export const useAuthStore = defineStore('auth', {
         },
         async fetchPermissions(){
             if(!(await this.isAuthorized())){
-                return
+                return false
             }
             this.permissions = await this.userEndpoint.axios.getPermissions()
+            return true
         },
         async fetchHouseholds(){
             if(!(await this.isAuthorized())){
@@ -158,7 +166,11 @@ export const useAuthStore = defineStore('auth', {
             this._households.sort((a, b) => a.name.localeCompare(b.name))
         },
         async init(){
-            await this.fetchPermissions()
+            const result = await this.fetchPermissions()
+            if(!result){
+                await this.reset()
+                return
+            }
             await this.fetchHouseholds()
         },
         updateUser(toUpdate: User){

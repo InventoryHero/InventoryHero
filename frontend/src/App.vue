@@ -8,14 +8,9 @@ import {
 } from "@/store"
 import AppBarBottom from "@/components/ui/AppBarBottom.vue";
 import AppBar from "@/components/ui/AppBar.vue";
-import {Notifications, useNotification} from "@kyvg/vue3-notification";
+import {Notifications} from "@kyvg/vue3-notification";
 import {TabType} from "@/types/TabType.ts";
-
-// TODO the print settings look a bit clunky
-
-
 import {applyStorage, getAccessToken, getBrowserLocalStorage} from "axios-jwt";
-import useDialogConfig from "@/composables/useDialogConfig.ts";
 import {RouteLocationNormalizedGeneric} from "vue-router";
 
 const configStore = useConfigStore()
@@ -28,6 +23,7 @@ const {mobile} = useDisplay()
 const notificationStore = useNotificationStore()
 
 // TODO ADMIN USER TABLE CAN BENEFIT FROM SOCKET (E.G. USER VERIFIED EMAIL)
+// TODO the print settings look a bit clunky
 
 // the setup actually runs the earliest, loading content here makes sense
 // to handle this, the whole App is wrapped in a supsense
@@ -80,11 +76,6 @@ function reloadContent(){
   router.go(0)
 }
 
-const {
-  isVisible: scanQrCodeModalVisible,
-  openDialog: openScanQrCodeModal,
-  closeDialog: closeScanQrCodeModal
-} = useDialogConfig()
 
 const tab = ref(TabType.Product)
 provide("tab", tab)
@@ -93,12 +84,19 @@ function getKey(route: RouteLocationNormalizedGeneric): string{
   return route.meta?.key?? route.path
 }
 
+
+// todo translate: toasts.text.error.user_not_in_household
+
+
 onUpdated(async () => {
   notificationStore.triggerNotifications()
 })
+
+
 </script>
 
 <template >
+
   <notifications
       v-if="!tokenized"
       position="top right"
@@ -137,7 +135,6 @@ onUpdated(async () => {
       v-else
       :nav="(!dockVisible) || isAdminRoute"
       @toggle-nav="navOpen = !navOpen"
-      @scan-qr-code="openScanQrCodeModal"
   />
   <template v-if="authorized && !tokenized">
     <nav-drawer
@@ -149,7 +146,8 @@ onUpdated(async () => {
         v-model="dockVisible"
     />
 
-    <v-dialog
+
+    <!--<v-dialog
         no-click-animation
         class="fill-height"
         v-model="scanQrCodeModalVisible"
@@ -157,7 +155,8 @@ onUpdated(async () => {
       <qr-scanner
           @close="closeScanQrCodeModal"
       />
-    </v-dialog>
+    </v-dialog>-->
+
   </template>
 
   <v-main>
@@ -166,6 +165,7 @@ onUpdated(async () => {
           :name="transition.name"
           :mode="transition.mode"
       >
+
         <v-container
             :key="getKey(route)"
             class="fill-width"
@@ -174,6 +174,7 @@ onUpdated(async () => {
             }"
             fluid
         >
+
           <component
               :is="Component"
           />

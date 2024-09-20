@@ -4,6 +4,7 @@ import {useAuthStore} from "@/store";
 import useAxios from "@/composables/useAxios.ts";
 import {GeneralEndpoint} from "@/api/http";
 import {useTemplateRef} from "vue";
+import {VForm} from "vuetify/components";
 
 const {t} = useI18n()
 const {styling} = useAppStyling()
@@ -28,10 +29,14 @@ const rules = {
 }
 
 
-const loginForm = useTemplateRef("login-form")
+const loginForm = useTemplateRef<VForm>("login-form")
 const loading = ref(false)
 const authStore = useAuthStore()
 async function login(){
+  if(!loginForm.value)
+  {
+    return
+  }
   const {valid} = await loginForm.value.validate()
   if(!valid) {
     return

@@ -385,6 +385,7 @@
   "scan": {
     "title": "Scan Storage QR Code",
     "go_to": "Go to {name}",
+    "camera": "Camera",
     "select_camera": "Please select your camera to proceed",
     "camera_paused": "The camera feed is currently paused, to scan different codes, click here",
     "loading_camera": "Please wait, loading camera feed"
@@ -412,7 +413,7 @@
     "create": "Add new item - InventoryHero",
     "administration": "Administration",
     "password_reset": "Reset Password",
-    "test": ""
+    "qr_code_scanner": "Scan QRCode - InventoryHero"
   },
   "confirmation": {
     "verifying": "Verifying your email now, this may take a moment...",
