@@ -64,7 +64,6 @@ class Config(object):
         "password": os.getenv("INVENTORYHERO_SMTP_PASSWORD", None),
         "from_email": os.getenv("INVENTORYHERO_SMTP_FROM_ADDRESS", "noreply@inventory-hero.local"),
         "from_name": os.getenv("INVENTORYHERO_SMTP_FROM_NAME", "InventoryHero"),
-        "in_use": False
     }
 
     if SMTP["protocol"] != "SSL":
@@ -73,11 +72,7 @@ class Config(object):
     SMTP["in_use"] = (SMTP["server"] is not None and SMTP["port"] is not None
                       and SMTP["password"] is not None and SMTP["username"] is not None)
 
-    CONFIRMATION_NEEDED = os.getenv("INVENTORYHERO_CONFIRMATION_NEEDED", "false").lower() in ('true', '1', 't')
-
-    if CONFIRMATION_NEEDED and not SMTP["in_use"]:
-        raise MissingSmtpConfig("ENTER SMTP CONFIG OR DISABLE CONFIRMATION")
-
+    SMTP_ENABLED = all(SMTP.values())
     APP_URL = os.getenv("INVENTORYHERO_APP_URL", "http://localhost:8080")
 
     REGISTRATION_ALLOWED = os.getenv("INVENTORYHERO_REGISTRATION_ALLOWED", "true").lower() in ('true', '1', 't')
@@ -121,6 +116,8 @@ socketio = SocketIO(app, cors_allowed_origins=app.config["ALLOWED_ORIGINS"])
 gunicorn_logger = logging.getLogger('gunicorn.error')
 app.logger.handlers.extend(gunicorn_logger.handlers)
 app.logger.setLevel(logging.INFO)
+
+app.logger.error(app.config)
 CORS(app, origins=app.config["ALLOWED_ORIGINS"])
 
 db.init_app(app)

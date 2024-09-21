@@ -37,13 +37,93 @@ onMounted(() => {
 <template>
   <v-row
     justify="center"
-    class="fill-height mt-4"
+    class="fill-height"
   >
     <v-col
       cols="12"
-      lg="6"
+      lg="4"
+      class="mt-12"
     >
-      <v-card>
+      <v-card
+        v-if="!requestInProgress"
+        elevation="5"
+      >
+        <template v-slot:title>
+          {{ verified ? $t('confirmation.email_confirmed') : $t('confirmation.failure')}}
+        </template>
+        <v-card-subtitle class="d-inline-block text-wrap">
+          {{ $t('confirmation.activated')}}
+        </v-card-subtitle>
+        <v-card-text
+
+        >
+          <v-row
+            dense
+            justify="center"
+            class="mb-4"
+          >
+            <v-col
+                cols="12"
+                lg="10"
+                class="d-flex justify-center"
+
+            >
+              <template
+                  v-if="verified"
+              >
+                <v-progress-circular
+                    :model-value="progressBarState"
+                    :size="150"
+                    :width="8"
+                    color="primary"
+
+                >
+                  <vue-countdown
+                      :time="countdown*1000" :interval="1000" :auto-start="true"
+                      v-slot="{seconds}"
+                      @progress="time=$event.seconds"
+                      @end="router.push('/login')"
+                  >
+                    <span class="text-wrap">
+                    {{ $t('confirmation.redirect_in', {seconds: seconds}) }}
+                  </span>
+                  </vue-countdown>
+                </v-progress-circular>
+
+              </template>
+              <template
+                v-else
+              >
+                {{ $t(`confirmation.${status}`) }}
+              </template>
+            </v-col>
+          </v-row>
+          <v-row
+              class="mt-2"
+              dense
+              justify="center"
+          >
+            <v-col
+                lg="10"
+            >
+
+              <v-btn
+                  class="fill-width"
+                  color="primary"
+                  rounded="xl"
+                  :text="$t('confirmation.go_to_login')"
+                  to="/login"
+                  :disabled="requestInProgress"
+                  :loading="requestInProgress"
+              />
+            </v-col>
+          </v-row>
+        </v-card-text>
+      </v-card>
+      <v-card
+        elevation="5"
+        v-else
+      >
         <template v-slot:loader>
           <v-progress-linear
               color="primary"
@@ -51,65 +131,9 @@ onMounted(() => {
               :indeterminate="true"
           />
         </template>
-        <template
-          v-if="!requestInProgress"
-        >
-          <v-card-title >
-            {{ verified ? $t('confirmation.email_confirmed') : $t('confirmation.failure')}}
-          </v-card-title>
-          <v-card-text
-              v-if="verified"
-              class="mt-2 d-flex flex-column justify-content-center align-center justify-center"
-          >
-            <v-progress-circular
-                :model-value="progressBarState"
-                :size="150"
-                :width="8"
-                color="primary"
-            >
-              <vue-countdown
-                  :time="countdown*1000" :interval="1000" :auto-start="true"
-                  v-slot="{seconds}"
-                  @progress="time=$event.seconds"
-                  @end="router.push('/login')"
-              >
-                <span class="text-wrap">
-                {{ $t('confirmation.redirect_in', {seconds: seconds}) }}
-              </span>
-              </vue-countdown>
-            </v-progress-circular>
-
-            <span
-                class="mt-4 text-h6"
-            >
-            {{ $t('confirmation.activated')}}
-          </span>
-          </v-card-text>
-          <v-card-text
-              v-else
-          >
-            {{ $t(`confirmation.${status}`) }}
-          </v-card-text>
-          <v-card-actions
-              class="justify-end"
-          >
-            <v-btn
-                variant="outlined"
-                color="primary"
-                to="/login"
-                :disabled="requestInProgress"
-            >
-              {{ $t('confirmation.go_to_login')}}
-            </v-btn>
-          </v-card-actions>
-        </template>
-        <template v-else>
-          <v-card-text
-            class="d-flex justify-center"
-          >
-            {{ $t('confirmation.verifying') }}
-          </v-card-text>
-        </template>
+        <v-card-title class="d-inline-block text-wrap">
+          {{$t('confirmation.verifying')}}
+        </v-card-title>
       </v-card>
     </v-col>
   </v-row>

@@ -52,26 +52,35 @@ export const useAuthStore = defineStore('auth', {
         {
             // reset auth store, to prevent any poisoning
             await this.reset()
-            const loginSuccess = await this.userEndpoint.axios.login({
+            const {success, message} = await this.userEndpoint.axios.login({
                 username: username,
                 password: password
             })
-            if(!loginSuccess){
-                return
+            if(!success){
+                return {
+                    success: false,
+                    message
+                }
             }
             if(!(await isLoggedIn())) {
-                return;
+                return {
+                    success: false
+                };
             }
 
            const userData =  await this.userEndpoint.axios.getUser()
-            if(userData !== undefined && userData !== null)
-            {
-                this._user.user = {
-                    ...userData,
-                    isAdmin: undefined
-                }
-                this._user.authorized = true
+            if(userData === undefined || userData === null){
+                return {
+                    success: false
+                };
             }
+
+            this._user.user = {
+                ...userData,
+                isAdmin: undefined
+            }
+            this._user.authorized = true
+
             await this.fetchPermissions()
             await this.fetchHouseholds()
             getAccessToken().then((token) => {
@@ -83,9 +92,14 @@ export const useAuthStore = defineStore('auth', {
             if(this.returnUrl === null)
             {
                 await this.$router.push("/");
-                return;
+                return {
+                    success: true
+                };
             }
             await this.$router.push(this.returnUrl)
+            return {
+                success: true
+            }
         },
         async logout()
         {
@@ -229,6 +243,10 @@ export const useAuthStore = defineStore('auth', {
                 text: i18n.global.t('toasts.text.info.ownership_received'),
                 type: 'info'
             })
+        },
+        async resendConfirmation(username: string){
+            const success = await this.userEndpoint.axios.resendConfirmationEmail(username)
+            return success
         }
     },
     getters: {

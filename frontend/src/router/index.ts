@@ -21,6 +21,9 @@ import products from "@/router/routes/products"
 import boxes from "@/router/routes/boxes.ts"
 import locations from "@/router/routes/locations.ts";
 import QrScanner from "@/views/QrScanner.vue";
+import Register from "@/views/Register.vue";
+import ForgotPassword from "@/views/ForgotPassword.vue";
+import MissingConfirmation from "@/views/MissingConfirmation.vue";
 
 
 
@@ -33,7 +36,28 @@ const vueRouter =  createRouter({
       component: Login,
       meta: {
         requiresAuth: false,
-        fillHeight: true
+        onlyUnauthorized: true,
+        fillHeight: false
+      }
+    },
+    {
+      path: "/register",
+      name: "register",
+      component: Register,
+      meta: {
+        requiresAuth: false,
+        onlyUnauthorized: true,
+        fillHeight: false
+      }
+    },
+    {
+      path: "/forgot-password",
+      name: "forgot password",
+      component: ForgotPassword,
+      meta: {
+        requiresAuth: false,
+        onlyUnauthorized: true,
+        fillHeight: false
       }
     },
     {
@@ -46,6 +70,17 @@ const vueRouter =  createRouter({
         fillHeight: true,
         requiresHousehold: false,
         tokenized: true
+      }
+    },
+    {
+      path: "/confirmation-missing",
+      name: "missing confirmation",
+      component: MissingConfirmation,
+      meta: {
+        requiresAuth: false,
+        fillHeight: true,
+        onlyUnauthorized: true,
+        requiresHousehold: false
       }
     },
     {
@@ -183,13 +218,14 @@ vueRouter.beforeEach(async (to, from) => {
     if(!(to.meta.requiresAuth ?? true)){
       return
     }
+
     if(to.path !== "/logout"){
       authStore.setReturnUrl(to.fullPath)
     }
     return "/login"
   }
 
-  if(to.path === "/login") {
+  if(to.meta.onlyUnauthorized ?? false) {
     return "/"
   }
 

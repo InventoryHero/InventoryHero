@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {usePrintSettings} from "@/store"
 import {Paper, supportedPapers} from "@/store/printSettings";
-import MarginSetting from "@/components/widgets/QrCode/Print/MarginSetting.vue";
+import MarginSetting from "@/components/widgets/QrCode/MarginSetting.vue";
 
 const printSettingStore = usePrintSettings()
 const pageSettingsVisible = ref(false)

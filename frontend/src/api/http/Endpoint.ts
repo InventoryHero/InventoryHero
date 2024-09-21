@@ -55,13 +55,20 @@ export class Endpoint {
                     await this.authStore.destroy()
                     break
                 case 403:
-                    if(error.response.data?.status !== null && error.response.data?.status !== undefined) {
-                        notify({
-                            title: i18n.global.t(`toasts.titles.error.${error.response.data.status ?? 'unauthorized'}`),
-                            text: i18n.global.t(`toasts.text.error.${error.response.data.status ?? 'unauthorized'}`),
-                            type: 'error'
-                        })
+                    if(error.response.data?.status === null || error.response.data?.status === undefined){
+                        break
                     }
+
+                    if(error.response.data.status === "email_not_confirmed"){
+                        break
+                    }
+
+
+                    notify({
+                        title: i18n.global.t(`toasts.titles.error.${error.response.data.status ?? 'unauthorized'}`),
+                        text: i18n.global.t(`toasts.text.error.${error.response.data.status ?? 'unauthorized'}`),
+                        type: 'error'
+                    })
                     //await this.authStore.destroy();
                     break
                 case 404:

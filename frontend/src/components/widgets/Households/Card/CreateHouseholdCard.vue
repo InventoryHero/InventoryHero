@@ -96,7 +96,7 @@ watch(collapsed, (newValue) => {
         <v-form
             ref="household-form"
             action=""
-            @submit.prevent=""
+            @submit.prevent="(event) => event.preventDefault()"
         >
           <v-row
             no-gutters

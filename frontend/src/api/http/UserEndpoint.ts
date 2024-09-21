@@ -34,10 +34,17 @@ export class UserEndpoint extends Endpoint{
                 accessToken: data.access_token,
                 refreshToken: data.refresh_token
             })
-            return true
+            return {
+                success: true
+            }
         }
         this.handleNonErrorNotifications(response)
-        return false
+        const error = (response as unknown) as AxiosError;
+        const data = error.response?.data as {status?: string}|undefined
+        return {
+            success: false,
+            message: data?.status
+        }
     }
 
     public async logout(){
@@ -194,6 +201,31 @@ export class UserEndpoint extends Endpoint{
         }
     }
 
+    public async resendConfirmationEmail(user: string){
+
+        const passwordResetAxios = axios.create()
+        try{
+            const response = await passwordResetAxios.get(`${baseURL}user/confirmation/resend/${user}`)
+            if(response.status === 200){
+                return {
+                    success: true,
+                    message: ""
+                };
+            }
+            return {
+                success: false,
+                message: response.data.message
+            }
+        } catch(error: unknown){
+            const e = error as AxiosError
+            const data = e.response?.data as {status?: string}|undefined
+            return {
+                success: false,
+                message: data?.status ?? ''
+            }
+        }
+    }
+
 
     // functions that use separate axios
     public async forgotPassword(email: string){
@@ -206,6 +238,10 @@ export class UserEndpoint extends Endpoint{
                     success: true,
                     message: ""
                 };
+            }
+            return {
+                success: false,
+                message: response.data.message
             }
         } catch(error: unknown){
             const e = error as AxiosError
@@ -228,6 +264,10 @@ export class UserEndpoint extends Endpoint{
                     message: ""
                 };
             }
+            return {
+                success: false,
+                message: response.data.message
+            }
         } catch(error: unknown){
             const e = error as AxiosError
             const data = e.response?.data as {status?: string}|undefined
@@ -249,6 +289,10 @@ export class UserEndpoint extends Endpoint{
                     success: true,
                     message: ""
                 };
+            }
+            return {
+                success: false,
+                message: response.data.message
             }
         } catch(error: unknown){
             const e = error as AxiosError

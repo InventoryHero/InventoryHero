@@ -34,14 +34,19 @@ class AdminEndpoint(Blueprint):
                 return jsonify(status="user_not_found"), 422
             if user.email_confirmed:
                 return jsonify(status="account_already_confirmed"), 400
-            confirmation_code = None
-            if self.app.config["CONFIRMATION_NEEDED"]:
-                confirmation_code = uuid.uuid4()
+
+            # this should be default, but who knows
+            if not self.app.config["SMTP_ENABLED"]:
+                user.confirmation_code = None
+                user.email_confirmed = True
+                self.db.session.commit()
+                return jsonify(status="success"), 200
+
+            confirmation_code = uuid.uuid4()
             user.confirmation_code = confirmation_code
-            if self.app.config["CONFIRMATION_NEEDED"]:
-                mail = Mail(self.app.config["SMTP"], self.app.config["APP_URL"])
-                mail.send_registration_confirmation(user.email, confirmation_code)
             self.db.session.commit()
+            mail = Mail(self.app.config["SMTP"], self.app.config["APP_URL"])
+            mail.send_registration_confirmation(user.email, confirmation_code)
             return jsonify(status="success"), 200
 
         @self.route("/reset-password/<int:user_id>", methods=["POST"])

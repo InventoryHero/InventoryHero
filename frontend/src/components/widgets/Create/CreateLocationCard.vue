@@ -77,7 +77,7 @@ watch(tab, (newValue: TabType, oldValue: TabType) => {
       :request-in-progress="postingLocation"
   >
     <v-form
-        @submit.prevent
+        @submit.prevent="(event) => event.preventDefault()"
         ref="add-form"
         :disabled="postingLocation"
     >

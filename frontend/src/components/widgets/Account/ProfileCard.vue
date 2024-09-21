@@ -184,7 +184,7 @@ onBeforeRouteLeave(() => {
         ref="userForm"
         v-model="isValid"
         :disabled="saving"
-        @submit.prevent=""
+        @submit.prevent="(event) => event.preventDefault()"
       >
         <v-row dense>
           <v-col>

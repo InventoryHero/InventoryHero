@@ -77,31 +77,32 @@ class User(Blueprint):
                 return jsonify(status="email_in_use"), 409
 
             confirmation_code = None
-            if self.app.config["CONFIRMATION_NEEDED"]:
+            if self.app.config["SMTP_ENABLED"]:
                 confirmation_code = uuid.uuid4()
 
             user = ApplicationUser(
                 username=username,
                 email=email,
                 password=password.decode("utf-8"),
-                email_confirmed=not self.app.config["CONFIRMATION_NEEDED"],
+                email_confirmed=not self.app.config["SMTP_ENABLED"],
                 confirmation_code=confirmation_code
             )
-
-            if self.app.config["CONFIRMATION_NEEDED"]:
-                mail = Mail(self.app.config["SMTP"], self.app.config["APP_URL"])
-                mail.send_registration_confirmation(email, confirmation_code)
 
             try:
                 self.db.session.add(user)
                 self.db.session.commit()
+
+                if self.app.config["SMTP_ENABLED"]:
+                    mail = Mail(self.app.config["SMTP"], self.app.config["APP_URL"])
+                    mail.send_registration_confirmation(email, confirmation_code)
+
             except sqlalchemy.exc.IntegrityError as e:
                 self.app.logger.error(e)
 
             return jsonify(
                 status="success",
                 user=username,
-                confirmation=not self.app.config["CONFIRMATION_NEEDED"]
+                confirmation=user.email_confirmed
             ), 200
 
         @self.route("/login", methods=["POST"])
@@ -118,12 +119,13 @@ class User(Blueprint):
             if user is None:
                 return {"status": "username_not_found"}, 401
 
-            if not user.email_confirmed:
-                return jsonify(status="email_not_confirmed"), 403
-
             pw_valid = bcrypt.checkpw(password.encode('utf-8'), user.password.encode('utf-8'))
             if not pw_valid:
                 return {"status": "username_or_pw_invalid"}, 401
+
+            if not user.email_confirmed:
+                return jsonify(status="email_not_confirmed"), 403
+
             access_token = create_access_token(identity=user)
             refresh_token = create_refresh_token(identity=user)
             return jsonify(access_token=access_token, refresh_token=refresh_token)
@@ -246,7 +248,7 @@ class User(Blueprint):
 
             confirmation_code = None
             email_confirmed = True
-            if self.app.config["CONFIRMATION_NEEDED"]:
+            if self.app.config["SMTP_ENABLED"]:
                 confirmation_code = uuid.uuid4()
                 email_confirmed = False
 
@@ -269,6 +271,9 @@ class User(Blueprint):
 
             self.db.session.add(user)
             self.db.session.commit()
+            if self.app.config["SMTP_ENABLED"]:
+                mail = Mail(self.app.config["SMTP"], self.app.config["APP_URL"])
+                mail.send_registration_confirmation(email, confirmation_code)
 
             return jsonify(status="success", user=user), 200
 
@@ -333,10 +338,12 @@ class User(Blueprint):
             return request_password_reset_mail(current_user)
 
         def request_password_reset_mail(user):
-            if not self.app.config["SMTP"]["in_use"]:
+            if not self.app.config["SMTP_ENABLED"]:
                 return jsonify(status="email_not_configured"), 503
             if user is None:
                 return jsonify(), 200
+            if not user.email_confirmed:
+                return jsonify(status="email_not_confirmed"), 403
             reset_id = uuid.uuid4().hex
             # TODO ABORT IF NO EMAIL CONFIGURED AND NOTIFY USER
             mail = Mail(self.app.config["SMTP"], self.app.config["APP_URL"])
@@ -411,6 +418,26 @@ class User(Blueprint):
             if reset_request.password_reset_time + timedelta(hours=24) < datetime.now(UTC):
                 return False, "expired", None
             return True, "", reset_request
+
+        @self.route("/confirmation/resend/<string:username>", methods=["GET"])
+        def resend_confirmation(username):
+            user = ApplicationUser.query.filter_by(username=username).first()
+            if user is None:
+                return jsonify(status="user_not_found"), 422
+            if user.email_confirmed:
+                return jsonify(status="account_already_confirmed"), 400
+
+            if not self.app.config["SMTP_ENABLED"]:
+                user.email_confirmed = True
+                user.confirmation_code = None
+                return jsonify(status="success"), 200
+
+            confirmation_code = uuid.uuid4()
+            user.confirmation_code = confirmation_code
+            self.db.session.commit()
+            mail = Mail(self.app.config["SMTP"], self.app.config["APP_URL"])
+            mail.send_registration_confirmation(user.email, confirmation_code)
+            return jsonify(status="success"), 200
 
     def blacklist_token(self, token):
         jti = token["jti"]

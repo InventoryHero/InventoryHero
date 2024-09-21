@@ -196,6 +196,7 @@ onBeforeUnmount(() => {
       <v-form
         ref="form"
         v-model="valid"
+        @submit.prevent="(event) => event.preventDefault()"
       >
         <v-row dense>
           <v-col>
