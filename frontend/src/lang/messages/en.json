@@ -607,7 +607,8 @@
         "forgot_password_request": "@:toasts.titles.success.reset_password_mail"
       },
       "warning": {
-        "insufficient_permissions": "\uD83D\uDEAB You do not have the necessary permissions to perform this action."
+        "insufficient_permissions": "\uD83D\uDEAB You do not have the necessary permissions to perform this action.",
+        "email_not_confirmed": "The user's email needs to be confirmed"
       },
       "new-content": {
         "new": "{user} updated your household"
@@ -709,7 +710,8 @@
         "forgot_password_request": ""
       },
       "warning": {
-        "insufficient_permissions": ""
+        "insufficient_permissions": "",
+        "email_not_confirmed": ""
       },
       "new-content": {
         "new": "Some things in your household might have changed. Click here to load the most recent data!"

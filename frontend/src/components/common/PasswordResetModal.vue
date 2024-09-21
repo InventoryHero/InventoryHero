@@ -93,7 +93,7 @@ function sendEmail(){
     notify({
       title: $t(`toasts.titles.warning.${result.message}`),
       text: $t(`toasts.text.warning.${result.message}`),
-      type: "warning"
+      type: "warn"
     })
   })
 }
