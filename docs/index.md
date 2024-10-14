@@ -4,22 +4,22 @@ layout: home
 
 hero:
   name: "InventoryHero"
-  text: "InventoryHero"
-  tagline: My great project tagline
+  text: "Stay organized with ease, from room to room"
+  tagline: Your home, organized effortlessly
   actions:
     - theme: brand
-      text: Markdown Examples
-      link: /markdown-examples
+      text: Get started
+      link: /intro/about
     - theme: alt
-      text: API Examples
-      link: /api-examples
+      text: Demo
+      link: https://demo.inventory-hero.com
 
-features:
-  - title: Feature A
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature B
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
-  - title: Feature C
-    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+#features:
+#  - title: Feature A
+#    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+#  - title: Feature B
+#    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
+#  - title: Feature C
+#    details: Lorem ipsum dolor sit amet, consectetur adipiscing elit
 ---
 
