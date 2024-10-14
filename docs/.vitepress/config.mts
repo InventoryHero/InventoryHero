@@ -4,7 +4,6 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: "InventoryHero",
   description: "InventoryHero",
-  base: "/InventoryHero",
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
