@@ -1,0 +1,48 @@
+name: Deploy VitePress Docs to GitHub Pages on Release
+
+on:
+  release:
+    types: [published]  # This runs the workflow when a release is published
+
+  workflow_dispatch: # Allows manual triggering of the workflow
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Set up Node.js to run build commands
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18 # Use your preferred Node.js version
+
+      # Cache dependencies to speed up future builds
+      - name: Cache node_modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      # Install dependencies for VitePress
+      - name: Install dependencies
+        run: npm install
+
+      # Build the VitePress documentation
+      - name: Build VitePress site
+        run: npm run docs:build
+        env:
+          NODE_ENV: production
+
+      # Deploy to GitHub Pages using the output from VitePress
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/.vitepress/dist
