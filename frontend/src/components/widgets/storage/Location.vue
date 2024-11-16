@@ -108,7 +108,7 @@ onMounted(() => {
 
 <template>
   <confirmation-dialog
-      :dialog-opened="confirmationDialog"
+      v-model:dialog-opened="confirmationDialog"
       :title="$t('locations.confirm_delete.title')"
       :text="$t('locations.confirm_delete.text')"
       :confirm-text="$t('locations.confirm_delete.confirm')"

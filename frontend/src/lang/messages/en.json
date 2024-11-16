@@ -10,30 +10,48 @@
   "not_found": "We couldn’t find what you were looking for, but this cat’s ready for an adventure!",
   "back_to_home": "Back to mission control",
   "logging_out": "We are logging you out, please wait a few seconds",
-  "password_reset": {
-    "reset_password": "@:titles.password_reset",
+  "forgot_password": {
+    "title": "\uD83D\uDD11 @:titles.password_reset",
+    "email_disabled":  "It looks like email notifications are not enabled. Please reach out to your administrator directly for assistance.",
     "email_placeholder": "@:password_reset.email_label",
     "email_label": "@:account.profile_card.email",
-    "description": "Please enter your email address, and we will send you instructions on how to reset your password.",
-    "password": "@:login.register.password",
-    "repeat_password": "@:login.register.repeat_password",
+    "description": "Please enter your InventoryHero email address, and we will send you instructions on how to reset your password.",
+    "password": "@:register.password",
+    "repeat_password": "@:register.repeat_password",
+    "btn": "Request Link",
+    "to_login": "Back to log in",
     "rules": {
-      "email_needed": "@:login.register.rules.email_needed",
-      "password_needed": "@:login.register.rules.password_needed",
-      "passwords_not_equal": "@:login.register.rules.passwords_not_equal"
+      "email_needed": "@:register.rules.email_needed",
+      "password_needed": "@:register.rules.password_needed",
+      "passwords_not_equal": "@:register.rules.passwords_not_equal"
+    }
+  },
+  "reset_password": {
+    "forgot_password": "@:titles.password_reset",
+    "old_password": "Old password",
+    "password": "@:register.password",
+    "password_repeat": "@:register.repeat_password",
+    "title": "\uD83D\uDD11 @:titles.password_reset",
+    "subtitle": "Enter a new password below to continue your journey with InventoryHero.",
+    "admin_title": "@:reset_password.title of {username}",
+    "rules": {
+      "email_needed": "@:register.rules.email_needed",
+      "password_needed": "@:register.rules.password_needed",
+      "passwords_not_equal": "@:register.rules.passwords_not_equal"
     },
-    "card": {
-      "title": "@:titles.password_reset",
-      "close": "Close",
-      "reset_password": "@:save",
-      "error": {
-        "invalid_token": "Your password reset request appears to be invalid. Please double-check that you've copied everything correctly from the email.",
-        "expired": "Your password reset link has expired. Please request a new link to reset your password."
-
-      }
+    "to_reset": "Go to reset",
+    "to_login": "Go to log in",
+    "reset_password": "Set new password",
+    "email_disabled": "Your app configuration disabled email support, so you need to tell your user the reset password manually",
+    "send_email": "Send Reset Email",
+    "email_or_direct": "Either reset the user's password by clicking the \" @:reset_password.send_email \" button or do it manually. If you are doing manually you need to notify your user to reset their password afterwards!",
+    "error": {
+      "invalid_token": "Your password reset request appears to be invalid. Please verify that you've copied everything correctly from the email.",
+      "expired": "Your password reset link has expired. Please request a new link to reset your password."
     }
   },
   "settings": {
+    "back": "Back",
     "ui": {
       "title": "UI Settings",
       "preset": "Theme preset",
@@ -299,11 +317,6 @@
       "save_changes": "Save",
       "lastname": "Surname",
       "firstname": "First name"
-    },
-    "password_reset": {
-      "forgot_password": "@:login.login.forgot_password_btn",
-      "old_password": "Old password",
-      "title": "@:titles.password_reset"
     }
   },
   "rules": {
@@ -311,31 +324,35 @@
     "username_fmt_rule": "Username must be 3-25 characters long and can only include letters, numbers, dots, hyphens, and underscores.",
     "min_password_length": "The password needs to have at least 8 characters"
   },
+
   "login": {
-    "login": {
-      "title": "Login",
-      "forgot_password_btn": "Forgot password?",
-      "btn": "Login",
-      "username": "Username",
-      "password": "Password",
-      "rules": {
-        "username_needed": "An username needs to be supplied",
-        "password_needed": "A password needs to be supplied"
-      }
-    },
-    "register": {
-      "title": "Register",
-      "username": "@:login.login.username",
-      "password": "@:login.login.password",
-      "email": "Email",
-      "repeat_password": "Repeat password",
-      "btn": "Sign up!",
-      "rules": {
-        "username_needed": "@:login.login.rules.username_needed",
-        "password_needed": "@:login.login.rules.password_needed",
-        "email_needed": "An email must be supplied",
-        "passwords_not_equal": "Passwords do not match"
-      }
+    "title": "\uD83D\uDE80 Welcome to InventoryHero",
+    "subtitle": "Power up your Inventory Management",
+    "forgot_password_btn": "Forgot password?",
+    "btn": "Login",
+    "username": "Username",
+    "password": "Password",
+    "register": "Sign up now",
+    "email_not_confirmed": "Your email address is not confirmed. Please check your inbox or click this message to request a new confirmation email",
+    "rules": {
+      "username_needed": "An username needs to be supplied",
+      "password_needed": "A password needs to be supplied"
+    }
+  },
+  "register": {
+    "title": "\uD83C\uDF89 Join InventoryHero now",
+    "subtitle": "\uD83D\uDE80 Start managing your inventory effortlessly",
+    "username": "@:login.username",
+    "password": "@:login.password",
+    "email": "Email",
+    "repeat_password": "Repeat password",
+    "btn": "Sign up!",
+    "back_to_login": "Log in here",
+    "rules": {
+      "username_needed": "@:login.rules.username_needed",
+      "password_needed": "@:login.rules.password_needed",
+      "email_needed": "An email must be supplied",
+      "passwords_not_equal": "Passwords do not match"
     }
   },
   "storage_selection": {
@@ -385,6 +402,7 @@
   "scan": {
     "title": "Scan Storage QR Code",
     "go_to": "Go to {name}",
+    "camera": "Camera",
     "select_camera": "Please select your camera to proceed",
     "camera_paused": "The camera feed is currently paused, to scan different codes, click here",
     "loading_camera": "Please wait, loading camera feed"
@@ -412,7 +430,7 @@
     "create": "Add new item - InventoryHero",
     "administration": "Administration",
     "password_reset": "Reset Password",
-    "test": ""
+    "qr_code_scanner": "Scan QRCode - InventoryHero"
   },
   "confirmation": {
     "verifying": "Verifying your email now, this may take a moment...",
@@ -420,8 +438,13 @@
     "email_confirmed": "Email verified, thank you 😊",
     "activated": "@:toasts.text.success.register",
     "failure": "Failure while verifying email",
-    "invalid_code": "This email address was already verified, try logging in please",
-    "go_to_login": "Go to login"
+    "invalid_code": "This email address has already been verified. Please log in to start using InventoryHero.",
+    "go_to_login": "Go to login",
+    "not_confirmed": {
+      "title": "Confirm Your Email to Unlock InventoryHero",
+      "subtitle": "It looks like your email hasn’t been confirmed. Enter your username to resend the confirmation email and finish setting up your account.",
+      "resend": "Resend Activation email"
+    }
   },
   "join": {
     "title": "{owner} wants you to join their household!",
@@ -449,7 +472,7 @@
       "last_name": "@:account.profile_card.lastname",
       "first_name": "@:account.profile_card.firstname",
       "admin": "Administrator",
-      "password": "@:login.login.password",
+      "password": "@:login.password",
       "roles": "Roles",
       "save_user": "Save User",
       "delete_confirm_title_single": "Delete User",
@@ -480,17 +503,6 @@
         "username_taken": "This username is already in use",
         "email_taken": "This email is already in use",
         "field_required": "This field is required"
-      },
-      "password_reset": {
-        "title": "Reset password of {username}",
-        "password_needed": "@:login.login.password_needed",
-        "passwords_not_equal": "@:login.register.passwords_not_equal",
-        "email_disabled": "Your app configuration disabled email support, so you need to tell your user the resetted password manually",
-        "send_email": "Send Reset Email",
-        "email_or_direct": "Either reset the user's password by clicking the \" @:administration.users.password_reset.send_email \" button or do it manually. If you are doing manually you need to notify your user to reset their password afterwards!",
-        "password": "@:administration.users.password",
-        "password_repeat": "@:login.register.repeat_password",
-        "save": "@:save"
       }
     }
   },
@@ -503,8 +515,7 @@
         "some_deleted": "Not all users could be deleted properly",
         "household_kick": "\uD83D\uDEAA Kicked from Household",
         "household_deleted": "❌ Household Deleted",
-        "no_storage_selected": "No storage selected",
-        "close_dialog_first": "Close the dialog first"
+        "no_storage_selected": "No storage selected"
       },
       "error": {
         "invalid_request": "Invalid request",
@@ -556,7 +567,9 @@
         "cannot_kick_yourself ": "❌ Action Not Allowed",
         "household_invalid_update_data": "❌ Invalid Update Data",
         "user_not_found": "\uD83D\uDD0D User Not Found",
-        "no_admin": "\uD83D\uDEAB Admin Privileges Required"
+        "no_admin": "\uD83D\uDEAB Admin Privileges Required",
+        "user_not_in_household": "You are not a member of the household",
+        "email_not_confirmed": "Please confirm your email first"
       },
       "success": {
         "default_household_set": "Default household updated",
@@ -589,10 +602,13 @@
         "kicked_from_household": "User removed",
         "household_transferred": "Household transferred",
         "household_updated": "Household updated",
-        "household_deleted": "Household deleted"
+        "household_deleted": "Household deleted",
+        "reset_password_mail": "Password reset email sent",
+        "forgot_password_request": "@:toasts.titles.success.reset_password_mail"
       },
       "warning": {
-        "insufficient_permissions": "\uD83D\uDEAB You do not have the necessary permissions to perform this action."
+        "insufficient_permissions": "\uD83D\uDEAB You do not have the necessary permissions to perform this action.",
+        "email_not_confirmed": "The user's email needs to be confirmed"
       },
       "new-content": {
         "new": "{user} updated your household"
@@ -604,8 +620,7 @@
         "some_deleted": "",
         "household_kick": "You have been removed from the household {name}",
         "household_deleted": "The household {name} you were part of has been deleted",
-        "no_storage_selected": "To print qr codes, please select a storage",
-        "close_dialog_first": ""
+        "no_storage_selected": "To print qr codes, please select a storage"
       },
       "error": {
         "invalid_request": "",
@@ -656,7 +671,9 @@
         "cannot_kick_yourself s": "You cannot kick yourself from the household.",
         "household_invalid_update_data": "The data provided for the household update is invalid. Please check and try again.",
         "user_not_found": "We couldn’t find the user. Please verify the details and try again.",
-        "no_admin": ""
+        "no_admin": "",
+        "user_not_in_household": "",
+        "email_not_confirmed": ""
       },
       "success": {
         "default_household_set": "",
@@ -688,10 +705,13 @@
         "kicked_from_household": "",
         "household_transferred": "",
         "household_updated": "",
-        "household_deleted": ""
+        "household_deleted": "",
+        "reset_password_mail": "",
+        "forgot_password_request": ""
       },
       "warning": {
-        "insufficient_permissions": ""
+        "insufficient_permissions": "",
+        "email_not_confirmed": ""
       },
       "new-content": {
         "new": "Some things in your household might have changed. Click here to load the most recent data!"

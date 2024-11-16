@@ -136,7 +136,7 @@ function removeFromHousehold(){
 <template>
 
   <confirmation-dialog
-    :dialog-opened="kickConfirmDialogVisible"
+    v-model:dialog-opened="kickConfirmDialogVisible"
     v-bind="confirmDialogConfig"
     :on-cancel="closeKickConfirmDialog"
     :on-confirm="() => {
@@ -150,7 +150,7 @@ function removeFromHousehold(){
   </confirmation-dialog>
 
   <confirmation-dialog
-    :dialog-opened="transferOwnershipConfirmDialogVisible"
+    v-model:dialog-opened="transferOwnershipConfirmDialogVisible"
     :title="t('households.edit.transfer_ownership.confirm.title')"
     :cancel-text="t('households.edit.transfer_ownership.confirm.abort')"
     :confirm-text="t('households.edit.transfer_ownership.confirm.confirm')"

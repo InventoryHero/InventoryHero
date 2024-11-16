@@ -8,21 +8,22 @@ const {fromAdmin=false, smtpEnabled=false} = defineProps<{
 
 <template>
   <v-sheet
-      class="pa-4 mb-2"
+      class="pa-4 mb-2 d-flex text-justify d-inline-block"
       color="accent"
       rounded="lg"
+      style="hyphens:auto;"
       v-if="fromAdmin"
   >
     <span
         v-if="!smtpEnabled"
     >
-      {{  $t("administration.users.password_reset.email_disabled") }}
+      {{  $t("reset_password.email_disabled") }}
     </span>
 
     <span
         v-else
     >
-      {{  $t("administration.users.password_reset.email_or_direct") }}
+      {{  $t("reset_password.email_or_direct") }}
     </span>
   </v-sheet>
 </template>

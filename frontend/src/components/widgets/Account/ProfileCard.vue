@@ -46,6 +46,10 @@ const username = computed({
     return editedData.value.username
   },
   set(value: string){
+    if(value === authStore.user?.username){
+      editedData.value.username = undefined
+      return
+    }
     editedData.value.username = value
     generalSocket.isUserNameTaken(value ?? '').then((isTaken: boolean) => {
       if(value === authStore.user?.username){
@@ -64,6 +68,10 @@ const email = computed({
     return editedData.value.email
   },
   set(value: string){
+    if(value === authStore.user?.email){
+      editedData.value.email = undefined
+      return
+    }
     editedData.value.email = value
     generalSocket.isEmailTaken(value ?? '').then((isTaken: boolean) => {
       if(value === authStore.user?.email){
@@ -82,6 +90,10 @@ const firstname = computed({
     return editedData.value.firstName
   },
   set(value: string){
+    if(value === authStore.user?.firstName){
+      editedData.value.firstName = undefined
+      return
+    }
     editedData.value.firstName = value
   }
 })
@@ -93,6 +105,10 @@ const lastname = computed({
     return editedData.value.lastName
   },
   set(value: string){
+    if(value === authStore.user?.lastName){
+      editedData.value.lastName = undefined
+      return
+    }
     editedData.value.lastName = value
   }
 })
@@ -168,7 +184,7 @@ onBeforeRouteLeave(() => {
         ref="userForm"
         v-model="isValid"
         :disabled="saving"
-        @submit.prevent=""
+        @submit.prevent="(event) => event.preventDefault()"
       >
         <v-row dense>
           <v-col>

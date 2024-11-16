@@ -63,30 +63,10 @@ function toggleNav(){
         v-if="isAuthorized"
         icon="mdi-qrcode-scan"
         color="primary"
-        @click="emit('scanQrCode')"
+        to="/scan-qr"
       />
       <app-bar-overflow-menu
-          v-if="isAuthorized"
       />
-
-      <template
-          v-else
-      >
-        <app-icon-btn
-            v-if="!isSettings"
-            icon="mdi-cog"
-            size="x-large"
-            @click="() => {$router.push('/settings')}"
-        />
-        <app-icon-btn
-            v-else
-            icon="mdi-arrow-left"
-            size="x-large"
-            @click="() => {$router.push('/login')}"
-        />
-
-      </template>
-
     </template>
 
 

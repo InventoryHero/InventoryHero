@@ -64,7 +64,6 @@ onBeforeRouteLeave(()=> {
   if(printConfigDialogVisible.value || selectionDialogVisible.value){
     closeSelectionDialog()
     closePrintConfigDialog()
-    return false
   }
 })
 

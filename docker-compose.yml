@@ -26,7 +26,6 @@ services:
       INVENTORYHERO_DB_PASSWORD: inventoryhero
 
       # if self registration is allowed / email confirmation needed
-      INVENTORYHERO_CONFIRMATION_NEEDED: false
       INVENTORYHERO_REGISTRATION_ALLOWED: false
 
       # default user config (only needed on first run)

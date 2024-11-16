@@ -36,15 +36,15 @@ const checkingSmtpConfig = ref<boolean>(false)
 const passwordForm = useTemplateRef("passwordForm")
 
 const rules = {
-  required: (value: string) => value !== '' || $t('administration.users.password_reset.password_needed'),
-  mismatch: (value: string) => newPassword.value === value || $t('administration.users.password_reset.passwords_not_equal'),
+  required: (value: string) => value !== '' || $t('reset_password.rules.password_needed'),
+  mismatch: (value: string) => newPassword.value === value || $t('reset_password.rules.passwords_not_equal'),
 }
 
 const resetEmailText = computed(() =>{
   if(fromAdmin){
-    return $t('administration.users.password_reset.send_email')
+    return $t('reset_password.send_email')
   }
-  return $t('account.password_reset.forgot_password')
+  return $t('reset_password.forgot_password')
 })
 
 async function savePassword(){
@@ -69,8 +69,8 @@ async function savePassword(){
   }
 
   notify({
-    title: $t(`toasts.titles.success.password_reset${fromAdmin ? '_admin' : ''}`),
-    text: $t(`toasts.text.success.password_reset${fromAdmin ? '_admin' : ''}`),
+    title: $t(`toasts.titles.success.reset_password${fromAdmin ? '_admin' : ''}`),
+    text: $t(`toasts.text.success.reset_password${fromAdmin ? '_admin' : ''}`),
     type: "success"
   })
   closeModal()
@@ -83,8 +83,8 @@ function sendEmail(){
     resettingPassword.value = false
     if(result.success){
       notify({
-        title: $t(`toasts.titles.success.password_reset${fromAdmin ? '_admin' : ''}_mail`),
-        text: $t(`toasts.text.success.password_reset${fromAdmin ? '_admin' : ''}_mail`),
+        title: $t(`toasts.titles.success.reset_password${fromAdmin ? '_admin' : ''}_mail`),
+        text: $t(`toasts.text.success.reset_password${fromAdmin ? '_admin' : ''}_mail`),
         type: "success"
       })
       closeModal()
@@ -93,7 +93,7 @@ function sendEmail(){
     notify({
       title: $t(`toasts.titles.warning.${result.message}`),
       text: $t(`toasts.text.warning.${result.message}`),
-      type: "warning"
+      type: "warn"
     })
   })
 }
@@ -139,24 +139,22 @@ onMounted(() => {
                   :active="resettingPassword || checkingSmtpConfig"
               />
             </template>
-            <v-card-title
-              class="d-flex justify-space-between align-center"
-            >
-              <span
-                v-if="fromAdmin"
-              >
-                {{ $t("administration.users.password_reset.title", {username: userName}) }}
-              </span>
-              <span
-                v-else
-              >
-                {{ $t('account.password_reset.title') }}
-              </span>
+            <template v-slot:append>
               <app-icon-btn
                   icon="mdi-close"
                   @click="closeModal"
               />
-            </v-card-title>
+            </template>
+            <template v-slot:title>
+
+              <template v-if="fromAdmin">
+                {{ $t("reset_password.admin_title", {username: userName}) }}
+              </template>
+              <template v-else>
+                {{ $t('reset_password.title') }}
+              </template>
+
+            </template>
             <v-card-text>
               <password-reset-admin-banner
                 :from-admin="fromAdmin"
@@ -164,52 +162,86 @@ onMounted(() => {
               />
               <v-form
                   ref="passwordForm"
+                  @submit.prevent="(event) => event.preventDefault()"
               >
-                <app-password-textfield
-                    v-if="!fromAdmin"
-                    v-bind="textFieldStyle"
-                    :label="$t('account.password_reset.old_password')"
-                    class="mb-4"
-                    v-model="oldPassword"
-                    :rules="[rules.required]"
-                    :disable-min-length="true"
-                />
+                <v-row dense>
+                  <v-col>
+                    <app-password-textfield
+                        v-if="!fromAdmin"
+                        v-bind="textFieldStyle"
+                        :label="$t('reset_password.old_password')"
+                        v-model="oldPassword"
+                        :rules="[rules.required]"
+                        disable-min-length
+                    />
+                  </v-col>
+                </v-row>
 
-                <app-password-textfield
-                    v-bind="textFieldStyle"
-                    :label="$t('administration.users.password_reset.password')"
-                    class="mb-4"
-                    v-model="newPassword"
-                    :rules="[rules.required]"
-                />
+                <v-row dense>
+                  <v-col>
+                    <app-password-textfield
+                        v-bind="textFieldStyle"
+                        :label="$t('reset_password.password')"
+                        v-model="newPassword"
+                        :rules="[rules.required]"
+                    />
+                  </v-col>
+                </v-row>
 
-                <app-password-textfield
-                    v-bind="textFieldStyle"
-                    :label="$t('administration.users.password_reset.password_repeat')"
-                    class="mb-4"
-                    v-model="newPasswordRepeat"
-                    :rules="[rules.mismatch]"
-                />
+                <v-row dense>
+                  <v-col>
+                    <app-password-textfield
+                        v-bind="textFieldStyle"
+                        :label="$t('reset_password.password_repeat')"
+                        v-model="newPasswordRepeat"
+                        disable-min-length
+                        :rules="[rules.mismatch]"
+                    />
+                  </v-col>
+                </v-row>
               </v-form>
             </v-card-text>
-            <v-card-actions
-                class="overflow-x-auto"
-            >
-              <v-btn
-                  prepend-icon="mdi-lock-reset"
-                  :text="resetEmailText"
-                  @click="sendEmail"
-                  :disabled="resettingPassword || checkingSmtpConfig || !smtpEnabled"
-
-              />
-              <v-spacer />
-              <v-btn
-                  prepend-icon="mdi-content-save"
-                  :text="$t('administration.users.password_reset.save')"
-                  @click="savePassword"
-                  :disabled="resettingPassword"
-                  :loading="resettingPassword"
-              />
+            <v-card-actions>
+              <v-row
+                justify="center"
+                justify-sm="end"
+                justify-md="end"
+                justify-lg="end"
+                dense
+              >
+                <v-col
+                    lg="3"
+                    md="3"
+                    sm="3"
+                    class="d-flex justify-center justify-lg-end justify-md-end justify-sm-end"
+                >
+                  <v-btn
+                      prepend-icon="mdi-lock-reset"
+                      :text="resetEmailText"
+                      @click="sendEmail"
+                      :disabled="resettingPassword || checkingSmtpConfig || !smtpEnabled"
+                      density="comfortable"
+                      variant="outlined"
+                  />
+                </v-col>
+                <v-col
+                    lg="3"
+                    md="3"
+                    sm="3"
+                    class="d-flex justify-center justify-lg-end justify-md-end justify-sm-end"
+                >
+                  <v-btn
+                      prepend-icon="mdi-content-save"
+                      :text="$t('reset_password.reset_password')"
+                      color="green"
+                      variant="elevated"
+                      density="comfortable"
+                      @click="savePassword"
+                      :disabled="resettingPassword"
+                      :loading="resettingPassword"
+                  />
+                </v-col>
+              </v-row>
 
             </v-card-actions>
           </v-card>

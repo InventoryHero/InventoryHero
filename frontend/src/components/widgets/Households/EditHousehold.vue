@@ -91,19 +91,11 @@ onBeforeMount(() => {
 })
 
 const deletingHousehold = ref(false)
-const deleteConfirmed = ref(false)
-const {
-  isVisible: deleteConfirmDialogVisible,
-  openDialog: openDeleteConfirmDialog,
-  closeDialog: closeDeleteConfirmDialog
-} = useDialogConfig()
+
 function deleteHousehold(){
-  if(!deleteConfirmed.value){
-    openDeleteConfirmDialog()
-    return
-  }
   deletingHousehold.value = true
   householdEndpoint.deleteHousehold(householdId.value).then((success) => {
+
     if(success){
       authStore.removeHousehold(householdId.value, "deleted")
       router.push("/households")
@@ -111,6 +103,13 @@ function deleteHousehold(){
     deletingHousehold.value = false
   })
 }
+const {
+  reallyDo,
+  confirmationDialog,
+  saveAction
+} = useConfirmationSetup(deleteHousehold)
+
+
 
 function removeFromHousehold(id: number){
   const member = householdMembers.value.find(member => member.id === id)
@@ -154,17 +153,14 @@ function reset(){
 <template>
 
   <confirmation-dialog
-      :dialog-opened="deleteConfirmDialogVisible"
+      v-model:dialog-opened="confirmationDialog"
       :title="t('households.edit.delete.confirm.title')"
       :cancel-text="t('households.edit.delete.confirm.abort')"
       :confirm-text="t('households.edit.delete.confirm.confirm')"
       cancel-icon="mdi-cancel"
       confirm-icon="mdi-delete"
-      :on-cancel="closeDeleteConfirmDialog"
-      :on-confirm="() => {
-        deleteConfirmed = true
-        deleteHousehold()
-    }"
+      :on-cancel="() => confirmationDialog = false"
+      :on-confirm="reallyDo"
   >
     <template v-slot:text>
       <p v-html="t('households.edit.delete.confirm.text')"/>
@@ -253,7 +249,7 @@ function reset(){
               :text="t('households.edit.delete_household')"
               variant="tonal"
               color="red-accent-1"
-              @click="deleteHousehold"
+              @click="saveAction"
           />
         </v-card-actions>
       </v-card>

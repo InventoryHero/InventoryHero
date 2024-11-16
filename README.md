@@ -39,7 +39,6 @@ services:
       INVENTORYHERO_DB_PASSWORD: inventoryhero
 
       # if self registration is allowed / email confirmation needed
-      INVENTORYHERO_CONFIRMATION_NEEDED: false
       INVENTORYHERO_REGISTRATION_ALLOWED: false
 
       # default user config (only needed on first run)
@@ -74,7 +73,6 @@ The following environment variables are available to configure InventoryHero to 
 | INVENTORYHERO_DB_USER               | Database username                                                                                                |
 | INVENTORYHERO_DB_PASSWORD           | Database password                                                                                                |
 | INVENTORYHERO_APP_URL               | Needed such that confirmation emails have the proper URL set. (Should be the you configured for InventoryHero)   |
-| INVENTORYHERO_CONFIRMATION_NEEDED   | States if you want to force email confirmation upon registration                                                 |
 | INVENTORYHERO_SECRET_KEY            | JWT_SECRET_KEY used by Flask. Override this!                                                                     |
 | INVENTORYHERO_SMTP_FROM_ADDRESS     | The email address InventoryHero should send emails with                                                          |
 | INVENTORYHERO_SMTP_FROM_NAME        | The name InventoryHero should send emails with                                                                   |

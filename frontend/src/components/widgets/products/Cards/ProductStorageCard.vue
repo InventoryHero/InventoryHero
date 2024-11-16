@@ -82,7 +82,7 @@ function showStoredAtDetail(){
 <template>
 
   <confirmation-dialog
-      :dialog-opened="deleteConfirmDialog"
+      v-model:dialog-opened="deleteConfirmDialog"
       :title="$t('products.delete_detail.title', {storage: storage?.storage?.name ?? 'void'})"
       :text="$t('products.delete_detail.text')"
       :cancel-text="$t('products.delete_detail.cancel')"

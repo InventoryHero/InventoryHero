@@ -245,7 +245,7 @@ export default defineComponent({
         :confirm-text="$t('administration.users.delete')"
         :cancel-text="$t('administration.users.cancel')"
         confirm-icon="mdi-delete"
-        :dialog-opened="deleteModalActive"
+        v-model:dialog-opened="deleteModalActive"
         :on-confirm="deleteUser"
         :on-cancel="abortDeletion"
       />
