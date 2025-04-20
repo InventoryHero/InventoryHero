@@ -21,13 +21,13 @@ from hashlib import sha256
 
 @jwt.user_identity_loader
 def user_identity_lookup(user):
-    return user.id
+    return user
 
 
 @jwt.user_lookup_loader
 def user_lookup_callback(_jwt_header, jwt_data):
     identity = jwt_data["sub"]
-    return ApplicationUser.query.filter_by(id=identity).one_or_none()
+    return ApplicationUser.query.filter_by(username=identity).one_or_none()
 
 
 @jwt.token_in_blocklist_loader
@@ -126,19 +126,23 @@ class User(Blueprint):
             if not user.email_confirmed:
                 return jsonify(status="email_not_confirmed"), 403
 
-            access_token = create_access_token(identity=user)
-            refresh_token = create_refresh_token(identity=user)
+            access_token = create_access_token(identity=user.username)
+            refresh_token = create_refresh_token(identity=user.username)
+            self.app.logger.warning(user)
+            self.app.logger.warning(access_token)
             return jsonify(access_token=access_token, refresh_token=refresh_token)
 
         @self.route("", methods=["GET"])
         @jwt_required()
         def get_user():
+            self.app.logger.warning("halloooooo")
+            self.app.logger.error(current_user)
             return jsonify(current_user), 200
 
         @self.route("/refresh_token", methods=["POST"])
         @jwt_required(refresh=True)
         def refresh():
-            access_token = create_access_token(identity=current_user)
+            access_token = create_access_token(identity=current_user.username)
             return jsonify(access_token=access_token)
 
         @self.route("/logout", methods=["DELETE"])
