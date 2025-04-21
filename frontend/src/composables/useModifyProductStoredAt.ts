@@ -1,12 +1,12 @@
 import {ProductEndpoint} from "@/api/http";
 import {useProducts} from "@/store";
 import {ProductStorageMapping} from "@/types/api.ts";
-import useAxios from "@/composables/useAxios.ts";
+import useAxiosOld from "@/composables/useAxiosOld.ts";
 
 export default () => {
     const saving = ref(false)
     const deleting = ref(false)
-    const {axios: productEndpoint} = useAxios<ProductEndpoint>("product")
+    const {axios: productEndpoint} = useAxiosOld<ProductEndpoint>("product")
     const productStore = useProducts()
     // The reusable logic for adjusting the amount
     const updateStoredAt =

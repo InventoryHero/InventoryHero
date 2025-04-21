@@ -12,6 +12,7 @@ import {Notifications} from "@kyvg/vue3-notification";
 import {TabType} from "@/types/TabType.ts";
 import {applyStorage, getAccessToken, getBrowserLocalStorage} from "axios-jwt";
 import {RouteLocationNormalizedGeneric} from "vue-router";
+import {storeToRefs} from "pinia";
 
 const configStore = useConfigStore()
 const authStore = useAuthStore()
@@ -22,6 +23,8 @@ const router = useRouter()
 const {mobile} = useDisplay()
 const notificationStore = useNotificationStore()
 
+const {authorized} = storeToRefs(authStore)
+
 // TODO ADMIN USER TABLE CAN BENEFIT FROM SOCKET (E.G. USER VERIFIED EMAIL)
 // TODO the print settings look a bit clunky
 
@@ -30,12 +33,10 @@ const notificationStore = useNotificationStore()
 applyStorage(getBrowserLocalStorage());
 configStore.init()
 await authStore.init()
-if(await authStore.isAuthorized())
+await authStore.isAuthorized()
+if(authorized.value)
 {
-  getAccessToken().then((token) => {
-    householdSocket.updateHeaders(token)
-    generalSocket.updateHeaders(token)
-  })
+// TODO CONNECT TO SOCKETS
 }
 
 
@@ -65,9 +66,6 @@ const transition = computed(() => {
   }
 })
 
-const authorized = computed(() => {
-  return authStore.authorized
-})
 
 const tokenized = computed(() => route.meta.tokenized ?? false)
 

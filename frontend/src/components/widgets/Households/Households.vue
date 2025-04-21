@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import {useAuthStore} from "@/store";
+import {HouseholdPublic} from "@/api/types/households.ts";
 
-
-const authStore = useAuthStore();
 const {t} = useI18n()
-
-const households = computed(() => authStore.households)
+const {household: householdEndpoint} = useAxios()
+const households = ref([] as Array<HouseholdPublic>)
 const collapsed = ref(true)
 const createHouseholdCollapsed = computed({
   get(){
@@ -21,6 +20,12 @@ const afterText = computed(() => {
 })
 
 
+onMounted(async () => {
+  const {success, data} = await householdEndpoint.all()
+  if(success){
+    households.value = data ?? []
+  }
+})
 
 </script>
 
@@ -39,6 +44,7 @@ const afterText = computed(() => {
     >
 
       <create-household-card
+          @created="(newHousehold: HouseholdPublic) => households.push(newHousehold)"
           v-model:collapsed="createHouseholdCollapsed"
           class="fill-width"
       />

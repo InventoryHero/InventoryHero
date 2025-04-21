@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import {useConfigStore, useProducts} from "@/store";
-import useAxios from "@/composables/useAxios.ts";
+import useAxiosOld from "@/composables/useAxiosOld.ts";
 import {ProductEndpoint} from "@/api/http";
 import {onMounted} from "vue";
 import useRouteTransition from "@/composables/useRouteTransition.ts";
 
 const productStore = useProducts()
 const configStore = useConfigStore()
-const {axios: productEndpoint} = useAxios<ProductEndpoint>('product')
+const {axios: productEndpoint} = useAxiosOld<ProductEndpoint>('product')
 
 
 const props = defineProps<{

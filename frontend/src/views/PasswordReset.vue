@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import {onBeforeMount, ref, useTemplateRef} from 'vue'
-import useAxios from "@/composables/useAxios.ts";
+import useAxiosOld from "@/composables/useAxiosOld.ts";
 import {UserEndpoint} from "@/api/http";
 import {useI18n} from "vue-i18n";
 import {useRouter} from "vue-router";
 import {useNotification} from "@kyvg/vue3-notification";
 import {VForm} from "vuetify/components";
 
-const {axios: userEndpoint} = useAxios<UserEndpoint>("user")
+const {axios: userEndpoint} = useAxiosOld<UserEndpoint>("user")
 const {t: $t} = useI18n()
 const router = useRouter()
 const {notify} = useNotification()

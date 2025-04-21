@@ -1,19 +1,17 @@
-<script lang="ts">
+<script setup lang="ts">
 import {useAuthStore} from "@/store";
 import HouseholdQuickSelectCard from "@/components/widgets/Households/Card/HouseholdQuickSelectCard.vue";
+const authData = useAuthStore();
 
 
-export default{
-  components: {HouseholdQuickSelectCard},
-  setup(){
-    const authData = useAuthStore();
-    return {authData}
-  },
-
+function fetchAccount(){
+  authData.whoami().then((data) => {console.log(data)})
 }
+
 </script>
 
 <template>
+  <v-btn @click="fetchAccount"></v-btn>
   <v-row
       justify="center"
       dense

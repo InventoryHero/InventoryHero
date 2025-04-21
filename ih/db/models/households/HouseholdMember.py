@@ -1,0 +1,20 @@
+from datetime import datetime
+from typing import Optional
+
+from sqlalchemy import Column, func, DateTime
+from sqlmodel import SQLModel, Field, Relationship
+
+from ih.schema.households.household import Role
+
+class HouseholdMember(SQLModel, table=True):
+    id: Optional[int] = Field(default=None, primary_key=True, index=True)
+    user_id: int = Field(foreign_key="user.id", ondelete="CASCADE", nullable=False)
+    household_id: int = Field(foreign_key="household.id", ondelete="CASCADE", nullable=False)
+    role: str = Field(default=Role.MEMBER)
+    joined: datetime = Field(
+        default_factory=datetime.now,
+        sa_column=Column(DateTime, server_default=func.now(), nullable=False)
+    )
+
+    household: "Household" = Relationship(back_populates="household_members")
+    user: "User" = Relationship(back_populates="household_memberships")

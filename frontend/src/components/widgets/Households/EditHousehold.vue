@@ -7,12 +7,14 @@ import ConfirmationDialog from "@/components/common/ConfirmationDialog.vue";
 import useDialogConfig from "@/composables/useDialogConfig.ts";
 import {notify} from "@kyvg/vue3-notification";
 import {useDisplay} from "vuetify";
+import {HouseholdMemberPublic, HouseholdPublic, HouseholdUpdate} from "@/api/types/households.ts";
+import {storeToRefs} from "pinia";
+import {ROLE_ADMIN, ROLE_MEMBER, ROLE_OWNER} from "@/api/types/householdRoles.ts";
 
 const authStore = useAuthStore()
-const {axios: householdEndpoint} = useAxios<HouseholdEndpoint>("household")
+const {household: householdEndpoint} = useAxios()
 const {t} = useI18n()
 const router = useRouter()
-const {mobile} = useDisplay()
 
 const {styling} = useAppStyling()
 
@@ -20,7 +22,9 @@ const {id=""} = defineProps<{
   id?: string
 }>()
 
-const householdMembers = ref<Array<HouseholdMember>>([])
+const {user} = storeToRefs(authStore)
+
+const householdMembers = ref<Array<HouseholdMemberPublic>>([])
 const loadingMembers = ref(false)
 
 const householdId = computed(() => {
@@ -31,12 +35,8 @@ const householdId = computed(() => {
   return number
 })
 
+const household = ref<HouseholdPublic|undefined>()
 const newHouseholdName = ref<string|undefined>()
-
-const household = computed(
-    () => authStore.households.find((h) => h.id === householdId.value)
-)
-
 const householdName = computed({
   get(){
     if(newHouseholdName.value !== undefined)
@@ -50,8 +50,11 @@ const householdName = computed({
   }
 })
 
+const myself = computed(() => householdMembers.value.find(x => x.user_id === user.value?.id))
+const isOwner = computed(() => ROLE_OWNER === myself.value?.role)
+const isAdmin = computed(() => ROLE_ADMIN === myself.value?.role)
 
-const isOwner = computed(() => household.value?.creator === authStore.user?.id)
+const errorMessage = ref<string|undefined>()
 
 const nameField = useTemplateRef("name-field")
 
@@ -60,56 +63,24 @@ const rules = ref({
   nameShorterThan: (value: string) => value.length <= 25 || t('households.rules.name_shorter_than')
 })
 
-
-
-onBeforeMount(() => {
-  loadingMembers.value = true
-  householdEndpoint.getMembers(householdId.value).then(({success, members}) => {
-    if(success){
-      householdMembers.value = (members ?? []).sort((a, b) => {
-        if (a.username === authStore.user?.username) {
-          return -1
-        }
-        if (b.username ===  authStore.user?.username) {
-          return 1
-        }
-        if (a.joined && !b.joined) {
-          return -1
-        }
-        if (!a.joined && b.joined) {
-          return 1
-        }
-
-        return 0;
-      }).map((member) => ({
-        ...member,
-        size: member.joined ? 61 : 73
-      }))
-    }
-    loadingMembers.value = false
-  })
-})
-
 const deletingHousehold = ref(false)
 
-function deleteHousehold(){
-  deletingHousehold.value = true
-  householdEndpoint.deleteHousehold(householdId.value).then((success) => {
-
-    if(success){
-      authStore.removeHousehold(householdId.value, "deleted")
-      router.push("/households")
-    }
-    deletingHousehold.value = false
-  })
-}
 const {
   reallyDo,
   confirmationDialog,
   saveAction
 } = useConfirmationSetup(deleteHousehold)
 
+function deleteHousehold(){
+  deletingHousehold.value = true
+  householdEndpoint.delete(householdId.value).then((success) => {
 
+    if(success){
+      router.push("/households")
+    }
+    deletingHousehold.value = false
+  })
+}
 
 function removeFromHousehold(id: number){
   const member = householdMembers.value.find(member => member.id === id)
@@ -129,12 +100,12 @@ async function updateName(){
   if(valid.length > 0){
     return
   }
-  householdEndpoint.updateHousehold(householdId.value, {
+  householdEndpoint.update(householdId.value, {
     name: householdName.value
-  }).then(({success, household}) => {
+  } as HouseholdUpdate).then(({success, data}) => {
     if(success){
-      authStore.updateHousehold(householdId.value, household!)
       reset()
+      household.value = data
       notify({
         title: t(`toasts.titles.success.household_updated`),
         text: t(`toasts.text.success.household_updated`),
@@ -147,6 +118,36 @@ async function updateName(){
 function reset(){
   newHouseholdName.value = undefined
 }
+
+onBeforeMount(() => {
+  loadingMembers.value = true
+  householdEndpoint.getAllMembers(householdId.value).then(({success, data, error}) => {
+    if(!success){
+      errorMessage.value = (error as any) as (string|undefined)
+      // TODO ERROR HANDLING
+      return
+    }
+
+    household.value = data as HouseholdPublic
+    householdMembers.value = (data?.members ?? []).sort((a, b) => {
+      if (a.user_id === authStore.user?.id) {
+        return -1
+      }
+      if (b.user_id === authStore.user?.id) {
+        return 1
+      }
+      if (a.joined && !b.joined) {
+        return -1
+      }
+      if (!a.joined && b.joined) {
+        return 1
+      }
+
+      return 0;
+    })
+    loadingMembers.value = false
+  })
+})
 
 </script>
 
@@ -178,7 +179,7 @@ function reset(){
         lg="8"
     >
       <v-card
-          v-if="household && isOwner"
+          v-if="errorMessage === undefined"
           class="d-flex flex-column fill-height fill-width"
           :disabled="loadingMembers || deletingHousehold"
       >
@@ -221,13 +222,14 @@ function reset(){
               <RecycleScroller
                   class="scroll"
                   :items="householdMembers"
+                  :item-size="68"
               >
                 <template v-slot="{ item }">
                   <household-member-card
-                    :disabled="item.username === authStore.user?.username"
-                    :household-member="item"
-                    :household="household"
-                    @kicked="removeFromHousehold(item.id)"
+                      :is-owner="isOwner"
+                      :household-member="item"
+                      :household="household!"
+                      @kicked="removeFromHousehold(item.id)"
                   />
                 </template>
               </RecycleScroller>
@@ -245,6 +247,7 @@ function reset(){
           />
           <v-spacer />
           <v-btn
+              v-if="isOwner"
               prepend-icon="mdi-trash-can"
               :text="t('households.edit.delete_household')"
               variant="tonal"
@@ -258,8 +261,8 @@ function reset(){
           v-else
       >
         <v-card
-            :text="t(`households.edit.${(!isOwner && household) ? 'no_rights' : 'not_found'}.text`)"
-            :title="t(`households.edit.${(!isOwner && household) ? 'no_rights' : 'not_found'}.title`)"
+            :text="t(`households.edit.${errorMessage}.text`)"
+            :title="t(`households.edit.${errorMessage}.title`)"
         >
           <v-card-actions
               class="d-flex justify-end"

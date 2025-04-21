@@ -1,65 +1,64 @@
-import {
-    UserEndpoint,
-    Endpoint,
-    HouseholdEndpoint,
-    LocationEndpoint,
-    StorageEndpoint,
-    BoxEndpoint,
-    ProductEndpoint,
-    AdministrationEndpoint, GeneralEndpoint
-} from "@/api/http";
+import axios, {AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse} from "axios";
+import authEndpoint from "@/api/authEndpoint.ts";
+import userEndpoint from "@/api/userEndpoint.ts";
+import householdEndpoint from "@/api/householdEndpoint.ts";
 
-import {useAuthStore} from "@/store";
+interface CustomAxiosRequestConfig extends AxiosRequestConfig {
+    _retry?: boolean;
+}
+
+let instance: AxiosInstance | null = null;
+let refreshInstance: AxiosInstance | null = null;
+
+export default (baseURL = "/api")=> {
+    if(!instance){
+        instance = axios.create({
+            baseURL,
+            withCredentials: true
+        })
+        refreshInstance = axios.create({
+            baseURL: baseURL,
+            withCredentials: true
+        })
+        instance.interceptors.response.use((response: AxiosResponse) => response, async (error: AxiosError) => {
+            const originalRequest = error.config as CustomAxiosRequestConfig;
+            if(error.response?.status === 401 && !originalRequest._retry){
+                originalRequest._retry = true
+                try {
+                    // if this fails we know, that the refresh token is invalid
+                    const success = await refreshToken(refreshInstance!)
+
+                    if(success){
+                        return instance!(originalRequest);
+                    }
+                } catch (refreshError) {
+                    console.error("Token refresh failed:", refreshError);
+                }
+            }
 
 
-type SpecificEndpoint = UserEndpoint | HouseholdEndpoint | LocationEndpoint | StorageEndpoint | BoxEndpoint | ProductEndpoint | AdministrationEndpoint | GeneralEndpoint;
-
-export type AxiosContext<T extends Endpoint> = {
-    axios: T
-};
-
-export default function useAxios<T extends SpecificEndpoint>(endpoint: string): AxiosContext<T> {
-    //const authStore = useAuthStore()
-    let axios = null;
-    switch(endpoint){
-        case "user":
-            axios = new UserEndpoint() as T
-            break
-        case "household":
-            axios = new HouseholdEndpoint() as T
-            break;
-        case "storage":
-            axios = new StorageEndpoint() as T
-            break
-        case "location":
-            axios = new LocationEndpoint() as T
-            break
-        case "box":
-            axios = new BoxEndpoint() as T
-            break
-        case "product":
-            axios = new ProductEndpoint() as T
-            break
-        case "administration":
-            //if(authStore.isAdmin){
-            axios = new AdministrationEndpoint() as T
-            //}
-            break
-        case "general":
-            axios = new GeneralEndpoint() as T
-            break
-
-        default:
-            console.error("INVALID ENDPOINT")
-
+            switch(error.response?.status){
+                case 401:
+                    console.log("WE FUCKED UP")
+                    return error;
+            }
+            return Promise.reject(error);
+        })
+        instance.interceptors.request.use((config) => {
+            return config;
+        })
     }
 
-    if(axios === null){
-        axios = new Endpoint() as T
-    }
+    const {refreshToken, ...auth} = authEndpoint(instance)
+    const user = userEndpoint(instance)
+    const household = householdEndpoint(instance)
+
 
     return {
-        axios: axios ,
+        api: instance,
+        auth,
+        userEndpoint: user,
+        household
     }
 
 }

@@ -5,12 +5,12 @@
 //@ts-nocheck see: https://github.com/gruhn/vue-qrcode-reader/issues/429
 
 import {BoxEndpoint, LocationEndpoint} from "@/api/http";
-import useAxios from "@/composables/useAxios.ts";
+import useAxiosOld from "@/composables/useAxiosOld.ts";
 import {useScroll} from "@vueuse/core";
 import {useTemplateRef} from "vue";
 
-const {axios: boxEndpoint} = useAxios<BoxEndpoint>("box");
-const {axios: locationEndpoint} = useAxios<LocationEndpoint>("location");
+const {axios: boxEndpoint} = useAxiosOld<BoxEndpoint>("box");
+const {axios: locationEndpoint} = useAxiosOld<LocationEndpoint>("location");
 const router = useRouter()
 
 const {t} = useI18n()

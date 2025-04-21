@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import {useAuthStore, useProducts, useStorage} from "@/store";
 import {BoxEndpoint, LocationEndpoint, ProductEndpoint} from "@/api/http";
-import useAxios from "@/composables/useAxios.ts";
+import useAxiosOld from "@/composables/useAxiosOld.ts";
 import { TabType} from "@/types/TabType.ts";
 
 const router = useRouter();
 const productStore = useProducts();
 const storageStore = useStorage();
-const {axios: productEndpoint} = useAxios<ProductEndpoint>("product")
-const {axios: boxEndpoint} = useAxios<BoxEndpoint>("box")
-const {axios: locationEndpoint} = useAxios<LocationEndpoint>("location")
+const {axios: productEndpoint} = useAxiosOld<ProductEndpoint>("product")
+const {axios: boxEndpoint} = useAxiosOld<BoxEndpoint>("box")
+const {axios: locationEndpoint} = useAxiosOld<LocationEndpoint>("location")
 
 const tab = inject<Ref<TabType>>("tab", ref(TabType.Product))
 const tabs = ref<TabType[]>([TabType.Product, TabType.Box, TabType.Location]);

@@ -4,7 +4,7 @@ import {i18n} from "@/lang";
 import {applyAuthTokenInterceptor, getBrowserLocalStorage, IAuthTokens} from "axios-jwt";
 import {notify} from "@kyvg/vue3-notification";
 
-export const baseURL = '/api/v1/'
+export const baseURL = '/api'
 
 
 async function requestRefresh(refreshToken: string): Promise<IAuthTokens | string>{
@@ -31,10 +31,15 @@ export class Endpoint {
         if(endpoint !== ""){
             this.endpoint = "/" + endpoint.replace("/", "")
         }
+
+        // withCredentials allows to fetch cookies
         this.internalAxios = axios.create({
-            baseURL: baseURL
+            baseURL: baseURL,
+            withCredentials: true
         })
         this.internalAxios.interceptors.response.use((response) => response, async (error) => {
+            const originalRequest = error.config
+            console.log(originalRequest)
             switch (error?.response?.status)
             {
                 case 400:
@@ -45,6 +50,24 @@ export class Endpoint {
                     })
                     break
                 case 401:
+                    
+                    if(!originalRequest._retry){
+                        originalRequest._retry = true
+                        try {
+                            const refreshAxios = axios.create({
+                                baseURL: baseURL,
+                                withCredentials: true
+                            })
+                            // if this fails we know, that the refresh token is invalid
+                            let response = await refreshAxios.get("/auth/refresh")
+
+                            if(response.status === 200){
+                                return this.internalAxios(originalRequest);
+                            }
+                        } catch (refreshError) {
+                            console.error("Token refresh failed:", refreshError);
+                        }
+                    }
                     if(error.response.data.status!== null && error.response.data.status !== undefined) {
                         notify({
                             title: i18n.global.t(`toasts.titles.error.${error.response.data.status ?? 'unauthorized'}`),
@@ -112,7 +135,7 @@ export class Endpoint {
                     })
                     break
             }
-            return error
+            return error;
         })
 
         this.internalAxios.interceptors.request.use((cfg) => {
@@ -123,7 +146,7 @@ export class Endpoint {
             cfg.url = this.endpoint + cfg.url
             return cfg
         })
-        applyAuthTokenInterceptor(this.internalAxios, { requestRefresh, getStorage: getBrowserLocalStorage })
+        //applyAuthTokenInterceptor(this.internalAxios, { requestRefresh, getStorage: getBrowserLocalStorage })
     }
 
     protected handleNonErrorNotifications(response: AxiosResponse){

@@ -1,6 +1,6 @@
 import {defineStore} from "pinia";
 import {useAuthStore} from "@/store";
-import useNewAxios from "@/composables/useAxios.ts";
+import useNewAxios from "@/composables/useAxiosOld.ts";
 import {UserEndpoint} from "@/api/http";
 import {i18n} from "@/lang";
 import {notify} from "@kyvg/vue3-notification";

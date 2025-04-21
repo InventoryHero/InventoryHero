@@ -104,7 +104,7 @@ export default defineConfig({
     port: 3000,
     https: true,
     proxy: {
-      "/api/v1": {
+      "/api": {
         target: 'http://127.0.0.1:5000/'
       },
       "/socket.io": {

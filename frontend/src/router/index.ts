@@ -208,6 +208,10 @@ const vueRouter =  createRouter({
 })
 
 vueRouter.beforeEach(async (to, from) => {
+  if(!to.meta.requiresAuth){
+    return
+  }
+
   const authStore = useAuthStore();
   const notificationStore = useNotificationStore()
   const loggedIn = await authStore.isAuthorized()

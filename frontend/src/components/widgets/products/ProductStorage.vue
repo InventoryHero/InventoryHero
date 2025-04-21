@@ -2,7 +2,7 @@
 import {useProducts} from "@/store";
 import {computed, onMounted, ref} from "vue";
 import useStorageTitle from "@/composables/useStorageTitle.ts";
-import useAxios from "@/composables/useAxios.ts";
+import useAxiosOld from "@/composables/useAxiosOld.ts";
 import {StorageEndpoint} from "@/api/http";
 import {ApiStorage} from "@/types/api.ts";
 import useUpdateProductStoredAt from "@/composables/useModifyProductStoredAt.ts";
@@ -13,7 +13,7 @@ import useConfirmationSetup from "@/composables/useConfirmationSetup.ts";
 
 
 const productStore = useProducts()
-const {axios: storageEndpoint} = useAxios<StorageEndpoint>("storage")
+const {axios: storageEndpoint} = useAxiosOld<StorageEndpoint>("storage")
 const {saving, deleting, updateStoredAt, deleteStoredAt} = useUpdateProductStoredAt()
 const {redirect} = useRedirectToStorage()
 const {notify} = useNotification()

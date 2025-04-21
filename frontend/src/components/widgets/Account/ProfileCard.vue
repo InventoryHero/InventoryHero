@@ -5,7 +5,7 @@ import {computed, ref, useTemplateRef} from "vue";
 import {useI18n} from "vue-i18n";
 import {User} from "@/types";
 import useFieldIsNotTakenValidator from "@/composables/useFieldIsNotTakenValidator.ts";
-import useAxios from "@/composables/useAxios.ts";
+import useAxiosOld from "@/composables/useAxiosOld.ts";
 import {UserEndpoint} from "@/api/http";
 import {useNotification} from "@kyvg/vue3-notification";
 
@@ -13,7 +13,7 @@ const {t: $t} = useI18n()
 
 const authStore = useAuthStore()
 const generalSocket = useGeneralSocketStore()
-const {axios: userEndpoint} = useAxios<UserEndpoint>("user")
+const {axios: userEndpoint} = useAxiosOld<UserEndpoint>("user")
 const {notify} = useNotification()
 const {styling} = useAppStyling()
 

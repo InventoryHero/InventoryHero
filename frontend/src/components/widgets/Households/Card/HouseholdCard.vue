@@ -6,13 +6,18 @@ import HouseholdInvite from "@/components/widgets/Households/Card/HouseholdInvit
 import {HouseholdEndpoint} from "@/api/http";
 import {useNotification} from "@kyvg/vue3-notification";
 import ConfirmationDialog from "@/components/common/ConfirmationDialog.vue";
+import {HouseholdPublic, HouseholdWithMemberPublic} from "@/api/types/households.ts";
+import {storeToRefs} from "pinia";
+import {ROLE_ADMIN, ROLE_OWNER} from "@/api/types/householdRoles.ts";
 
 defineOptions({
   inheritAttrs: false
 })
 const authStore = useAuthStore()
-const {axios: householdEndpoint} = useAxios<HouseholdEndpoint>("household")
-const householdSocket = useHouseholdSocketStore()
+const {household: defaultHousehold, user} = storeToRefs(authStore)
+const {household: householdEndpoint, userEndpoint} = useAxios()
+
+//TODO const householdSocket = useHouseholdSocketStore()
 const {notify} = useNotification()
 const {t} = useI18n()
 const router = useRouter()
@@ -20,11 +25,10 @@ const router = useRouter()
 const {
   household
 } = defineProps<{
-  household: Household
+  household: HouseholdWithMemberPublic
 }>()
 
-const isDefaultHousehold = computed(() => household.id === authStore.household?.id)
-
+const isDefaultHousehold = computed(() => household.id === defaultHousehold.value?.id)
 const selectedIcon = computed(() => {
   if(isDefaultHousehold.value){
     return 'mdi-checkbox-outline'
@@ -39,7 +43,8 @@ const colorIfDefault = computed(() => {
   return ''
 })
 
-const isOwnHousehold = computed(() => household.creator === authStore.user?.id)
+const isAdmin = computed(() => household.member.role == ROLE_ADMIN)
+const isOwner = computed(() => household.member.role == ROLE_OWNER)
 
 
 const requestInProgress = ref(false)
@@ -58,9 +63,17 @@ const {
   closeDialog: closeConfirmLeaveDialog,
 } = useDialogConfig()
 
-function setAsHousehold(){
-  authStore.changeHousehold(household)
-  authStore.followReturnUrl()
+async function setAsHousehold(){
+
+  const {success, data: newDefault} = await userEndpoint.setDefaultHousehold({
+    id: household.id
+  })
+  console.log(success)
+  if(success){
+    defaultHousehold.value = newDefault
+    await authStore.followReturnUrl()
+  }
+  // TODO ERROR
 }
 
 function reallyLeave(){
@@ -77,9 +90,10 @@ function leaveHousehold(){
 
   requestInProgress.value = true
   if(isDefaultHousehold.value){
-    householdSocket.leaveHousehold()
+    // TODO
+    //householdSocket.leaveHousehold()
   }
-  householdEndpoint.leaveHousehold(household.id).then((success) => {
+  /*householdEndpoint.leaveHousehold(household.id).then((success) => {
     if(success) {
       notify({
         title: t('toasts.titles.success.household_left'),
@@ -92,7 +106,7 @@ function leaveHousehold(){
       authStore.leftHousehold(household)
     }
     requestInProgress.value = false
-  })
+  })*/
 }
 
 </script>
@@ -152,19 +166,19 @@ function leaveHousehold(){
           class="flex-0-0"
       >
         <app-icon-btn
-            v-if="isOwnHousehold"
+            v-if="isOwner || isAdmin"
             icon="mdi-store-edit"
             class="me-1"
             :to="`/households/edit/${household.id}`"
         />
         <app-icon-btn
-            v-if="isOwnHousehold"
+            v-if="isOwner || isAdmin"
             icon="mdi-account-plus"
             class="me-1"
             @click.stop="openInviteDialog"
         />
         <app-icon-btn
-            v-if="!isOwnHousehold"
+            v-if="!isOwner"
             icon="mdi-location-exit"
             class="me-1"
             @click.stop="leaveHousehold"

@@ -1,10 +1,10 @@
 import {defineStore} from "pinia";
 import {useAuthStore} from "@/store";
-import useNewAxios from "@/composables/useAxios.ts";
+import useNewAxios from "@/composables/useAxiosOld.ts";
 import {UserEndpoint} from "@/api/http";
 import {io} from "socket.io-client";
 import {getAccessToken} from "axios-jwt";
-import useAxios from "@/composables/useAxios.ts";
+import useAxiosOld from "@/composables/useAxiosOld.ts";
 import {SocketResponse} from "@/types/sockets.ts";
 
 type DefaultCallback = () => void
@@ -123,7 +123,7 @@ export const useGeneralSocketStore =  defineStore("generalSocket", {
             }
         },
         renewToken(){
-            const {axios} = useAxios<UserEndpoint>("user")
+            const {axios} = useAxiosOld<UserEndpoint>("user")
             axios.getUser().then(() => {
                 getAccessToken().then((token) => {
                     this.updateHeaders(token)

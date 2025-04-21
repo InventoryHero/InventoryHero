@@ -1,0 +1,151 @@
+import {AxiosError, AxiosInstance} from "axios"
+import {
+    HouseholdMemberPublic, HouseholdMemberUpdateRole,
+    HouseholdPublic,
+    HouseholdUpdate,
+    HouseholdWithMembersPublic, Role
+} from "@/api/types/households.ts"
+import {ApiResponse} from "@/api/types/ApiResponse.ts"
+
+export default (api: AxiosInstance) => {
+    const getAllHouseholds = async (): Promise<ApiResponse<Array<HouseholdPublic>>> => {
+        const response = await api.get("/household/")
+        if(response.status === 200){
+            return {
+                success: true,
+                data: response.data
+            } as ApiResponse<Array<HouseholdPublic>>
+        }
+        return {
+            success: false
+        }
+    }
+
+    const getHousehold = async (id: number): Promise<ApiResponse<HouseholdPublic>> => {
+        const response = await api.get(`/household/${id}`)
+        if(response.status === 200){
+            return {
+                success: true,
+                data: response.data
+            } as ApiResponse<HouseholdPublic>
+        }
+        return {
+            success: false
+        }
+    }
+
+    const createHousehold = async (data: HouseholdPublic): Promise<ApiResponse<HouseholdPublic>> => {
+        const response = await api.post("/household/", data)
+        if (response.status === 201){
+            return {
+                success: true,
+                data: response.data
+            }
+        }
+        return {
+            success: false
+        }
+    }
+
+    const deleteHousehold = async (id: number): Promise<ApiResponse> => {
+        const response = await api.delete(`/household/${id}`)
+        return {
+            success: response.status === 204
+        }
+    }
+
+    const updateHousehold = async (householdId: number, updateData: HouseholdUpdate): Promise<ApiResponse<HouseholdPublic>> => {
+        const response = await api.patch(`/household/${householdId}`, updateData)
+        if (response.status === 200){
+            return {
+                success: true,
+                data: response.data
+            }
+        }
+        return {
+            success: false
+        }
+    }
+
+    const getAllMembers = async (householdId: number): Promise<ApiResponse<HouseholdWithMembersPublic>> => {
+        try{
+            const response = await api.get(`/household/${householdId}/member/`)
+            return {
+                success: response.status === 200,
+                data: response.data,
+                error: response.data?.detail ?? undefined
+            }
+        } catch(error: any){
+            error = error as AxiosError
+            return {
+                success: false,
+                error: error.response.data.detail
+            }
+        }
+    }
+
+
+    const transferOwnership = async (householdId: number, newOwnerId: number): Promise<ApiResponse> => {
+        try{
+            const response = await api.post(`/household/${householdId}/transfer-ownership/${newOwnerId}`)
+            return {
+                success: response.status === 200,
+                error: response.data?.detail ?? ''
+            }
+        } catch(error: any){
+            error = error as AxiosError
+            console.log(error)
+            return {
+                success: false,
+                error: error.response.data.detail
+            }
+        }
+    }
+
+    const removeMember = async (householdId: number, userId: number): Promise<ApiResponse> => {
+        try{
+            const response = await api.delete(`/household/${householdId}/member/${userId}`)
+            return {
+                success: response.status === 204,
+                error: response.data?.detail ?? ''
+            }
+        } catch(error: any){
+            error = error as AxiosError
+            return {
+                success: false,
+                error: error.response.data.detail
+            }
+        }
+    }
+
+    const updateRole = async (householdId: number, userId: number, role: Role): Promise<ApiResponse> => {
+        try{
+            const response = await api.patch(`/household/${householdId}/member/${userId}`, {
+                role: role
+            } as HouseholdMemberUpdateRole)
+            return {
+                success: response.status === 200,
+                error: response.data?.detail ?? ''
+            }
+        } catch(error: any){
+            error = error as AxiosError
+            return {
+                success: false,
+                error: error.response.data.detail
+            }
+        }
+    }
+
+    return {
+        all: getAllHouseholds,
+        one: getHousehold,
+        create: createHousehold,
+        delete: deleteHousehold,
+        update: updateHousehold,
+        getAllMembers,
+        transferOwnership,
+        removeMember,
+        updateRole
+
+    }
+}

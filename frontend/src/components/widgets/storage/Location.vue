@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import {useContentFilterStore, useProducts, useStorage} from "@/store";
-import useAxios from "@/composables/useAxios.ts";
+import useAxiosOld from "@/composables/useAxiosOld.ts";
 import {LocationEndpoint} from "@/api/http";
 import {StorageTypes} from "@/types";
 import {TabType} from "@/types/TabType.ts";
@@ -15,7 +15,7 @@ const productStore = useProducts()
 const contentFilterStore = useContentFilterStore()
 const route = useRoute()
 const {t} = useI18n()
-const {axios: locationEndpoint} = useAxios<LocationEndpoint>("location")
+const {axios: locationEndpoint} = useAxiosOld<LocationEndpoint>("location")
 const {goBackOneLevel} = useGoBackOneLevel()
 
 

@@ -1,13 +1,12 @@
 <script setup lang="ts">
 import {useAuthStore} from "@/store";
-import {HouseholdEndpoint} from "@/api/http";
-import {Household} from "@/types";
-import useAxios from "@/composables/useAxios.ts";
 import {useI18n} from "vue-i18n";
 import {useRouter} from "vue-router";
 import useAppStyling from "@/composables/useAppStyling.ts";
+import {storeToRefs} from "pinia";
+import {HouseholdPublic} from "@/api/types/households.ts";
 const authData = useAuthStore();
-const {axios} = useAxios<HouseholdEndpoint>("household");
+const {household: householdEndpoint, userEndpoint} = useAxios()
 
 const {t: $t} = useI18n()
 const $router = useRouter()
@@ -20,23 +19,11 @@ const {
   collapsible?: boolean
 }>()
 
+const {household: selectedHousehold} = storeToRefs(authData)
+const tmpSelected = ref<number|undefined>(selectedHousehold.value?.id)
 const collapsed = ref(false)
 const loadingUserHouseholds = ref(false)
-const userHouseholds = ref<Array<Household>>([])
-
-const updatedHousehold = ref<Household|undefined>()
-const selectedHousehold = computed({
-  get(){
-    if(updatedHousehold.value){
-      return updatedHousehold.value
-    }
-    return authData.household
-  },
-  set(value: Household){
-    updatedHousehold.value = value
-  }
-
-})
+const userHouseholds = ref<Array<HouseholdPublic>>([])
 
 const icon = computed(() =>{
   if(collapsed.value){
@@ -62,25 +49,36 @@ const placeholderText = computed(() => {
 })
 
 const saveBtnDisabled = computed(() => {
-    return selectedHousehold.value?.id === authData.household?.id
+    return selectedHousehold.value?.id === tmpSelected.value
 })
 
 function saveHouseholdChanges(){
-  authData.changeHousehold(selectedHousehold.value)
-  updatedHousehold.value = undefined
+  if(tmpSelected.value === undefined){
+    // TODO ERROR
+    return
+  }
+  // TODO NOW WE SHOULD SIGNAL LOADING
+  userEndpoint.setDefaultHousehold({
+    id: tmpSelected.value
+  }).then(({success, data})=> {
+    if(!success){
+      //TODO ERROR
+    }
+
+    selectedHousehold.value = data!
+    tmpSelected.value = data!.id
+  })
 }
 function editHouseholds(){
   $router.push("/households")
 }
 
 onMounted(() => {
-  loadingUserHouseholds.value = true
-  axios.getHouseholds().then((households: Array<Household>) => {
-    const selected = households.find(h => h.id === authData.household?.id)
-    if(selected){
-      selectedHousehold.value = selected
+  householdEndpoint.all().then(({success, data: households}) => {
+    if(!success){
+      // TODO ERROR HANDLING
     }
-    userHouseholds.value = households
+    userHouseholds.value = households ?? []
     loadingUserHouseholds.value = false
   })
 })
@@ -88,8 +86,6 @@ onMounted(() => {
 </script>
 
 <template>
-
-
       <v-card
           v-bind="$attrs"
           density="compact"
@@ -124,11 +120,11 @@ onMounted(() => {
                 :items="userHouseholds"
                 density="compact"
                 item-title="name"
+                item-value="id"
                 :single-line="true"
                 :placeholder="placeholderText"
                 :no-data-text="noDataText"
-                return-object
-                v-model="selectedHousehold"
+                v-model="tmpSelected"
                 :loading="loadingUserHouseholds"
                 :clearable="false"
             >

@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import {useTemplateRef} from "vue";
-import {HouseholdEndpoint} from "@/api/http";
 import {useNotification} from "@kyvg/vue3-notification";
 import {useAuthStore} from "@/store";
+import {HouseholdPublic} from "@/api/types/households.ts";
+
 
 defineOptions({
   inheritAttrs: false
 })
 
-const {axios: householdEndpoint} = useAxios<HouseholdEndpoint>("household")
+const {household: householdEndpoint} = useAxios()
 const authStore = useAuthStore()
 const {styling} = useAppStyling()
 const {t} = useI18n()
@@ -23,12 +24,17 @@ const rules = ref({
   nameShorterThan: (value: string) => value.length <= 25 || t('households.rules.name_shorter_than')
 })
 
+const emit = defineEmits<{
+   created: [newHousehold: HouseholdPublic]
+}>()
+
 const collapseIcon = computed(() =>{
   if(collapsed.value){
     return 'mdi-menu-down'
   }
   return 'mdi-menu-up'
 })
+
 
 async function createHousehold(){
   //@ts-expect-error couldn't figure out how to type templateRef forms
@@ -38,12 +44,15 @@ async function createHousehold(){
   }
 
   saving.value = true
-  householdEndpoint.createHousehold(name.value!).then(({success, household}) => {
+  householdEndpoint.create({
+    name: name.value!
+  } as HouseholdPublic).then(({success, data: household}) => {
     saving.value = false
     if(!success){
       return
     }
-    authStore.addHousehold(household!)
+    emit("created", household!)
+    //authStore.addHousehold(household!)
     notify({
       title: t( "toasts.titles.success.household_created", {name: name.value!}),
       text: t( "toasts.text.success.household_created"),
@@ -51,6 +60,7 @@ async function createHousehold(){
     })
     clear()
   })
+
 }
 
 function clear(){

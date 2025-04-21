@@ -10,11 +10,11 @@ import axios, {AxiosError} from "axios";
 export class UserEndpoint extends Endpoint{
 
     constructor(){
-        super(false, "/user")
+        super(false, "")
     }
 
     public async getUser():Promise<User|undefined> {
-        const response = await this.internalAxios.get("");
+        const response = await this.internalAxios.get("/user/self");
         if(response.status === 200)
         {
             return response.data
@@ -25,14 +25,18 @@ export class UserEndpoint extends Endpoint{
     }
 
     public async login(loginParams: ILoginRequest){
-        const response = await this.internalAxios.post('/login', loginParams)
+        const loginFormData = new FormData()
+        loginFormData.append("username", loginParams.username)
+        loginFormData.append("password", loginParams.password)
+        const response = await this.internalAxios.post('/auth/token', loginFormData);
         if(response.status === 200)
         {
             const data: ILoginResponse = response.data as ILoginResponse
+            console.log(data)
 
             await setAuthTokens({
                 accessToken: data.access_token,
-                refreshToken: data.refresh_token
+                refreshToken: data.access_token,
             })
             return {
                 success: true

@@ -3,7 +3,7 @@ import {useContentFilterStore, useProducts, useStorage} from "@/store";
 import useStorageTitle from "@/composables/useStorageTitle.ts";
 import {computed, onMounted, ref} from "vue";
 import useRedirectToStorage from "@/composables/useRedirectToStorage.ts";
-import useAxios from "@/composables/useAxios.ts";
+import useAxiosOld from "@/composables/useAxiosOld.ts";
 import {BoxEndpoint, LocationEndpoint} from "@/api/http";
 import {ApiProduct, ApiStorage, StorageTypes} from "@/types";
 import {useI18n} from "vue-i18n";
@@ -16,8 +16,8 @@ const storageStore = useStorage()
 const productStore = useProducts()
 const contentFilterStore = useContentFilterStore()
 const {redirect} = useRedirectToStorage()
-const {axios: locationEndpoint} = useAxios<LocationEndpoint>("location")
-const {axios: boxEndpoint} = useAxios<BoxEndpoint>("box")
+const {axios: locationEndpoint} = useAxiosOld<LocationEndpoint>("location")
+const {axios: boxEndpoint} = useAxiosOld<BoxEndpoint>("box")
 const {t} = useI18n()
 const router = useRouter()
 const route = useRoute()

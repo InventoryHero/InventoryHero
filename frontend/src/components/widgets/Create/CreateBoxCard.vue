@@ -2,7 +2,7 @@
 
 
 import {useStorage} from "@/store";
-import useAxios from "@/composables/useAxios.ts";
+import useAxiosOld from "@/composables/useAxiosOld.ts";
 import {useI18n} from "vue-i18n";
 import {useNotification} from "@kyvg/vue3-notification";
 import {TabType} from "@/types/TabType.ts";
@@ -13,7 +13,7 @@ import {BoxEndpoint} from "@/api/http";
 import useAppStyling from "@/composables/useAppStyling.ts";
 
 const storageStore = useStorage()
-const {axios: boxEndpoint} = useAxios<BoxEndpoint>('box')
+const {axios: boxEndpoint} = useAxiosOld<BoxEndpoint>('box')
 const {styling} = useAppStyling()
 
 const {t} = useI18n()

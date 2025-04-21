@@ -1,6 +1,6 @@
 <script lang="ts">
 import {defineComponent} from "vue";
-import useAxios from "@/composables/useAxios.ts";
+import useAxiosOld from "@/composables/useAxiosOld.ts";
 import {AdministrationEndpoint} from "@/api/http/AdministrationEndpoint.ts";
 import {User} from "@/types/api.ts";
 import {useDisplay} from "vuetify";
@@ -11,9 +11,9 @@ export default defineComponent({
   name: "Users",
   components: {UserEditModal},
   setup(){
-    const adminEndpoint = useAxios("administration")
-    const userEndpoint = useAxios("user")
-    const generalEndpoint = useAxios("general")
+    const adminEndpoint = useAxiosOld("administration")
+    const userEndpoint = useAxiosOld("user")
+    const generalEndpoint = useAxiosOld("general")
     const {mobile} = useDisplay()
     return {
       mobile,

@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import {computed, onMounted, ref} from 'vue'
 import {UserEndpoint} from "@/api/http";
-import useAxios from "@/composables/useAxios.ts";
+import useAxiosOld from "@/composables/useAxiosOld.ts";
 import { useRouter} from "vue-router";
 import {useI18n} from "vue-i18n";
 
-const {axios: userEndpoint} = useAxios<UserEndpoint>("user")
+const {axios: userEndpoint} = useAxiosOld<UserEndpoint>("user")
 const {t: $t} = useI18n()
 const router = useRouter()
 

@@ -2,7 +2,7 @@
 import {useProducts, useStorage} from "@/store";
 import {ApiProduct, ApiStorage, ProductStorageMapping} from "@/types";
 import {useI18n} from "vue-i18n";
-import useAxios from "@/composables/useAxios.ts";
+import useAxiosOld from "@/composables/useAxiosOld.ts";
 import {ProductEndpoint} from "@/api/http";
 import {useNotification} from "@kyvg/vue3-notification";
 import useHint from "@/composables/useHint.ts";
@@ -12,7 +12,7 @@ import {TabType} from "@/types/TabType.ts";
 
 const storageStore = useStorage()
 const productStore = useProducts()
-const {axios: productEndpoint} = useAxios<ProductEndpoint>('product')
+const {axios: productEndpoint} = useAxiosOld<ProductEndpoint>('product')
 
 const {t} = useI18n()
 const {notify} = useNotification()

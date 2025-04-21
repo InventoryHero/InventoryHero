@@ -1,12 +1,12 @@
 <script setup lang="ts">
 
 import {Household} from "@/types";
-import useAxios from "@/composables/useAxios.ts";
+import useAxiosOld from "@/composables/useAxiosOld.ts";
 import {HouseholdEndpoint} from "@/api/http";
 import {useAuthStore} from "@/store";
 import useShareMethods from "@/composables/useShareMethods.ts";
 
-const {axios: householdEndpoint} = useAxios<HouseholdEndpoint>("household")
+const {axios: householdEndpoint} = useAxiosOld<HouseholdEndpoint>("household")
 const userStore = useAuthStore()
 const {t} = useI18n()
 const {household} = defineProps<{

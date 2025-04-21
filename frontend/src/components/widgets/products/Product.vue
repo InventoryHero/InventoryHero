@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import {useProducts, useContentFilterStore} from "@/store"
-import useAxios from "@/composables/useAxios.ts";
+import useAxiosOld from "@/composables/useAxiosOld.ts";
 import {ProductEndpoint} from "@/api/http";
 import {ProductStorageMapping} from "@/types/api.ts";
 import ProductStorageCard from "@/components/widgets/products/Cards/ProductStorageCard.vue";
@@ -14,7 +14,7 @@ import useConfirmationSetup from "@/composables/useConfirmationSetup.ts";
 
 const productStore = useProducts()
 const scrollStore = useContentFilterStore()
-const {axios: productEndpoint} = useAxios<ProductEndpoint>("product")
+const {axios: productEndpoint} = useAxiosOld<ProductEndpoint>("product")
 const {t} = useI18n()
 const {notify} = useNotification();
 const router = useRouter()

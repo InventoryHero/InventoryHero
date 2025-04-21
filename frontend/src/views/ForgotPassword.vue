@@ -2,7 +2,7 @@
 import {GeneralEndpoint} from "@/api/http";
 import {useI18n} from "vue-i18n";
 import {computed, ref, useTemplateRef} from "vue";
-import useAxios from "@/composables/useAxios.ts";
+import useAxiosOld from "@/composables/useAxiosOld.ts";
 import {UserEndpoint} from "@/api/http";
 import {useNotification} from "@kyvg/vue3-notification";
 import useAppStyling from "@/composables/useAppStyling.ts";
@@ -11,7 +11,7 @@ import useEmailRule from "@/composables/useEmailRule.ts";
 
 
 const smtpEnabled = ref(false)
-const {axios: generalEndpoint} = useAxios<GeneralEndpoint>("general")
+const {axios: generalEndpoint} = useAxiosOld<GeneralEndpoint>("general")
 const router = useRouter()
 
 onMounted(() => {
@@ -22,7 +22,7 @@ onMounted(() => {
 
 
 const {t} = useI18n()
-const {axios: userEndpoint} = useAxios<UserEndpoint>("user")
+const {axios: userEndpoint} = useAxiosOld<UserEndpoint>("user")
 const {notify} = useNotification()
 const {styling} = useAppStyling()
 const email = ref("")

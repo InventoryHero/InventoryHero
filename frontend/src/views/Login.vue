@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import {useAuthStore} from "@/store";
-import useAxios from "@/composables/useAxios.ts";
+import useAxiosOld from "@/composables/useAxiosOld.ts";
 import {GeneralEndpoint} from "@/api/http";
 import {useTemplateRef} from "vue";
 import {VForm} from "vuetify/components";
@@ -48,7 +48,7 @@ async function login(){
 
 
 const smtpEnabled = ref(false)
-const {axios: generalEndpoint} = useAxios<GeneralEndpoint>("general")
+const {axios: generalEndpoint} = useAxiosOld<GeneralEndpoint>("general")
 onMounted(() => {
   generalEndpoint.checkSmtp().then((enabled: boolean) => {
     smtpEnabled.value = enabled

@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import {useStorage} from "@/store";
 import {LocationEndpoint} from "@/api/http";
-import useAxios from "@/composables/useAxios.ts";
+import useAxiosOld from "@/composables/useAxiosOld.ts";
 import useHint from "@/composables/useHint.ts";
 import {useNotification} from "@kyvg/vue3-notification";
 import {TabType} from "@/types/TabType.ts";
 import useAppStyling from "@/composables/useAppStyling.ts";
 import {useTemplateRef} from "vue";
 
-const {axios: locationEndpoint} = useAxios<LocationEndpoint>("location")
+const {axios: locationEndpoint} = useAxiosOld<LocationEndpoint>("location")
 const storageStore = useStorage()
 const {t} = useI18n()
 const {notify} = useNotification()

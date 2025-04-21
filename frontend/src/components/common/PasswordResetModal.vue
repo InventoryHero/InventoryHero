@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {computed, onMounted, ref, useTemplateRef} from 'vue'
-import useAxios from "@/composables/useAxios.ts";
+import useAxiosOld from "@/composables/useAxiosOld.ts";
 import {AdministrationEndpoint, GeneralEndpoint, UserEndpoint} from "@/api/http";
 import useTextFieldStyle from "@/composables/useAppStyling.ts";
 import {useI18n} from "vue-i18n";
@@ -11,9 +11,9 @@ defineOptions({
   inheritAttrs: false
 })
 
-const {axios: adminEndpoint} = useAxios<AdministrationEndpoint>("administration")
-const {axios: userEndpoint} = useAxios<UserEndpoint>("user")
-const {axios: generalEndpoint} = useAxios<GeneralEndpoint>("general")
+const {axios: adminEndpoint} = useAxiosOld<AdministrationEndpoint>("administration")
+const {axios: userEndpoint} = useAxiosOld<UserEndpoint>("user")
+const {axios: generalEndpoint} = useAxiosOld<GeneralEndpoint>("general")
 const {t: $t} = useI18n()
 const {notify} = useNotification()
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import {useConfigStore, useProducts, useStorage} from "@/store";
-import useAxios from "@/composables/useAxios.ts";
+import useAxiosOld from "@/composables/useAxiosOld.ts";
 import {BoxEndpoint, LocationEndpoint} from "@/api/http";
 import {onMounted} from "vue";
 import useRouteTransition from "@/composables/useRouteTransition.ts";
@@ -8,8 +8,8 @@ import useRouteTransition from "@/composables/useRouteTransition.ts";
 const productStore = useProducts()
 const storageStore = useStorage()
 const configStore = useConfigStore()
-const {axios: boxEndpoint} = useAxios<BoxEndpoint>("box")
-const {axios: locationEndpoint} = useAxios<LocationEndpoint>("location")
+const {axios: boxEndpoint} = useAxiosOld<BoxEndpoint>("box")
+const {axios: locationEndpoint} = useAxiosOld<LocationEndpoint>("location")
 const route = useRoute()
 
 const props = defineProps<{

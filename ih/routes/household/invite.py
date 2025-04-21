@@ -1,0 +1,75 @@
+from datetime import datetime
+from fastapi import HTTPException
+from typing import List
+
+from fastapi_utils.cbv import cbv
+from starlette import status
+
+from ih.db.models.households import HouseholdInvite
+from ih.routes._base.HouseholdAdminControllerBase import HouseholdAdminControllerBase
+from ih.routes._base.UserApiRouter import UserAPIRouter
+from ih.routes._base.UserControllerBase import UserControllerBase
+from ih.schema.households.invite import HouseholdInviteCreate, HouseholdInvitePublic
+
+router = UserAPIRouter(prefix="/{household_id}/invite", tags=["household invite"])
+accept_invite_router = UserAPIRouter(prefix="/invite", tags=["household invite"])
+
+@cbv(accept_invite_router)
+class AcceptInviteController(UserControllerBase):
+
+    def _validate_invite(self, code: str) -> HouseholdInvite:
+        invitation = self.repositories.households.get_invitation(code)
+        if not invitation or invitation.accepted:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="invite_not_found_or_already_used"
+            )
+
+        if invitation.expires_at and invitation.expires_at < datetime.now():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="invite_expired"
+            )
+
+        if self.user.email.lower() != invitation.email.lower():
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="email_mismatch_for_invite"
+            )
+        return invitation
+
+    @accept_invite_router.get("/validate/{code}", status_code=status.HTTP_202_ACCEPTED)
+    def validate_invite(self, code: str):
+        _ = self._validate_invite(code)
+
+    @accept_invite_router.post("/accept/{code}", status_code=status.HTTP_200_OK)
+    def accept_invite(self, code: str):
+        invitation = self._validate_invite(code)
+        self.repositories.households.add_member(household_id=invitation.household_id)
+        invitation.accepted = True
+        self.session.add(invitation)
+        self.session.commit()
+
+
+@cbv(router)
+class HouseholdInviteController(HouseholdAdminControllerBase):
+    @router.get("/", response_model=List[HouseholdInvitePublic], status_code=status.HTTP_200_OK)
+    def get_all(self):
+        return self.repositories.households.get_all_invites()
+
+
+    @router.post("/", response_model=HouseholdInvitePublic, status_code=status.HTTP_200_OK)
+    def create_and_send_invite(self, household_invite: HouseholdInviteCreate):
+        invite = self.repositories.households.create_invite(household_invite)
+
+        if not self.settings.IH_SMTP_ENABLED:
+            return invite
+
+        # TODO SEND EMAIL
+        return invite
+
+    @router.delete("/{invite_id}", status_code=status.HTTP_204_NO_CONTENT)
+    def delete_invite(self, invite_id: int):
+        self.repositories.households.delete_invite(invite_id)
+
+

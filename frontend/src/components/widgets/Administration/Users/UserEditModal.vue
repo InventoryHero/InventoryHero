@@ -2,14 +2,14 @@
 import {defineComponent, PropType} from "vue";
 import {User} from "@/types/api.ts";
 import {useDisplay} from "vuetify";
-import useAxios from "@/composables/useAxios.ts";
+import useAxiosOld from "@/composables/useAxiosOld.ts";
 import {UserEndpoint} from "@/api/http";
 
 export default defineComponent({
   name: "UserEditModal",
   setup(){
     const {mobile} = useDisplay()
-    const {axios} = useAxios("user")
+    const {axios} = useAxiosOld("user")
     return {
       mobile,
       userEndpoint: axios as UserEndpoint

@@ -56,6 +56,7 @@ declare global {
   const useAppStyling: typeof import('./src/composables/useAppStyling')['default']
   const useAttrs: typeof import('vue')['useAttrs']
   const useAxios: typeof import('./src/composables/useAxios')['default']
+  const useAxiosOld: typeof import('./src/composables/useAxiosOld')['default']
   const useCompareStorage: typeof import('./src/composables/useCompareStorage')['default']
   const useConfirmationSetup: typeof import('./src/composables/useConfirmationSetup')['default']
   const useCssModule: typeof import('vue')['useCssModule']
@@ -96,6 +97,6 @@ declare global {
   export type { Component, Slot, Slots, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
   // @ts-ignore
-  export type { AxiosContext } from './src/composables/useAxios'
-  import('./src/composables/useAxios')
+  export type { AxiosContext } from './src/composables/useAxiosOld'
+  import('./src/composables/useAxiosOld')
 }
