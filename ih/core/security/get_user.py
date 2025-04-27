@@ -58,6 +58,25 @@ async def get_admin_user(current_user: User = Depends(get_current_user)) -> User
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
     return current_user
 
+
+async def get_household_member(
+    household_id: int = Path(...),
+    db: Session = Depends(get_session),
+    user: User = Depends(get_current_user)
+) -> Role | None:
+    membership = db.exec(
+        select(HouseholdMember).where(
+            (HouseholdMember.household_id == household_id),
+            (HouseholdMember.user_id == user.id)
+        )
+    ).first()
+
+    if not membership:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="no_member_of_household")
+
+    return membership.role
+
+
 def get_household_admin_or_owner(
     household_id: int = Path(...),
     db: Session = Depends(get_session),

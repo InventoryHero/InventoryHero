@@ -1,16 +1,14 @@
 <script setup lang="ts">
 
 import {Household} from "@/types";
-import useAxiosOld from "@/composables/useAxiosOld.ts";
-import {HouseholdEndpoint} from "@/api/http";
 import {useAuthStore} from "@/store";
 import useShareMethods from "@/composables/useShareMethods.ts";
+import {HouseholdWithMemberPublic} from "@/api/types/households.ts";
 
-const {axios: householdEndpoint} = useAxiosOld<HouseholdEndpoint>("household")
-const userStore = useAuthStore()
+const {household: householdEndpoint} = useAxios()
 const {t} = useI18n()
 const {household} = defineProps<{
-  household: Household
+  household: HouseholdWithMemberPublic
 }>()
 
 const emit = defineEmits<{
@@ -32,11 +30,13 @@ const inviteLink = computed(() => {
 
 function generateInviteCode(){
   loadingInviteCode.value = true
-  householdEndpoint.createInviteCode(household.id).then((data) => {
-    if(data.success)
-    {
-      inviteCode.value = data.code
+  householdEndpoint.createInvite(household.id).then(({success, data, error}) => {
+    console.log(data)
+    if(success){
+      inviteCode.value = data?.code!
     }
+
+  // TODO HANDLE ERROR
     loadingInviteCode.value = false
   })
 }

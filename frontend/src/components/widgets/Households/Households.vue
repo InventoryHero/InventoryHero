@@ -4,6 +4,8 @@ import {HouseholdPublic} from "@/api/types/households.ts";
 
 const {t} = useI18n()
 const {household: householdEndpoint} = useAxios()
+
+const update = ref(false)
 const households = ref([] as Array<HouseholdPublic>)
 const collapsed = ref(true)
 const createHouseholdCollapsed = computed({
@@ -18,6 +20,14 @@ const createHouseholdCollapsed = computed({
 const afterText = computed(() => {
   return t('households.all_displayed')
 })
+
+const onLeave = (id: number) => {
+  households.value = households.value.filter(h => h.id !== id)
+  update.value = true
+  nextTick(() => {
+    update.value = false
+  })
+}
 
 
 onMounted(async () => {
@@ -69,6 +79,7 @@ onMounted(async () => {
                 class="scroll"
                 :items="households"
                 :min-item-size="65"
+                v-if="!update"
             >
               <template v-slot="{ item, index, active}">
                 <DynamicScrollerItem
@@ -81,6 +92,7 @@ onMounted(async () => {
                 >
                   <household-card
                       :household="item"
+                      @left="onLeave"
                   />
                 </DynamicScrollerItem>
               </template>

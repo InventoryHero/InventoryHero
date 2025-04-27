@@ -14,7 +14,7 @@ from ih.db.models.User import User
 from ih.db.models.households import Household, HouseholdMember, HouseholdInvite
 from ih.schema.households.household import HouseholdCreate, HouseholdPublic, HouseholdUpdate, \
     HouseholdWithMembersPublic, HouseholdMemberPublic, HouseholdWithMemberPublic, Role, HouseholdMemberUpdateRole
-from ih.schema.households.invite import HouseholdInviteCreate, HouseholdInvitePublic
+from ih.schema.households.invite import HouseholdInvitePublic
 
 
 class HouseholdRepository:
@@ -182,6 +182,17 @@ class HouseholdRepository:
         self.session.delete(to_remove)
         self.session.commit()
 
+    def leave_household(self):
+        query = select(HouseholdMember).where(HouseholdMember.user_id == self.user.id, HouseholdMember.household_id == self.household_id)
+        to_remove = self.session.exec(query).first()
+        if not to_remove:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user_is_not_member_of_household")
+        if to_remove.role == Role.OWNER:
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="cannot_remove_owner")
+        self.session.delete(to_remove)
+        self.session.commit()
+
+
     def update_member_role(self, household_id: int, member_id: int,  update: HouseholdMemberUpdateRole):
         to_update = self._get_member(household_id, user_id=member_id, include_user=True)
         if to_update.role == Role.OWNER:
@@ -191,20 +202,11 @@ class HouseholdRepository:
         self.session.add(to_update)
         self.session.commit()
 
-    def create_invite(self, invite_data: HouseholdInviteCreate) -> HouseholdInvitePublic:
-        user = self.session.exec(
-            select(User)
-            .join(HouseholdMember)
-            .where(User.email == invite_data.email, HouseholdMember.household_id == self.household_id)
-        ).first()
-
-        if user:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                                detail="user_already_in_household")
+    def create_invite(self )-> HouseholdInvitePublic:
 
         raw_code = secrets.token_urlsafe(32)
         code_hash = hashlib.sha256(raw_code.encode()).hexdigest()
-        invite = HouseholdInvite(**invite_data.model_dump(), code=code_hash, household_id=self.household_id)
+        invite = HouseholdInvite(code=code_hash, household_id=self.household_id, inviter=self.user.id)
         try:
             self.session.add(invite)
             self.session.commit()
@@ -238,7 +240,10 @@ class HouseholdRepository:
 
     def get_invitation(self, code: str) -> HouseholdInvite | None:
         code = hashlib.sha256(code.encode()).hexdigest()
-        query = select(HouseholdInvite).where(HouseholdInvite.code == code)
+        query = select(HouseholdInvite).where(HouseholdInvite.code == code).options(
+            selectinload(HouseholdInvite.household),
+            selectinload(HouseholdInvite.inviter_user)
+        )
         return self.session.exec(query).first()
 
     def add_member(self, household_id: int):

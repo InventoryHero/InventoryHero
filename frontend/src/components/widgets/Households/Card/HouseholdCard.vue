@@ -1,12 +1,10 @@
 <script setup lang="ts">
-import {Household} from "@/types"
 import {useAuthStore, useHouseholdSocketStore} from "@/store";
 import useDialogConfig from "@/composables/useDialogConfig.ts";
 import HouseholdInvite from "@/components/widgets/Households/Card/HouseholdInvite.vue";
-import {HouseholdEndpoint} from "@/api/http";
 import {useNotification} from "@kyvg/vue3-notification";
 import ConfirmationDialog from "@/components/common/ConfirmationDialog.vue";
-import {HouseholdPublic, HouseholdWithMemberPublic} from "@/api/types/households.ts";
+import {HouseholdWithMemberPublic} from "@/api/types/households.ts";
 import {storeToRefs} from "pinia";
 import {ROLE_ADMIN, ROLE_OWNER} from "@/api/types/householdRoles.ts";
 
@@ -20,12 +18,15 @@ const {household: householdEndpoint, userEndpoint} = useAxios()
 //TODO const householdSocket = useHouseholdSocketStore()
 const {notify} = useNotification()
 const {t} = useI18n()
-const router = useRouter()
 
 const {
   household
 } = defineProps<{
   household: HouseholdWithMemberPublic
+}>()
+
+const emit = defineEmits<{
+  left: [id: number]
 }>()
 
 const isDefaultHousehold = computed(() => household.id === defaultHousehold.value?.id)
@@ -49,7 +50,6 @@ const isOwner = computed(() => household.member.role == ROLE_OWNER)
 
 const requestInProgress = ref(false)
 const leaveConfirmed = ref(false)
-
 
 const {
   isVisible: inviteDialogVisible,
@@ -93,20 +93,18 @@ function leaveHousehold(){
     // TODO
     //householdSocket.leaveHousehold()
   }
-  /*householdEndpoint.leaveHousehold(household.id).then((success) => {
+
+  householdEndpoint.leaveHousehold(household.id).then((success) => {
     if(success) {
       notify({
         title: t('toasts.titles.success.household_left'),
         text: t('toasts.text.success.household_left'),
         type: 'success'
       })
-      if (isDefaultHousehold.value) {
-        authStore.changeHousehold(undefined)
-      }
-      authStore.leftHousehold(household)
+      emit('left', household.id)
     }
     requestInProgress.value = false
-  })*/
+  })
 }
 
 </script>
@@ -146,11 +144,13 @@ function leaveHousehold(){
       density="comfortable"
       class="pb-1"
       elevation="0"
+      :loading="requestInProgress"
+      :disabled="requestInProgress"
   >
-    <template v-slot:loader>
+    <template v-slot:loader="{isActive}">
       <v-progress-linear
         indeterminate
-        :active="requestInProgress"
+        :active="isActive"
         color="primary"
       />
     </template>
@@ -190,10 +190,11 @@ function leaveHousehold(){
         />
       </v-sheet>
     </v-card-text>
-    <v-divider
-        class="border-opacity-50"
-    />
+
   </v-card>
+  <v-divider
+      class="border-opacity-50"
+  />
 </template>
 
 <style scoped lang="scss">

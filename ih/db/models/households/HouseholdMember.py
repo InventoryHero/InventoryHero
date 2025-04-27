@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from sqlalchemy import Column, func, DateTime
+from sqlalchemy import Column, func, DateTime, UniqueConstraint
 from sqlmodel import SQLModel, Field, Relationship
 
 from ih.schema.households.household import Role
@@ -18,3 +18,7 @@ class HouseholdMember(SQLModel, table=True):
 
     household: "Household" = Relationship(back_populates="household_members")
     user: "User" = Relationship(back_populates="household_memberships")
+
+    __table_args__ = (
+        UniqueConstraint("household_id", "user_id", name="user_in_household_unique"),
+    )

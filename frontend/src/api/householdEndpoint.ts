@@ -1,5 +1,6 @@
 import {AxiosError, AxiosInstance} from "axios"
 import {
+    HouseholdInvitePublic, HouseholdInviteWithMeta,
     HouseholdMemberPublic, HouseholdMemberUpdateRole,
     HouseholdPublic,
     HouseholdUpdate,
@@ -136,6 +137,76 @@ export default (api: AxiosInstance) => {
         }
     }
 
+    const createInvite = async (householdId: number): Promise<ApiResponse<HouseholdInvitePublic>> => {
+        try{
+            const response = await api.post(`/household/${householdId}/invite/`)
+            const success = response.status === 200;
+            return {
+                success: success,
+                data: success ? response.data : undefined,
+                error: success ? undefined : response.data?.detail ?? ''
+            }
+        } catch(error: any){
+            error = error as AxiosError
+            return {
+                success: false,
+                error: error.response.data.detail
+            }
+        }
+    }
+
+    const checkInviteValidity = async (code: string): Promise<ApiResponse<HouseholdInviteWithMeta>> => {
+        try{
+            const response = await api.get(`/household/invite/validate/${code}`)
+            const success = response.status === 202;
+            return {
+                success: success,
+                data: success ? response.data : undefined,
+                error: success ? undefined : response.data?.detail ?? ''
+            }
+        } catch(error: any){
+            error = error as AxiosError
+            return {
+                success: false,
+                error: error.response.data.detail
+            }
+        }
+    }
+
+    const acceptInvite = async (code: string): Promise<ApiResponse> => {
+        try{
+            const response = await api.post(`/household/invite/accept/${code}`)
+            const success = response.status === 200;
+            return {
+                success: success,
+                error: success ? undefined : response.data?.detail ?? ''
+            }
+        } catch(error: any){
+            error = error as AxiosError
+            return {
+                success: false,
+                error: error.response.data.detail
+            }
+        }
+    }
+
+    const leaveHousehold = async (householdId: number): Promise<ApiResponse> => {
+        try{
+            const response = await api.delete(`/household/${householdId}/member/`)
+            const success = response.status === 204;
+            return {
+                success: success,
+                error: success ? undefined : response.data?.detail ?? ''
+            }
+        } catch(error: any){
+            error = error as AxiosError
+            return {
+                success: false,
+                error: error.response.data.detail
+            }
+        }
+    }
+
     return {
         all: getAllHouseholds,
         one: getHousehold,
@@ -145,7 +216,10 @@ export default (api: AxiosInstance) => {
         getAllMembers,
         transferOwnership,
         removeMember,
-        updateRole
-
+        updateRole,
+        createInvite,
+        checkInviteValidity,
+        acceptInvite,
+        leaveHousehold
     }
 }

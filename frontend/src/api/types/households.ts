@@ -13,6 +13,24 @@ export interface HouseholdBase {
 export interface HouseholdCreate {
   name: string;
 }
+export interface HouseholdInviteBase {
+  id: number;
+  created_at: string;
+  expires_at: string;
+}
+export interface HouseholdInvitePublic {
+  id: number;
+  created_at: string;
+  expires_at: string;
+  code: string;
+}
+export interface HouseholdInviteWithMeta {
+  id: number;
+  created_at: string;
+  expires_at: string;
+  inviter_name: string;
+  household_name: string;
+}
 export interface HouseholdMemberBase {
   id: number;
   user_id: number;

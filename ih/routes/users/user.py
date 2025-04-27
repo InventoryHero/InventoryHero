@@ -46,6 +46,7 @@ class UserController(UserControllerBase):
 
     @user_router.get("/self", response_model=UserPublic)
     async def get_user_details(self):
+        self.logger.info("HALLO :)")
         return self.user
 
     @user_router.post("/current-household", response_model=Optional[HouseholdWithMemberPublic], status_code=status.HTTP_200_OK)
