@@ -2,14 +2,9 @@ from functools import cached_property
 
 from ih.repositories.factory import RepositoryFactory
 from ih.routes._base.HouseholdControllerBase import HouseholdControllerBase
-from ih.core.security.get_user import get_household_admin_or_owner
-from fastapi import Depends, Path
-
-from ih.schema.households import  Role
 
 
 class HouseholdAdminControllerBase(HouseholdControllerBase):
-    role: Role|None = Depends(get_household_admin_or_owner)
 
     @cached_property
     def repositories(self):

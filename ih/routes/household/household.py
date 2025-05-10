@@ -1,5 +1,5 @@
 from typing import List
-
+from uuid import UUID
 from fastapi import HTTPException
 from fastapi_utils.cbv import cbv
 from starlette import status
@@ -26,17 +26,17 @@ class HouseholdController(UserControllerBase):
         return self.repositories.households.all()
 
     @router.get("/{household_id}", response_model=HouseholdWithMemberPublic, status_code=status.HTTP_200_OK)
-    def get_household(self, household_id: int):
+    def get_household(self, household_id: UUID):
         return self.repositories.households.get(household_id)
 
     @router.delete("/{household_id}", status_code=status.HTTP_204_NO_CONTENT)
-    def delete_household(self, household_id: int):
+    def delete_household(self, household_id: UUID):
         self.repositories.households.delete(household_id)
 
     @router.patch("/{household_id}", response_model=HouseholdPublic)
-    def update_household(self, household_id: int, household: HouseholdUpdate):
+    def update_household(self, household_id: UUID, household: HouseholdUpdate):
         return self.repositories.households.update(household_id, household)
 
     @router.post("/{household_id}/transfer-ownership/{user_id}", status_code=status.HTTP_200_OK)
-    def transfer_ownership(self, household_id: int, user_id: int):
+    def transfer_ownership(self, household_id: UUID, user_id: UUID):
         self.repositories.households.transfer_ownership(household_id, user_id)

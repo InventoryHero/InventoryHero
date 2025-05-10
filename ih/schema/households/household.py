@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import Optional, List
+from uuid import UUID
 
 from pydantic import BaseModel, ConfigDict
 
@@ -18,21 +19,21 @@ class HouseholdCreate(HouseholdBase):
     pass
 
 class HouseholdPublic(HouseholdBase):
-    id: int
+    id: UUID
     created: datetime
-    creator: int
+    #creator: int
     model_config = ConfigDict(from_attributes=True)
 
 class HouseholdUpdate(HouseholdBase):
     name: Optional[str] = None
 
 class HouseholdSelection(BaseModel):
-    id: int
+    id: UUID
 
 
 class HouseholdMemberBase(BaseModel):
-    id: int
-    user_id: int
+    id: UUID
+    user_id: UUID
     joined: datetime
     role: Role
 

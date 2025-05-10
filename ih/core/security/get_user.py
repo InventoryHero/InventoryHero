@@ -3,6 +3,7 @@ from fastapi.security import OAuth2PasswordBearer
 from jwt import PyJWTError
 import jwt
 from sqlmodel import select, Session
+from uuid import UUID
 
 from ih.db.db_setup import get_session
 from ih.db.models.User import User
@@ -41,12 +42,13 @@ async def get_current_user(
         token = request.cookies.get("access_token")
     try:
         payload = jwt.decode(token, settings.IH_SECRET_KEY, algorithms=[ALGORITHM])
-        username: str | None = payload.get("sub")
-        if username is None:
+        uuid_str: str | None = payload.get("sub")
+        if uuid_str is None:
             raise credentials_exception
+        uuid: UUID = UUID(uuid_str)
     except PyJWTError as error:
         raise credentials_exception from error
-    query = select(User).where(User.username == username)
+    query = select(User).where(User.id == uuid)
     user = session.exec(query).first()
 
     if user is None:
@@ -60,7 +62,7 @@ async def get_admin_user(current_user: User = Depends(get_current_user)) -> User
 
 
 async def get_household_member(
-    household_id: int = Path(...),
+    household_id: UUID = Path(...),
     db: Session = Depends(get_session),
     user: User = Depends(get_current_user)
 ) -> Role | None:
@@ -76,9 +78,13 @@ async def get_household_member(
 
     return membership.role
 
+async def get_household_id(
+    household_id: UUID = Path(...)
+) -> UUID | None:
+    return household_id
 
 def get_household_admin_or_owner(
-    household_id: int = Path(...),
+    household_id: UUID = Path(...),
     db: Session = Depends(get_session),
     user: User = Depends(get_current_user)
 ) -> Role | None:

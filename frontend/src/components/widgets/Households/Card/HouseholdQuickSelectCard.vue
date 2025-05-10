@@ -20,7 +20,7 @@ const {
 }>()
 
 const {household: selectedHousehold} = storeToRefs(authData)
-const tmpSelected = ref<number|undefined>(selectedHousehold.value?.id)
+const tmpSelected = ref<string|undefined>(selectedHousehold.value?.id)
 const collapsed = ref(false)
 const loadingUserHouseholds = ref(false)
 const userHouseholds = ref<Array<HouseholdPublic>>([])

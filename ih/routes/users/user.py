@@ -5,7 +5,7 @@ from fastapi_utils.cbv import cbv
 from starlette import status
 
 from ih.schema.households import HouseholdSelection, HouseholdWithMemberPublic
-from ih.schema.user.user import UserPublic, AdminUserCreate
+from ih.schema.user.user import UserPublic, AdminUserCreate, UserUpdate
 from ih.routes._base.AdminApiRouter import AdminAPIRouter
 from ih.routes._base.AdminControllerBase import BaseAdminController
 from ih.routes._base.UserApiRouter import UserAPIRouter
@@ -46,7 +46,6 @@ class UserController(UserControllerBase):
 
     @user_router.get("/self", response_model=UserPublic)
     async def get_user_details(self):
-        self.logger.info("HALLO :)")
         return self.user
 
     @user_router.post("/current-household", response_model=Optional[HouseholdWithMemberPublic], status_code=status.HTTP_200_OK)
@@ -56,3 +55,7 @@ class UserController(UserControllerBase):
     @user_router.get("/current-household", response_model=Optional[HouseholdWithMemberPublic], status_code=status.HTTP_200_OK)
     async def get_current_household(self):
         return self.household
+
+    @user_router.post("/self", response_model=UserPublic, status_code=status.HTTP_200_OK)
+    async def update_user(self, to_update: UserUpdate):
+        return self.repositories.users.update_user(self.user.id, to_update)

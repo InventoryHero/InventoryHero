@@ -24,13 +24,10 @@ def init_db():
     settings = get_app_settings()
 
     with Session(engine) as session:
-        query = select(User).filter_by(id=0)
-
-        existing = session.exec(query).first()
+        existing = session.exec(select(User)).first()
 
         if existing is None:
             default_user = User(
-                id=0,
                 username=settings._IH_DEFAULT_USERNAME,
                 email=settings._IH_DEFAULT_EMAIL,
                 confirmed=True,

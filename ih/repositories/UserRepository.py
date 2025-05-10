@@ -1,6 +1,7 @@
 from typing import Sequence, Optional
-
+from uuid import UUID
 from fastapi import HTTPException
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import selectinload
 from sqlmodel import Session, select
 from starlette import status
@@ -8,7 +9,7 @@ from starlette import status
 from ih.core.security.password import hash_password
 from ih.db.models.households import HouseholdMember
 from ih.schema.households import HouseholdPublic, HouseholdWithMemberPublic, HouseholdMemberPublic
-from ih.schema.user.user import UserPublic, UserCreate, AdminUserCreate
+from ih.schema.user.user import UserPublic, UserCreate, AdminUserCreate, UserUpdate
 from ih.db.models.User import User
 
 
@@ -16,18 +17,29 @@ from ih.db.models.User import User
 class UserRepository:
     session: Session
     user: Optional[User]
-    _household_id: int | None = None
+    _household_id: UUID | None = None
 
     def __init__(self, session: Session, user: Optional[User]):
         self.session = session
         self.user = user
 
     @property
-    def household_id(self) -> int | None:
+    def household_id(self) -> UUID | None:
         return self._household_id
 
     def get_all(self) -> Sequence[User]:
         return self.session.exec(select(User)).all()
+
+    def get_user_by_id(self, user_id: UUID):
+        result = self.session.exec(
+            select(User).where(User.id == user_id)
+        )
+        user = result.first()
+
+        if not user:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+
+        return user
 
     def create(self, user: UserCreate | AdminUserCreate) -> User | None:
         query = select(User).where(
@@ -56,7 +68,7 @@ class UserRepository:
         self.session.refresh(new_user)
         return new_user
 
-    def delete(self, user_id: int) -> bool:
+    def delete(self, user_id: UUID) -> bool:
         query = select(User).where(User.id == user_id)
         user = self.session.exec(query).first()
         if user is None:
@@ -66,7 +78,7 @@ class UserRepository:
         self.session.commit()
         return True
 
-    def set_current_household(self, household_id: int) -> HouseholdWithMemberPublic:
+    def set_current_household(self, household_id: UUID) -> HouseholdWithMemberPublic:
         query = (
             select(HouseholdMember)
              .where(HouseholdMember.user_id == self.user.id, HouseholdMember.household_id == household_id)
@@ -85,3 +97,23 @@ class UserRepository:
             **HouseholdPublic.model_validate(household.household).model_dump(),
             member=HouseholdMemberPublic.model_validate(household)
         )
+
+    def update_user(self, user_id: UUID, to_update: UserUpdate) -> UserPublic:
+        update_data = to_update.model_dump(exclude_unset=True)
+        user = self.get_user_by_id(user_id)
+
+        for field, value in update_data.items():
+            setattr(user, field, value)
+        try:
+            self.session.commit()
+            self.session.refresh(user)
+        except IntegrityError as e:
+            self.session.rollback()
+            # Customize error message based on the field — example here is for username
+            if "username" in str(e.orig):
+                raise HTTPException(status_code=409, detail="username_taken")
+            if "email" in str(e.orig):
+                raise HTTPException(status_code=409, detail="email_taken")
+            raise HTTPException(status_code=400, detail="update_failed_invalid_values")
+
+        return user

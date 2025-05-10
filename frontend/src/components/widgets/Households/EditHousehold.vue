@@ -28,12 +28,9 @@ const householdMembers = ref<Array<HouseholdMemberPublic>>([])
 const loadingMembers = ref(false)
 
 const householdId = computed(() => {
-  const number = parseInt(id, 10)
-  if(isNaN(number)){
-    return -1;
-  }
-  return number
+  return id
 })
+
 
 const household = ref<HouseholdPublic|undefined>()
 const newHouseholdName = ref<string|undefined>()
@@ -82,7 +79,7 @@ function deleteHousehold(){
   })
 }
 
-function removeFromHousehold(id: number){
+function removeFromHousehold(id: string){
   const member = householdMembers.value.find(member => member.id === id)
   if(member){
     notify({

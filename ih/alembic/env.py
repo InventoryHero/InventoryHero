@@ -7,7 +7,7 @@ from alembic import context
 
 from sqlmodel import SQLModel
 from ih.db.models import (
-    User, RefreshToken, households
+    User, RefreshToken, households, storage
 )
 from ih.core.config import get_app_settings
 

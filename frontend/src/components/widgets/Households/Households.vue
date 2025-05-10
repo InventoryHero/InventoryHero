@@ -21,7 +21,7 @@ const afterText = computed(() => {
   return t('households.all_displayed')
 })
 
-const onLeave = (id: number) => {
+const onLeave = (id: string) => {
   households.value = households.value.filter(h => h.id !== id)
   update.value = true
   nextTick(() => {

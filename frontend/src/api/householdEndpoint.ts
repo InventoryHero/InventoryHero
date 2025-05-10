@@ -22,7 +22,7 @@ export default (api: AxiosInstance) => {
         }
     }
 
-    const getHousehold = async (id: number): Promise<ApiResponse<HouseholdPublic>> => {
+    const getHousehold = async (id: string): Promise<ApiResponse<HouseholdPublic>> => {
         const response = await api.get(`/household/${id}`)
         if(response.status === 200){
             return {
@@ -48,14 +48,14 @@ export default (api: AxiosInstance) => {
         }
     }
 
-    const deleteHousehold = async (id: number): Promise<ApiResponse> => {
+    const deleteHousehold = async (id: string): Promise<ApiResponse> => {
         const response = await api.delete(`/household/${id}`)
         return {
             success: response.status === 204
         }
     }
 
-    const updateHousehold = async (householdId: number, updateData: HouseholdUpdate): Promise<ApiResponse<HouseholdPublic>> => {
+    const updateHousehold = async (householdId: string, updateData: HouseholdUpdate): Promise<ApiResponse<HouseholdPublic>> => {
         const response = await api.patch(`/household/${householdId}`, updateData)
         if (response.status === 200){
             return {
@@ -68,7 +68,7 @@ export default (api: AxiosInstance) => {
         }
     }
 
-    const getAllMembers = async (householdId: number): Promise<ApiResponse<HouseholdWithMembersPublic>> => {
+    const getAllMembers = async (householdId: string): Promise<ApiResponse<HouseholdWithMembersPublic>> => {
         try{
             const response = await api.get(`/household/${householdId}/member/`)
             return {
@@ -86,7 +86,7 @@ export default (api: AxiosInstance) => {
     }
 
 
-    const transferOwnership = async (householdId: number, newOwnerId: number): Promise<ApiResponse> => {
+    const transferOwnership = async (householdId: string, newOwnerId: string): Promise<ApiResponse> => {
         try{
             const response = await api.post(`/household/${householdId}/transfer-ownership/${newOwnerId}`)
             return {
@@ -103,7 +103,7 @@ export default (api: AxiosInstance) => {
         }
     }
 
-    const removeMember = async (householdId: number, userId: number): Promise<ApiResponse> => {
+    const removeMember = async (householdId: string, userId: string): Promise<ApiResponse> => {
         try{
             const response = await api.delete(`/household/${householdId}/member/${userId}`)
             return {
@@ -119,7 +119,7 @@ export default (api: AxiosInstance) => {
         }
     }
 
-    const updateRole = async (householdId: number, userId: number, role: Role): Promise<ApiResponse> => {
+    const updateRole = async (householdId: string, userId: string, role: Role): Promise<ApiResponse> => {
         try{
             const response = await api.patch(`/household/${householdId}/member/${userId}`, {
                 role: role
@@ -137,7 +137,7 @@ export default (api: AxiosInstance) => {
         }
     }
 
-    const createInvite = async (householdId: number): Promise<ApiResponse<HouseholdInvitePublic>> => {
+    const createInvite = async (householdId: string): Promise<ApiResponse<HouseholdInvitePublic>> => {
         try{
             const response = await api.post(`/household/${householdId}/invite/`)
             const success = response.status === 200;
@@ -190,7 +190,7 @@ export default (api: AxiosInstance) => {
         }
     }
 
-    const leaveHousehold = async (householdId: number): Promise<ApiResponse> => {
+    const leaveHousehold = async (householdId: string): Promise<ApiResponse> => {
         try{
             const response = await api.delete(`/household/${householdId}/member/`)
             const success = response.status === 204;

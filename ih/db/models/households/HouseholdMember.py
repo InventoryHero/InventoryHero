@@ -1,5 +1,6 @@
 from datetime import datetime
 from typing import Optional
+from uuid import UUID, uuid4
 
 from sqlalchemy import Column, func, DateTime, UniqueConstraint
 from sqlmodel import SQLModel, Field, Relationship
@@ -7,9 +8,9 @@ from sqlmodel import SQLModel, Field, Relationship
 from ih.schema.households.household import Role
 
 class HouseholdMember(SQLModel, table=True):
-    id: Optional[int] = Field(default=None, primary_key=True, index=True)
-    user_id: int = Field(foreign_key="user.id", ondelete="CASCADE", nullable=False)
-    household_id: int = Field(foreign_key="household.id", ondelete="CASCADE", nullable=False)
+    id: Optional[UUID] = Field(default_factory=uuid4, primary_key=True, index=True)
+    user_id: UUID = Field(foreign_key="user.id", ondelete="CASCADE", nullable=False)
+    household_id: UUID = Field(foreign_key="household.id", ondelete="CASCADE", nullable=False)
     role: str = Field(default=Role.MEMBER)
     joined: datetime = Field(
         default_factory=datetime.now,

@@ -26,7 +26,7 @@ const {
 }>()
 
 const emit = defineEmits<{
-  left: [id: number]
+  left: [id: string]
 }>()
 
 const isDefaultHousehold = computed(() => household.id === defaultHousehold.value?.id)

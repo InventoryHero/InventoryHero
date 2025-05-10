@@ -57,12 +57,11 @@ async def get_token(
             detail="username_or_password_incorrect",
             headers={"WWW-Authenticate": "Bearer"},
         )
-    access_token = create_access_token(
-        {
-            "sub": user.username
+    token_payload = {
+            "sub": str(user.id)
         }
-    )
-    refresh_token, jti = create_refresh_token({"sub": user.username}, session, user.id)
+    access_token = create_access_token(token_payload)
+    refresh_token, jti = create_refresh_token(token_payload, session, user.id)
 
     response.set_cookie(
         key="refresh_token",
@@ -95,10 +94,10 @@ async def refresh(response: Response, request: Request, session: Session = Depen
 
     try:
         payload = jwt.decode(refresh_token, settings.IH_SECRET_KEY, algorithms=[ALGORITHM])
-        username = payload.get("sub")
+        uuid = payload.get("sub")
         token_row = session.get(RefreshToken, payload.get("jti"))
 
-        if not username or not token_row:
+        if not uuid or not token_row:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="invalid_token",
@@ -117,7 +116,7 @@ async def refresh(response: Response, request: Request, session: Session = Depen
             detail="invalid_token",
         )
 
-    new_access_token = create_access_token({"sub": username})
+    new_access_token = create_access_token({"sub": uuid})
     response.set_cookie(
         key="access_token",
         value=new_access_token,

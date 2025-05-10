@@ -1,6 +1,7 @@
 from datetime import datetime
 from fastapi import HTTPException
 from typing import List
+from uuid import UUID
 
 from fastapi_utils.cbv import cbv
 from sqlmodel import select
@@ -79,7 +80,7 @@ class HouseholdInviteController(HouseholdAdminControllerBase):
         return invite
 
     @router.delete("/{invite_id}", status_code=status.HTTP_204_NO_CONTENT)
-    def delete_invite(self, invite_id: int):
+    def delete_invite(self, invite_id: UUID):
         self.repositories.households.delete_invite(invite_id)
 
 

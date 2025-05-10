@@ -1,6 +1,7 @@
 import hashlib
 import secrets
 from typing import Optional, List, Union
+from uuid import UUID
 
 from fastapi import HTTPException
 from sqlalchemy import delete
@@ -20,14 +21,14 @@ from ih.schema.households.invite import HouseholdInvitePublic
 class HouseholdRepository:
     session: Session
     user: Optional[User]
-    household_id: Optional[int]
+    household_id: Optional[UUID]
 
-    def __init__(self, session: Session, user: Optional[User] = None, household: Optional[int] = None):
+    def __init__(self, session: Session, user: Optional[User] = None, household: Optional[UUID] = None):
         self.session = session
         self.user = user
         self.household_id = household
 
-    def _get_household(self, household_id: int) -> Household:
+    def _get_household(self, household_id: UUID) -> Household:
         query = select(Household).where(Household.id == household_id)
         household = self.session.exec(query).first()
 
@@ -36,8 +37,8 @@ class HouseholdRepository:
         return household
 
 
-    def _get_member(self, household_id: int,
-                    user_id: int = -1,
+    def _get_member(self, household_id: UUID,
+                    user_id: UUID = None,
                     include_user: bool = False,
                     include_household: bool = False) -> Union[HouseholdMember, List[HouseholdMember]]:
         base_query = (
@@ -65,11 +66,10 @@ class HouseholdRepository:
                 detail="no_rights"
             )
 
-        if user_id == self.user.id:
-            return requester
-
-        if user_id == -1:
+        if user_id is None:
             return self.session.exec(base_query).all()
+        elif user_id == self.user.id:
+            return requester
 
         user_query = base_query.where(HouseholdMember.user_id == user_id)
         user = self.session.exec(user_query).first()
@@ -100,8 +100,8 @@ class HouseholdRepository:
             member = HouseholdMemberPublic.model_validate(member)
         )
 
-    def get(self, household_id: int) -> HouseholdWithMembersPublic:
-        member = self._get_member(household_id, user_id=-1, include_household=True)
+    def get(self, household_id: UUID) -> HouseholdWithMembersPublic:
+        member = self._get_member(household_id, user_id=None, include_household=True)
         return HouseholdWithMembersPublic(
             **HouseholdPublic.model_validate(member.household).model_dump(),
             members = [HouseholdMemberPublic.model_validate(member)]
@@ -125,12 +125,12 @@ class HouseholdRepository:
             ) for household_member in results
         ]
 
-    def delete(self, household_id: int):
+    def delete(self, household_id: UUID):
         household_member = self._get_member(household_id, user_id=self.user.id, include_household=True)
         self.session.delete(household_member.household)
         self.session.commit()
 
-    def update(self, household_id: int, update_data: HouseholdUpdate) -> HouseholdPublic:
+    def update(self, household_id: UUID, update_data: HouseholdUpdate) -> HouseholdPublic:
         household_member = self._get_member(household_id, user_id=self.user.id, include_household=True)
 
         household_data_dict = update_data.model_dump(exclude_unset=True)
@@ -143,8 +143,8 @@ class HouseholdRepository:
         return household_member.household
 
 
-    def get_all_members(self, household_id: int) -> HouseholdWithMembersPublic:
-        results = self._get_member(household_id, user_id=-1, include_user=True)
+    def get_all_members(self, household_id: UUID) -> HouseholdWithMembersPublic:
+        results = self._get_member(household_id, user_id=None, include_user=True)
         if not results:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND)
 
@@ -154,7 +154,7 @@ class HouseholdRepository:
             members = [HouseholdMemberPublic.model_validate(member) for member in results]
         )
 
-    def transfer_ownership(self, household_id: int, user_id: int):
+    def transfer_ownership(self, household_id: UUID, user_id: UUID):
         curr_owner = self._get_member(household_id, self.user.id)
         if curr_owner.role != Role.OWNER:
             raise HTTPException(status_code=403, detail="only_owner_can_transfer_ownership")
@@ -170,7 +170,7 @@ class HouseholdRepository:
         self.session.add(curr_owner)
         self.session.commit()
 
-    def remove_member(self, household_id: int, member_id: int):
+    def remove_member(self, household_id: UUID, member_id: UUID):
         to_remove = self._get_member(household_id, user_id=member_id, include_user=True)
         if to_remove.role == Role.OWNER:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="cannot_remove_owner")
@@ -193,7 +193,7 @@ class HouseholdRepository:
         self.session.commit()
 
 
-    def update_member_role(self, household_id: int, member_id: int,  update: HouseholdMemberUpdateRole):
+    def update_member_role(self, household_id: UUID, member_id: UUID,  update: HouseholdMemberUpdateRole):
         to_update = self._get_member(household_id, user_id=member_id, include_user=True)
         if to_update.role == Role.OWNER:
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="cannot_update_owner")
@@ -222,7 +222,7 @@ class HouseholdRepository:
         public_invite = HouseholdInvitePublic(**invite.model_dump(exclude={"code"}), code=raw_code)
         return public_invite
 
-    def delete_invite(self, invite_id: int):
+    def delete_invite(self, invite_id: UUID):
         query = delete(HouseholdInvite).where(HouseholdInvite.id == invite_id, HouseholdInvite.household_id == self.household_id)
         result = self.session.exec(query)
         self.session.commit()
@@ -246,7 +246,7 @@ class HouseholdRepository:
         )
         return self.session.exec(query).first()
 
-    def add_member(self, household_id: int):
+    def add_member(self, household_id: UUID):
         new_member = HouseholdMember(
             household_id=household_id,
             user_id=self.user.id

@@ -2,6 +2,7 @@ import uuid
 from datetime import timedelta, datetime, timezone
 from passlib.context import CryptContext
 from sqlmodel import Session
+from uuid import UUID
 
 from . import settings, ALGORITHM
 
@@ -24,7 +25,7 @@ def create_access_token(data: dict):
     encoded_jwt = jwt.encode(to_encode, settings.IH_SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
 
-def create_refresh_token(data: dict, session: Session, user_id: int):
+def create_refresh_token(data: dict, session: Session, user_id: UUID):
     to_encode = data.copy()
     expire = datetime.now(timezone.utc) + timedelta(seconds=settings.IH_REFRESH_TOKEN_EXPIRATION)
     jti = str(uuid.uuid4())

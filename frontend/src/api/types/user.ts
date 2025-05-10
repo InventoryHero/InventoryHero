@@ -31,8 +31,14 @@ export interface UserPublic {
   email: string;
   first_name?: string | null;
   last_name?: string | null;
-  id: number;
+  id: string;
   admin: boolean;
   registered_on: string;
   confirmed: boolean;
+}
+export interface UserUpdate {
+  username?: string | null;
+  email?: string | null;
+  first_name?: string | null;
+  last_name?: string | null;
 }

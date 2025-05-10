@@ -1,6 +1,7 @@
 from pydantic import BaseModel, ConfigDict
 from typing import Optional
 from datetime import datetime
+from uuid import UUID
 
 
 class UserBase(BaseModel):
@@ -15,8 +16,15 @@ class UserCreate(UserBase):
 class AdminUserCreate(UserCreate):
     admin: bool = False
 
+class UserUpdate(BaseModel):
+    username: Optional[str] = None
+    email: Optional[str] = None
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+
+
 class UserPublic(UserBase):
-    id: int
+    id: UUID
     admin: bool
     registered_on: datetime
     confirmed: bool
