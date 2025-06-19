@@ -5,7 +5,7 @@ from fastapi_utils.cbv import cbv
 from starlette import status
 
 from ih.db.models.storage.Storage import StorageType
-from ih.routes._base.StorageControllerBase import StorageControllerBase
+from ih.routes._base.HouseholdContextController import HouseholdContextController
 from ih.routes._base.UserApiRouter import UserAPIRouter
 from ih.schema.storage.storage import RoomCreateSchema, StorageResponseSchema
 
@@ -15,7 +15,7 @@ scoped_router = UserAPIRouter(prefix="/content/{storage_id}", tags=["storage"])
 
 
 @cbv(router)
-class StorageBaseController(StorageControllerBase):
+class StorageBaseController(HouseholdContextController):
 
     @router.post("/", status_code=status.HTTP_201_CREATED)
     def create_storage(self, to_create: RoomCreateSchema):
@@ -28,7 +28,7 @@ class StorageBaseController(StorageControllerBase):
 
 
 @cbv(scoped_router)
-class StorageScopedController(StorageControllerBase):
+class StorageScopedController(HouseholdContextController):
 
     @scoped_router.get("/")
     def list_items(self, storage_id: uuid.UUID):

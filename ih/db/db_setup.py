@@ -1,6 +1,7 @@
 from typing import Annotated
 
-from fastapi import Depends
+from fastapi import Depends, HTTPException
+from sqlalchemy.exc import SQLAlchemyError
 from sqlmodel import create_engine, Session
 
 from ih.core.config import get_app_settings
@@ -16,7 +17,11 @@ engine = create_engine(settings.DB_URL, echo=False, connect_args=connect_args, p
 
 def get_session():
     with Session(engine) as session:
-        yield session
+        try:
+            yield session
+            session.commit()
+        except SQLAlchemyError as e:
+            raise HTTPException(status_code=500, detail=str(e))
 
 
 SessionDep = Annotated[Session, Depends(get_session)]

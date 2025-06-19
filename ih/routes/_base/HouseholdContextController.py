@@ -8,7 +8,7 @@ from ih.routes._base.UserControllerBase import UserControllerBase
 from ih.schema.households import HouseholdWithMemberPublic
 
 
-class StorageControllerBase(UserControllerBase):
+class HouseholdContextController(UserControllerBase):
     @cached_property
     def household(self) -> HouseholdWithMemberPublic:
         base_household = super().household

@@ -1,11 +1,11 @@
 from fastapi import APIRouter
-from . import users
-from . import auth
-from . import household
-from . import storage
+from . import (
+    auth, users, household, storage, product
+)
 
 router = APIRouter(prefix="/api")
 router.include_router(users.router)
 router.include_router(auth.router)
 router.include_router(household.router)
 router.include_router(storage.router)
+router.include_router(product.router)

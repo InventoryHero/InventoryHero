@@ -6,9 +6,7 @@ from sqlalchemy import pool
 from alembic import context
 
 from sqlmodel import SQLModel
-from ih.db.models import (
-    User, RefreshToken, households, storage
-)
+from ih.db.models import *
 from ih.core.config import get_app_settings
 
 # this is the Alembic Config object, which provides
