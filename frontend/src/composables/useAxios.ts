@@ -2,6 +2,8 @@ import axios, {AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse} fro
 import authEndpoint from "@/api/authEndpoint.ts";
 import userEndpoint from "@/api/userEndpoint.ts";
 import householdEndpoint from "@/api/householdEndpoint.ts";
+import itemsEndpoint from "@/api/itemsEndpoint.ts";
+import storageEndpoint from "@/api/storageEndpoint.ts";
 
 interface CustomAxiosRequestConfig extends AxiosRequestConfig {
     _retry?: boolean;
@@ -52,13 +54,16 @@ export default (baseURL = "/api")=> {
     const {refreshToken, ...auth} = authEndpoint(instance)
     const user = userEndpoint(instance)
     const household = householdEndpoint(instance)
-
+    const items = itemsEndpoint(instance)
+    const storage = storageEndpoint(instance)
 
     return {
         api: instance,
         auth,
         userEndpoint: user,
-        household
+        household,
+        items,
+        storage
     }
 
 }

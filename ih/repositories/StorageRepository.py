@@ -1,20 +1,23 @@
 import hashlib
 import secrets
-from typing import Optional, List, Union
+from typing import Optional, List, Union, Any, Sequence
 from uuid import UUID
 
 from fastapi import HTTPException
-from sqlalchemy import delete
+from sqlalchemy import delete, func, Row, RowMapping, literal
 from sqlalchemy.exc import IntegrityError
 
-from sqlalchemy.orm import selectinload
+from sqlalchemy.orm import selectinload, aliased, noload
 from sqlmodel import Session, select
+from sqlmodel.sql._expression_select_cls import _T
 from starlette import status
 
+from ih.db.models import Item, ItemStorage, ItemAttributes
 from ih.db.models.User import User
 from ih.db.models.households import Household
 from ih.db.models.storage.Storage import StorageType, Storage
-from ih.schema.storage.storage import StorageBaseSchema, StorageResponseSchema
+from ih.schema.items import ItemInstanceReadSchema
+from ih.schema.storage.storage import StorageBaseSchema, StorageResponseSchema, BoxResponseSchema, RoomResponseSchema
 
 
 class StorageRepository:
@@ -27,6 +30,17 @@ class StorageRepository:
         self.user = user
         self.household_id = household
 
+
+    def get_by_id(self, storage_id: UUID) -> Optional[Storage]:
+        stmt = (
+            select(Storage)
+            .where(
+                Storage.household_id == self.household_id,
+                Storage.id == storage_id
+            )
+            .options(selectinload(Storage.parent))
+        )
+        return self.session.exec(stmt).first()
 
     def create_storage(self, storage_type: StorageType, to_create: StorageBaseSchema) -> Storage:
         # todo check if to_create.parent_id exists and is in household
@@ -44,7 +58,7 @@ class StorageRepository:
         match storage_type:
             case StorageType.BOX:
                 if parent is None:
-                    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="box_needs_parent")
+                    raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="box_needs_room_parent")
             case StorageType.ROOM:
                 if parent is not None:
                     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="room_cannot_have_parent")
@@ -61,6 +75,123 @@ class StorageRepository:
         self.session.refresh(storage)
         return storage
 
-    def get_all_storage(self, storage_type: StorageType) -> List[Storage]:
-        return self.session.exec(select(Storage).where(Storage.storage_type == storage_type)).all()
+    def get_storage(self) -> List[Storage]:
+        stmt = (
+            select(Storage)
+            .where(
+                Storage.household_id == self.household_id
+            )
+            .order_by(Storage.storage_type, Storage.name)  # Good to sort it for the dropdown
+            .options(noload(Storage.parent))
+        )
+        return self.session.exec(stmt).all()
 
+    def list_boxes(self, storage_id: Optional[UUID] = None) -> List[BoxResponseSchema]:
+        item_counts_sq = (
+            select(
+                ItemStorage.storage_id.label("storage_id"),
+                func.sum(ItemStorage.quantity).label("num_items")
+            )
+            .group_by(ItemStorage.storage_id)
+            .subquery()
+        )
+
+        stmt = (
+            select(
+                Storage,
+                func.coalesce(item_counts_sq.c.num_items, 0).label("num_items")
+            )
+            .outerjoin(item_counts_sq, Storage.id == item_counts_sq.c.storage_id)
+
+            .where(
+                Storage.household_id == self.household_id,
+                Storage.storage_type == StorageType.BOX,
+
+            )
+        )
+
+        if storage_id is not None:
+            stmt = stmt.where(Storage.parent_id == storage_id)
+
+        results = self.session.exec(stmt).all()
+        return [BoxResponseSchema(**box.model_dump(), num_items=num_items, parent=None) for box, num_items in results]
+
+
+    def list_rooms(self) -> List[RoomResponseSchema]:
+        item_counts_sq = (
+            select(
+                ItemStorage.storage_id.label("storage_id"),
+                func.sum(ItemStorage.quantity).label("num_items")
+            )
+            .group_by(ItemStorage.storage_id)
+            .subquery()
+        )
+        box_counts_sq = (
+            select(
+                Storage.parent_id.label("parent_id"),
+                func.count(Storage.id).label("num_boxes")
+            )
+            .where(Storage.storage_type == StorageType.BOX)
+            .group_by(Storage.parent_id)
+            .subquery()
+        )
+
+        stmt = (
+            select(
+                Storage,
+                func.coalesce(item_counts_sq.c.num_items, 0).label("num_items"),
+                func.coalesce(box_counts_sq.c.num_boxes, 0).label("num_boxes")
+            )
+            .outerjoin(item_counts_sq, Storage.id == item_counts_sq.c.storage_id)
+            .outerjoin(box_counts_sq, Storage.id == box_counts_sq.c.parent_id)
+            .order_by(Storage.name)
+            .where(
+                Storage.household_id == self.household_id,
+                Storage.storage_type == StorageType.ROOM,
+
+            )
+        )
+
+        results = self.session.exec(stmt).all()
+        return [RoomResponseSchema(**room.model_dump(), num_items=num_items, num_boxes=num_boxes) for room, num_items, num_boxes in results]
+
+
+    def get_storage_path(self, starting_storage_id: UUID) -> List[Storage]:
+        """
+        Uses a recursive CTE to fetch the full hierarchical path for a given storage ID.
+        Returns the path from the top-most parent to the starting node.
+        """
+        if not starting_storage_id:
+            return []
+
+        # Alias the Storage model to use in the CTE
+        storage_alias = aliased(Storage)
+
+        # Create the CTE object
+        # The name 'storage_path_cte' is arbitrary
+        path_cte = (
+            select(Storage, literal(0).label('depth'))
+            .where(Storage.id == starting_storage_id)
+            .cte(name="storage_path_cte", recursive=True)
+        )
+
+        # Define the recursive part of the CTE
+        # This joins the CTE to the Storage table to find the parent
+        recursive_part = (
+            select(storage_alias, path_cte.c.depth + 1)
+            .join(path_cte, path_cte.c.parent_id == storage_alias.id)
+        )
+
+        # Combine the anchor and recursive parts with UNION ALL
+        full_cte = path_cte.union_all(recursive_part)
+
+        # Now, select everything from our completed CTE
+        stmt = (
+            select(Storage)
+            .join(full_cte, Storage.id == full_cte.c.id)
+            .order_by(full_cte.c.depth.desc())  # Order by depth to get Grandparent -> Parent -> Child
+        )
+
+        # Execute the query
+        results = self.session.exec(stmt).all()
+        return results

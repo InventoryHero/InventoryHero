@@ -80,6 +80,7 @@ declare global {
   const useScrollToTop: typeof import('./src/composables/useScrollToTop')['default']
   const useShareMethods: typeof import('./src/composables/useShareMethods')['default']
   const useSlots: typeof import('vue')['useSlots']
+  const useStorageHelper: typeof import('./src/composables/useStorageHelper')['default']
   const useStorageIcon: typeof import('./src/composables/useStorageIcon')['default']
   const useStorageTitle: typeof import('./src/composables/useStorageTitle')['default']
   const useStrongPasswordRule: typeof import('./src/composables/useStrongPasswordRule')['default']

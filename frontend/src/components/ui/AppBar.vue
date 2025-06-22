@@ -6,17 +6,11 @@ const route = useRoute()
 const router = useRouter()
 
 const emit = defineEmits<{
-  (e: 'toggleNav'): void,
   (e: 'scanQrCode'): void
 }>()
 
-const {nav=false} = defineProps<{
-  nav?: boolean
-}>()
 
-const displayNav = computed(() => {
-  return nav && isAuthorized.value
-})
+
 const isAuthorized = computed(() => {
   return authStore.authorized
 })
@@ -30,24 +24,13 @@ const tabsVisible = computed(() => route.path === "/create")
 const tab = inject<string>("tab")
 
 
-
-
-function toggleNav(){
-  emit('toggleNav')
-}
-
 </script>
 
 <template>
   <v-app-bar
-      density="comfortable"
+      density="compact"
   >
-    <template v-slot:prepend>
-      <v-app-bar-nav-icon
-          v-if="displayNav"
-          @click.stop="toggleNav()"
-      ></v-app-bar-nav-icon>
-    </template>
+    <slot />
     <v-app-bar-title>
       <v-card
         hover

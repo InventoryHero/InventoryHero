@@ -1,6 +1,7 @@
 
 import {i18n} from "@/lang";
 import PasswordReset from "@/views/PasswordReset.vue";
+import Tokenized from "@/layouts/Tokenized.vue";
 
 
 export default {
@@ -13,6 +14,7 @@ export default {
         requiresHousehold: false,
         fillHeight: false,
         title: i18n.global.t('titles.password_reset'),
-        tokenized: true
+        tokenized: true, // TODO DEPRECATED,
+        layout: Tokenized
     }
 }

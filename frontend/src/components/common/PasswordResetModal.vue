@@ -2,7 +2,7 @@
 import {computed, onMounted, ref, useTemplateRef} from 'vue'
 import useAxiosOld from "@/composables/useAxiosOld.ts";
 import {AdministrationEndpoint, GeneralEndpoint, UserEndpoint} from "@/api/http";
-import useTextFieldStyle from "@/composables/useAppStyling.ts";
+
 import {useI18n} from "vue-i18n";
 import PasswordResetAdminBanner from "@/components/widgets/Administration/Users/PasswordResetAdminBanner.vue";
 import {useNotification} from "@kyvg/vue3-notification";
@@ -25,7 +25,7 @@ const {userName="", fromAdmin=false} = defineProps<{
   fromAdmin?: boolean
 }>()
 
-const {styling: textFieldStyle} = useAppStyling()
+const {textFieldStyle} = useAppStyling()
 
 const oldPassword = ref<string>("")
 const newPassword = ref<string>("")

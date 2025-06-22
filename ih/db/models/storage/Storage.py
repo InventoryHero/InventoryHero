@@ -17,9 +17,13 @@ class Storage(SQLModel, table=True):
     storage_type: StorageType  = Field()# e.g., "Room", "Box", etc.
     parent_id: Optional[uuid.UUID] = Field(default=None, foreign_key="storage.id")
     household_id: uuid.UUID = Field(foreign_key="household.id", nullable=False, ondelete="CASCADE")
-    product_locations: List["ProductLocation"] = Relationship(back_populates="storage")
+    item_locations: List["ItemStorage"] = Relationship(back_populates="storage")
 
-    parent: Optional["Storage"] = Relationship()
-    #children: List["Storage"] = Relationship(back_populates="parent")
+    parent: Optional["Storage"] = Relationship(
+        back_populates="children",
+        # sa_relationship_kwargs tells SQLAlchemy how to handle the self-join
+        sa_relationship_kwargs=dict(remote_side="Storage.id")
+    )
+    children: List["Storage"] = Relationship(back_populates="parent")
     household: "Household" = Relationship()
 

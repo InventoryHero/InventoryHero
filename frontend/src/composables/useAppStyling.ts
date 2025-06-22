@@ -1,7 +1,10 @@
+import type { VTextField, VBtn } from 'vuetify/components'
 
+type VTextFieldProps = InstanceType<typeof VTextField>['$props']
+type VBtnProps = InstanceType<typeof VBtn>['$props']
 
 export default () => {
-    const styling = computed(() => {
+    const textFieldStyling = computed<VTextFieldProps>(() => {
         return {
             variant: "solo-filled",
             rounded: "lg",
@@ -14,9 +17,18 @@ export default () => {
             'class': 'align-center'
         } as Partial<object>
     })
+    const btnStyle = computed<VBtnProps>(() => {
+        return {
+            color: "primary",
+            class: 'text-none',
+            density: 'default'
+        }
+    })
+
 
 
     return {
-        styling
+        textFieldStyling,
+        btnStyle
     }
 }

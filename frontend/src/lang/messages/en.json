@@ -79,6 +79,22 @@
       }
     }
   },
+  "items": {
+    "quantity": "Qty: {quantity}",
+    "item": {
+      "delete": "Delete",
+      "edit": "Edit"
+    },
+    "attributes": {
+      "quantity": "Quantity",
+      "expiry_date": "Expiration date",
+      "serial_number": "Serialnumber",
+      "batch": "Batch",
+      "notes": "Notes",
+      "delete": "Delete",
+      "edit": "Edit"
+    }
+  },
   "nav": {
     "home": "Home",
     "products": "Product Overview",
@@ -186,53 +202,22 @@
     "no_products": "Nothing there..."
   },
   "boxes": {
-    "filter": "Filter",
-    "loading": "Loading your boxes",
-    "confirm_delete": {
-      "title": "Delete box",
-      "text": "This will delete this box. Content will be moved to the default storage ('void'). This is destructive and cannot be undone. Do you want to proceed?",
-      "cancel": "Cancel",
-      "confirm": "Yes delete"
-    },
     "box": {
-      "created": "Created at",
-      "product_amount": "Products in box",
-      "all_displayed": "No more items left in box to display",
-      "loading": "Loading products in box",
-      "rules": {
-        "new_name_empty": "Name cannot be empty!"
-      }
-    },
-    "all_displayed": "You've reached the end. No more boxes to see here.",
-    "no_matches": "No boxes match the current filter.",
-    "no_boxes": "Nothing there..."
+      "delete": "Delete",
+      "edit": "Edit",
+      "stored_at": "Stored at: {parent}",
+      "items_quantity": "No items | One item | {n} items"
+    }
   },
-  "locations": {
-    "filter": "Filter",
-    "tabs": {
-      "box": "Boxes",
-      "product": "Products"
-    },
-    "loading": "Loading your locations",
-    "confirm_delete": {
-      "title": "Delete location",
-      "text": "This will delete this location. Content will be moved to the default storage ('void'). This is destructive and cannot be undone. Do you want to proceed?",
-      "cancel": "Cancel",
-      "confirm": "Yes delete"
-    },
-    "location": {
-      "created": "Created at",
-      "product_amount": "Products in location",
-      "boxes_amount": "Boxes in location",
-      "all_displayed": "No more items left at location to display",
-      "loading_content": "Loading boxes and products",
-      "rules": {
-        "new_name_empty": "Name cannot be empty!"
-      }
-    },
-    "all_displayed": "You've reached the end. No more locations to see here.",
-    "no_matches": "No locations match the current filter.",
-    "no_locations": "Nothing there..."
+  "rooms": {
+    "room": {
+      "tabs": {
+        "items": "Items",
+        "boxes": "Boxes"
+      },
+      "items_quantity": "No items | One item | {n} items",
+      "boxes_quantity": "No boxes | One box | {n} boxes"
+    }
   },
   "households": {
     "household_card": {

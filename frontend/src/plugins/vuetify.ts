@@ -6,8 +6,14 @@ import '@fortawesome/fontawesome-free/css/all.css'
 import '@mdi/font/css/materialdesignicons.css'
 import { fa } from 'vuetify/iconsets/fa'
 import {aliases, mdi} from "vuetify/iconsets/mdi";
+import * as labsComponents from 'vuetify/labs/components'
+import * as components from 'vuetify/components'
 
 export default createVuetify({
+    components: {
+      ...components,
+      ...labsComponents
+    },
     theme : {
         defaultTheme: "dark",
         themes: {

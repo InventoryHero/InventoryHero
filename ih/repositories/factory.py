@@ -5,7 +5,7 @@ from sqlmodel import Session
 
 from ih.db.models.User import User
 from ih.repositories.HouseholdRepository import HouseholdRepository
-from ih.repositories.ProductRepository import ProductRepository
+from ih.repositories.ItemRepository import ItemRepository
 from ih.repositories.StorageRepository import StorageRepository
 from ih.repositories.UserRepository import UserRepository
 from uuid import UUID
@@ -29,5 +29,5 @@ class RepositoryFactory:
         return StorageRepository(self.session, self.user, self.household)
 
     @cached_property
-    def products(self) -> ProductRepository:
-        return ProductRepository(self.session, self.user, self.household)
+    def items(self) -> ItemRepository:
+        return ItemRepository(self.session, self.user, self.household)

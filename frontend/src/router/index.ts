@@ -18,12 +18,15 @@ import RouteNotFound from "@/views/RouteNotFound.vue";
 import passwordReset from "./routes/passwordReset";
 import households from "@/router/routes/household";
 import products from "@/router/routes/products"
-import boxes from "@/router/routes/boxes.ts"
+import boxes from "@/router/routes/storage.ts"
 import locations from "@/router/routes/locations.ts";
 import QrScanner from "@/views/QrScanner.vue";
 import Register from "@/views/Register.vue";
 import ForgotPassword from "@/views/ForgotPassword.vue";
 import MissingConfirmation from "@/views/MissingConfirmation.vue";
+import Unauthorized from "@/layouts/Unauthorized.vue";
+import Tokenized from "@/layouts/Tokenized.vue";
+import items from "@/router/routes/items.ts";
 
 
 
@@ -37,7 +40,8 @@ const vueRouter =  createRouter({
       meta: {
         requiresAuth: false,
         onlyUnauthorized: true,
-        fillHeight: false
+        fillHeight: false,
+        layout: Unauthorized
       }
     },
     {
@@ -47,7 +51,8 @@ const vueRouter =  createRouter({
       meta: {
         requiresAuth: false,
         onlyUnauthorized: true,
-        fillHeight: false
+        fillHeight: false,
+        layout: Unauthorized
       }
     },
     {
@@ -57,7 +62,8 @@ const vueRouter =  createRouter({
       meta: {
         requiresAuth: false,
         onlyUnauthorized: true,
-        fillHeight: false
+        fillHeight: false,
+        layout: Unauthorized
       }
     },
     {
@@ -69,7 +75,8 @@ const vueRouter =  createRouter({
         requiresAuth: false,
         fillHeight: true,
         requiresHousehold: false,
-        tokenized: true
+        tokenized: true, // TODO DEPRECATED
+        layout: Tokenized
       }
     },
     {
@@ -104,9 +111,8 @@ const vueRouter =  createRouter({
         fillHeight: false
       }
     },
-    products,
-    boxes,
-    locations,
+    ...items,
+    ...boxes,
     {
       path: "/settings",
       name: "settings",
