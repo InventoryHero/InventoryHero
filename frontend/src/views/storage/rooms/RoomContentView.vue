@@ -44,7 +44,6 @@ const loadRoomDetail = async () => {
   if(!success) {
     // TODO
   }
-  console.log(room)
   room.value = data! as RoomResponseSchema
   loading.value = false
 }
@@ -85,7 +84,7 @@ onBeforeMount(() => {
       <template v-slot:item="{item}">
         <v-tabs-window-item
             :value="item.value"
-            class="mt-1"
+            class="mt-2"
         >
           <component
               :is="item.component"

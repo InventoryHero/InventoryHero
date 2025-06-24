@@ -6,6 +6,7 @@ import {storeToRefs} from "pinia";
 import NotInitialized from "@/layouts/NotInitialized.vue";
 
 const route = useRoute()
+const router = useRouter()
 const configStore = useConfigStore()
 const authStore = useAuthStore()
 
@@ -27,6 +28,7 @@ const transition = computed(() => {
 const isInitialized = ref(false)
 async function initializeApp() {
   try {
+    await router.isReady();
     configStore.init()
     await authStore.init()
     await authStore.isAuthorized()
@@ -46,6 +48,8 @@ async function initializeApp() {
 onBeforeMount(() => {
   initializeApp()
 })
+
+
 </script>
 
 <template>
@@ -68,7 +72,6 @@ onBeforeMount(() => {
         </transition>
       </router-view>
     </component>
-
   </v-app>
 </template>
 

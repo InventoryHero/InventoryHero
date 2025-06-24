@@ -1,7 +1,15 @@
 <script setup lang="ts">
-const {t} = useI18n()
-const createExpanded = shallowRef()
+import {useModal} from "@/composables-new/useModal.ts";
+
 const {mdAndUp} = useDisplay()
+const {t} = useI18n()
+const {openModal} = useModal()
+
+
+
+const createExpanded = shallowRef()
+
+
 
 const location = computed(() => {
   if(mdAndUp.value) {
@@ -44,9 +52,12 @@ const offset = computed(() => {
           <v-list-item>
             box
           </v-list-item>
-          <v-list-item>
-            room
-          </v-list-item>
+          <v-list-item
+            :title="t('create.room.short_title')"
+            @click="openModal('createRoomModal', {
+              blockNavigation: true
+            })"
+          />
           <v-list-item>
             category
           </v-list-item>

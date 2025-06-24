@@ -1,6 +1,7 @@
 <script setup lang="ts">
-
 import {ItemSummarySchema} from "@/api/types/items.ts";
+
+const {t} = useI18n();
 
 const items = defineModel<Array<ItemSummarySchema>>({
   required: true
@@ -36,11 +37,28 @@ const {
       />
     </v-col>
   </v-row>
-  <v-row dense justify="center" class="pb-16">
+  <v-row
+      dense
+      justify="center"
+      class="mt-4 pb-16"
+  >
     <v-col
         class="d-flex justify-center"
     >
-      all items have been displayed
+      <v-sheet
+          v-if="items.length > 0"
+          color="transparent"
+          class="text-center pa-4"
+      >
+        <v-icon
+            icon="mdi-check-circle-outline"
+            color="success"
+            size="x-large"
+            class="mb-2"
+        ></v-icon>
+        <p class="text-h6">You're all caught up!</p>
+        <p class="text-medium-emphasis">All items have been displayed.</p>
+      </v-sheet>
     </v-col>
   </v-row>
 

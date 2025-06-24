@@ -81,6 +81,7 @@
   },
   "items": {
     "quantity": "Qty: {quantity}",
+    "end": "You've reached the end",
     "item": {
       "delete": "Delete",
       "edit": "Edit"
@@ -111,96 +112,6 @@
       "users": "Users"
     }
   },
-  "storage": {
-    "select": {
-      "no_storage": "No storage available"
-    }
-  },
-  "add": {
-    "product": {
-      "tab": "Product",
-      "title": "New product",
-      "new_product": "Create new product",
-      "start_typing": "Start typing to create a new product 😊",
-      "labels": {
-        "product": "Product name",
-        "star": "Star product",
-        "location": "Product storage container",
-        "amount": "Amount"
-      },
-      "hints": {
-        "combobox": "Either enter a new product name (must be unique) or select an existing product",
-        "locationSelect": "If you want to store your product at a location or in a box, select the container here",
-        "amount": "How many instances of this product do you want to store?",
-        "star": "Mark as favourite"
-      },
-      "rules": {
-        "need_product": "A name must be supplied",
-        "amount_nan": "Please enter an amount (at least 0).",
-        "amount_negative": "@:add.product.rules.amount_nan"
-      }
-    },
-    "box": {
-      "tab": "Box",
-      "title":"New Box",
-      "labels": {
-        "box": "Name of the new box",
-        "location": "Location of the box"
-      },
-      "hints": {
-        "boxName": "Name of the box you want to create",
-        "locationSelect": "If your box should be stored at a location, select it here"
-      },
-      "rules": {
-        "name_needed": "A name must be supplied"
-      }
-    },
-    "location": {
-      "tab": "Location",
-      "title": "New Location",
-      "labels": {
-        "location": "Location name"
-      },
-      "hints": {
-        "locationName": "Name of the location you want to add"
-      },
-      "rules": {
-        "name_needed": "A name must be supplied"
-      }
-    },
-
-    "save": "Save item",
-    "clear": "Clear input"
-  },
-  "products": {
-    "loading": "Loading your products",
-    "filter": "Filter",
-    "delete_detail": {
-      "title": "\uD83D\uDDD1\uFE0F Confirm Deletion at {storage}",
-      "text": "You are about to delete all instances of this product at the specified storage. This action cannot be undone. Are you sure you want to proceed?",
-      "confirm": "Yes, delete",
-      "cancel": "Cancel"
-    },
-    "delete_product": {
-      "title": "\uD83D\uDDD1\uFE0F Confirm Product Deletion",
-      "text": "You are about to delete this product from every storage. This action will remove the product entirely and cannot be undone. Are you sure you want to proceed?",
-      "confirm": "@:products.delete_detail.confirm",
-      "cancel": "@:products.delete_detail.cancel"
-    },
-    "product": {
-      "created": "Created at",
-      "amount": "Amount stored",
-      "last_used": "Last used at",
-      "all_displayed": "Every storage location of this product has been displayed.",
-      "loading": "Loading details",
-      "rules": {
-        "new_name_empty": "Name cannot be empty!"
-      }
-    },
-    "all_displayed": "You've reached the end. No more products to see here.",
-    "no_matches": "No products match the current filter.",
-    "no_products": "Nothing there..."
-  },
   "boxes": {
     "box": {
       "delete": "Delete",
@@ -210,15 +121,34 @@
     }
   },
   "rooms": {
+    "all_displayed": "All rooms displayed",
+    "content_changed_title": "Your rooms have changed",
+    "content_changed_subtitle": "Click here to reload",
     "room": {
       "tabs": {
         "items": "Items",
         "boxes": "Boxes"
       },
+      "delete": "Delete",
+      "edit":  "Edit",
       "items_quantity": "No items | One item | {n} items",
       "boxes_quantity": "No boxes | One box | {n} boxes"
     }
   },
+
+  "create": {
+    "room": {
+      "title": "Create room",
+      "short_title": "Room",
+      "form": {
+        "name": "Name",
+        "name_required": "A name needs to be entered",
+        "save_and_close": "Save & Close",
+        "save": "Save"
+      }
+    }
+  },
+
   "households": {
     "household_card": {
       "title": "Current household",

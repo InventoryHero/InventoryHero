@@ -71,8 +71,9 @@ class StorageRepository:
             household_id=self.household_id,
         )
         self.session.add(storage)
-        self.session.commit()
+        self.session.flush()
         self.session.refresh(storage)
+        print(storage)
         return storage
 
     def get_storage(self) -> List[Storage]:

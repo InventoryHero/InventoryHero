@@ -1,5 +1,5 @@
-import {AxiosInstance} from "axios";
-import {BoxResponseSchema, RoomResponseSchema, StorageType} from "@/api/types/storage.ts";
+import {AxiosInstance, AxiosResponse} from "axios";
+import {BoxResponseSchema, RoomResponseSchema, StorageCreateSchema, StorageType} from "@/api/types/storage.ts";
 import {ApiResponse} from "@/api/types/ApiResponse.ts";
 import {ItemDetailReadSchema, ItemSummarySchema} from "@/api/types/items.ts";
 
@@ -68,11 +68,34 @@ export default (api: AxiosInstance) => {
         }
     }
 
+    const createStorage = async (createSchema: StorageCreateSchema): Promise<ApiResponse<test>> => {
+        let url = `/storage/create`
+        try{
+            const response = await api.post(url, createSchema)
+            if(response.status === 201){
+                return {
+                    success: true,
+                    data: response.data
+                } as ApiResponse<test>
+            }
+        } catch(error){
+            return {
+                success: false,
+                error: error
+            }
+        }
+        return {
+            success: false
+        }
+    }
+
+
     return {
         getAllStorage,
         getStorageDetail,
         getStorageItems,
         getStorageBoxes,
+        createStorage,
     }
 
 }

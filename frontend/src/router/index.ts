@@ -27,6 +27,8 @@ import MissingConfirmation from "@/views/MissingConfirmation.vue";
 import Unauthorized from "@/layouts/Unauthorized.vue";
 import Tokenized from "@/layouts/Tokenized.vue";
 import items from "@/router/routes/items.ts";
+import {useModal} from "@/composables-new/useModal.ts";
+import useContentRefreshStore from "@/store/useContentRefreshStore.ts";
 
 
 
@@ -258,12 +260,35 @@ vueRouter.beforeEach(async (to, from) => {
   }
 })
 
-vueRouter.beforeEach(async (to) => {
+vueRouter.beforeEach(async (to, from) => {
+
+  const contentRefreshStore = useContentRefreshStore()
+  contentRefreshStore.clearBanner()
+
   document.title = (to.meta?.title ?? i18n.global.t('app.title')) as string
   notify({
     group: 'newContent',
     clean: true,
   });
+})
+
+vueRouter.beforeResolve(async to => {
+  const {activeModal, closeModal, isAwaitingConfirmation, forceNavigation} = useModal()
+  console.log(to)
+  console.log(forceNavigation.value)
+  if(forceNavigation.value){
+    console.log("HALLO")
+    closeModal()
+    return
+  }
+
+  if(isAwaitingConfirmation.value){
+    return false
+  }
+  if(activeModal.value){
+    closeModal(to)
+    return false
+  }
 })
 
 export default vueRouter
