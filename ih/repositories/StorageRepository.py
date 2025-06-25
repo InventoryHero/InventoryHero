@@ -57,7 +57,7 @@ class StorageRepository:
 
         match storage_type:
             case StorageType.BOX:
-                if parent is None:
+                if parent is None and to_create.parent_id is not None:
                     raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="box_needs_room_parent")
             case StorageType.ROOM:
                 if parent is not None:

@@ -146,6 +146,17 @@
         "save_and_close": "Save & Close",
         "save": "Save"
       }
+    },
+    "box": {
+      "title": "Create box",
+      "short_title": "Box",
+      "form": {
+        "name": "Name",
+        "name_required": "A name needs to be entered",
+        "parent": "Parent storage",
+        "save_and_close": "Save & Close",
+        "save": "Save"
+      }
     }
   },
 

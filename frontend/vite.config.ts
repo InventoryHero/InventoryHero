@@ -15,6 +15,13 @@ export default defineConfig({
     target: "esnext",
     sourcemap: false
   },
+  css: {
+    preprocessorOptions: {
+      scss: {
+        additionalData: `@use "@/scss/transitions.scss";`
+      }
+    }
+  },
   plugins: [
     basicSsl({
       /** name of certification */
@@ -93,7 +100,8 @@ export default defineConfig({
       ]
     }),
     Components({
-    })
+    }),
+
   ],
   resolve: {
     alias: {

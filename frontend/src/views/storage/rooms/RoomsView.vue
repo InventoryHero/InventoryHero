@@ -16,7 +16,6 @@ const {storage: storageEndpoint} = useAxios()
 const contentRefreshStore = useContentRefreshStore()
 
 const needle = ref<string|undefined>();
-const newContent = ref<boolean>(false)
 const rooms = ref<RoomResponseSchema[]>([])
 const isLoading = ref(false)
 const filteredRooms = computed(() => {
@@ -38,7 +37,6 @@ const loadRooms = async () => {
 
 const clickOnBanner = () => {
   loadRooms().then(() => {
-    newContent.value = false
   })
 }
 
@@ -48,7 +46,6 @@ roomAddedEventBus.on(() => {
     subtitle: t('rooms.content_changed_subtitle'),
     callback: clickOnBanner
   })
-  newContent.value = true
 })
 
 onBeforeMount(() => {

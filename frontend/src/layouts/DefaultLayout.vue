@@ -15,12 +15,11 @@ const router = useRouter()
 const notificationStore = useNotificationStore()
 const { mdAndUp, xs, sm, md, lg, xl } = useDisplay()
 const { activeModal, closeModal, confirmLeave, cancelLeave, isAwaitingConfirmation } = useModal()
-const contentRefreshStore = useContentRefreshStore()
+
 
 
 const nav = ref(false)
 const fabOpen = shallowRef(false)
-const {isVisible, actionCallback, title, subtitle} = storeToRefs(contentRefreshStore)
 
 const {
   showFab = false
@@ -63,16 +62,12 @@ function reloadContent(){
 const tab = ref(TabType.Product)
 provide("tab", tab)
 
-const handleClickOnRefreshBanner = () => {
-  if(actionCallback.value) {
-    actionCallback.value()
-  }
-  contentRefreshStore.clearBanner()
-}
+
 
 onUpdated(async () => {
   notificationStore.triggerNotifications()
 })
+
 
 
 </script>
@@ -179,25 +174,7 @@ onUpdated(async () => {
             cols="12"
             lg="10"
         >
-          <v-alert
-              v-if="isVisible"
-              density="compact"
-              class="text-center content-changed-banner mb-4"
-              width="100%"
-              color="info"
-              @click="handleClickOnRefreshBanner"
-          >
-            <template v-slot:text>
-              <span class="text-center text-h5">
-                {{title}}
-              </span>
-              <br/>
-              <span v-if="subtitle" class="text-center text-medium-emphasis">
-                {{subtitle}}
-              </span>
-            </template>
-
-          </v-alert>
+          <info-banner />
           <slot />
         </v-col>
       </v-row>

@@ -274,10 +274,7 @@ vueRouter.beforeEach(async (to, from) => {
 
 vueRouter.beforeResolve(async to => {
   const {activeModal, closeModal, isAwaitingConfirmation, forceNavigation} = useModal()
-  console.log(to)
-  console.log(forceNavigation.value)
   if(forceNavigation.value){
-    console.log("HALLO")
     closeModal()
     return
   }

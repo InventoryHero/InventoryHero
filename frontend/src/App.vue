@@ -76,5 +76,5 @@ onBeforeMount(() => {
 </template>
 
 <style scoped lang="scss">
-@import "@/scss/transitions/scale-transition";
+
 </style>
