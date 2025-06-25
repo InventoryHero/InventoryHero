@@ -5,12 +5,10 @@ node_modules
 
 
 # ide
-.idea
 venv
 
 
 # data
 .env
 data/inventoryhero.db
-/dev
 /tests/.temp/
