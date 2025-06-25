@@ -12,3 +12,5 @@ venv
 .env
 data/inventoryhero.db
 /tests/.temp/
+__pycache__/
+*.pyc

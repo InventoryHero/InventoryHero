@@ -6,7 +6,8 @@ from starlette import status
 
 from ih.routes._base.UserApiRouter import UserAPIRouter
 from ih.routes._base.UserControllerBase import UserControllerBase
-from ih.schema.households.household import HouseholdPublic, HouseholdCreate, HouseholdUpdate, HouseholdWithMemberPublic
+from ih.schema.households.household import HouseholdPublic, HouseholdCreate, HouseholdUpdate, HouseholdWithMemberPublic, \
+    HouseholdWithMembersPublic
 
 router = UserAPIRouter(prefix="/household", tags=["household"])
 
@@ -25,7 +26,7 @@ class HouseholdController(UserControllerBase):
     def get_all_households(self):
         return self.repositories.households.all()
 
-    @router.get("/{household_id}", response_model=HouseholdWithMemberPublic, status_code=status.HTTP_200_OK)
+    @router.get("/{household_id}", response_model=HouseholdWithMembersPublic, status_code=status.HTTP_200_OK)
     def get_household(self, household_id: UUID):
         return self.repositories.households.get(household_id)
 
