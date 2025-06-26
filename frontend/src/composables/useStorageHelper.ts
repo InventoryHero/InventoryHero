@@ -4,7 +4,7 @@ import {StorageType} from "@/api/types/items.ts";
 export default () => {
 
     const router = useRouter()
-    const getStorageIcon = (type: StorageType) => {
+    const getStorageIcon = (type: StorageType): string => {
         switch(type){
             case "box":
                 return "mdi-package-variant"

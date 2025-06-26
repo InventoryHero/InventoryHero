@@ -8,9 +8,7 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    AppBar: typeof import('./src/components/ui/AppBar.vue')['default']
-    AppBarBottom: typeof import('./src/components/ui/AppBarBottom.vue')['default']
-    AppBarOverflowMenu: typeof import('./src/components/ui/AppBarOverflowMenu.vue')['default']
+    AllDisplayed: typeof import('./src/components/shared/AllDisplayed.vue')['default']
     AppConfirmButton: typeof import('./src/components/ui/AppConfirmButton.vue')['default']
     AppConfirmModal: typeof import('./src/components/ui/AppConfirmModal.vue')['default']
     AppContentActions: typeof import('./src/components/ui/AppContentActions.vue')['default']
@@ -45,15 +43,15 @@ declare module 'vue' {
     BoxSummaryList: typeof import('./src/components/storage/boxes/BoxSummaryList.vue')['default']
     CategoryChip: typeof import('./src/components/ui-new/CategoryChip.vue')['default']
     Confirmation: typeof import('./src/components/widgets/confirmation/Confirmation.vue')['default']
-    ConfirmationDialog: typeof import('./src/components/common/ConfirmationDialog.vue')['default']
+    ConfirmLeaveDialog: typeof import('./src/components/shared/modals/ConfirmLeaveDialog.vue')['default']
     CreateBoxCard: typeof import('./src/components/widgets/Create/CreateBoxCard.vue')['default']
     CreateBoxModal: typeof import('./src/components/storage/boxes/CreateBoxModal.vue')['default']
     CreateCard: typeof import('./src/components/widgets/Create/CreateCard.vue')['default']
     CreateHouseholdCard: typeof import('./src/components/widgets/Households/Card/CreateHouseholdCard.vue')['default']
+    CreateItemModal: typeof import('./src/components/items/CreateItemModal.vue')['default']
     CreateLocationCard: typeof import('./src/components/widgets/Create/CreateLocationCard.vue')['default']
     CreateProductCard: typeof import('./src/components/widgets/Create/CreateProductCard.vue')['default']
     CreateRoomModal: typeof import('./src/components/storage/rooms/CreateRoomModal.vue')['default']
-    DemoModal: typeof import('./src/components/shared/modals/DemoModal.vue')['default']
     DemoMOdal: typeof import('./src/components/shared/modals/DemoMOdal.vue')['default']
     EditHousehold: typeof import('./src/components/widgets/Households/EditHousehold.vue')['default']
     ForgotPasswordCard: typeof import('./src/components/widgets/Login/ForgotPasswordCard.vue')['default']

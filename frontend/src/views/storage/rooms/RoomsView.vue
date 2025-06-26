@@ -4,11 +4,6 @@ import {storeToRefs} from "pinia";
 import roomAddedEventBus from "@/services/roomAddedEventBus.ts";
 import useContentRefreshStore from "@/store/useContentRefreshStore.ts";
 
-type Tab = {
-  icon: string,
-  value: string,
-  component: any
-}
 
 const {t} = useI18n()
 const route = useRoute()
@@ -23,6 +18,26 @@ const filteredRooms = computed(() => {
     return rooms.value
   }
   return rooms.value.filter(room => room.name.toLowerCase().includes(needle.value!.toLowerCase()))
+})
+
+const endReachedContent = computed(() => {
+  if(filteredRooms.value.length > 0){
+    return {
+      title: t('rooms.all_displayed')
+    }
+  }
+  if(rooms.value.length == 0){
+    return {
+      title: t('rooms.no_rooms'),
+      icon: "mdi-alert-circle-outline",
+      color: "warning"
+    }
+  }
+  return {
+    title: t('rooms.filtered_all'),
+    icon: "mdi-magnify-close",
+    color: "info"
+  }
 })
 
 const loadRooms = async () => {
@@ -81,19 +96,9 @@ onBeforeMount(() => {
       <v-col
           class="d-flex justify-center"
       >
-        <v-sheet
-            v-if="rooms.length > 0"
-            color="transparent"
-            class="text-center pa-4"
-        >
-          <v-icon
-              icon="mdi-check-circle-outline"
-              color="success"
-              size="x-large"
-              class="mb-2"
-          ></v-icon>
-          <p class="text-medium-emphasis">{{t('rooms.all_displayed')}}</p>
-        </v-sheet>
+        <all-displayed
+            v-bind="endReachedContent"
+        />
       </v-col>
     </v-row>
   </template>

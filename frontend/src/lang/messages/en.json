@@ -113,6 +113,8 @@
     }
   },
   "boxes": {
+    "content_changed_title": "Your boxes have changed",
+    "content_changed_subtitle": "Click here to reload",
     "box": {
       "delete": "Delete",
       "edit": "Edit",

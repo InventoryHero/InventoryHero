@@ -109,13 +109,15 @@ onBeforeMount(() => {
   <item-summary-list
       v-if="!loading"
       v-model="filteredItems"
+      :num-items="items.length"
   />
 
   <!-- A simple loading indicator -->
-  <div v-else class="text-center pa-16">
-    <!--TODO-->
-    <v-progress-circular indeterminate size="64"></v-progress-circular>
-  </div>
+  <v-skeleton-loader
+      v-else
+      :loading="loading"
+      type="list-item-avatar-three-line@4"
+  />
 
 </template>
 

@@ -7,7 +7,7 @@ type test = BoxResponseSchema | RoomResponseSchema
 
 export default (api: AxiosInstance) => {
 
-    const getAllStorage = async (storage_type: StorageType|undefined): Promise<ApiResponse<Array<test>>> => {
+    const getAllStorage = async (storage_type: StorageType|undefined = undefined): Promise<ApiResponse<Array<test>>> => {
         const response = await api.get("/storage/all", {
             params: {
                 storage_type:storage_type

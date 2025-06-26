@@ -104,6 +104,6 @@ class StorageScopedController(HouseholdContextController):
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="box_has_only_items"
             )
-        return self.repositories.storageso.list_boxes(self.storage.id)
+        return self.repositories.storage.list_boxes(self.storage.id)
 
 

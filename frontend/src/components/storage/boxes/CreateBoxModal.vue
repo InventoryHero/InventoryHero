@@ -129,7 +129,6 @@ onBeforeMount(() => {
                   prepend-icon="mdi-door"
               ></v-list-item>
             </template>
-
           </v-select>
         </v-col>
       </v-row>

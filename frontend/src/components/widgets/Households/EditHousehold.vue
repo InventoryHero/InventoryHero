@@ -3,7 +3,6 @@ import {useAuthStore} from "@/store";
 import {HouseholdEndpoint} from "@/api/http";
 import {HouseholdMember} from "@/types";
 import {useTemplateRef} from "vue";
-import ConfirmationDialog from "@/components/common/ConfirmationDialog.vue";
 import useDialogConfig from "@/composables/useDialogConfig.ts";
 import {notify} from "@kyvg/vue3-notification";
 import {useDisplay} from "vuetify";
@@ -150,20 +149,7 @@ onBeforeMount(() => {
 
 <template>
 
-  <confirmation-dialog
-      v-model:dialog-opened="confirmationDialog"
-      :title="t('households.edit.delete.confirm.title')"
-      :cancel-text="t('households.edit.delete.confirm.abort')"
-      :confirm-text="t('households.edit.delete.confirm.confirm')"
-      cancel-icon="mdi-cancel"
-      confirm-icon="mdi-delete"
-      :on-cancel="() => confirmationDialog = false"
-      :on-confirm="reallyDo"
-  >
-    <template v-slot:text>
-      <p v-html="t('households.edit.delete.confirm.text')"/>
-    </template>
-  </confirmation-dialog>
+
 
 
   <v-row

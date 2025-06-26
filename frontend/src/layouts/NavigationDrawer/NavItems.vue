@@ -41,9 +41,12 @@ const offset = computed(() => {
       >
         <v-list
         >
-          <v-list-item>
-            item
-          </v-list-item>
+          <v-list-item
+            :title="t('create.item.short_title')"
+            @click="openModal('createItemModal',{
+              blockNavigation: true
+            })"
+          />
           <v-list-item
             :title="t('create.box.short_title')"
             @click="openModal('createBoxModal', {
@@ -81,6 +84,13 @@ const offset = computed(() => {
         prepend-icon="mdi-door"
         :title="t('nav.rooms')"
         color="accent"
+    />
+
+    <v-list-item
+        to="/households"
+        prepend-icon="mdi-home-account"
+        :title="t('nav.households')"
+        color="primary"
     />
 
   </v-list>

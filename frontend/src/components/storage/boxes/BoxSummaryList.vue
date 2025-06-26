@@ -2,10 +2,36 @@
 
 import {BoxResponseSchema} from "@/api/types/storage.ts";
 
+const {t} = useI18n()
 const boxes = defineModel<Array<BoxResponseSchema>>({
   required: true
 })
 
+const {
+  numBoxes = 0
+} = defineProps<{
+  numBoxes?: number
+}>()
+
+const endReachedContent = computed(() => {
+  if(boxes.value.length > 0){
+    return {
+      title: t('boxes.all_displayed')
+    }
+  }
+  if(numBoxes == 0){
+    return {
+      title: t('boxes.no_boxes'),
+      icon: "mdi-alert-circle-outline",
+      color: "warning"
+    }
+  }
+  return {
+    title: t('boxes.filtered_all'),
+    icon: "mdi-magnify-close",
+    color: "info"
+  }
+})
 
 </script>
 
@@ -31,7 +57,9 @@ const boxes = defineModel<Array<BoxResponseSchema>>({
     <v-col
         class="d-flex justify-center"
     >
-      all items have been displayed
+      <all-displayed
+        v-bind="endReachedContent"
+      />
     </v-col>
   </v-row>
 

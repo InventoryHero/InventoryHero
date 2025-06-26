@@ -51,6 +51,8 @@ const loadRoomDetail = async () => {
 onBeforeMount(() => {
   loadRoomDetail()
 })
+
+
 </script>
 
 <template>

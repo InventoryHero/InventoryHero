@@ -8,11 +8,32 @@ const items = defineModel<Array<ItemSummarySchema>>({
 })
 
 const {
-  from = undefined
+  from = undefined,
+  numItems = 0
 } = defineProps<{
-  from?: string
+  from?: string,
+  numItems?: number
 }>()
 
+const endReachedContent = computed(() => {
+  if(items.value.length > 0){
+    return {
+      title: t('items.all_displayed')
+    }
+  }
+  if(numItems == 0){
+    return {
+      title: t('items.no_items'),
+      icon: "mdi-alert-circle-outline",
+      color: "warning"
+    }
+  }
+  return {
+    title: t('items.filtered_all'),
+    icon: "mdi-magnify-close",
+    color: "info"
+  }
+})
 
 
 
@@ -45,20 +66,9 @@ const {
     <v-col
         class="d-flex justify-center"
     >
-      <v-sheet
-          v-if="items.length > 0"
-          color="transparent"
-          class="text-center pa-4"
-      >
-        <v-icon
-            icon="mdi-check-circle-outline"
-            color="success"
-            size="x-large"
-            class="mb-2"
-        ></v-icon>
-        <p class="text-h6">You're all caught up!</p>
-        <p class="text-medium-emphasis">All items have been displayed.</p>
-      </v-sheet>
+      <all-displayed
+        v-bind="endReachedContent"
+      />
     </v-col>
   </v-row>
 

@@ -2,7 +2,6 @@
 import {
   useNotificationStore
 } from "@/store"
-import AppBar from "@/components/ui/AppBar.vue";
 import {Notifications} from "@kyvg/vue3-notification";
 import {TabType} from "@/types/TabType.ts";
 import NavItems from "@/layouts/NavigationDrawer/NavItems.vue";
@@ -12,6 +11,7 @@ import {storeToRefs} from "pinia";
 
 const route = useRoute()
 const router = useRouter()
+const {t} = useI18n()
 const notificationStore = useNotificationStore()
 const { mdAndUp, xs, sm, md, lg, xl } = useDisplay()
 const { activeModal, closeModal, confirmLeave, cancelLeave, isAwaitingConfirmation } = useModal()
@@ -80,11 +80,32 @@ onUpdated(async () => {
       :max="2"
   />
 
-  <app-bar>
+  <v-app-bar
+      density="compact"
+  >
     <v-app-bar-nav-icon
         @click.stop="nav = !nav"
-    ></v-app-bar-nav-icon>
-  </app-bar>
+    />
+    <v-app-bar-title>
+      <v-card
+          hover
+          width="fit-content"
+          to="/"
+
+      >
+        {{ t('app.title') }}
+      </v-card>
+    </v-app-bar-title>
+    <template v-slot:append>
+      <app-icon-btn
+          icon="mdi-qrcode-scan"
+          color="primary"
+          to="/scan-qr"
+      />
+    </template>
+
+
+  </v-app-bar>
 
   <v-navigation-drawer
       v-model="isDrawerOpen"
@@ -92,28 +113,47 @@ onUpdated(async () => {
       :permanent="mdAndUp"
   >
     <nav-items />
+    <template v-slot:append>
+      <v-list-item
+          to="/settings"
+          prepend-icon="mdi-cog"
+          :title="t('nav.settings')"
+          color="primary"
+      />
+      <v-spacer />
+      <v-list-item
+          to="/account"
+          prepend-icon="mdi-account"
+          :title="$t('nav.account')"
+          color="primary"
+      />
+      <template
+          v-if="false"
+      >
+        <!--TODO ADMIN-->
+        <v-list-item
+            to="/administration"
+            prepend-icon="mdi-shield-account"
+            :title="$t('nav.administration')"
+            color="primary"
+        />
+      </template>
+      <v-divider color="primary" class="border-opacity-50"/>
+      <v-list-item
+          to="/logout"
+          :title="t('nav.logout')"
+          prepend-icon="mdi-logout"
+
+      />
+    </template>
   </v-navigation-drawer>
 
-  <v-main
-  >
-
-    <v-dialog
+  <v-main>
+    <confirm-leave-dialog
         v-model="isAwaitingConfirmation"
-        persistent
-        width="auto"
-    >
-      <v-card class="pa-4" >
-        <v-card-title class="text-h6">Unsaved Changes</v-card-title>
-        <v-card-text>
-          Are you sure you want to leave? Your changes will be lost.
-        </v-card-text>
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn @click="cancelLeave">Stay</v-btn>
-          <v-btn color="error" variant="tonal" @click="confirmLeave">Discard Changes</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+        @cancel="cancelLeave"
+        @confirm="confirmLeave"
+    />
     <v-dialog
       :model-value="!!activeModal"
       @update:model-value="closeModal(null)"

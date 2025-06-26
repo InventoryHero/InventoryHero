@@ -4,6 +4,7 @@ import {RouteLocationNormalized} from "vue-router";
 export const modals = {
     createRoomModal: defineAsyncComponent(() => import('@/components/storage/rooms/CreateRoomModal.vue')),
     createBoxModal: defineAsyncComponent(() => import('@/components/storage/boxes/CreateBoxModal.vue')),
+    createItemModal: defineAsyncComponent(() => import('@/components/items/CreateItemModal.vue'))
 }
 
 export type ModalName = keyof typeof modals

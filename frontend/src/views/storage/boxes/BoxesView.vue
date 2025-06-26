@@ -23,11 +23,13 @@ const filteredBoxes = computed(() => {
 })
 
 const loadBoxes = async () => {
+  loading.value = true
   storageEndpoint.getAllStorage("box").then(({success, data, error}) => {
     if(!success){
       //TODO
     }
     boxes.value = (data ?? []) as Array<BoxResponseSchema>
+    loading.value = false
   })
 }
 
@@ -55,7 +57,16 @@ onBeforeMount(() => {
     v-model="needle"
   />
 
-  <box-summary-list v-model="filteredBoxes" />
+  <box-summary-list
+      v-if="!loading"
+      v-model="filteredBoxes"
+      :num-boxes="boxes.length"
+  />
+  <v-skeleton-loader
+    v-else
+    :loading="loading"
+    type="list-item-avatar-three-line@4"
+  />
 </template>
 
 <style scoped lang="scss">

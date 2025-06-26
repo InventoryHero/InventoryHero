@@ -3,7 +3,6 @@ import {useAuthStore, useHouseholdSocketStore} from "@/store";
 import useDialogConfig from "@/composables/useDialogConfig.ts";
 import HouseholdInvite from "@/components/widgets/Households/Card/HouseholdInvite.vue";
 import {useNotification} from "@kyvg/vue3-notification";
-import ConfirmationDialog from "@/components/common/ConfirmationDialog.vue";
 import {HouseholdWithMemberPublic} from "@/api/types/households.ts";
 import {storeToRefs} from "pinia";
 import {ROLE_ADMIN, ROLE_OWNER} from "@/api/types/householdRoles.ts";
@@ -111,22 +110,6 @@ function leaveHousehold(){
 
 <template>
 
-  <confirmation-dialog
-      v-model:dialog-opened="confirmLeaveDialogVisible"
-      :text="t('households.leave.confirm.text')"
-      :cancel-text="t('households.leave.confirm.stay')"
-      :confirm-text="t('households.leave.confirm.leave')"
-      confirm-icon="mdi-location-exit"
-      cancel-icon="mdi-home"
-      :on-cancel="closeConfirmLeaveDialog"
-      :on-confirm="reallyLeave"
-  >
-    <template v-slot:title>
-      <p
-          v-html="t('households.leave.confirm.title', {name: household.name})"
-      />
-    </template>
-  </confirmation-dialog>
 
 
   <v-dialog

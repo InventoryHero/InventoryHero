@@ -5,7 +5,6 @@ import useShareMethods from "@/composables/useShareMethods.ts";
 import {useAuthStore} from "@/store";
 import {HouseholdEndpoint} from "@/api/http";
 import useDialogConfig from "@/composables/useDialogConfig.ts";
-import ConfirmationDialog from "@/components/common/ConfirmationDialog.vue";
 import {useNotification} from "@kyvg/vue3-notification";
 import {HouseholdMemberPublic, HouseholdPublic, Role} from "@/api/types/households.ts";
 import {storeToRefs} from "pinia";
@@ -149,37 +148,6 @@ function updateRole(role: Role){
 </script>
 <template>
 
-  <confirmation-dialog
-    v-model:dialog-opened="kickConfirmDialogVisible"
-    v-bind="confirmDialogConfig"
-    :on-cancel="closeKickConfirmDialog"
-    :on-confirm="() => {
-      kickConfirmed = true
-      removeFromHousehold()
-    }"
-  >
-    <template v-slot:text>
-      <p v-html="confirmDialogConfig.text" />
-    </template>
-  </confirmation-dialog>
-
-  <confirmation-dialog
-    v-model:dialog-opened="transferOwnershipConfirmDialogVisible"
-    :title="t('households.edit.transfer_ownership.confirm.title')"
-    :cancel-text="t('households.edit.transfer_ownership.confirm.abort')"
-    :confirm-text="t('households.edit.transfer_ownership.confirm.confirm')"
-    cancel-icon="mdi-cancel"
-    confirm-icon="mdi-account-arrow-right"
-    :on-cancel="closeTransferOwnershipConfirmDialog"
-    :on-confirm="() => {
-      transferConfirmed = true
-      transferHousehold()
-    }"
-  >
-    <template v-slot:text>
-      <p v-html="t('households.edit.transfer_ownership.confirm.text', {user: username})" />
-    </template>
-  </confirmation-dialog>
 
   <!--
     <v-snackbar

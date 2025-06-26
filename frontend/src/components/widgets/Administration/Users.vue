@@ -239,7 +239,7 @@ export default defineComponent({
         v-model="createModalActive"
         @created:user="userCreated"
       />
-      <confirmation-dialog
+      <confirm-leave-dialog
         :title="deleteConfirmationTitle"
         :text="deleteConfirmationBody"
         :confirm-text="$t('administration.users.delete')"
