@@ -25,6 +25,10 @@ const {
   highlight?: boolean
 }>()
 
+
+const emit = defineEmits<{
+  (e: 'reload'): void
+}>()
 const color = computed(() => {
   if(highlight){
     return 'primary'
@@ -40,6 +44,7 @@ const goToStorage = (id: string, type: StorageType) => {
 </script>
 
 <template>
+
   <v-expansion-panel
       :key="storage.id"
   >
@@ -76,6 +81,7 @@ const goToStorage = (id: string, type: StorageType) => {
               :instance="instance"
               :attributes="attributes[instance.product_attribute_id]"
               @consume="instance.quantity--"
+              @reload="emit('reload')"
           />
         </v-col>
       </v-row>

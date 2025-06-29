@@ -1,5 +1,11 @@
 import {AxiosInstance} from "axios";
-import {CategoryReadSchema, ItemDetailReadSchema, ItemSummarySchema} from "@/api/types/items.ts";
+import {
+    CategoryReadSchema,
+    ItemCreateSchema,
+    ItemDetailReadSchema, ItemInstanceCreate,
+    ItemReadSchema,
+    ItemSummarySchema, ItemUpdateSchema
+} from "@/api/types/items.ts";
 import {ApiResponse} from "@/api/types/ApiResponse.ts";
 import {HouseholdPublic} from "@/api/types/households.ts";
 
@@ -57,11 +63,65 @@ export default (api: AxiosInstance) => {
         }
     }
 
+    const createNewItem = async (item: ItemCreateSchema): Promise<ApiResponse<ItemReadSchema>> => {
+        const response = await api.post("/items/create", item)
+        if(response.status === 201){
+            return {
+                success: true,
+                data: response.data,
+            }
+        }
+        return {
+            success: false,
+            error: response.data
+        }
+    }
+
+    const addItemInstance = async (item_id: string, item: ItemInstanceCreate): Promise<ApiResponse<ItemReadSchema>> => {
+        const response = await api.post(`/items/${item_id}/create`, item)
+        if(response.status === 201){
+            return {
+                success: true,
+                data: response.data,
+            }
+        }
+        return {
+            success: false,
+            error: response.data
+        }
+    }
+
+    const deleteItem = async (item_id: string): Promise<ApiResponse<void>> => {
+        const response = await api.delete(`/items/${item_id}/`)
+        return {
+            success: response.status == 204,
+            error: response.data
+        }
+    }
+
+    const updateItem = async(item_id: string, updateData: ItemUpdateSchema): Promise<ApiResponse<ItemReadSchema>> => {
+        const response = await api.patch(`/items/${item_id}/`, updateData)
+        if(response.status === 200){
+            return {
+                success: true,
+                data: response.data as ItemReadSchema
+            }
+        }
+        return {
+            success: false,
+            error: response.data
+        }
+    }
+
     return {
         getAllItemsSummary,
         getAllCategories,
         getItemDetails,
-        consumeItemInstance
+        consumeItemInstance,
+        createNewItem,
+        addItemInstance,
+        deleteItem,
+        updateItem
     }
 
 }

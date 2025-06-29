@@ -1,8 +1,9 @@
 from typing import Optional, List, Dict, Set
 from pydantic import BaseModel, ConfigDict
 from uuid import UUID
-from .item_attribute import ItemAttributesCreateSchema, ItemAttributesReadBaseSchema
-from .item_storage import ItemStorageCreateSchema, ItemStorageWithAttributesReadSchema, ItemStorageReadSchema
+from .item_attribute import ItemAttributesCreateSchema, ItemAttributesReadBaseSchema, ItemAttributesBaseSchema
+from .item_storage import ItemStorageCreateSchema, ItemStorageWithAttributesReadSchema, ItemStorageReadSchema, \
+    ItemStorageBaseSchema
 from .category import CategoryReadSchema
 from ..common import BreadcrumbSchema
 from ..storage import StorageResponseSchema
@@ -20,12 +21,7 @@ class ItemSummarySchema(ItemBaseSchema):
     total_quantity: int
     categories: Optional[List["CategoryReadSchema"]] = None
 
-# Schema for creating a new items via the API
-class ItemCreateSchema(ItemBaseSchema):
-    categories: List[UUID] = []
-    pass
-
-class ProductUpdateSchema(BaseModel):
+class ItemUpdateSchema(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     categories_to_add: Optional[List[UUID]]
@@ -48,3 +44,8 @@ class ItemInstanceCreate(BaseModel):
 class ItemInstanceReadSchema(ItemReadSchema):
     storage: ItemStorageWithAttributesReadSchema
     model_config = ConfigDict(from_attributes=True)
+
+class ItemCreateSchema(ItemBaseSchema):
+    categories: List[UUID] = []
+    attributes: ItemAttributesBaseSchema
+    storage: ItemStorageBaseSchema

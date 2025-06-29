@@ -1,4 +1,4 @@
-import type { VTextField, VBtn, VSelect, VNumberInput } from 'vuetify/components'
+import type { VTextField, VBtn, VSelect, VNumberInput, VTextarea } from 'vuetify/components'
 import type { VDateInput } from 'vuetify/labs/VDateInput'
 
 type VTextFieldProps = InstanceType<typeof VTextField>['$props']
@@ -6,6 +6,7 @@ type VBtnProps = InstanceType<typeof VBtn>['$props']
 type VSelectProps = InstanceType<typeof VSelect>['$props']
 type VNumberInputProps = InstanceType<typeof VNumberInput>['$props']
 type VDateInputProps = InstanceType<typeof VDateInput>['$props']
+type VTextareaProps = InstanceType<typeof VTextarea>['$props']
 
 export default () => {
     const textFieldStyling = computed<VTextFieldProps>(() => {
@@ -63,6 +64,19 @@ export default () => {
         }
     })
 
+    const textAreaStyle = computed<VTextareaProps>(() => {
+        return {
+            variant: "solo-filled",
+            density: "comfortable",
+            hideDetails: "auto",
+            persistentCounter: true,
+            color:"primary",
+            rows: 1,
+            autoGrow: true,
+            clearable: true
+        }
+    })
+
 
 
     return {
@@ -70,6 +84,7 @@ export default () => {
         selectStyling,
         numberInputStyling,
         btnStyle,
-        dateInputStyling
+        dateInputStyling,
+        textAreaStyle,
     }
 }

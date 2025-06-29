@@ -3,11 +3,14 @@ import { ref, computed, onBeforeMount } from 'vue'
 import {CategoryReadSchema, ItemSummarySchema} from "@/api/types/items.ts";
 import {onBeforeRouteUpdate} from "vue-router";
 import ItemSummaryList from "@/components/items/ItemSummaryList.vue";
+import itemAddedEventBus from "@/services/itemAddedEventBus.ts";
+import useContentRefreshStore from "@/store/useContentRefreshStore.ts";
 
 const {items: itemsEndpoint} = useAxios()
 const { mdAndUp, xs, sm, md, lg, xl } = useDisplay()
 const {textFieldStyling, btnStyle} = useAppStyling()
-const route = useRoute()
+const contentRefreshStore = useContentRefreshStore()
+const {t} = useI18n()
 
 const items = ref<Array<ItemSummarySchema>>([])
 const categories =ref<Array<CategoryReadSchema>>([])
@@ -50,6 +53,20 @@ const filteredItems = computed(() => {
   return filtered
 })
 
+
+const clickOnBanner = () => {
+  loadItems().then(() => {
+  })
+}
+
+
+itemAddedEventBus.on(() => {
+  contentRefreshStore.showBanner({
+    title: t('items.content_changed_title'),
+    subtitle: t('items.content_changed_subtitle'),
+    callback: clickOnBanner
+  })
+})
 
 
 onBeforeMount(() => {

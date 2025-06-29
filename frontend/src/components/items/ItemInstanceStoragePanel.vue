@@ -14,10 +14,12 @@ const {
 }>()
 
 const emit = defineEmits<{
-  (e: 'consume'): void
+  (e: 'consume'): void,
+  (e: 'reload'): void,
 }>()
 
 const quantityLoading = ref<boolean>(false)
+const editItemInstanceDialogVisible = ref<boolean>(false)
 
 const formatExpirationDate = (expirationDate: string|null|undefined) => {
   if(!expirationDate){
@@ -46,7 +48,7 @@ const consumeInstance = async () => {
 }
 
 const edit = () => {
-  // TODO EDIT
+  editItemInstanceDialogVisible.value = true
 }
 const deleteAllInstances = () => {
   // TODO
@@ -54,6 +56,10 @@ const deleteAllInstances = () => {
 </script>
 
 <template>
+  <edit-item-instance-dialog
+      v-model="editItemInstanceDialogVisible"
+      @reload="emit('reload')"
+  />
   <v-card
       height="fit-content"
       max-height="400"

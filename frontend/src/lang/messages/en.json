@@ -80,11 +80,19 @@
     }
   },
   "items": {
+    "content_changed_title": "Your items have changed",
+    "content_changed_subtitle": "Click here to reload",
     "quantity": "Qty: {quantity}",
     "end": "You've reached the end",
     "item": {
       "delete": "Delete",
-      "edit": "Edit"
+      "edit": "Edit",
+      "delete_confirmation": {
+        "title": "Are you sure?",
+        "text": "This will delete all instances of this item and cannot be undone",
+        "confirm": "Yes, delete",
+        "cancel": "No, cancel"
+      }
     },
     "attributes": {
       "quantity": "Quantity",
@@ -158,6 +166,28 @@
         "parent": "Parent storage",
         "save_and_close": "Save & Close",
         "save": "Save"
+      }
+    },
+    "item":  {
+      "title": "Add or create item",
+      "short_title": "Item",
+      "form": {
+        "name": "Name",
+        "name_required": "A name (or existing item) needs to be selected",
+        "description": "Description",
+        "description_too_long": "Your description is too long",
+        "categories": "Categories",
+        "parent": "Storage",
+        "parent_needed": "A storage for the item needs to be selected",
+        "quantity": "Quantity",
+        "expiry_date": "Expiration date",
+        "batch": "Batch number",
+        "serial_number": "Serial number",
+        "notes": "Notes",
+        "notes_too_long": "Your notes are too long",
+        "save_and_close": "Save & Close",
+        "save": "Save",
+        "new_item": "Create a new item {n}"
       }
     }
   },

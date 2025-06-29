@@ -16,6 +16,7 @@ const {t, d} = useI18n()
 const item = ref<ItemDetailReadSchema|undefined>()
 const loading = ref<boolean>(true)
 
+
 const {
   id
 } = defineProps<{
@@ -41,8 +42,8 @@ const breadcrumbs = computed(() => {
   return item.value.breadcrumbs
 })
 
-onBeforeMount(() => {
-  loading.value = true
+const loadItem = async (showLoader: boolean) => {
+  loading.value = showLoader
   itemEndpoint.getItemDetails(id, fromStorageId.value).then( ({success, data, error}) => {
     if(!success){
       // TODO ERROR
@@ -52,6 +53,10 @@ onBeforeMount(() => {
     item.value = data!
     loading.value = false
   })
+}
+
+onBeforeMount(() => {
+  loadItem(true)
 })
 
 </script>
@@ -101,6 +106,7 @@ onBeforeMount(() => {
     </v-breadcrumbs>
     <item-detail-header
         v-model="item"
+        @deleting="deleting => {loading = deleting}"
     />
     <v-divider opacity="50" class="mt-4 mb-4"/>
 
@@ -113,6 +119,7 @@ onBeforeMount(() => {
           :attributes="item.attributes"
           :storage="storage"
           :highlight="fromStorageId === storage.id"
+          @reload="loadItem(false)"
       >
       </item-detail-storage-panel>
     </v-expansion-panels>

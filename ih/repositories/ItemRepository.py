@@ -4,7 +4,7 @@ from uuid import UUID
 
 from fastapi import HTTPException
 from sqlalchemy import case
-from sqlalchemy.orm import selectinload, joinedload, subqueryload
+from sqlalchemy.orm import selectinload, joinedload, subqueryload, contains_eager
 from sqlmodel import Session, select, func
 from starlette import status
 
@@ -12,7 +12,7 @@ from ih.db.models import ItemStorage, Item, ItemAttributes, Category, Storage
 from ih.db.models.User import User
 from ih.db.models.storage.Storage import StorageType
 from ih.schema.items import ItemSummarySchema, ItemCreateSchema, ItemAttributesCreateSchema, \
-    ItemStorageCreateSchema, CategoryCreateSchema
+    ItemStorageCreateSchema, CategoryCreateSchema, ItemUpdateSchema
 
 
 class ItemRepository:
@@ -55,7 +55,6 @@ class ItemRepository:
             The matching ProductAttribute object or None if no exact match is found.
         """
 
-        # if there is no attributes_data specified by the user, use the default one
         if attributes_data is None:
             attributes_data = ItemAttributesCreateSchema()
 
@@ -133,9 +132,7 @@ class ItemRepository:
         if existing:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="product_already_exists")
 
-
-
-        product = Item(**to_create.model_dump(exclude={"categories"}), household_id=self.household_id)
+        product = Item(**to_create.model_dump(exclude={"categories", "attributes", "storage"}), household_id=self.household_id)
 
         for category_id in to_create.categories:
             stmt = (
@@ -186,9 +183,8 @@ class ItemRepository:
             .order_by(*order_clauses)
 
             .options(
-                selectinload(Storage.item_locations)
-                .selectinload(ItemStorage.attributes)
-                .selectinload(ItemAttributes.item)
+                contains_eager(Storage.item_locations)
+                .contains_eager(ItemStorage.attributes)
             )
         )
 
@@ -247,6 +243,43 @@ class ItemRepository:
             .where(Category.household_id == self.household_id)
         )
         return self.session.exec(stmt)
+
+    def delete(self, item: Item):
+        self.session.delete(item)
+        self.session.flush()
+
+    def update(self, item: Item, update_data: ItemUpdateSchema) -> Item:
+        if update_data.name is not None:
+            item.name = update_data.name
+
+        if update_data.description is not None:
+            item.description = update_data.description
+
+        if update_data.categories_to_remove:
+            item.categories = [
+                cat for cat in item.categories if cat.id not in update_data.categories_to_remove
+            ]
+
+
+
+        if update_data.categories_to_add:
+            new_categories = self.session.exec(
+                select(Category)
+                .where(Category.id.in_(update_data.categories_to_add), Category.household_id == self.household_id)
+            ).all()
+            existing_ids = {cat.id for cat in item.categories}
+            # Filter out ones already linked
+            for category in new_categories:
+                if category.id not in existing_ids:
+                    item.categories.append(category)
+
+        # Handle category removals
+
+
+        self.session.add(item)
+        self.session.flush()
+        self.session.refresh(item)
+        return item
 
 
 

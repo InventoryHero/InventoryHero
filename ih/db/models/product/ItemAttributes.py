@@ -14,4 +14,4 @@ class ItemAttributes(SQLModel, table=True):
     notes: Optional[str] = None
 
     item: Item = Relationship(back_populates="attributes")
-    storage: List["ItemStorage"] = Relationship(back_populates="attributes")
+    storage: List["ItemStorage"] = Relationship(back_populates="attributes", cascade_delete=True)

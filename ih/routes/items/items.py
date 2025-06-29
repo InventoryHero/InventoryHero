@@ -15,7 +15,7 @@ from ih.routes._base.UserApiRouter import UserAPIRouter
 from ih.schema.common import BreadcrumbSchema
 from ih.schema.items import ItemSummarySchema, ItemReadSchema, ItemCreateSchema, ItemInstanceCreate, \
     ItemInstanceReadSchema, ItemStorageReadSchema, ItemAttributesReadSchema, ItemDetailReadSchema, \
-    ItemAttributesReadBaseSchema
+    ItemAttributesReadBaseSchema, ItemUpdateSchema
 from ih.schema.storage import StorageResponseSchema
 
 router = UserAPIRouter(prefix="", tags=["items"])
@@ -25,8 +25,12 @@ product_scoped_router = UserAPIRouter(prefix="/{item_id}", tags=["items"])
 class ItemBaseController(HouseholdContextController):
 
     @router.post("/create", status_code=status.HTTP_201_CREATED, response_model=ItemReadSchema)
-    def create_product(self, product: ItemCreateSchema):
-        return self.repositories.items.create(product)
+    def create_product(self, item: ItemCreateSchema):
+        self.logger.info(item)
+        new_item = self.repositories.items.create(item)
+        attribute = self.repositories.items.get_attribute(new_item.id, item.attributes)
+        _ = self.repositories.items.create_instance(attribute.id, item.storage)
+        return new_item
 
     @router.get("/overview", status_code=status.HTTP_200_OK, response_model=List[ItemSummarySchema])
     def get_products(self) -> List[ItemSummarySchema]:
@@ -70,7 +74,7 @@ class ItemController(HouseholdContextController):
                                None,
                                description="The ID of the storage location the user navigated from, used to build contextual breadcrumbs."
                            )
-   ) -> ItemDetailReadSchema:
+    ) -> ItemDetailReadSchema:
         """
         Retrieves all stored locations for a given items.
 
@@ -79,6 +83,7 @@ class ItemController(HouseholdContextController):
         """
 
         results = self.repositories.items.get_item_instances(self.item.id, from_storage)
+        print(results)
 
         attributes: Dict[uuid.UUID, ItemAttributesReadBaseSchema] = {}
         items: Dict[uuid.UUID, List[ItemStorageReadSchema]] = defaultdict(list)
@@ -115,7 +120,22 @@ class ItemController(HouseholdContextController):
     )
     def delete_instance(self, item_storage_id: uuid.UUID) -> None:
         self.repositories.items.delete_instance(self.item.id, item_storage_id, True)
+
+    @product_scoped_router.delete(
+        "/",
+        status_code=status.HTTP_204_NO_CONTENT,
+        summary="Delete whole item"
+    )
+    def delete(self) -> None:
+        self.repositories.items.delete(self.item)
         
+    @product_scoped_router.patch(
+        "/",
+        status_code=status.HTTP_200_OK,
+        response_model=ItemReadSchema
+    )
+    def update(self, update_data: ItemUpdateSchema) -> ItemReadSchema:
+        return self.repositories.items.update(self.item, update_data)
 
 # TODO MOVE INSTANCE TO DIFFERENT LOCATION
 

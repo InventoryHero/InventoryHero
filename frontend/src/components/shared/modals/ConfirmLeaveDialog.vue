@@ -26,7 +26,7 @@ const emit = defineEmits<{
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn @click="emit('cancel)')">Stay</v-btn>
+        <v-btn @click="emit('cancel')">Stay</v-btn>
         <v-btn color="error" variant="tonal" @click="emit('confirm')">Discard Changes</v-btn>
       </v-card-actions>
     </v-card>
