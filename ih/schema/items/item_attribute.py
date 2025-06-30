@@ -1,9 +1,12 @@
 from datetime import datetime
-from typing import Optional, List
-from pydantic import BaseModel, ConfigDict, computed_field
+from typing import Optional, List, Annotated
+from pydantic import BaseModel, ConfigDict, computed_field, Field
 from uuid import UUID
+from pydantic_core import PydanticUndefined
+
 
 from .item_storage import ItemStorageReadSchema
+
 
 
 class ItemAttributesBaseSchema(BaseModel):
@@ -11,18 +14,19 @@ class ItemAttributesBaseSchema(BaseModel):
     serial_number: Optional[str] = None
     batch_code: Optional[str] = None
     notes: Optional[str] = None
-    model_config = ConfigDict(from_attributes=True)
+
 
 # Schema for creating a new items attribute
 class ItemAttributesCreateSchema(ItemAttributesBaseSchema):
     pass
 
-# Schema for updating an existing items attribute
-class ProductAttributeUpdateSchema(BaseModel):
+
+class ItemAttributesUpdateSchema(BaseModel):
     expiration_date: Optional[datetime] = None
     serial_number: Optional[str] = None
     batch_code: Optional[str] = None
     notes: Optional[str] = None
+
 
 # Schema for reading a items attribute from the API
 class ItemAttributesReadBaseSchema(ItemAttributesBaseSchema):

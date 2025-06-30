@@ -73,6 +73,12 @@ export interface ItemStorageReadSchema {
   id: string;
   product_attribute_id: string;
 }
+export interface ItemAttributesUpdateSchema {
+  expiration_date: string | null;
+  serial_number: string | null;
+  batch_code: string | null;
+  notes: string | null;
+}
 export interface ItemBaseSchema {
   name: string;
   description?: string | null;
@@ -130,14 +136,18 @@ export interface ItemStorageWithAttributesReadSchema {
   product_attribute_id: string;
   attributes: ItemAttributes;
 }
+export interface ItemInstanceUpdateSchema {
+  stock?: ItemStorageUpdateSchema | null;
+  attributes?: ItemAttributesUpdateSchema | null;
+}
+export interface ItemStorageUpdateSchema {
+  quantity: number | null;
+}
 export interface ItemReadSchema {
   name: string;
   description?: string | null;
   id: string;
   categories: CategoryReadSchema[];
-}
-export interface ItemStorageUpdateSchema {
-  quantity?: number | null;
 }
 export interface ItemSummarySchema {
   name: string;
@@ -151,10 +161,4 @@ export interface ItemUpdateSchema {
   description?: string | null;
   categories_to_add: string[] | null;
   categories_to_remove: string[] | null;
-}
-export interface ProductAttributeUpdateSchema {
-  expiration_date?: string | null;
-  serial_number?: string | null;
-  batch_code?: string | null;
-  notes?: string | null;
 }

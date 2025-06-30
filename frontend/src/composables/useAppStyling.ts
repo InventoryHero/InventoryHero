@@ -40,7 +40,8 @@ export default () => {
             persistentClear: false,
             hideDetails: "auto",
             disabled: false,
-            density: "comfortable"
+            density: "comfortable",
+            controlVariant: "split"
         }
     })
 

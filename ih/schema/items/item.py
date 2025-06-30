@@ -1,9 +1,10 @@
 from typing import Optional, List, Dict, Set
 from pydantic import BaseModel, ConfigDict
 from uuid import UUID
-from .item_attribute import ItemAttributesCreateSchema, ItemAttributesReadBaseSchema, ItemAttributesBaseSchema
+from .item_attribute import ItemAttributesCreateSchema, ItemAttributesReadBaseSchema, ItemAttributesBaseSchema, \
+    ItemAttributesUpdateSchema
 from .item_storage import ItemStorageCreateSchema, ItemStorageWithAttributesReadSchema, ItemStorageReadSchema, \
-    ItemStorageBaseSchema
+    ItemStorageBaseSchema, ItemStorageUpdateSchema
 from .category import CategoryReadSchema
 from ..common import BreadcrumbSchema
 from ..storage import StorageResponseSchema
@@ -49,3 +50,8 @@ class ItemCreateSchema(ItemBaseSchema):
     categories: List[UUID] = []
     attributes: ItemAttributesBaseSchema
     storage: ItemStorageBaseSchema
+
+class ItemInstanceUpdateSchema(BaseModel):
+    stock: Optional[ItemStorageUpdateSchema] = None
+    attributes: Optional[ItemAttributesUpdateSchema] = None
+

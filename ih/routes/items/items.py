@@ -15,7 +15,8 @@ from ih.routes._base.UserApiRouter import UserAPIRouter
 from ih.schema.common import BreadcrumbSchema
 from ih.schema.items import ItemSummarySchema, ItemReadSchema, ItemCreateSchema, ItemInstanceCreate, \
     ItemInstanceReadSchema, ItemStorageReadSchema, ItemAttributesReadSchema, ItemDetailReadSchema, \
-    ItemAttributesReadBaseSchema, ItemUpdateSchema
+    ItemAttributesReadBaseSchema, ItemUpdateSchema, ItemStorageUpdateSchema, ItemAttributesUpdateSchema, \
+    ItemInstanceUpdateSchema
 from ih.schema.storage import StorageResponseSchema
 
 router = UserAPIRouter(prefix="", tags=["items"])
@@ -136,6 +137,24 @@ class ItemController(HouseholdContextController):
     )
     def update(self, update_data: ItemUpdateSchema) -> ItemReadSchema:
         return self.repositories.items.update(self.item, update_data)
+
+    @product_scoped_router.patch(
+        "/{item_storage_id}",
+        status_code=status.HTTP_204_NO_CONTENT,
+        summary="Delete all instances of a items at a location"
+    )
+    def delete_instance(self,
+                        item_storage_id: uuid.UUID,
+                        update_data: ItemInstanceUpdateSchema
+    ):
+        if 'expiration_date' in update_data.attributes.model_fields_set:
+            print("expiration_date was set")
+        if 'quantity' in update_data.stock.model_fields_set:
+            print("quantity was set")
+        print(update_data.stock)
+        print(update_data.attributes)
+
+        self.repositories.items.update_instance(item_storage_id, update_data.attributes, update_data.stock)
 
 # TODO MOVE INSTANCE TO DIFFERENT LOCATION
 

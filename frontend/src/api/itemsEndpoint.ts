@@ -4,8 +4,10 @@ import {
     ItemCreateSchema,
     ItemDetailReadSchema, ItemInstanceCreate,
     ItemReadSchema,
-    ItemSummarySchema, ItemUpdateSchema
+    ItemSummarySchema, ItemUpdateSchema,
+    ItemInstanceUpdateData
 } from "@/api/types/items.ts";
+
 import {ApiResponse} from "@/api/types/ApiResponse.ts";
 import {HouseholdPublic} from "@/api/types/households.ts";
 
@@ -113,6 +115,14 @@ export default (api: AxiosInstance) => {
         }
     }
 
+    const updateItemInstance = async(itemId: string, instanceId: string, updateData: ItemInstanceUpdateData): Promise<ApiResponse> => {
+        const response = await api.patch(`/items/${itemId}/${instanceId}`, updateData)
+        return {
+            success: response.status == 204,
+            error: response.data
+        }
+    }
+
     return {
         getAllItemsSummary,
         getAllCategories,
@@ -121,7 +131,8 @@ export default (api: AxiosInstance) => {
         createNewItem,
         addItemInstance,
         deleteItem,
-        updateItem
+        updateItem,
+        updateItemInstance
     }
 
 }

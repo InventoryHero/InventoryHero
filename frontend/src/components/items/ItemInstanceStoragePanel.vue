@@ -58,6 +58,9 @@ const deleteAllInstances = () => {
 <template>
   <edit-item-instance-dialog
       v-model="editItemInstanceDialogVisible"
+      :item-instance="instance"
+      :item-attributes="attributes"
+      :item-id="itemId"
       @reload="emit('reload')"
   />
   <v-card

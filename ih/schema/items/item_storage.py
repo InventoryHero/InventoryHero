@@ -1,7 +1,9 @@
 from datetime import datetime
-from typing import Optional, List
+from typing import Optional, List, Annotated
 from pydantic import BaseModel, Field, ConfigDict
 from uuid import UUID
+
+from pydantic_core import PydanticUndefined
 
 from ih.db.models import ItemAttributes
 
@@ -16,10 +18,8 @@ class ItemStorageCreateSchema(ItemStorageBaseSchema):
 
 # Schema for updating a items Storage, e.g., changing the quantity
 class ItemStorageUpdateSchema(BaseModel):
-    quantity: Optional[int] = Field(default=None, gt=0)
-    # Moving an item would involve changing the storage_id, often handled by a
-    # dedicated endpoint rather than a simple PATCH to the Storage entry itself.
-    # For example: POST /items/attributes/{attr_id}/move/{storage_id}
+    quantity: Annotated[Optional[int], Field(gt=0)] = None
+
 
 # Schema for reading a items Storage from the API
 class ItemStorageReadSchema(ItemStorageBaseSchema):

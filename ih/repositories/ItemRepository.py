@@ -12,7 +12,7 @@ from ih.db.models import ItemStorage, Item, ItemAttributes, Category, Storage
 from ih.db.models.User import User
 from ih.db.models.storage.Storage import StorageType
 from ih.schema.items import ItemSummarySchema, ItemCreateSchema, ItemAttributesCreateSchema, \
-    ItemStorageCreateSchema, CategoryCreateSchema, ItemUpdateSchema
+    ItemStorageCreateSchema, CategoryCreateSchema, ItemUpdateSchema, ItemAttributesUpdateSchema, ItemStorageUpdateSchema
 
 
 class ItemRepository:
@@ -280,6 +280,11 @@ class ItemRepository:
         self.session.flush()
         self.session.refresh(item)
         return item
+
+    def update_instance(self, instance_id: UUID, attributes_to_update: ItemAttributesUpdateSchema, item_stock: ItemStorageUpdateSchema) -> None:
+        # first check if there are other instances with the same attributes in the household
+        # if yes, we need to create a new attribute set, otherwise we can reuse the old one
+        # check the item_stock to update
 
 
 
