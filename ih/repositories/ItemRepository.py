@@ -286,5 +286,52 @@ class ItemRepository:
         # if yes, we need to create a new attribute set, otherwise we can reuse the old one
         # check the item_stock to update
 
+        instance = self.session.exec(
+            select(ItemStorage)
+            .join(ItemAttributes)
+            .join(Item)
+            .where(
+                ItemStorage.id == instance_id,
+                Item.household_id == self.household_id,
+            )
+        ).first()
+
+        if instance is None:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="item_not_found"
+            )
+
+        curr_attributes = self.session.exec(
+            select(ItemAttributes)
+            .where(ItemAttributes.id == instance.product_attribute_id)
+        ).first()
+
+        if curr_attributes is None:
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="unknown_error_occurred"
+            )
+
+
+        stmt = select(ItemAttributes).where(ItemAttributes.item_id == curr_attributes.item_id)
+
+        # Use the provided data, or an empty dictionary if none was given.
+        search_criteria = attributes_to_update.model_dump()
+        original_attributes = curr_attributes.model_dump()
+        for field_name in search_criteria:
+            column = getattr(ItemAttributes, field_name)
+            value = search_criteria[field_name]
+            if field_name in attributes_to_update.model_fields_set:
+                stmt = stmt.where(column == value)
+            else:
+                stmt = stmt.where(column == original_attributes[field_name])
+
+        new_attributes = self.session.exec(stmt).first()
+        print("newe", new_attributes)
+        print("curr", curr_attributes)
+
+        pass
+
 
 
