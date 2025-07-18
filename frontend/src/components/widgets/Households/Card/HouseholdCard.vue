@@ -152,7 +152,7 @@ function leaveHousehold(){
             v-if="isOwner || isAdmin"
             icon="mdi-store-edit"
             class="me-1"
-            :to="`/households/edit/${household.id}`"
+            :to="`/households/${household.id}`"
         />
         <app-icon-btn
             v-if="isOwner || isAdmin"

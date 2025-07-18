@@ -74,13 +74,13 @@ const offset = computed(() => {
         color="accent"
     />
     <v-list-item
-        to="/boxes"
+        to="/storage/boxes"
         prepend-icon="mdi-package-variant"
         :title="t('nav.boxes')"
         color="accent"
     />
     <v-list-item
-        to="/rooms"
+        to="/storage/rooms"
         prepend-icon="mdi-door"
         :title="t('nav.rooms')"
         color="accent"

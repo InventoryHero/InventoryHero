@@ -12,7 +12,7 @@ const {
 
 const to = computed(() => {
   return router.resolve({
-    name: "RoomContentView",
+    name: "/storage/rooms/room.[id]",
     params: {
       id: room.id
     }

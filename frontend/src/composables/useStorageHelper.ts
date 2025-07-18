@@ -17,14 +17,14 @@ export default () => {
         switch(type){
             case "box":
                 return router.resolve({
-                    name: 'BoxContentView',
+                    name: '/storage/boxes/box.[id]',
                     params: {
                         id: id,
                     },
                 })
             case "room":
                 return router.resolve({
-                    name: 'RoomContentView',
+                    name: '/storage/rooms/room.[id]',
                     params: {
                         id: id,
                     },

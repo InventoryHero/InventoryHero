@@ -13,9 +13,9 @@ export default () => {
         }
         switch (storage.type ?? -1) {
             case StorageTypes.Location:
-                return router.push(`/locations/location/${storage.id}`)
+                return router.push(`/storage/locations/location/${storage.id}`)
             case StorageTypes.Box:
-                return router.push(`/boxes/box/${storage.id}`) /*/${t(redirectedFrom, { name: redirectedFromName })}*/
+                return router.push(`/storage/boxes/box/${storage.id}`) /*/${t(redirectedFrom, { name: redirectedFromName })}*/
             default:
                 return
         }

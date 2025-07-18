@@ -100,7 +100,7 @@ onUpdated(async () => {
       <app-icon-btn
           icon="mdi-qrcode-scan"
           color="primary"
-          to="/scan-qr"
+          to="/qr/scan"
       />
     </template>
 
@@ -124,7 +124,7 @@ onUpdated(async () => {
       <v-list-item
           to="/account"
           prepend-icon="mdi-account"
-          :title="$t('nav.account')"
+          :title="t('nav.account')"
           color="primary"
       />
       <template
@@ -134,7 +134,7 @@ onUpdated(async () => {
         <v-list-item
             to="/administration"
             prepend-icon="mdi-shield-account"
-            :title="$t('nav.administration')"
+            :title="t('nav.administration')"
             color="primary"
         />
       </template>

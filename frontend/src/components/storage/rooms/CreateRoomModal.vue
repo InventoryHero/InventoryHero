@@ -44,7 +44,7 @@ const saveRoom = async () => {
   }
   loading.value = false
 
-  if(route.path === "/rooms"){
+  if(route.name === "/storage/rooms/room.[id]"){
     roomAddedEventBus.emit()
   }
   name.value = null

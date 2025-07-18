@@ -2,13 +2,16 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { VitePWA } from 'vite-plugin-pwa'
-//@ts-expect-error node url cannot be found, but it is there
-import {fileURLToPath, URL} from "node:url";
+import VueRouter from 'unplugin-vue-router/vite'
 import Components from 'unplugin-vue-components/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import {i18n} from './src/lang';
 import vuetify from "vite-plugin-vuetify";
 import basicSsl from '@vitejs/plugin-basic-ssl'
+import Layouts from 'vite-plugin-vue-layouts-next'
+
+//@ts-expect-error node url cannot be found, but it is there
+import {fileURLToPath, URL} from "node:url";
 
 export default defineConfig({
   build: {
@@ -27,6 +30,9 @@ export default defineConfig({
       /** name of certification */
       name: 'test',
 
+    }),
+    VueRouter({
+      /* options */
     }),
     vue(),
     vuetify(),

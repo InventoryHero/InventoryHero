@@ -8,6 +8,9 @@ import { fa } from 'vuetify/iconsets/fa'
 import {aliases, mdi} from "vuetify/iconsets/mdi";
 import * as labsComponents from 'vuetify/labs/components'
 import * as components from 'vuetify/components'
+import useGenerateMaterialYouTheme from "@/composables-new/useGenerateMaterialYouTheme.ts";
+
+
 
 export default createVuetify({
     components: {

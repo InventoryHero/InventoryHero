@@ -1,35 +1,16 @@
 
 import {createRouter, createWebHistory} from "vue-router";
-import Dashboard from "../views/Dashboard.vue";
-import Login from "@/views/Login.vue"
+import {routes} from 'vue-router/auto-routes'
 import {useAuthStore, useNotificationStore} from "@/store";
-import Settings from "@/views/Settings.vue";
-import Account from "@/views/Account.vue";
-import Logout from "@/views/Logout.vue";
-import {i18n} from "@/lang";
-import Confirmation from "@/views/Confirmation.vue";
-import Join from "@/views/Join.vue";
-import {notify} from "@kyvg/vue3-notification";
-import Users from "@/components/widgets/Administration/Users.vue";
-import Overview from "@/components/widgets/Administration/Overview.vue";
-import RouteNotFound from "@/views/RouteNotFound.vue";
-
-import passwordReset from "./routes/passwordReset";
-import households from "@/router/routes/household";
-import boxes from "@/router/routes/storage.ts"
-import QrScanner from "@/views/QrScanner.vue";
-import Register from "@/views/Register.vue";
-import ForgotPassword from "@/views/ForgotPassword.vue";
-import MissingConfirmation from "@/views/MissingConfirmation.vue";
-import Unauthorized from "@/layouts/Unauthorized.vue";
-import Tokenized from "@/layouts/Tokenized.vue";
-import items from "@/router/routes/items.ts";
-import {useModal} from "@/composables-new/useModal.ts";
 import useContentRefreshStore from "@/store/useContentRefreshStore.ts";
+import {i18n} from "@/lang";
+import {useModal} from "@/composables-new/useModal.ts";
+const vueRouter = createRouter({
+  history: createWebHistory(),
+  routes: routes
+})
 
-
-
-const vueRouter =  createRouter({
+/*const vueRouter =  createRouter({
   history: createWebHistory(),
   routes: [
     {
@@ -200,7 +181,8 @@ const vueRouter =  createRouter({
       return { top: 0 }
     }
   },
-})
+})*/
+
 
 vueRouter.beforeEach(async (to, from) => {
   if(!to.meta.requiresAuth){
@@ -253,10 +235,10 @@ vueRouter.beforeEach(async (to, from) => {
   contentRefreshStore.clearBanner()
 
   document.title = (to.meta?.title ?? i18n.global.t('app.title')) as string
-  notify({
+  /*notify({
     group: 'newContent',
     clean: true,
-  });
+  });*/
 })
 
 vueRouter.beforeResolve(async to => {

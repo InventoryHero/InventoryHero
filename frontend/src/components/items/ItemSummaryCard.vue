@@ -24,14 +24,14 @@ const iconPlaceholder = computed(() => {
 
 const to = computed(() => {
   return router.resolve({
-    name: "ItemDetail",
+    name: "/items/[id]",
     params: {
       id: item.id
     },
     query: {
       fromStorage: from
     }
-  } )
+  })
 })
 
 

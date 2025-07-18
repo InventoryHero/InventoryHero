@@ -1,4 +1,5 @@
 /// <reference types="vite/client" />
+/// <reference types="unplugin-vue-router/client" />
 import type { Notifications } from '@kyvg/vue3-notification';
 import {FunctionalComponent} from "vue";
 import 'pinia'

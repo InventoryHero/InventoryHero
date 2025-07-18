@@ -56,13 +56,13 @@ export default defineComponent({
           color="primary"
       />
       <v-list-item
-          to="/boxes"
+          to="/storage/boxes"
           prepend-icon="mdi-package-variant"
           :title="$t('nav.boxes')"
           color="primary"
       />
       <v-list-item
-          to="/locations"
+          to="/storage/locations"
           prepend-icon="mdi-archive-marker"
           :title="$t('nav.location')"
           color="primary"

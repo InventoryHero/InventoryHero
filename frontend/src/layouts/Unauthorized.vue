@@ -10,7 +10,9 @@ import {Notifications} from "@kyvg/vue3-notification";
       :max="2"
   />
   <v-main>
-    <slot />
+    <v-container>
+      <slot />
+    </v-container>
   </v-main>
 </template>
 

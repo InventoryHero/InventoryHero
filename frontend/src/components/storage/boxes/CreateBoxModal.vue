@@ -48,7 +48,7 @@ const saveBox = async () => {
   }
   loading.value = false
 
-  if(route.path === "/boxes"){
+  if(route.path === "/storage/boxes"){
     boxAddedEventBus.emit()
   }
   name.value = null

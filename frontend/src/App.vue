@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import DefaultLayout from "@/layouts/DefaultLayout.vue";
+import Default from "@/layouts/default.vue";
 import {useAuthStore, useConfigStore} from "@/store";
 import {storeToRefs} from "pinia";
 import NotInitialized from "@/layouts/NotInitialized.vue";
@@ -11,7 +11,7 @@ const configStore = useConfigStore()
 const authStore = useAuthStore()
 
 const {authorized} = storeToRefs(authStore)
-
+console.log(route.meta)
 const transition = computed(() => {
   if(configStore.transitions){
     return {
@@ -23,6 +23,8 @@ const transition = computed(() => {
     name: "", mode: ""
   }
 })
+
+
 
 
 const isInitialized = ref(false)
@@ -45,6 +47,14 @@ async function initializeApp() {
   }
 }
 
+const layoutComponent = computed(() => {
+  if(!isInitialized.value){
+    return NotInitialized
+  }
+
+  const layoutName = route.meta.layout || 'default';
+  return defineAsyncComponent(() => import(`./layouts/${layoutName}.vue`));
+})
 onBeforeMount(() => {
   initializeApp()
 })
@@ -53,9 +63,10 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <v-app>
+  <v-app v-if="configStore.initialized">
     <component
-        :is="isInitialized ? (route.meta.layout ?? DefaultLayout) : NotInitialized"
+
+        :is="layoutComponent"
         v-bind="route.meta.layoutProps ?? {}"
     >
       <router-view v-slot="{Component, route}">
@@ -73,6 +84,7 @@ onBeforeMount(() => {
       </router-view>
     </component>
   </v-app>
+
 </template>
 
 <style scoped lang="scss">

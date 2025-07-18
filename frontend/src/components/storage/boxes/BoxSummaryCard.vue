@@ -13,7 +13,7 @@ const {
 
 const to = computed(() => {
   return router.resolve({
-    name: "BoxContentView",
+    name: "/storage/boxes/box.[id]",
     params: {
       id: box.id
     }
