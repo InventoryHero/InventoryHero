@@ -1,29 +1,38 @@
 <script setup lang="ts">
 import {ItemAttributesBaseSchema, ItemStorageReadSchema} from "@/api/types/items.ts";
-
+import useAppStyling from "@/composables/useAppStyling.ts";
+const {numberInputStyling} = useAppStyling()
 const {t, d} = useI18n()
 const {items: itemEndpoint} = useAxios()
 const {
+  itemName,
+  storageName,
   itemId,
   instance,
-  attributes
+  attributes,
+  loading=false
 } = defineProps<{
+  itemName: string,
+  storageName: string,
   itemId: string
   instance: ItemStorageReadSchema,
-  attributes: ItemAttributesBaseSchema
+  attributes: ItemAttributesBaseSchema,
+  loading?: boolean
 }>()
 
 const emit = defineEmits<{
   (e: 'consume'): void,
+  (e: 'add'): void,
   (e: 'reload'): void,
 }>()
 
 const quantityLoading = ref<boolean>(false)
 const editItemInstanceDialogVisible = ref<boolean>(false)
+const deleting = ref<boolean>(false)
 
 const formatExpirationDate = (expirationDate: string|null|undefined) => {
   if(!expirationDate){
-    return t('items.attributes.no_expiration_set')
+    return ''
   }
   const date = new Date(expirationDate)
   if(isNaN(date.getTime())){
@@ -32,12 +41,17 @@ const formatExpirationDate = (expirationDate: string|null|undefined) => {
   return d(date, 'short')
 }
 
-const addInstance = () => {
-  // TODO ADD INSTANCE
+const addInstance = async () => {
+  quantityLoading.value = true
+  const {success, data, error} = await itemEndpoint.addItemInstance(itemId, instance.id)
+  if (!success) {
+    // TODO REDIRECT TO ERROR PAGE
+  }
+  emit('add')
+  quantityLoading.value = false
 }
 
 const consumeInstance = async () => {
-  console.log(instance)
   quantityLoading.value = true
   const {success, data, error} = await itemEndpoint.consumeItemInstance(itemId, instance.id)
   if (!success) {
@@ -47,17 +61,35 @@ const consumeInstance = async () => {
   quantityLoading.value = false
 }
 
+const changeAmount = (newAmount: number) => {
+  if(instance.quantity > newAmount){
+    consumeInstance()
+  }
+  else {
+    addInstance()
+  }
+}
+
 const edit = () => {
   editItemInstanceDialogVisible.value = true
 }
-const deleteAllInstances = () => {
-  // TODO
+const deleteAllInstances = async () => {
+  deleting.value = true
+  const {success, data, error} = await itemEndpoint.deleteInstances(itemId, instance.id)
+  if(!success) {
+    // TODO
+  }
+  emit('reload')
+  deleting.value = false
+
 }
 </script>
 
 <template>
   <edit-item-instance-dialog
       v-model="editItemInstanceDialogVisible"
+      :item-name="itemName"
+      :storage-name="storageName"
       :item-instance="instance"
       :item-attributes="attributes"
       :item-id="itemId"
@@ -68,6 +100,8 @@ const deleteAllInstances = () => {
       max-height="400"
       variant="outlined"
       class="mt-1 mb-1 overflow-y-scroll"
+      :loading="loading || deleting"
+      :disabled="loading || deleting"
 
   >
     <v-card-text>
@@ -82,80 +116,59 @@ const deleteAllInstances = () => {
           >
             {{t('items.attributes.quantity')}}
           </v-list-item-title>
-          <v-list-item-subtitle>
-            <v-icon-btn
-                icon="mdi-minus"
-                class="me-2"
-                @click="consumeInstance"
-            />
-            <span>
-              {{ instance.quantity }}
-            </span>
-            <v-icon-btn
-                class="ms-2"
-                icon="mdi-plus"
-                @click="addInstance"
+          <v-list-item-subtitle
+            class="mt-1"
+          >
+            <v-number-input
+
+              v-bind="numberInputStyling"
+              :model-value="instance.quantity"
+              @update:model-value="changeAmount"
+              density="compact"
+              :disabled="quantityLoading"
+              :loading="quantityLoading"
+              :min="0"
             />
           </v-list-item-subtitle>
         </v-list-item>
 
         <v-list-item
+            v-if="attributes.expiration_date"
             :title="t('items.attributes.expiry_date')"
             :subtitle="formatExpirationDate(attributes.expiration_date)"
         />
-        <v-list-item>
-          <v-list-item-title
-              class="text-wrap"
-          >
-            {{t('items.attributes.serial_number')}}
-          </v-list-item-title>
-          <v-list-item-subtitle
-              class="text-wrap"
-          >
-            {{attributes.serial_number ?? ''}}
-          </v-list-item-subtitle>
-        </v-list-item>
-        <v-list-item>
-          <v-list-item-title
-              class="text-wrap"
-          >
-            {{t('items.attributes.batch')}}
-          </v-list-item-title>
-          <v-list-item-subtitle
-              class="text-wrap"
-          >
-            {{attributes.batch_code ?? ''}}
-          </v-list-item-subtitle>
-        </v-list-item>
-        <v-list-item>
-          <v-list-item-title
-              class="text-wrap"
-          >
-            {{t('items.attributes.notes')}}
-          </v-list-item-title>
-          <v-list-item-subtitle
-              class="text-wrap"
-          >
-            {{attributes.notes ?? ''}}
-          </v-list-item-subtitle>
-        </v-list-item>
+        <v-list-item
+            v-if="attributes.serial_number"
+            :title="t('items.attributes.serial_number')"
+            :subtitle="attributes.serial_number"
+        />
+        <v-list-item
+            v-if="attributes.batch_code"
+            :title="t('items.attributes.batch')"
+            :subtitle="attributes.batch_code"
+        />
+        <v-list-item
+            v-if="attributes.notes"
+            :title="t('items.attributes.notes')"
+            :subtitle="attributes.notes"
+        />
       </v-list>
     </v-card-text>
     <v-card-actions>
       <v-spacer/>
+      <!-- TODO confirmation for delete -->
       <v-btn
         prepend-icon="mdi-trash-can"
         :text="t('items.attributes.delete')"
         class="text-none"
         density="compact"
-        variant="tonal"
         color="error"
         @click="deleteAllInstances"
       />
       <v-btn
           density="compact"
           prepend-icon="mdi-pencil"
-          :text="t('items.attributes.edit')"
+          :text="t('items.attributes.edit.button')"
           class="text-none"
           color="primary"
           @click="edit"

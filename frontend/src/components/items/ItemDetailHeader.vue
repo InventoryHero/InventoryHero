@@ -54,7 +54,6 @@
   />
 
   <v-card
-      subtitle="this is my subtitle"
       width="100%"
   >
     <template v-slot:prepend>
@@ -69,8 +68,7 @@
           {{ item.name }}
         </span>
     </template>
-
-    <v-card-text>
+    <template v-slot:subtitle>
       <v-chip-group
           base-color="primary"
           show-arrows
@@ -82,6 +80,10 @@
           {{ category.name }}
         </category-chip>
       </v-chip-group>
+    </template>
+
+    <v-card-text>
+
       <template v-if="item.description"> {{item.description}}</template>
     </v-card-text>
     <v-card-actions>
@@ -92,16 +94,16 @@
             @click="deleteItem"
             :text="t('items.item.delete')"
             density="comfortable"
-            color="error"
-            variant="tonal"
             class="text-none"
+            color="error"
         />
         <v-btn
             prepend-icon="mdi-pencil"
             @click="edit"
-            :text="t('items.item.edit')"
+            :text="t('items.item.edit.button')"
             density="comfortable"
             color="primary"
+
             class="text-none"
         />
 

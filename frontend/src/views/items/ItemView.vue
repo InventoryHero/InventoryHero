@@ -60,7 +60,8 @@ const clickOnBanner = () => {
 }
 
 
-itemAddedEventBus.on(() => {
+itemAddedEventBus.on((id) => {
+  console.log(id)
   contentRefreshStore.showBanner({
     title: t('items.content_changed_title'),
     subtitle: t('items.content_changed_subtitle'),

@@ -123,7 +123,7 @@ onBeforeMount(() => {
   <v-card
     :loading="loading"
     :disabled="loading"
-    :title="t('items.item.edit.title')"
+    :title="t('items.item.edit.title', {name: item.name})"
   >
     <template v-slot:append>
       <v-icon-btn
@@ -190,12 +190,12 @@ onBeforeMount(() => {
       </v-form>
     </v-card-text>
     <v-card-actions>
+      <v-spacer/>
       <v-btn
         v-bind="btnStyle"
         :text="t('items.item.edit.cancel')"
         @click="active = false"
       />
-      <v-spacer/>
       <v-btn
           v-bind="btnStyle"
           :text="t('items.item.edit.save')"

@@ -93,7 +93,7 @@ const to = computed(() => {
                 :text="category.name"
                 variant="tonal"
                 color="primary"
-
+                class="me-1"
             />
           </template>
           <template v-slot:append>

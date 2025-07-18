@@ -79,7 +79,7 @@ export default (api: AxiosInstance) => {
         }
     }
 
-    const addItemInstance = async (item_id: string, item: ItemInstanceCreate): Promise<ApiResponse<ItemReadSchema>> => {
+    const createItemInstance = async (item_id: string, item: ItemInstanceCreate): Promise<ApiResponse<ItemReadSchema>> => {
         const response = await api.post(`/items/${item_id}/create`, item)
         if(response.status === 201){
             return {
@@ -123,16 +123,34 @@ export default (api: AxiosInstance) => {
         }
     }
 
+    const deleteInstances = async(itemId: string, instanceId: string): Promise<ApiResponse> => {
+        const response = await api.delete(`/items/${itemId}/${instanceId}`)
+        return {
+            success: response.status == 204,
+            error: response.data
+        }
+    }
+
+    const addItemInstance = async (itemId: string, instanceId: string): Promise<ApiResponse<void>> => {
+        const response = await api.post(`/items/${itemId}/${instanceId}/add`)
+        return {
+            success: response.status == 204,
+            error: response.data
+        }
+    }
+
     return {
         getAllItemsSummary,
         getAllCategories,
         getItemDetails,
         consumeItemInstance,
         createNewItem,
-        addItemInstance,
+        createItemInstance,
         deleteItem,
         updateItem,
-        updateItemInstance
+        updateItemInstance,
+        deleteInstances,
+        addItemInstance
     }
 
 }

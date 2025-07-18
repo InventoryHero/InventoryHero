@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date
 from typing import Optional, List, Annotated
 from pydantic import BaseModel, ConfigDict, computed_field, Field
 from uuid import UUID
@@ -10,7 +10,7 @@ from .item_storage import ItemStorageReadSchema
 
 
 class ItemAttributesBaseSchema(BaseModel):
-    expiration_date: Optional[datetime] = None
+    expiration_date: Optional[date] = None
     serial_number: Optional[str] = None
     batch_code: Optional[str] = None
     notes: Optional[str] = None
@@ -22,7 +22,7 @@ class ItemAttributesCreateSchema(ItemAttributesBaseSchema):
 
 
 class ItemAttributesUpdateSchema(BaseModel):
-    expiration_date: Optional[datetime] = None
+    expiration_date: Optional[date] = None
     serial_number: Optional[str] = None
     batch_code: Optional[str] = None
     notes: Optional[str] = None

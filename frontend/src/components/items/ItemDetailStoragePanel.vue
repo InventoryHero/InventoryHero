@@ -13,21 +13,25 @@ type AttributeMap = Record<string, ItemAttributesBaseSchema>
 
 const {
   itemId,
+  itemName,
   storage,
   items,
   attributes,
-  highlight = false
+  highlight = false,
+  loading = false,
 } = defineProps<{
   itemId: string,
+  itemName: string,
   storage: StorageResponseSchema,
   items: StorageMap
   attributes: AttributeMap,
-  highlight?: boolean
+  highlight?: boolean,
+  loading?: boolean,
 }>()
 
 
 const emit = defineEmits<{
-  (e: 'reload'): void
+  (e: 'reload', id: string): void
 }>()
 const color = computed(() => {
   if(highlight){
@@ -47,9 +51,10 @@ const goToStorage = (id: string, type: StorageType) => {
 
   <v-expansion-panel
       :key="storage.id"
+
   >
     <v-expansion-panel-title
-
+      :readonly="loading"
     >
       <v-icon
           :icon="getStorageIcon(storage.storage_type)"
@@ -78,10 +83,14 @@ const goToStorage = (id: string, type: StorageType) => {
         >
           <item-instance-storage-panel
               :item-id="itemId"
+              :item-name="itemName"
+              :storage-name="storage.name"
               :instance="instance"
               :attributes="attributes[instance.product_attribute_id]"
               @consume="instance.quantity--"
-              @reload="emit('reload')"
+              @add="instance.quantity++"
+              @reload="emit('reload', storage.id)"
+              :loading="loading"
           />
         </v-col>
       </v-row>

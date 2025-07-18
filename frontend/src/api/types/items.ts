@@ -74,10 +74,10 @@ export interface ItemStorageReadSchema {
   product_attribute_id: string;
 }
 export interface ItemAttributesUpdateSchema {
-  expiration_date: string | null;
-  serial_number: string | null;
-  batch_code: string | null;
-  notes: string | null;
+  expiration_date?: string | null;
+  serial_number?: string | null;
+  batch_code?: string | null;
+  notes?: string | null;
 }
 export interface ItemBaseSchema {
   name: string;
@@ -141,7 +141,7 @@ export interface ItemInstanceUpdateSchema {
   attributes?: ItemAttributesUpdateSchema | null;
 }
 export interface ItemStorageUpdateSchema {
-  quantity: number | null;
+  quantity?: number | null;
 }
 export interface ItemReadSchema {
   name: string;

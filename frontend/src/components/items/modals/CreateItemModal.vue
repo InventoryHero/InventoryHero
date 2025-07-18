@@ -12,6 +12,7 @@ import {
   ItemSummarySchema
 } from "@/api/types/items.ts";
 import itemAddedEventBus from "@/services/itemAddedEventBus.ts";
+import {toISODateString} from "@/utils/date.ts";
 
 
 const {t} = useI18n()
@@ -55,6 +56,9 @@ const loadingCategories = ref<boolean>(false)
 const parents = ref<StorageResponseSchema[]>([])
 const items = ref<ItemSummarySchema[]>([])
 const expiryDate = ref<Date|null>()
+const serialNumber = ref<string|null>()
+const batch = ref<string|null>()
+const notes = ref<string|null>()
 const selectedCategories = ref<string[]>([])
 const categories = ref<CategoryReadSchema[]>([])
 const description = ref<string|null>()
@@ -87,10 +91,10 @@ const handleCreateNewItem = async () => {
     description: description.value,
     categories: selectedCategories.value,
     attributes: {
-      expiration_date: expiryDate.value,
-      serial_number: null,
-      batch_code: null,
-      notes: null
+      expiration_date: toISODateString(expiryDate.value ?? null),
+      serial_number: serialNumber.value,
+      batch_code: batch.value,
+      notes: notes.value
     } as ItemAttributesBaseSchema,
     storage: {
       storage_id: parent.value!.id,
@@ -116,10 +120,10 @@ const handleCreateNewItem = async () => {
 const handleAddItemInstance = async () => {
   let newItem: ItemInstanceCreate = {
     attributes: {
-      expiration_date: expiryDate.value,
-      serial_number: null,
-      batch_code: null,
-      notes: null
+      expiration_date: toISODateString(expiryDate.value ?? null),
+      serial_number: serialNumber.value,
+      batch_code: batch.value,
+      notes: notes.value
     } as ItemAttributesBaseSchema,
     storage: {
       storage_id: parent.value!.id,
@@ -127,7 +131,7 @@ const handleAddItemInstance = async () => {
     } as ItemStorageBaseSchema
   }
   loading.value = true
-  const {success, data, error} = await itemEndpoint.addItemInstance((item.value as ItemSummarySchema).id, newItem)
+  const {success, data, error} = await itemEndpoint.createItemInstance((item.value as ItemSummarySchema).id, newItem)
   if(!success){
     // TODO NOTIFY
   }
@@ -135,21 +139,23 @@ const handleAddItemInstance = async () => {
   return true
 }
 
-const saveRoom = async () => {
+const saveProduct = async () => {
   //@ts-expect-error
   const { valid } = await form.value.validate()
   if(!valid){
     return false
   }
-  let ret;
+  let ret
+  let id: string|undefined = undefined
   if (typeof item.value === 'object'){
     ret = await handleAddItemInstance()
+    id = item.value!.id
   } else {
     ret = await handleCreateNewItem()
   }
 
-  if(ret && route.path === "/items"){
-    itemAddedEventBus.emit()
+  if(ret && route.path.startsWith("/items")){
+    itemAddedEventBus.emit(id)
   }
 
   form.value.reset()
@@ -157,7 +163,7 @@ const saveRoom = async () => {
 }
 
 const saveAndClose = () => {
-  saveRoom().then((success: boolean) => {
+  saveProduct().then((success: boolean) => {
     if(success){
       forceNavigation.value = true
       emit('close')
@@ -261,46 +267,49 @@ onBeforeMount(() => {
               </template>
             </v-combobox>
           </v-col>
-          <v-col
-              cols="12"
-          >
-            <v-textarea
-                v-bind="textAreaStyle"
-                :label="t('create.item.form.description')"
-                :counter="1024"
-                :rules="descriptionRules"
-                v-model="description"
-                :disabled="itemFieldsDisabled"
-            />
-          </v-col>
-          <v-col
-              cols="12"
-          >
-            <v-select
-                v-bind="selectStyling"
-                v-model="selectedCategories"
-                :label="t('create.item.form.categories')"
-                :items="categories"
-                :loading="loadingCategories"
-                item-title="name"
-                item-value="id"
-                multiple
-                :disabeld="itemFieldsDisabled"
+          <template v-if="!itemFieldsDisabled">
+            <v-col
+                cols="12"
+
             >
-              <template v-slot:selection="{ item, index }">
-                <v-chip
-                    v-if="index < 2"
-                    :text="item.title"
-                    density="comfortable"
-                />
-                <v-chip
-                    v-if="index === 2"
-                    density="comfortable"
-                    :text="t('create.item.form.categories_overflow', categories.length - 2)"
-                />
-              </template>
-            </v-select>
-          </v-col>
+              <v-textarea
+                  v-bind="textAreaStyle"
+                  :label="t('create.item.form.description')"
+                  :counter="1024"
+                  :rules="descriptionRules"
+                  v-model="description"
+                  :disabled="itemFieldsDisabled"
+              />
+            </v-col>
+            <v-col
+                cols="12"
+            >
+              <v-select
+                  v-bind="selectStyling"
+                  v-model="selectedCategories"
+                  :label="t('create.item.form.categories')"
+                  :items="categories"
+                  :loading="loadingCategories"
+                  item-title="name"
+                  item-value="id"
+                  multiple
+                  :disabled="itemFieldsDisabled"
+              >
+                <template v-slot:selection="{ item, index }">
+                  <v-chip
+                      v-if="index < 2"
+                      :text="item.title"
+                      density="comfortable"
+                  />
+                  <v-chip
+                      v-if="index === 2"
+                      density="comfortable"
+                      :text="t('create.item.form.categories_overflow', categories.length - 2)"
+                  />
+                </template>
+              </v-select>
+            </v-col>
+          </template>
           <v-col
             cols="12"
           >
@@ -350,6 +359,7 @@ onBeforeMount(() => {
             <v-text-field
               v-bind="textFieldStyling"
               :label="t('create.item.form.batch')"
+              v-model="batch"
             />
           </v-col>
           <v-col
@@ -358,6 +368,7 @@ onBeforeMount(() => {
             <v-text-field
                 v-bind="textFieldStyling"
                 :label="t('create.item.form.serial_number')"
+                v-model="serialNumber"
             />
           </v-col>
           <v-col
@@ -368,7 +379,7 @@ onBeforeMount(() => {
                 :label="t('create.item.form.notes')"
                 :counter="1024"
                 :rules="notesRules"
-
+                v-model="notes"
             />
           </v-col>
         </v-row>
@@ -380,7 +391,7 @@ onBeforeMount(() => {
       <v-btn
           v-bind="btnStyle"
           :text="t('create.item.form.save')"
-          @click="saveRoom"
+          @click="saveProduct"
           :disabled="loadingParents"
       />
       <v-btn

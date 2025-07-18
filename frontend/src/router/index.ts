@@ -5,7 +5,6 @@ import Login from "@/views/Login.vue"
 import {useAuthStore, useNotificationStore} from "@/store";
 import Settings from "@/views/Settings.vue";
 import Account from "@/views/Account.vue";
-import Create from "@/views/Create.vue";
 import Logout from "@/views/Logout.vue";
 import {i18n} from "@/lang";
 import Confirmation from "@/views/Confirmation.vue";
@@ -17,9 +16,7 @@ import RouteNotFound from "@/views/RouteNotFound.vue";
 
 import passwordReset from "./routes/passwordReset";
 import households from "@/router/routes/household";
-import products from "@/router/routes/products"
 import boxes from "@/router/routes/storage.ts"
-import locations from "@/router/routes/locations.ts";
 import QrScanner from "@/views/QrScanner.vue";
 import Register from "@/views/Register.vue";
 import ForgotPassword from "@/views/ForgotPassword.vue";
@@ -137,16 +134,6 @@ const vueRouter =  createRouter({
       }
     },
     households,
-    {
-      path: "/create",
-      component: Create,
-      meta:{
-        requiresAuth: true,
-        requiresHousehold: true,
-        fillHeight: true,
-        title: i18n.global.t('titles.create')
-      }
-    },
     {
       path: '/logout',
       name: "logout",

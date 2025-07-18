@@ -2,4 +2,4 @@ import {useEventBus} from "@vueuse/core";
 
 
 
-export default useEventBus("item-added")
+export default useEventBus<string|undefined>("item-added")

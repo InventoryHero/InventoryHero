@@ -160,6 +160,7 @@ class ItemRepository:
                 ).asc()
              )
 
+
         order_clauses.append(
             case(
                 (Storage.storage_type == StorageType.BOX, 2),
@@ -168,6 +169,7 @@ class ItemRepository:
             ).asc()
         )
         order_clauses.append(Storage.name.asc())
+
 
         stmt = (
             # Start by selecting the model you want a list of at the end
@@ -215,13 +217,13 @@ class ItemRepository:
         self.session.delete(instance)
         self.session.flush()
 
-        remaining_locations = self.session.exec(remaining_locations_stmt).all()
-        print(remaining_locations)
-        if len(remaining_locations) > 0:
+        remaining_locations = self.session.exec(remaining_locations_stmt).one()
+        if remaining_locations > 0:
             return
         attribute = self.session.exec(select(ItemAttributes).where(ItemAttributes.id == attribute_id)).first()
         if attribute:
             self.session.delete(attribute)
+            self.session.flush()
 
     def create_category(self, category: CategoryCreateSchema) -> Category:
         stmt = (
@@ -286,6 +288,8 @@ class ItemRepository:
         # if no, we need to create a new attribute set, otherwise we can reuse the old one
         # check the item_stock to update
 
+        # TODO DELETE ATTRIBUTES IF NO INSTANCES REFERENCE THEM
+
         instance = self.session.exec(
             select(ItemStorage)
             .join(ItemAttributes)
@@ -334,14 +338,17 @@ class ItemRepository:
                 stmt = stmt.where(column == condition_value)
 
         new_attributes = self.session.exec(stmt).first()
-        print(new_attributes)
-        if new_attributes is None:
 
-            new_attributes = ItemAttributes(**attributes_to_update.model_dump(), item_id=curr_attributes.item_id)
+        attributes_changed = new_attributes is None or new_attributes.id != curr_attributes.id
+
+        if new_attributes is None:
+            attributes_changed = True
+            new_attributes = ItemAttributes(**curr_attributes.model_dump(exclude=["id", "storage"]))
+            for key, value in attributes_to_update.model_dump(exclude_unset=True).items():
+                setattr(new_attributes, key, value)
             self.session.add(new_attributes)
             self.session.flush()
             self.session.refresh(new_attributes)
-
         # now that we have the attributes, we need to check if this attribute set is already stored at this location
         stmt = (
             select(ItemStorage)
@@ -357,18 +364,33 @@ class ItemRepository:
                 storage_id = instance.storage_id,
                 product_attribute_id = new_attributes.id
             )
-            print(new_instance)
             self.session.add(new_instance)
             self.session.flush()
             self.session.refresh(new_instance)
-        print("HALLO")
+
         if 'quantity' not in item_stock.model_fields_set:
             item_stock.quantity = instance.quantity
 
-        new_instance.quantity += item_stock.quantity
+        if new_instance.id == instance.id:
+            new_instance.quantity = item_stock.quantity
+        else:
+            new_instance.quantity += item_stock.quantity
 
-        self.session.delete(instance)
+        if attributes_changed:
+            self.delete_instance(curr_attributes.item_id, instance.id, True)
 
+    def add_instance(self, item_id: UUID, location_id: UUID) -> None:
+        stmt = (
+            select(ItemStorage)
+            .join(ItemAttributes, ItemStorage.product_attribute_id == ItemAttributes.id)
+            .join(Item, Item.id == ItemAttributes.item_id)
+            .where(Item.id == item_id, ItemStorage.id == location_id)
+        )
+        instance = self.session.exec(stmt).first()
 
+        if instance is None:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="product_not_found")
+
+        instance.quantity += 1
 
 

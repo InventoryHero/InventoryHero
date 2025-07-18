@@ -114,6 +114,14 @@ class ItemController(HouseholdContextController):
     def consume_instance(self, item_storage_id: uuid.UUID) -> None:
         self.repositories.items.delete_instance(self.item.id, item_storage_id, False)
 
+    @product_scoped_router.post(
+        "/{item_storage_id}/add",
+        status_code=status.HTTP_204_NO_CONTENT,
+        summary="Adds one instance of a items"
+    )
+    def add_instance(self, item_storage_id: uuid.UUID) -> None:
+        self.repositories.items.add_instance(self.item.id, item_storage_id)
+
     @product_scoped_router.delete(
         "/{item_storage_id}",
         status_code=status.HTTP_204_NO_CONTENT,
@@ -147,13 +155,8 @@ class ItemController(HouseholdContextController):
                         item_storage_id: uuid.UUID,
                         update_data: ItemInstanceUpdateSchema
     ):
-        if 'expiration_date' in update_data.attributes.model_fields_set:
-            print("expiration_date was set")
-
-        print(update_data.stock)
-        print(update_data.attributes)
-
         self.repositories.items.update_instance(item_storage_id, update_data.attributes, update_data.stock)
+
 
 # TODO MOVE INSTANCE TO DIFFERENT LOCATION
 

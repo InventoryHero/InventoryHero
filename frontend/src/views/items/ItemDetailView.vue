@@ -1,20 +1,21 @@
 <script setup lang="ts">
 
-import useAppStyling from "@/composables/useAppStyling.ts";
-import {BreadcrumbSchema, ItemDetailReadSchema} from "@/api/types/items.ts";
+import {ItemDetailReadSchema} from "@/api/types/items.ts";
 import useStorageHelper from "@/composables/useStorageHelper.ts";
 import {computed} from "vue";
+import itemAddedEventBus from "@/services/itemAddedEventBus.ts";
+import useContentRefreshStore from "@/store/useContentRefreshStore.ts";
 
-const {btnStyle} = useAppStyling()
+const contentRefreshStore = useContentRefreshStore()
 const {getStorageIcon, getStoragePath} = useStorageHelper()
 const route = useRoute()
-const router = useRouter()
 const {items: itemEndpoint} = useAxios()
-const {t, d} = useI18n()
+const {t} = useI18n()
 
 
 const item = ref<ItemDetailReadSchema|undefined>()
 const loading = ref<boolean>(true)
+const loadingStoragePanel = ref<string|undefined>(undefined)
 
 
 const {
@@ -42,8 +43,9 @@ const breadcrumbs = computed(() => {
   return item.value.breadcrumbs
 })
 
-const loadItem = async (showLoader: boolean) => {
+const loadItem = async (showLoader: boolean, loadRequestingStorage: string|undefined = undefined) => {
   loading.value = showLoader
+  loadingStoragePanel.value = loadRequestingStorage
   itemEndpoint.getItemDetails(id, fromStorageId.value).then( ({success, data, error}) => {
     if(!success){
       // TODO ERROR
@@ -52,11 +54,23 @@ const loadItem = async (showLoader: boolean) => {
     }
     item.value = data!
     loading.value = false
+    loadingStoragePanel.value = undefined
   })
 }
 
 onBeforeMount(() => {
   loadItem(true)
+})
+
+itemAddedEventBus.on((item_id) => {
+  if (id !== item_id){
+    return
+  }
+  contentRefreshStore.showBanner({
+    title: t('items.item.content_changed_title'),
+    subtitle: t('items.item.content_changed_subtitle'),
+    callback: () => (loadItem(true))
+  })
 })
 
 </script>
@@ -110,16 +124,18 @@ onBeforeMount(() => {
     />
     <v-divider opacity="50" class="mt-4 mb-4"/>
 
-    <v-expansion-panels  class="pb-16">
+    <v-expansion-panels  class="pb-16" >
       <item-detail-storage-panel
           v-for="(storage) in item.storage"
           :key="storage.id"
           :item-id="item.id"
+          :item-name="item.name"
           :items="item.items"
           :attributes="item.attributes"
           :storage="storage"
           :highlight="fromStorageId === storage.id"
-          @reload="loadItem(false)"
+          :loading="loadingStoragePanel === storage.id"
+          @reload="(id) => loadItem(false, id)"
       >
       </item-detail-storage-panel>
     </v-expansion-panels>
