@@ -143,14 +143,13 @@ class ItemController(HouseholdContextController):
         status_code=status.HTTP_204_NO_CONTENT,
         summary="Delete all instances of a items at a location"
     )
-    def delete_instance(self,
+    def update_instance(self,
                         item_storage_id: uuid.UUID,
                         update_data: ItemInstanceUpdateSchema
     ):
         if 'expiration_date' in update_data.attributes.model_fields_set:
             print("expiration_date was set")
-        if 'quantity' in update_data.stock.model_fields_set:
-            print("quantity was set")
+
         print(update_data.stock)
         print(update_data.attributes)
 

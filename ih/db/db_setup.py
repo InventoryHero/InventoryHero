@@ -21,6 +21,7 @@ def get_session():
             yield session
             session.commit()
         except SQLAlchemyError as e:
+            print(e)
             raise HTTPException(status_code=500, detail=str(e))
 
 

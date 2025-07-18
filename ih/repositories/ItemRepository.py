@@ -283,7 +283,7 @@ class ItemRepository:
 
     def update_instance(self, instance_id: UUID, attributes_to_update: ItemAttributesUpdateSchema, item_stock: ItemStorageUpdateSchema) -> None:
         # first check if there are other instances with the same attributes in the household
-        # if yes, we need to create a new attribute set, otherwise we can reuse the old one
+        # if no, we need to create a new attribute set, otherwise we can reuse the old one
         # check the item_stock to update
 
         instance = self.session.exec(
@@ -322,16 +322,53 @@ class ItemRepository:
         for field_name in search_criteria:
             column = getattr(ItemAttributes, field_name)
             value = search_criteria[field_name]
+
             if field_name in attributes_to_update.model_fields_set:
-                stmt = stmt.where(column == value)
+                condition_value = value
             else:
-                stmt = stmt.where(column == original_attributes[field_name])
+                condition_value = original_attributes[field_name]
+
+            if condition_value is None:
+                stmt = stmt.where(column.is_(None))
+            else:
+                stmt = stmt.where(column == condition_value)
 
         new_attributes = self.session.exec(stmt).first()
-        print("newe", new_attributes)
-        print("curr", curr_attributes)
+        print(new_attributes)
+        if new_attributes is None:
 
-        pass
+            new_attributes = ItemAttributes(**attributes_to_update.model_dump(), item_id=curr_attributes.item_id)
+            self.session.add(new_attributes)
+            self.session.flush()
+            self.session.refresh(new_attributes)
+
+        # now that we have the attributes, we need to check if this attribute set is already stored at this location
+        stmt = (
+            select(ItemStorage)
+            .where(
+                ItemStorage.product_attribute_id == new_attributes.id,
+                ItemStorage.storage_id == instance.storage_id
+            )
+        )
+        new_instance = self.session.exec(stmt).first()
+
+        if new_instance is None:
+            new_instance = ItemStorage(
+                storage_id = instance.storage_id,
+                product_attribute_id = new_attributes.id
+            )
+            print(new_instance)
+            self.session.add(new_instance)
+            self.session.flush()
+            self.session.refresh(new_instance)
+        print("HALLO")
+        if 'quantity' not in item_stock.model_fields_set:
+            item_stock.quantity = instance.quantity
+
+        new_instance.quantity += item_stock.quantity
+
+        self.session.delete(instance)
+
 
 
 
