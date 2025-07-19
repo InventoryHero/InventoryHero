@@ -35,6 +35,7 @@ declare module 'vue-router/auto-routes' {
     '/password-reset.[id]': RouteRecordInfo<'/password-reset.[id]', '/password-reset/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     '/qr/scan': RouteRecordInfo<'/qr/scan', '/qr/scan', Record<never, never>, Record<never, never>>,
     '/register': RouteRecordInfo<'/register', '/register', Record<never, never>, Record<never, never>>,
+    '/settings': RouteRecordInfo<'/settings', '/settings', Record<never, never>, Record<never, never>>,
     '/storage/boxes/': RouteRecordInfo<'/storage/boxes/', '/storage/boxes', Record<never, never>, Record<never, never>>,
     '/storage/boxes/box.[id]': RouteRecordInfo<'/storage/boxes/box.[id]', '/storage/boxes/box/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     '/storage/rooms/': RouteRecordInfo<'/storage/rooms/', '/storage/rooms', Record<never, never>, Record<never, never>>,

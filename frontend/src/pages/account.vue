@@ -45,3 +45,13 @@ function fetchAccount(){
 <style scoped>
 
 </style>
+
+<route>
+{
+  "meta": {
+    "requiresAuth": true,
+    "requiresHousehold": false,
+    "title": 'titles.settings',
+  }
+}
+</route>
