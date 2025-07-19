@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {useModal} from "@/composables-new/useModal.ts";
+
 
 const isAwaitingConfirmation = defineModel<boolean>({
   required: true

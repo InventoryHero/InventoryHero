@@ -1,17 +1,16 @@
 <script setup lang="ts">
-
-import Default from "@/layouts/default.vue";
 import {useAuthStore, useConfigStore} from "@/store";
 import {storeToRefs} from "pinia";
-import NotInitialized from "@/layouts/NotInitialized.vue";
 
 const route = useRoute()
 const router = useRouter()
 const configStore = useConfigStore()
 const authStore = useAuthStore()
+const {t} = useI18n();
 
 const {authorized} = storeToRefs(authStore)
-console.log(route.meta)
+const isInitialized = ref(false)
+
 const transition = computed(() => {
   if(configStore.transitions){
     return {
@@ -24,14 +23,10 @@ const transition = computed(() => {
   }
 })
 
-
-
-
-const isInitialized = ref(false)
 async function initializeApp() {
+  configStore.init()
   try {
     await router.isReady();
-    configStore.init()
     await authStore.init()
     await authStore.isAuthorized()
     if(authorized.value)
@@ -47,14 +42,6 @@ async function initializeApp() {
   }
 }
 
-const layoutComponent = computed(() => {
-  if(!isInitialized.value){
-    return NotInitialized
-  }
-
-  const layoutName = route.meta.layout || 'default';
-  return defineAsyncComponent(() => import(`./layouts/${layoutName}.vue`));
-})
 onBeforeMount(() => {
   initializeApp()
 })
@@ -63,28 +50,45 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <v-app v-if="configStore.initialized">
-    <component
-
-        :is="layoutComponent"
-        v-bind="route.meta.layoutProps ?? {}"
-    >
-      <router-view v-slot="{Component, route}">
-        <transition
-            :name="transition.name"
-            :mode="transition.mode"
+  <router-view v-if="isInitialized" />
+  <v-app v-else>
+    <v-main>
+      <v-container
+          fluid
+          class="fill-height"
+      >
+        <v-row
+            justify="center"
         >
-          <div :key="route.meta?.key ?? route.path">
-            <component
-
-                :is="Component"
-            />
-          </div>
-        </transition>
-      </router-view>
-    </component>
+          <v-col
+              cols="12"
+              md="10"
+              lg="8"
+              class="pb-16"
+          >
+            <v-card
+                class="fill-width"
+            >
+              <template v-slot:loader>
+                <v-progress-linear
+                    indeterminate
+                    active
+                    color="primary"
+                />
+              </template>
+              <template v-slot:text>
+                <span
+                    class="d-flex justify-center"
+                >
+                  {{t('app.loading_content')}}
+                </span>
+              </template>
+            </v-card>
+          </v-col>
+        </v-row>
+      </v-container>
+    </v-main>
   </v-app>
-
 </template>
 
 <style scoped lang="scss">

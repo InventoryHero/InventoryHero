@@ -101,6 +101,10 @@
     "useModel": true,
     "useTemplateRef": true,
     "useAxiosOld": true,
-    "useStorageHelper": true
+    "useStorageHelper": true,
+    "ModalName": true,
+    "modals": true,
+    "useGenerateMaterialYouTheme": true,
+    "useGlobalModal": true
   }
 }

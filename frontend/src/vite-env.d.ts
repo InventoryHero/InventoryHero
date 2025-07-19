@@ -31,15 +31,3 @@ declare module 'pinia' {
 
 
 
-declare module 'vue-router' {
-    interface RouteMeta {
-        fillHeight?: boolean,
-        requiresAuth?: boolean,
-        onylUnauthorized?: boolean,
-        requiresHousehold?: boolean,
-        requiresAdmin?: boolean,
-        tokenized?: boolean,
-        key?: string
-    }
-}
-

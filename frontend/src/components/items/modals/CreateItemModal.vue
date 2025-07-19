@@ -2,7 +2,7 @@
 import useAppStyling from "@/composables/useAppStyling.ts";
 import {useTemplateRef} from "vue";
 import {VForm} from "vuetify/components";
-import {useModal} from "@/composables-new/useModal.ts";
+import useGlobalModal from "@/composables/useGlobalModal.ts";
 import {StorageResponseSchema} from "@/api/types/storage.ts";
 import {
   CategoryReadSchema,
@@ -19,8 +19,21 @@ const {t} = useI18n()
 const {textFieldStyling, btnStyle, selectStyling, numberInputStyling, dateInputStyling, textAreaStyle} = useAppStyling()
 const {getStorageIcon} = useStorageHelper()
 const {items: itemEndpoint, storage: storageEndpoint} = useAxios()
-const {forceNavigation} = useModal()
 const route = useRoute()
+const {  xs, sm  } = useDisplay()
+
+const active = defineModel<boolean>()
+const {isDirty, isAwaitingConfirmation, leave, stay, forceClose, close} = useGlobalModal()
+
+const {
+  height,
+  width
+} = defineProps<{
+  height?: string|number|undefined,
+  width?: string|number|undefined,
+}>()
+
+
 const nameRules = ref([
   (v: string|null|ItemSummarySchema) => {
     if (!v) {
@@ -64,15 +77,10 @@ const categories = ref<CategoryReadSchema[]>([])
 const description = ref<string|null>()
 
 
+
 const itemFieldsDisabled = computed(() => {
   return !(typeof item.value == 'string' || !item.value)
 })
-
-
-const emit = defineEmits<{
-  (e: 'close'): void
-}>()
-
 
 const checkIfNewItem = () => {
   if( typeof item.value == 'string' || !item.value){
@@ -165,14 +173,9 @@ const saveProduct = async () => {
 const saveAndClose = () => {
   saveProduct().then((success: boolean) => {
     if(success){
-      forceNavigation.value = true
-      emit('close')
+      forceClose()
     }
   })
-}
-
-const close = () => {
-  emit('close')
 }
 
 
@@ -206,202 +209,231 @@ const loadCategories = async() => {
   loadingCategories.value = false
 }
 
+
+watch([item, parent, quantity, expiryDate, serialNumber, batch, notes, selectedCategories, description], () => {
+  isDirty.value = true
+})
+
+watch(active, () => {
+  if(form.value){
+    form.value.reset()
+  }
+  isDirty.value = false
+})
+
 onBeforeMount(() => {
   loadStorage()
   loadItems()
   loadCategories()
 })
+
+
 </script>
 
 <template>
-  <v-card
-      :loading="loading || loadingParents || loadingCategories"
-      :disabled="loading || loadingParents || loadingCategories"
+  <v-dialog
+      v-model="active"
+      scrollable
+      :height="height"
+      :width="width"
   >
-    <template v-slot:append>
-      <v-icon-btn
-          icon="mdi-close"
-          @click="close"
-      />
-    </template>
-    <template v-slot:title>
-      {{ t('create.item.title') }}
-    </template>
+    <v-card
+        :loading="loading || loadingParents || loadingCategories"
+        :disabled="loading || loadingParents || loadingCategories"
+    >
+      <template v-slot:append>
+        <v-icon-btn
+            icon="mdi-close"
+            @click="close"
+        />
+      </template>
+      <template v-slot:title>
+        {{ t('create.item.title') }}
+      </template>
 
-    <v-card-text>
-      <v-form
-          @submit.prevent=""
-          ref="form"
-      >
-        <v-row>
-          <v-col
-            cols="12"
-          >
-            <v-combobox
-                v-model="item"
-                v-bind="selectStyling"
-                :items="items"
-                :label="t('create.item.form.name')"
-                item-title="name"
-                :hide-no-data="false"
-                hide-selected
-                :loading="loading"
-                :rules="nameRules"
-                @update:model-value="checkIfNewItem"
-            >
-              <template v-slot:no-data>
-                <v-list-item>
-                  <v-list-item-title
-                      v-if="typeof item === 'string' && item.trim() !== ''"
-                  >
-                    {{ t('create.item.form.new_item')}}
-                    <p class="text-primary font-weight-bold d-inline">{{item}}</p>
-                  </v-list-item-title>
-                  <v-list-item-title
-                      v-else
-                  >
-                    {{ t('create.item.form.start_typing') }}
-                  </v-list-item-title>
-
-                </v-list-item>
-              </template>
-            </v-combobox>
-          </v-col>
-          <template v-if="!itemFieldsDisabled">
+      <v-card-text>
+        <v-form
+            @submit.prevent=""
+            ref="form"
+        >
+          <v-row>
             <v-col
                 cols="12"
-
             >
-              <v-textarea
-                  v-bind="textAreaStyle"
-                  :label="t('create.item.form.description')"
-                  :counter="1024"
-                  :rules="descriptionRules"
-                  v-model="description"
-                  :disabled="itemFieldsDisabled"
-              />
+              <v-combobox
+                  v-model="item"
+                  v-bind="selectStyling"
+                  :items="items"
+                  :label="t('create.item.form.name')"
+                  item-title="name"
+                  :hide-no-data="false"
+                  hide-selected
+                  :loading="loading"
+                  :rules="nameRules"
+                  @update:model-value="checkIfNewItem"
+              >
+                <template v-slot:no-data>
+                  <v-list-item>
+                    <v-list-item-title
+                        v-if="typeof item === 'string' && item.trim() !== ''"
+                    >
+                      {{ t('create.item.form.new_item')}}
+                      <p class="text-primary font-weight-bold d-inline">{{item}}</p>
+                    </v-list-item-title>
+                    <v-list-item-title
+                        v-else
+                    >
+                      {{ t('create.item.form.start_typing') }}
+                    </v-list-item-title>
+
+                  </v-list-item>
+                </template>
+              </v-combobox>
             </v-col>
+            <template v-if="!itemFieldsDisabled">
+              <v-col
+                  cols="12"
+
+              >
+                <v-textarea
+                    v-bind="textAreaStyle"
+                    :label="t('create.item.form.description')"
+                    :counter="1024"
+                    :rules="descriptionRules"
+                    v-model="description"
+                    :disabled="itemFieldsDisabled"
+                />
+              </v-col>
+              <v-col
+                  cols="12"
+              >
+                <v-select
+                    v-bind="selectStyling"
+                    v-model="selectedCategories"
+                    :label="t('create.item.form.categories')"
+                    :items="categories"
+                    :loading="loadingCategories"
+                    item-title="name"
+                    item-value="id"
+                    multiple
+                    :disabled="itemFieldsDisabled"
+                >
+                  <template v-slot:selection="{ item, index }">
+                    <v-chip
+                        v-if="index < 2"
+                        :text="item.title"
+                        density="comfortable"
+                    />
+                    <v-chip
+                        v-if="index === 2"
+                        density="comfortable"
+                        :text="t('create.item.form.categories_overflow', categories.length - 2)"
+                    />
+                  </template>
+                </v-select>
+              </v-col>
+            </template>
             <v-col
                 cols="12"
             >
               <v-select
                   v-bind="selectStyling"
-                  v-model="selectedCategories"
-                  :label="t('create.item.form.categories')"
-                  :items="categories"
-                  :loading="loadingCategories"
+                  v-model="parent"
+                  :label="t('create.item.form.parent')"
+                  :items="parents"
+                  :loading="loadingParents"
                   item-title="name"
                   item-value="id"
-                  multiple
-                  :disabled="itemFieldsDisabled"
+                  return-object
+                  :rules="parentRules"
               >
-                <template v-slot:selection="{ item, index }">
-                  <v-chip
-                      v-if="index < 2"
-                      :text="item.title"
-                      density="comfortable"
-                  />
-                  <v-chip
-                      v-if="index === 2"
-                      density="comfortable"
-                      :text="t('create.item.form.categories_overflow', categories.length - 2)"
-                  />
+                <template v-slot:item="{ props: itemProps, item }">
+                  <v-list-item
+                      v-bind="itemProps"
+                      :prepend-icon="getStorageIcon(item.raw.storage_type)"
+                  ></v-list-item>
                 </template>
               </v-select>
             </v-col>
-          </template>
-          <v-col
-            cols="12"
-          >
-            <v-select
-                v-bind="selectStyling"
-                v-model="parent"
-                :label="t('create.item.form.parent')"
-                :items="parents"
-                :loading="loadingParents"
-                item-title="name"
-                item-value="id"
-                return-object
-                :rules="parentRules"
+            <v-col
+                cols="12"
             >
-              <template v-slot:item="{ props: itemProps, item }">
-                <v-list-item
-                    v-bind="itemProps"
-                    :prepend-icon="getStorageIcon(item.raw.storage_type)"
-                ></v-list-item>
-              </template>
-            </v-select>
-          </v-col>
-          <v-col
-            cols="12"
-          >
-            <v-number-input
-              v-bind="numberInputStyling"
-              v-model="quantity"
-              control-variant="split"
-              :min="0"
-              :rules="quantityRules"
-              :precision="0"
-              :label="t('create.item.form.quantity')"
-            />
-          </v-col>
-          <v-col cols="12">
+              <v-number-input
+                  v-bind="numberInputStyling"
+                  v-model="quantity"
+                  control-variant="split"
+                  :min="0"
+                  :rules="quantityRules"
+                  :precision="0"
+                  :label="t('create.item.form.quantity')"
+              />
+            </v-col>
+            <v-col cols="12">
 
-            <v-date-input
-              v-bind="dateInputStyling"
-              v-model="expiryDate"
-              :label="t('create.item.form.expiry_date')"
-            />
-          </v-col>
-          <v-col
-            cols="12"
-          >
-            <v-text-field
-              v-bind="textFieldStyling"
-              :label="t('create.item.form.batch')"
-              v-model="batch"
-            />
-          </v-col>
-          <v-col
-              cols="12"
-          >
-            <v-text-field
-                v-bind="textFieldStyling"
-                :label="t('create.item.form.serial_number')"
-                v-model="serialNumber"
-            />
-          </v-col>
-          <v-col
-              cols="12"
-          >
-            <v-textarea
-                v-bind="textAreaStyle"
-                :label="t('create.item.form.notes')"
-                :counter="1024"
-                :rules="notesRules"
-                v-model="notes"
-            />
-          </v-col>
-        </v-row>
+              <v-date-input
+                  v-bind="dateInputStyling"
+                  v-model="expiryDate"
+                  :label="t('create.item.form.expiry_date')"
+              />
+            </v-col>
+            <v-col
+                cols="12"
+            >
+              <v-text-field
+                  v-bind="textFieldStyling"
+                  :label="t('create.item.form.batch')"
+                  v-model="batch"
+              />
+            </v-col>
+            <v-col
+                cols="12"
+            >
+              <v-text-field
+                  v-bind="textFieldStyling"
+                  :label="t('create.item.form.serial_number')"
+                  v-model="serialNumber"
+              />
+            </v-col>
+            <v-col
+                cols="12"
+            >
+              <v-textarea
+                  v-bind="textAreaStyle"
+                  :label="t('create.item.form.notes')"
+                  :counter="1024"
+                  :rules="notesRules"
+                  v-model="notes"
+              />
+            </v-col>
+          </v-row>
 
-      </v-form>
-    </v-card-text>
+        </v-form>
+      </v-card-text>
 
-    <v-card-actions>
-      <v-btn
-          v-bind="btnStyle"
-          :text="t('create.item.form.save')"
-          @click="saveProduct"
-          :disabled="loadingParents"
-      />
-      <v-btn
-          v-bind="btnStyle"
-          :text="t('create.item.form.save_and_close')"
-          @click="saveAndClose"
-          :disabled="loadingParents"
-      />
-    </v-card-actions>
-  </v-card>
+      <v-card-actions>
+        <v-btn
+            v-bind="btnStyle"
+            :text="t('create.item.form.save')"
+            @click="saveProduct"
+            :disabled="loadingParents"
+        />
+        <v-btn
+            v-bind="btnStyle"
+            :text="t('create.item.form.save_and_close')"
+            @click="saveAndClose"
+            :disabled="loadingParents"
+        />
+      </v-card-actions>
+    </v-card>
+
+  </v-dialog>
+  <confirm-leave-dialog
+      v-model="isAwaitingConfirmation"
+      @cancel="stay"
+      @confirm="leave"
+  />
+
+
 </template>
 
 <style scoped lang="scss">

@@ -1,16 +1,7 @@
 import { defineStore } from 'pinia'
 import {useLocalStorage} from "@vueuse/core";
-import {TinyColor} from "@ctrl/tinycolor";
 import {Theme} from "./types"
 
-import {
-    argbFromHex,
-    hexFromArgb,
-    themeFromSourceColor,
-    TonalPalette,
-} from "@material/material-color-utilities";
-import {useTheme} from "vuetify/framework";
-import useGenerateMaterialYouTheme from "@/composables-new/useGenerateMaterialYouTheme.ts";
 
 
 
@@ -26,7 +17,6 @@ export const useConfigStore = defineStore('config', {
                     dark: true,
                     color: "#2196f3"
                 } as Theme,
-                useDock: true,
                 useTransitions: true,
                 language: "default"
             })
@@ -34,7 +24,6 @@ export const useConfigStore = defineStore('config', {
     },
     actions: {
         themeChange(newTheme: Partial<Theme>){
-
             this.config.theme = {
                 ...this.config.theme,
                 ...newTheme
@@ -43,9 +32,6 @@ export const useConfigStore = defineStore('config', {
             this.vuetify.theme.themes.value.light.colors = newThemes.light.colors
             this.vuetify.theme.themes.value.dark.colors = newThemes.dark.colors
             this.vuetify.theme.global.name.value = this.config.theme.dark ? 'dark' : 'light'
-        },
-        toggleDock(useDock: boolean){
-            this.config.useDock = useDock
         },
         toggleTransitions(useTransitions: boolean){
           this.config.useTransitions = useTransitions
@@ -57,7 +43,6 @@ export const useConfigStore = defineStore('config', {
                 dark: true,
                 color: "#2196f3"
             })
-            this.config.useDock = true;
             this.config.useTransitions = true;
         },
         languageChange(newLanguage: string){
@@ -81,7 +66,6 @@ export const useConfigStore = defineStore('config', {
     getters: {
         theme: state => state.config.theme.dark,
         color: state => state.config.theme.color,
-        dock: state => state.config.useDock,
         language: state => state.config.language,
         primary: state => state.config.theme.color,
         transitions: state => state.config.useTransitions

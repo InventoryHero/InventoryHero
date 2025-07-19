@@ -150,9 +150,10 @@ async function requestConfirmation(){
 {
   "meta": {
     "requiresAuth": false,
-    "onlyUnauthorized": true,
+    "allowAuthorized": true,
     "requiresHousehold": false,
-    "title": 'titles.confirmation'
+    "title": 'titles.confirmation',
+    "layout": "tokenized"
   }
 }
 </route>

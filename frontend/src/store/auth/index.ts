@@ -78,14 +78,7 @@ export const useAuthStore = defineStore('auth', {
                 }
             }
             this.whoami()
-            if(this.returnUrl === null)
-            {
-                await this.$router.push("/");
-                return {
-                    success: true
-                };
-            }
-            await this.$router.push(this.returnUrl)
+
             return {
                 success: true
             }

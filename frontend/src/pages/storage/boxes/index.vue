@@ -79,9 +79,7 @@ onBeforeMount(() => {
     "requiresAuth": true,
     "requiresHousehold": true,
     "title": 'titles.boxes',
-    "layoutProps": {
-      "showFab": true
-    }
+    "showFab": true
   }
 }
 </route>

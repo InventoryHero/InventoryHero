@@ -152,14 +152,10 @@ itemAddedEventBus.on((item_id) => {
 <route>
 {
   "props": true,
-
   "meta": {
     "requiresAuth": true,
     "requiresHousehold": true,
-    "layout": "default",
-    "layoutProps": {
-      "showFab": true
-    }
+    "showFab": true
   }
 }
 </route>

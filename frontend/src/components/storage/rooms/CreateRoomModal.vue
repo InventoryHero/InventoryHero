@@ -2,15 +2,26 @@
 import useAppStyling from "@/composables/useAppStyling.ts";
 import {useTemplateRef} from "vue";
 import {VForm} from "vuetify/components";
-import {useModal} from "@/composables-new/useModal.ts";
+
 import roomAddedEventBus from "@/services/roomAddedEventBus.ts";
+import useGlobalModal from "@/composables/useGlobalModal.ts";
 
 const {t} = useI18n()
 const {textFieldStyling, btnStyle} = useAppStyling()
 const {storage: storageEndpoint} = useAxios()
 const router = useRouter()
 const route = useRoute()
-const {forceNavigation} = useModal()
+const {isDirty, isAwaitingConfirmation, leave, stay, forceClose, close} = useGlobalModal()
+
+const active = defineModel<boolean>()
+
+const {
+  height,
+  width
+} = defineProps<{
+  height?: string|number|undefined,
+  width?: string|number|undefined,
+}>()
 
 const nameRules = ref([
   (v: string|null) => !!v || t('create.room.form.name_required')
@@ -20,9 +31,6 @@ const name = ref<string|null>()
 const form = useTemplateRef("form")
 const loading = ref<boolean>(false)
 
-const emit = defineEmits<{
-  (e: 'close'): void
-}>()
 
 const saveRoom = async () => {
   //@ts-expect-error
@@ -37,8 +45,7 @@ const saveRoom = async () => {
     storage_type: "room"
   })
   if(!success){
-    // TODO RETURN TO ERROR
-    forceNavigation.value = true
+    // TODO
     await router.push("/error")
     return false
   }
@@ -54,60 +61,79 @@ const saveRoom = async () => {
 const saveAndClose = () => {
   saveRoom().then((success: boolean) => {
     if(success){
-      forceNavigation.value = true
-      emit('close')
+      forceClose()
     }
   })
 }
 
-const close = () => {
-  emit('close')
-}
+watch([name], () => {
+  isDirty.value = true
+})
+
+watch(active, () => {
+  if(form.value){
+    form.value.reset()
+  }
+  isDirty.value = false
+})
+
 
 </script>
 
 <template>
-<v-card
-  :loading="loading"
-  :disabled="loading"
->
-  <template v-slot:append>
-    <v-icon-btn
-      icon="mdi-close"
-      @click="close"
-    />
-  </template>
-  <template v-slot:title>
-    {{ t('create.room.title') }}
-  </template>
-
-  <v-card-text>
-    <v-form
-      @submit.prevent=""
-      ref="form"
+  <v-dialog
+      v-model="active"
+      scrollable
+      :height="height"
+      :width="width"
+  >
+    <v-card
+      :loading="loading"
+      :disabled="loading"
     >
-      <v-text-field
-          v-bind="textFieldStyling"
-          v-model="name"
-          :label="t('create.room.form.name')"
-          :rules="nameRules"
-      />
-    </v-form>
-  </v-card-text>
+      <template v-slot:append>
+        <v-icon-btn
+          icon="mdi-close"
+          @click="close"
+        />
+      </template>
+      <template v-slot:title>
+        {{ t('create.room.title') }}
+      </template>
 
-  <v-card-actions>
-    <v-btn
-        v-bind="btnStyle"
-        :text="t('create.room.form.save')"
-        @click="saveRoom"
-    />
-    <v-btn
-      v-bind="btnStyle"
-      :text="t('create.room.form.save_and_close')"
-      @click="saveAndClose"
-    />
-  </v-card-actions>
-</v-card>
+      <v-card-text>
+        <v-form
+          @submit.prevent=""
+          ref="form"
+        >
+          <v-text-field
+              v-bind="textFieldStyling"
+              v-model="name"
+              :label="t('create.room.form.name')"
+              :rules="nameRules"
+          />
+        </v-form>
+      </v-card-text>
+
+      <v-card-actions>
+        <v-btn
+            v-bind="btnStyle"
+            :text="t('create.room.form.save')"
+            @click="saveRoom"
+        />
+        <v-btn
+          v-bind="btnStyle"
+          :text="t('create.room.form.save_and_close')"
+          @click="saveAndClose"
+        />
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
+  <confirm-leave-dialog
+      v-model="isAwaitingConfirmation"
+      @cancel="stay"
+      @confirm="leave"
+  />
 </template>
 
 <style scoped lang="scss">

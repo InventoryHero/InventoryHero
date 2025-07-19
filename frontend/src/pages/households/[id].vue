@@ -15,7 +15,7 @@ const {household: householdEndpoint} = useAxios()
 const {t} = useI18n()
 const router = useRouter()
 
-const {styling} = useAppStyling()
+const {textFieldStyling} = useAppStyling()
 
 const {id=""} = defineProps<{
   id?: string
@@ -178,7 +178,7 @@ onBeforeMount(() => {
         >
           <v-text-field
               ref="name-field"
-              v-bind="styling"
+              v-bind="textFieldStyling"
               v-model="householdName"
               @click:clear="householdName = ''"
               :rules="[rules.nameRequired, rules.nameShorterThan]"

@@ -148,9 +148,9 @@ onBeforeMount(() => {
   "meta": {
     "requiresAuth": true,
     "requiresHousehold": true,
-    "layoutProps": {
-      "showFab": true
-    }
+    "showFab": true,
+    "title": "titles.items"
+
   }
 }
 </route>

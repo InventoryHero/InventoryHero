@@ -35,6 +35,11 @@ export default defineConfig({
       /* options */
     }),
     vue(),
+    Layouts({
+      layoutsDirs: 'src/layouts',
+      pagesDirs: 'src/pages',
+      defaultLayout: 'default',
+    }),
     vuetify(),
     VitePWA({
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],

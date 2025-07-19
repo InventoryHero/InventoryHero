@@ -120,9 +120,8 @@ onBeforeMount(() => {
     "requiresAuth": true,
     "requiresHousehold": true,
     "title": 'titles.rooms',
-    "layoutProps": {
-      "showFab": true
-    }
+    "showFab": true
+
   }
 }
 </route>

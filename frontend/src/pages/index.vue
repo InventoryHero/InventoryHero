@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import {useModal} from "@/composables-new/useModal.ts";
 
-const {openModal} = useModal()
 const test = ref(true)
 </script>
 

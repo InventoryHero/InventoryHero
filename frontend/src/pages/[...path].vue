@@ -53,3 +53,14 @@ const router = useRouter()
 <style scoped lang="scss">
 
 </style>
+
+<route>
+{
+  "meta": {
+    "layout": "tokenized",
+    "requiresAuth": "false",
+    "allowAuthorized": "true",
+    "requiresHousehold": "false",
+  }
+}
+</route>

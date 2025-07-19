@@ -4,42 +4,47 @@ import {routes} from 'vue-router/auto-routes'
 import {useAuthStore, useNotificationStore} from "@/store";
 import useContentRefreshStore from "@/store/useContentRefreshStore.ts";
 import {i18n} from "@/lang";
-import {useModal} from "@/composables-new/useModal.ts";
+//@ts-expect-error cannot be found, but it is there
+import { setupLayouts } from 'virtual:generated-layouts'
+
 const vueRouter = createRouter({
   history: createWebHistory(),
-  routes: routes
+  routes: setupLayouts(routes)
 })
 
 vueRouter.beforeEach(async (to, from) => {
-  if(!to.meta.requiresAuth){
-    return
-  }
+  console.log(to.meta)
+
+  const allowAuthorized = to.meta.allowAuthorized ?? true
+  const requiresAuth = to.meta.requiresAuth ?? true
+  const requiresHousehold = to.meta.requiresHousehold ?? true
 
   const authStore = useAuthStore();
   const notificationStore = useNotificationStore()
   const loggedIn = await authStore.isAuthorized()
-  if(!loggedIn){
-    if(to.path === "/login") {
-      return
-    }
-    if(!(to.meta.requiresAuth ?? true)){
-      return
-    }
+  const household = authStore.household
 
-    if(to.path !== "/logout"){
-      authStore.setReturnUrl(to.fullPath)
-    }
-    return "/login"
-  }
 
-  if(to.meta.onlyUnauthorized ?? false) {
+  if(loggedIn && !allowAuthorized){
     return "/"
   }
 
-  if(to.meta.requiresHousehold && !authStore.household){
-    authStore.setReturnUrl(to.fullPath)
-    return "/households"
+  if(!loggedIn && requiresAuth){
+
+    return {
+      path: "/login",
+      query: {
+        redirect: to.fullPath === "/logout" ? '/' : to.fullPath,
+      }
+    }
   }
+
+  if(!household && requiresHousehold){
+    return {path: "/households", query: {redirect: to.fullPath}}
+  }
+
+  // TODO ADMIN
+  /*
   if(!(to.meta.requiresAdmin ?? false)){
     return
   }
@@ -52,7 +57,7 @@ vueRouter.beforeEach(async (to, from) => {
       type: 'warning'
     })
     return "/"
-  }
+  }*/
 })
 
 vueRouter.beforeEach(async (to, from) => {
@@ -67,21 +72,7 @@ vueRouter.beforeEach(async (to, from) => {
   });*/
 })
 
-vueRouter.beforeResolve(async to => {
-  const {activeModal, closeModal, isAwaitingConfirmation, forceNavigation} = useModal()
-  if(forceNavigation.value){
-    closeModal()
-    return
-  }
 
-  if(isAwaitingConfirmation.value){
-    return false
-  }
-  if(activeModal.value){
-    closeModal(to)
-    return false
-  }
-})
 
 export default vueRouter
 

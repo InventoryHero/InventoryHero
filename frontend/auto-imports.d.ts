@@ -22,6 +22,7 @@ declare global {
   const isReadonly: typeof import('vue')['isReadonly']
   const isRef: typeof import('vue')['isRef']
   const markRaw: typeof import('vue')['markRaw']
+  const modals: typeof import('./src/composables/useGlobalModal')['modals']
   const nextTick: typeof import('vue')['nextTick']
   const onActivated: typeof import('vue')['onActivated']
   const onBeforeMount: typeof import('vue')['onBeforeMount']
@@ -66,6 +67,8 @@ declare global {
   const useEditBtnStyle: typeof import('./src/composables/useEditBtnStyle')['default']
   const useEmailRule: typeof import('./src/composables/useEmailRule')['default']
   const useFieldIsNotTakenValidator: typeof import('./src/composables/useFieldIsNotTakenValidator')['default']
+  const useGenerateMaterialYouTheme: typeof import('./src/composables/useGenerateMaterialYouTheme')['default']
+  const useGlobalModal: typeof import('./src/composables/useGlobalModal')['default']
   const useGoBackOneLevel: typeof import('./src/composables/useGoBackOneLevel')['default']
   const useHint: typeof import('./src/composables/useHint')['default']
   const useI18n: typeof import('vue-i18n')['useI18n']
@@ -100,4 +103,7 @@ declare global {
   // @ts-ignore
   export type { AxiosContext } from './src/composables/useAxiosOld'
   import('./src/composables/useAxiosOld')
+  // @ts-ignore
+  export type { ModalName } from './src/composables/useGlobalModal'
+  import('./src/composables/useGlobalModal')
 }

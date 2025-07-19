@@ -23,7 +23,8 @@
       "@/*": ["./src/*"]
     },
     "types": [
-      "node"
+      "node",
+      "vite-plugin-vue-layouts/client"
     ]
   },
   "include": [
