@@ -3,9 +3,12 @@ import {useAuthStore} from "@/store";
 
 const authStore = useAuthStore()
 const {t} = useI18n()
+const router = useRouter()
 
 onMounted(() => {
-  authStore.logout()
+  authStore.logout().then(() => {
+    router.push("/login")
+  })
 })
 
 </script>

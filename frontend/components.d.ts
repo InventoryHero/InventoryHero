@@ -87,6 +87,8 @@ declare module 'vue' {
     PageSettings: typeof import('./src/components/widgets/QrCode/PageSettings.vue')['default']
     PasswordResetAdminBanner: typeof import('./src/components/widgets/Administration/Users/PasswordResetAdminBanner.vue')['default']
     PasswordResetModal: typeof import('./src/components/common/PasswordResetModal.vue')['default']
+    PasswordTextfield: typeof import('./src/components/settings/PasswordTextfield.vue')['default']
+    PasswordTextField: typeof import('./src/components/settings/PasswordTextField.vue')['default']
     PrintPreview: typeof import('./src/components/widgets/QrCode/PrintPreview.vue')['default']
     PrintQrCodeSettings: typeof import('./src/components/widgets/QrCode/PrintQrCodeSettings.vue')['default']
     PrintQrCodesModal: typeof import('./src/components/widgets/QrCode/PrintQrCodesModal.vue')['default']

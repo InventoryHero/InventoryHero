@@ -273,6 +273,32 @@
       "invite_invalid": "Looks like this invite is not valid",
       "user_already_member_of_household": "You are already a member of this household, just select it form your household selection and you can start inventorying!"
     }
+  },
+  "account": {
+    "username": "Username",
+    "email": "Email",
+    "change_pw": "Change password",
+    "save": "Save",
+    "lastname": "Surname",
+    "firstname": "First name",
+    "rules": {
+      "username_required": "The username field cannot be empty",
+      "email_required": "The email field cannot be empty"
+    },
+    "password": {
+      "password": "Password",
+      "change_password": "Change password",
+      "hide_change_password": "Hide",
+      "current_password": "Current password",
+      "new_password": "New password",
+      "new_password_repeat": "Repeat new password",
+      "forgot_password": "Forgot password?",
+      "rules": {
+        "old_not_empty": "Please enter your current password",
+        "new_not_empty": "Please enter a new password",
+        "repeat_not_empty": "Please repeat your new password",
+        "mismatch": "The new passwords do not match"
+      }
+    }
   }
-
 }

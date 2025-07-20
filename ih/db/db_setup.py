@@ -22,7 +22,9 @@ def get_session():
             session.commit()
         except SQLAlchemyError as e:
             print(e)
+            session.rollback()
             raise HTTPException(status_code=500, detail=str(e))
+
 
 
 SessionDep = Annotated[Session, Depends(get_session)]

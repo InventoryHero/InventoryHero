@@ -1,7 +1,7 @@
 
 import {createRouter, createWebHistory} from "vue-router";
 import {routes} from 'vue-router/auto-routes'
-import {useAuthStore, useNotificationStore} from "@/store";
+import {useAuthStore} from "@/store";
 import useContentRefreshStore from "@/store/useContentRefreshStore.ts";
 import {i18n} from "@/lang";
 //@ts-expect-error cannot be found, but it is there
@@ -20,7 +20,6 @@ vueRouter.beforeEach(async (to, from) => {
   const requiresHousehold = to.meta.requiresHousehold ?? true
 
   const authStore = useAuthStore();
-  const notificationStore = useNotificationStore()
   const loggedIn = await authStore.isAuthorized()
   const household = authStore.household
 

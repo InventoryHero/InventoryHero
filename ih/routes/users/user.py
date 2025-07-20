@@ -5,7 +5,7 @@ from fastapi_utils.cbv import cbv
 from starlette import status
 
 from ih.schema.households import HouseholdSelection, HouseholdWithMemberPublic
-from ih.schema.user.user import UserPublic, AdminUserCreate, UserUpdate
+from ih.schema.user.user import UserPublic, AdminUserCreate, UserUpdate, ChangePasswordForm, ResetPasswordForm
 from ih.routes._base.AdminApiRouter import AdminAPIRouter
 from ih.routes._base.AdminControllerBase import BaseAdminController
 from ih.routes._base.UserApiRouter import UserAPIRouter
@@ -56,6 +56,18 @@ class UserController(UserControllerBase):
     async def get_current_household(self):
         return self.household
 
-    @user_router.post("/self", response_model=UserPublic, status_code=status.HTTP_200_OK)
+    @user_router.put("/self", response_model=UserPublic, status_code=status.HTTP_200_OK)
     async def update_user(self, to_update: UserUpdate):
         return self.repositories.users.update_user(self.user.id, to_update)
+
+    @user_router.post("/change-password", status_code=204)
+    async def change_password(self, reset: ChangePasswordForm):
+        return self.repositories.users.change_password(self.user.id, reset.current_password, reset.new_password, reset.new_password_confirmation)
+
+    @user_router.post("/reset-password", status_code=204)
+    async def reset_password(self, email: ResetPasswordForm):
+        # TODO check if email is enabled
+        # IF NO: sent info to user
+        # IF YES: sent reset instructions to user
+        print(email)
+        pass

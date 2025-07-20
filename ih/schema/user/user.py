@@ -30,3 +30,11 @@ class UserPublic(UserBase):
     confirmed: bool
 
     model_config = ConfigDict(from_attributes=True)
+
+class ChangePasswordForm(BaseModel):
+    current_password: str
+    new_password: str
+    new_password_confirmation: str
+
+class ResetPasswordForm(BaseModel):
+    email: str

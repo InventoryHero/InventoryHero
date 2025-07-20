@@ -6,7 +6,7 @@ from sqlalchemy.orm import selectinload
 from sqlmodel import Session, select
 from starlette import status
 
-from ih.core.security.password import hash_password
+from ih.core.security.password import hash_password, verify_password
 from ih.db.models.households import HouseholdMember
 from ih.schema.households import HouseholdPublic, HouseholdWithMemberPublic, HouseholdMemberPublic
 from ih.schema.user.user import UserPublic, UserCreate, AdminUserCreate, UserUpdate
@@ -100,20 +100,23 @@ class UserRepository:
 
     def update_user(self, user_id: UUID, to_update: UserUpdate) -> UserPublic:
         update_data = to_update.model_dump(exclude_unset=True)
-        user = self.get_user_by_id(user_id)
 
+        user = self.get_user_by_id(user_id)
+        if not update_data:
+            return user
         for field, value in update_data.items():
             setattr(user, field, value)
-        try:
-            self.session.commit()
-            self.session.refresh(user)
-        except IntegrityError as e:
-            self.session.rollback()
-            # Customize error message based on the field — example here is for username
-            if "username" in str(e.orig):
-                raise HTTPException(status_code=409, detail="username_taken")
-            if "email" in str(e.orig):
-                raise HTTPException(status_code=409, detail="email_taken")
-            raise HTTPException(status_code=400, detail="update_failed_invalid_values")
-
+        self.session.flush()
+        self.session.refresh(user)
         return user
+
+    def change_password(self, user_id: UUID, current_password: str, new_password: str, new_password_confirmation: str) -> None:
+        if new_password != new_password_confirmation:
+            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="passwords_dont_match")
+        user = self.get_user_by_id(user_id)
+        if not verify_password(current_password, user.password):
+            raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
+
+        user.password = hash_password(new_password)
+        self.session.flush()
+

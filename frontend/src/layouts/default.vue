@@ -1,15 +1,13 @@
 <script setup lang="ts">
 import {
   useAuthStore,
-  useConfigStore,
-  useNotificationStore
+  useConfigStore
 } from "@/store"
 import {Notifications} from "@kyvg/vue3-notification";
 
 
 const currRoute = useRoute()
 const {t} = useI18n()
-const notificationStore = useNotificationStore()
 const { mdAndUp  } = useDisplay()
 const { activeModal, isDirty, isAwaitingConfirmation, openModal, forceClose } = useGlobalModal()
 const configStore = useConfigStore()
@@ -58,9 +56,6 @@ watch(activeModal, (newVal) => {
   }
 })
 
-onUpdated(async () => {
-  notificationStore.triggerNotifications()
-})
 
 onBeforeRouteLeave(() => {
   if(activeModal.value === null){
