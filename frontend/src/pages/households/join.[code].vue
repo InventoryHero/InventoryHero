@@ -46,6 +46,7 @@ const accept = () => {
 
 
 onBeforeMount(() => {
+  console.log(code)
   householdEndpoint.checkInviteValidity(code).then(({success, data, error}) => {
     if(!success){
       inviteOk.value = false
@@ -113,62 +114,60 @@ onBeforeMount(() => {
 </script>
 
 <template>
-<v-row
-  justify="center"
->
-  <v-col
-    cols="12"
-    lg="6"
+
+  <v-card
+      v-if="inviteOk"
+      :title="t('households.join.title', {owner: inviterName})"
   >
-    <v-card
-        v-if="inviteOk"
-        :title="t('join.title', {owner: inviterName})"
+    <template v-slot:text>
+      <i18n-t keypath="households.join.text">
+        <template #name>
+          <span class="text-primary">{{householdName}}</span>
+        </template>
+        <template #owner>
+          <span class="text-primary">{{inviterName}}</span>
+        </template>
+      </i18n-t>
+    </template>
+    <v-card-actions
+        class="d-flex flex-wrap justify-end"
     >
-      <template v-slot:text>
-        <p v-html="t('join.text', {
-          name: householdName,
-          owner: inviterName
-        })" />
-      </template>
-      <v-card-actions
-        class="justify-space-between"
+      <v-btn
+        variant="tonal"
+        color="red-lighten-2"
+        @click="deny"
       >
-        <v-btn
-          variant="tonal"
-          color="red-lighten-2"
-          @click="deny"
-        >
-          {{ t('join.deny')}}
-        </v-btn>
-        <v-btn
+        {{ t('households.join.deny')}}
+      </v-btn>
+      <v-btn
+        variant="elevated"
+        color="primary"
+        @click="accept"
+        :loading="accepting"
+      >
+        {{ t('households.join.accept')}}
+      </v-btn>
+    </v-card-actions>
+  </v-card>
+
+  <v-card
+      v-else
+      :title="t('households.join.invite_invalid')"
+      :text="t(`households.join.${errorMessage}`)"
+  >
+    <v-card-actions>
+      <v-spacer/>
+      <v-btn
           variant="elevated"
           color="primary"
-          @click="accept"
-          :loading="accepting"
-        >
-          {{ t('join.accept')}}
-        </v-btn>
-      </v-card-actions>
-    </v-card>
+          @click="router.push('/')"
+      >
+        {{ t('home')}}
+      </v-btn>
+    </v-card-actions>
+  </v-card>
 
-    <v-card
-        v-else
-        :title="t('join.invite_invalid')"
-        :text="t(`join.${errorMessage}`)"
-    >
-      <v-card-actions>
-        <v-btn
-            variant="elevated"
-            color="primary"
-            @click="router.push('/')"
-        >
-          {{ t('home')}}
-        </v-btn>
-      </v-card-actions>
-    </v-card>
 
-  </v-col>
-</v-row>
 </template>
 
 <style scoped lang="scss">
@@ -179,6 +178,7 @@ onBeforeMount(() => {
 
 <route>
 {
+  "props": true,
   "meta": {
     "requiresAuth": true,
     "requiresHousehold": false,

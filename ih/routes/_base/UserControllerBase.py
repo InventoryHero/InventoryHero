@@ -29,7 +29,9 @@ class UserControllerBase(ControllerBase):
         )
         result = self.session.exec(query).first()
         if result is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="household_not_found")
+            self.user.household = None
+            #raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="household_not_found")
+            return None
         return HouseholdWithMemberPublic(
             **HouseholdPublic.model_validate(result.household).model_dump(),
             member = HouseholdMemberPublic.model_validate(result)

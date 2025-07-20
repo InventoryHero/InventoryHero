@@ -23,6 +23,8 @@ const {id=""} = defineProps<{
 
 const {user} = storeToRefs(authStore)
 
+
+
 const householdMembers = ref<Array<HouseholdMemberPublic>>([])
 const loadingMembers = ref(false)
 
@@ -33,6 +35,18 @@ const householdId = computed(() => {
 
 const household = ref<HouseholdPublic|undefined>()
 const newHouseholdName = ref<string|undefined>()
+
+const breadcrumbs = ref<Array<{
+  title: string,
+  to?: string
+}>>([
+  {
+    title: t('nav.households'),
+    to: "/households"
+  }
+])
+
+
 const householdName = computed({
   get(){
     if(newHouseholdName.value !== undefined)
@@ -45,6 +59,7 @@ const householdName = computed({
     newHouseholdName.value = value
   }
 })
+
 
 const myself = computed(() => householdMembers.value.find(x => x.user_id === user.value?.id))
 const isOwner = computed(() => ROLE_OWNER === myself.value?.role)
@@ -125,6 +140,9 @@ onBeforeMount(() => {
     }
 
     household.value = data as HouseholdPublic
+    breadcrumbs.value.push({
+      title: household.value?.name
+    })
     householdMembers.value = (data?.members ?? []).sort((a, b) => {
       if (a.user_id === authStore.user?.id) {
         return -1
@@ -148,107 +166,90 @@ onBeforeMount(() => {
 </script>
 
 <template>
-
-
-
-
-  <v-row
-    class="fill-height fill-width"
-    justify="center"
-    no-gutters
-  >
-    <v-col
-        cols="12"
-        lg="8"
+  <template  v-if="errorMessage === undefined ">
+    <v-breadcrumbs
+      :items="breadcrumbs"
+    />
+    <v-card
+        :disabled="loadingMembers || deletingHousehold"
     >
-      <v-card
-          v-if="errorMessage === undefined"
-          class="d-flex flex-column fill-height fill-width"
-          :disabled="loadingMembers || deletingHousehold"
-      >
-        <template v-slot:loader>
-          <v-progress-linear
-            indeterminate
-            :active="loadingMembers || deletingHousehold"
-            color="primary"
-          />
-        </template>
-        <v-card-title
-          class="flex-0-0"
-        >
-          <v-text-field
-              ref="name-field"
-              v-bind="textFieldStyling"
-              v-model="householdName"
-              @click:clear="householdName = ''"
-              :rules="[rules.nameRequired, rules.nameShorterThan]"
-          >
-            <template v-slot:append>
-              <app-icon-btn
-                  :disabled="newHouseholdName === undefined"
-                  icon="mdi-content-save"
-                  @click="updateName"
-              />
-            </template>
-          </v-text-field>
-        </v-card-title>
-        <v-card-text>
-          <household-member-card
-              v-for="item in householdMembers"
-              :is-owner="isOwner"
-              :household-member="item"
-              :household="household!"
-              @kicked="removeFromHousehold(item.id)"
-          />
-        </v-card-text>
-
-        <v-card-actions
-          class="overflow-x-auto"
-        >
-          <v-btn
-              prepend-icon="mdi-arrow-left-bottom"
-              :text="t('households.edit.to_households')"
-              variant="tonal"
-              to="/households"
-          />
-          <v-spacer />
-          <v-btn
-              v-if="isOwner"
-              prepend-icon="mdi-trash-can"
-              :text="t('households.edit.delete_household')"
-              variant="tonal"
-              color="red-accent-1"
-              @click="saveAction"
-          />
-        </v-card-actions>
-      </v-card>
-
-      <template
-          v-else
-      >
-        <v-card
-            :text="t(`households.edit.${errorMessage}.text`)"
-            :title="t(`households.edit.${errorMessage}.title`)"
-        >
-          <v-card-actions
-              class="d-flex justify-end"
-          >
-            <v-btn
-                color="primary"
-                :text="t('households.edit.not_found.back')"
-                variant="tonal"
-                to="/households"
-            />
-
-          </v-card-actions>
-        </v-card>
-        <div class="fill-height"/>
+      <template v-slot:loader>
+        <v-progress-linear
+          indeterminate
+          :active="loadingMembers || deletingHousehold"
+          color="primary"
+        />
       </template>
+      <template v-slot:title>
+        <v-text-field
+            ref="name-field"
+            v-bind="textFieldStyling"
+            v-model="householdName"
+            @click:clear="householdName = ''"
+            :rules="[rules.nameRequired, rules.nameShorterThan]"
+        >
+          <template v-slot:append>
+            <v-icon
+                :disabled="newHouseholdName === undefined"
+                icon="mdi-content-save"
+                @click="updateName"
+            />
+          </template>
+          <template v-slot:append-inner>
+            <v-icon
+              v-if="newHouseholdName !== undefined"
+              icon="mdi-undo"
+              @click="newHouseholdName = undefined"
+            />
+          </template>
+        </v-text-field>
+      </template>
+      <v-card-text>
+        <household-member-card
+            v-for="item in householdMembers"
+            :is-owner="isOwner"
+            :household-member="item"
+            :household="household!"
+            @kicked="removeFromHousehold(item.id)"
+        />
+      </v-card-text>
 
+      <v-card-actions>
+        <v-spacer />
+        <v-btn
+            v-if="isOwner"
+            prepend-icon="mdi-trash-can"
+            :text="t('households.edit.delete_household')"
+            variant="tonal"
+            color="red-accent-1"
+            @click="saveAction"
+        />
+      </v-card-actions>
+    </v-card>
+  </template>
 
-    </v-col>
-  </v-row>
+  <template
+      v-else
+  >
+    <!--TODO-->
+    <v-card
+        :text="t(`households.edit.${errorMessage}.text`)"
+        :title="t(`households.edit.${errorMessage}.title`)"
+    >
+      <v-card-actions
+          class="d-flex justify-end"
+      >
+        <v-btn
+            color="primary"
+            :text="t('households.edit.not_found.back')"
+            variant="tonal"
+            to="/households"
+        />
 
+      </v-card-actions>
+    </v-card>
+    <div class="fill-height"/>
+  </template>
 
 </template>
 

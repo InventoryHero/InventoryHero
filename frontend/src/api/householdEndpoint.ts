@@ -1,21 +1,21 @@
 import {AxiosError, AxiosInstance} from "axios"
 import {
     HouseholdInvitePublic, HouseholdInviteWithMeta,
-    HouseholdMemberPublic, HouseholdMemberUpdateRole,
+    HouseholdMemberUpdateRole,
     HouseholdPublic,
-    HouseholdUpdate,
+    HouseholdUpdate, HouseholdWithMemberPublic,
     HouseholdWithMembersPublic, Role
 } from "@/api/types/households.ts"
 import {ApiResponse} from "@/api/types/ApiResponse.ts"
 
 export default (api: AxiosInstance) => {
-    const getAllHouseholds = async (): Promise<ApiResponse<Array<HouseholdPublic>>> => {
+    const getAllHouseholds = async (): Promise<ApiResponse<Array<HouseholdWithMemberPublic>>> => {
         const response = await api.get("/household/")
         if(response.status === 200){
             return {
                 success: true,
                 data: response.data
-            } as ApiResponse<Array<HouseholdPublic>>
+            } as ApiResponse<Array<HouseholdWithMemberPublic>>
         }
         return {
             success: false

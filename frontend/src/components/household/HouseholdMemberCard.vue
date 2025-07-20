@@ -1,10 +1,5 @@
 <script setup lang="ts">
-
-import {Household, HouseholdMember} from "@/types";
-import useShareMethods from "@/composables/useShareMethods.ts";
 import {useAuthStore} from "@/store";
-import {HouseholdEndpoint} from "@/api/http";
-import useDialogConfig from "@/composables/useDialogConfig.ts";
 import {useNotification} from "@kyvg/vue3-notification";
 import {HouseholdMemberPublic, HouseholdPublic, Role} from "@/api/types/households.ts";
 import {storeToRefs} from "pinia";
@@ -15,13 +10,13 @@ const {household: householdEndpoint} = useAxios()
 const authStore = useAuthStore()
 const router = useRouter()
 const {notify} = useNotification()
+const {t} = useI18n()
+
 
 const emit = defineEmits<{
   (e: 'kicked'): void
 }>()
 
-const {styling} = useAppStyling()
-const {t} = useI18n()
 
 const {
     householdMember,
@@ -35,15 +30,16 @@ const {
 }>()
 
 
-
 const {user} = storeToRefs(authStore)
 const disabled = ref(user.value?.id === householdMember.user_id)
 const username = computed(() => householdMember?.user?.username)
-
-
 const role = computed(() => householdMember?.role)
 
-const householdName = computed(() => household.name)
+const transferHouseholdDialog = ref<boolean>(false)
+const transferringOwnership = ref(false)
+
+const kickingUserDialog = ref<boolean>(false)
+const kickingUser = ref(false)
 
 // TODO INVITES
 /*
@@ -58,40 +54,14 @@ const {
 } = useShareMethods(invite, householdName)
 */
 
-// transfer ownership
-const transferringOwnership = ref(false)
-const transferConfirmed = ref(false)
-const {
-  isVisible: transferOwnershipConfirmDialogVisible,
-  openDialog: openTransferOwnershipConfirmDialog,
-  closeDialog: closeTransferOwnershipConfirmDialog
-} = useDialogConfig()
 
-// remove / kick from household
-const kickingUser = ref(false)
+// TODO FIX KICKED LOGIC
 const kicked = ref(false)
-const kickConfirmed = ref(false)
-const {
-  isVisible: kickConfirmDialogVisible,
-  openDialog: openKickConfirmDialog,
-  closeDialog: closeKickConfirmDialog
-} = useDialogConfig()
-const confirmDialogConfig = computed(() => {
-  return {
-    text: t('households.edit.kick.confirm.text'),
-    title: t('households.edit.kick.confirm.title'),
-    cancelText: t('households.edit.kick.confirm.abort'),
-    confirmText: t('households.edit.kick.confirm.confirm'),
-    confirmIcon: "mdi-account-off",
-  }
-})
 
-function kickFromHousehold(){
-  removeFromHousehold()
-}
-function removeFromHousehold(){
-  if(!kickConfirmed.value){
-    openKickConfirmDialog()
+
+function kickFromHousehold(kickConfirmed: boolean){
+  if(!kickConfirmed){
+    kickingUserDialog.value = true
     return
   }
   kickingUser.value = true
@@ -103,14 +73,14 @@ function removeFromHousehold(){
       emit('kicked')
     }
 
-    closeKickConfirmDialog()
+    kickingUserDialog.value = false
     kickingUser.value = false
 
   })
 }
-function transferHousehold(){
-  if(!transferConfirmed.value){
-    openTransferOwnershipConfirmDialog()
+function transferHousehold(confirmed: boolean = false){
+  if(!confirmed){
+    transferHouseholdDialog.value = true
     return
   }
   transferringOwnership.value = true
@@ -122,9 +92,11 @@ function transferHousehold(){
         type: 'error'
       })
       transferringOwnership.value = false
-      closeTransferOwnershipConfirmDialog()
+      transferHouseholdDialog.value = false
       return
     }
+    transferringOwnership.value = false
+    transferHouseholdDialog.value = false
     router.push("/households").then(() => {
       notify({
         title: t("toasts.titles.success.household_transferred"),
@@ -144,9 +116,69 @@ function updateRole(role: Role){
   })
 }
 
+onBeforeRouteLeave(() => {
+  return !transferHouseholdDialog.value && !kickingUserDialog.value
+})
 
 </script>
 <template>
+
+  <v-dialog
+    :model-value="transferHouseholdDialog || kickingUserDialog"
+    persistent
+    no-click-animation
+  >
+    <v-card
+      v-if="transferHouseholdDialog"
+      :loading="transferringOwnership"
+      :disabled="transferringOwnership"
+    >
+      <template v-slot:title>
+        <i18n-t keypath="households.transfer.title">
+          <template #user>
+            <span class="text-primary">{{username}}</span>
+          </template>
+        </i18n-t>
+      </template>
+      <v-card-text>
+        {{t('households.transfer.text', {user: username})}}
+      </v-card-text>
+      <v-card-actions>
+        <v-btn
+          :text="t('households.transfer.cancel')"
+          @click="transferHouseholdDialog = false"
+        />
+        <v-btn
+          :text="t('households.transfer.confirm')"
+          @click="transferHousehold(true)"
+        />
+      </v-card-actions>
+    </v-card>
+    <v-card
+      v-else-if="kickingUserDialog"
+    >
+      <template v-slot:title>
+        <i18n-t keypath="households.kick.title">
+          <template #user>
+            <span class="text-primary">{{username}}</span>
+          </template>
+        </i18n-t>
+      </template>
+      <v-card-text>
+        {{t('households.kick.text', {user: username})}}
+      </v-card-text>
+      <v-card-actions>
+        <v-btn
+            :text="t('households.kick.cancel')"
+            @click="kickingUserDialog = false"
+        />
+        <v-btn
+            :text="t('households.transfer.confirm')"
+            @click="kickFromHousehold(true)"
+        />
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 
 
   <!--
@@ -203,13 +235,13 @@ function updateRole(role: Role){
           readonly
         >
           <template v-slot:append>
-            <app-icon-btn
+            <v-icon-btn
               icon="mdi-clipboard-outline"
               color="primary"
               @click="copyToClipboard()"
             />
             <template v-if="webShareApiSupported">
-               <app-icon-btn
+               <v-icon-btn
                    icon="mdi-share-variant"
                    @click="navigatorShare"
                />
@@ -218,7 +250,7 @@ function updateRole(role: Role){
               <s-email
                   :share-options="emailShare"
               >
-                <app-icon-btn
+                <v-icon-btn
                     icon="mdi-email"
                     color="primary"
                 />
@@ -226,7 +258,7 @@ function updateRole(role: Role){
               <s-whats-app
                   :share-options="whatsAppShare"
               >
-                <app-icon-btn
+                <v-icon-btn
                     icon="mdi-whatsapp"
                     color="primary"
                 />
@@ -237,25 +269,29 @@ function updateRole(role: Role){
       </span>
       -->
 
-      <template v-if="role !== ROLE_OWNER">
-        <app-icon-btn
+      <template v-if="role !== ROLE_OWNER && !disabled">
+        <v-icon-btn
           v-if="role === ROLE_MEMBER"
+          variant="text"
           icon="mdi-shield"
           @click="updateRole(ROLE_ADMIN)"
         />
-        <app-icon-btn
+        <v-icon-btn
           v-if="role === ROLE_ADMIN"
+          variant="text"
           icon="mdi-shield-off"
           @click="updateRole(ROLE_MEMBER)"
         />
-        <app-icon-btn
+        <v-icon-btn
             v-if="isOwner"
+            variant="text"
             icon="mdi-transit-transfer"
-            @click="transferHousehold"
+            @click="transferHousehold(false)"
         />
-        <app-icon-btn
+        <v-icon-btn
             icon="mdi-account-remove"
-            @click="kickFromHousehold"
+            variant="text"
+            @click="kickFromHousehold(false)"
         />
       </template>
     </template>
@@ -266,5 +302,7 @@ function updateRole(role: Role){
 </template>
 
 <style scoped lang="scss">
-
+:deep(b){
+  color: rgba(var(--v-theme-primary), 1);
+}
 </style>

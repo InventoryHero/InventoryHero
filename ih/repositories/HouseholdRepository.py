@@ -115,8 +115,7 @@ class HouseholdRepository:
         )
         results = self.session.exec(query).all()
         if not results:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                                detail="user_has_no_households")
+            return []
 
         return [
             HouseholdWithMemberPublic(

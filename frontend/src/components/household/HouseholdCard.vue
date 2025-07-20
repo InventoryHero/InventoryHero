@@ -52,17 +52,8 @@ const isOwner = computed(() => household.member.role == ROLE_OWNER)
 const requestInProgress = ref(false)
 const leaveConfirmed = ref(false)
 
-const {
-  isVisible: inviteDialogVisible,
-  openDialog: openInviteDialog,
-  closeDialog: closeInviteDialog,
-} = useDialogConfig()
-
-const {
-  isVisible: confirmLeaveDialogVisible,
-  openDialog: openConfirmLeaveDialog,
-  closeDialog: closeConfirmLeaveDialog,
-} = useDialogConfig()
+const inviteDialogVisible = ref<boolean>(false)
+const leaveConfirmationDialog = ref<boolean>(false)
 
 async function setAsHousehold(){
   const redirectPath = route.query.redirect as string || undefined;
@@ -83,15 +74,10 @@ async function setAsHousehold(){
   // TODO ERROR
 }
 
-function reallyLeave(){
-  leaveConfirmed.value = true
-  closeConfirmLeaveDialog()
-  leaveHousehold()
-}
 
-function leaveHousehold(){
-  if(!leaveConfirmed.value){
-    openConfirmLeaveDialog()
+function leaveHousehold(confirmed: boolean){
+  if(!confirmed){
+    leaveConfirmationDialog.value = true
     return
   }
 
@@ -102,33 +88,64 @@ function leaveHousehold(){
   }
 
   householdEndpoint.leaveHousehold(household.id).then((success) => {
-    if(success) {
-      notify({
-        title: t('toasts.titles.success.household_left'),
-        text: t('toasts.text.success.household_left'),
-        type: 'success'
-      })
-      emit('left', household.id)
+    if(!success) {
+      // TODO ERROR
     }
+    notify({
+      title: t('toasts.titles.success.household_left'),
+      text: t('toasts.text.success.household_left'),
+      type: 'success'
+    })
+    leaveConfirmed.value = false
+    emit('left', household.id)
     requestInProgress.value = false
   })
 }
 
+onBeforeRouteLeave(() => {
+  return !inviteDialogVisible.value && !leaveConfirmationDialog.value
+})
+
 </script>
 
 <template>
-
-
-
   <v-dialog
-      v-model="inviteDialogVisible"
+      :model-value="inviteDialogVisible || leaveConfirmationDialog"
       persistent
       no-click-animation
   >
     <household-invite
+        v-if="inviteDialogVisible"
         :household="household"
-        @close="closeInviteDialog"
+        @close="inviteDialogVisible = false"
     />
+
+    <v-card
+      v-else-if="leaveConfirmationDialog"
+      :title="t('households.leave.title')"
+      :text="t('households.leave.text')"
+      :loading="requestInProgress"
+      :disabled="requestInProgress"
+    >
+      <template v-slot:title>
+        <i18n-t keypath="households.leave.title">
+          <template #name>
+            <span class="text-primary">{{household.name}}</span>
+          </template>
+        </i18n-t>
+      </template>
+      <v-card-actions>
+        <v-btn
+            :text="t('households.leave.cancel')"
+            @click="leaveConfirmationDialog = false"
+        />
+        <v-btn
+          :text="t('households.leave.confirm')"
+          @click="leaveHousehold"
+        />
+      </v-card-actions>
+
+    </v-card>
   </v-dialog>
 
   <v-card
@@ -156,25 +173,37 @@ function leaveHousehold(){
       <v-sheet
           class="flex-0-0"
       >
-        <app-icon-btn
+        <v-icon-btn
             v-if="isOwner || isAdmin"
+            variant="text"
+            size="medium"
+            density="comfortable"
+            class="me-2"
             icon="mdi-store-edit"
-            class="me-1"
-            :to="`/households/${household.id}`"
+            @click="router.push(`/households/${household.id}`)"
         />
-        <app-icon-btn
+        <v-icon-btn
             v-if="isOwner || isAdmin"
+            variant="text"
+            size="medium"
+            density="comfortable"
+            class="me-2"
             icon="mdi-account-plus"
-            class="me-1"
-            @click.stop="openInviteDialog"
+            @click.stop="inviteDialogVisible = true"
         />
-        <app-icon-btn
+        <v-icon-btn
             v-if="!isOwner"
+            variant="text"
+            size="medium"
+            density="comfortable"
+            class="me-2"
             icon="mdi-location-exit"
-            class="me-1"
-            @click.stop="leaveHousehold"
+            @click.stop="leaveHousehold(false)"
         />
-        <app-icon-btn
+        <v-icon-btn
+            variant="text"
+            size="medium"
+            density="comfortable"
             :icon="selectedIcon"
             :color="colorIfDefault"
             @click="setAsHousehold"

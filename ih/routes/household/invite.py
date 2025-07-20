@@ -49,6 +49,7 @@ class AcceptInviteController(UserControllerBase):
 
     @accept_invite_router.get("/validate/{code}", response_model=HouseholdInviteWithMeta, status_code=status.HTTP_202_ACCEPTED)
     def validate_invite(self, code: str):
+        print(code)
         invitation = self._validate_invite(code)
         self.logger.warn(HouseholdInviteWithMeta.model_validate(invitation))
         return HouseholdInviteWithMeta.model_validate(invitation)

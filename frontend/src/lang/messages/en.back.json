@@ -188,12 +188,7 @@
       "resend": "Resend Activation email"
     }
   },
-  "join": {
-    "title": "{owner} wants you to join their household!",
-    "text": "If you want to join the their household <b>{name}</b> and start inventorying with <b>{owner}</b> accept below.",
-    "accept": "Accept invite",
-    "deny": "Inventory' alone!"
-  },
+
   "invite": {
     "generating_code": "Generating your invite link...",
     "title": "Invite your friend",

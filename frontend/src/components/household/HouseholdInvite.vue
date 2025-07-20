@@ -1,7 +1,4 @@
 <script setup lang="ts">
-
-import {Household} from "@/types";
-import {useAuthStore} from "@/store";
 import useShareMethods from "@/composables/useShareMethods.ts";
 import {HouseholdWithMemberPublic} from "@/api/types/households.ts";
 
@@ -15,7 +12,7 @@ const emit = defineEmits<{
   (e: 'close'): void
 }>()
 
-const {styling} = useAppStyling()
+const {textFieldStyling} = useAppStyling()
 
 const loadingInviteCode = ref(false)
 const inviteCode = ref<string>("")
@@ -23,9 +20,9 @@ const inviteCode = ref<string>("")
 
 const inviteLink = computed(() => {
   if(loadingInviteCode.value){
-    return t('invite.generating_code')
+    return t('households.invite.generating_code')
   }
-  return `${window.location.origin}/join/${inviteCode.value}`
+  return `${window.location.origin}/households/join/${inviteCode.value}`
 })
 
 function generateInviteCode(){
@@ -81,7 +78,7 @@ onMounted(() => {
         <p
             class="d-flex justify-center"
         >
-          {{ $t('toasts.titles.success.copied_to_clipboard')}}
+          {{ t('toasts.titles.success.copied_to_clipboard')}}
         </p>
       </v-snackbar>
 
@@ -100,20 +97,20 @@ onMounted(() => {
         <v-card-title
             class="d-flex justify-space-between align-center"
         >
-          {{ $t('invite.title') }}
+          {{ t('households.invite.title') }}
           <app-icon-btn
               icon="mdi-close"
               @click="emit('close')"
           />
         </v-card-title>
         <v-card-subtitle>
-          {{ $t('invite.copy_to_clipboard')}}
+          {{ t('households.invite.copy_to_clipboard')}}
         </v-card-subtitle>
 
         <v-card-text>
 
           <v-text-field
-            v-bind="styling"
+            v-bind="textFieldStyling"
             :clearable="false"
             :loading="loadingInviteCode"
             readonly
@@ -132,7 +129,7 @@ onMounted(() => {
         <v-card-subtitle
           class="d-flex justify-end"
         >
-          {{ $t('invite.or')}}
+          {{ t('households.invite.or')}}
         </v-card-subtitle>
         <v-card-actions
           class="justify-end"

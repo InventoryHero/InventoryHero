@@ -182,12 +182,12 @@
       "save": "Save household"
     },
     "leave": {
-      "confirm": {
-        "title": "Leave Household <strong class='text-primary'>{name}</strong>",
-        "text": "Leaving this household can not be undone. To rejoin the household you'll need to ask the owner for a new invite.",
-        "stay": "Stay",
-        "leave": "Leave"
-      }
+
+      "title": "Leave Household {name}",
+      "text": "Leaving this household can not be undone. To rejoin the household you'll need to ask the owner for a new invite.",
+      "cancel": "Stay",
+      "confirm": "Leave"
+
     },
     "edit": {
       "delete_household": "Delete Household",
@@ -233,11 +233,46 @@
           "abort": "Cancel",
           "confirm": "Delete invite"
         }
+      },
+      "no_member_of_household": {
+        "title": "Who are you?",
+        "text": "You are not a member of this household. Request an invite from the owner to inventory in this household."
       }
+    },
+    "transfer": {
+      "title": "Transfer household to {user}?",
+      "cancel": "No",
+      "confirm": "Yes",
+      "text": "You cannot undo this and will only have member rights until {user} grants you more rights again"
+    },
+    "kick": {
+      "title": "Kick {user} from household?",
+      "cancel": "No",
+      "confirm": "Yes",
+      "text": "You cannot undo this and you will need to generate a new invite if {user} should join again"
     },
     "rules": {
       "name_required": "A name needs to be set!",
       "name_shorter_than": "The name must be shorter than 26 characters"
+    },
+    "invite": {
+      "generating_code": "Generating your invite link...",
+      "title": "Invite your friend",
+      "text": "Hey! \uD83C\uDF89\n\nLet’s get organized together! \uD83D\uDCE6 \n\nI’ve been using InventoryHero to manage my stuff, and I think you’ll love it too! Check it out and join me here: \n\n{inviteLink}",
+      "copy_to_clipboard": "Copy the invite link into your clipboard...",
+      "or": "...or share it directly",
+      "email": {
+        "subject": "Join my household {household}"
+      }
+    },
+    "join": {
+      "title": "{owner} wants you to join their household!",
+      "text": "If you want to join the their household {name} and start inventorying with {owner} accept below.",
+      "accept": "Accept invite",
+      "deny": "Inventory' alone!",
+      "invite_invalid": "Looks like this invite is not valid",
+      "user_already_member_of_household": "You are already a member of this household, just select it form your household selection and you can start inventorying!"
     }
   }
+
 }
