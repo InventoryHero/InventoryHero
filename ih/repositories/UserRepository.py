@@ -1,3 +1,5 @@
+import hashlib
+import secrets
 from typing import Sequence, Optional
 from uuid import UUID
 from fastapi import HTTPException
@@ -9,7 +11,7 @@ from starlette import status
 from ih.core.security.password import hash_password, verify_password
 from ih.db.models.households import HouseholdMember
 from ih.schema.households import HouseholdPublic, HouseholdWithMemberPublic, HouseholdMemberPublic
-from ih.schema.user.user import UserPublic, UserCreate, AdminUserCreate, UserUpdate
+from ih.schema.user.user import UserPublic, UserCreate, AdminUserCreate, UserUpdate, UserCreateBase
 from ih.db.models.User import User
 
 
@@ -41,7 +43,15 @@ class UserRepository:
 
         return user
 
-    def create(self, user: UserCreate | AdminUserCreate) -> User | None:
+    def create_user_admin(self, user: AdminUserCreate):
+        return self.create(user, False, user.admin)
+
+    def register(self, user: UserCreate, need_confirmation: bool = False):
+        if user.password != user.password_confirmation:
+            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="passwords_dont_match")
+        self.create(user, need_confirmation, False)
+
+    def create(self, user: UserCreateBase, confirmation_needed: bool = False, is_admin: bool = False) -> User | None:
         query = select(User).where(
             (User.email == user.email) | (User.username == user.username)
         )
@@ -53,18 +63,29 @@ class UserRepository:
                 status_code=status.HTTP_409_CONFLICT,
                 detail=reason
             )
-        admin = getattr(user, "admin", False)
+
+        confirmation_code = None
+        confirmation_hash = None
+        if confirmation_needed:
+            confirmation_code = secrets.token_urlsafe(32)
+            confirmation_hash = hashlib.sha256(confirmation_code.encode()).hexdigest()
+
+        # TODO SEND EMAIL
+        print(confirmation_code)
+
         new_user = User(
             email=user.email,
             username=user.username,
             first_name=user.first_name,
             last_name=user.last_name,
             password=hash_password(user.password),
-            admin=admin,
+            admin=is_admin,
+            confirmed=not confirmation_needed,
+            confirmation_code=confirmation_hash
         )
 
         self.session.add(new_user)
-        self.session.commit()
+        self.session.flush()
         self.session.refresh(new_user)
         return new_user
 
@@ -100,7 +121,6 @@ class UserRepository:
 
     def update_user(self, user_id: UUID, to_update: UserUpdate) -> UserPublic:
         update_data = to_update.model_dump(exclude_unset=True)
-
         user = self.get_user_by_id(user_id)
         if not update_data:
             return user
@@ -120,3 +140,16 @@ class UserRepository:
         user.password = hash_password(new_password)
         self.session.flush()
 
+    def confirm_email(self, code: str) -> None:
+        confirmation_hash = hashlib.sha256(code.encode()).hexdigest()
+        user = self.session.exec(
+            select(User)
+                .where(User.confirmation_code == confirmation_hash)
+        ).first()
+
+        if user is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user_not_found")
+
+        user.confirmed = True
+        user.confirmation_code = None
+        self.session.flush()

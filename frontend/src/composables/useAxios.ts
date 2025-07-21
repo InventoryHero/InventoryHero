@@ -4,6 +4,7 @@ import userEndpoint from "@/api/userEndpoint.ts";
 import householdEndpoint from "@/api/householdEndpoint.ts";
 import itemsEndpoint from "@/api/itemsEndpoint.ts";
 import storageEndpoint from "@/api/storageEndpoint.ts";
+import configEndpoint from "@/api/configEndpoint.ts";
 
 interface CustomAxiosRequestConfig extends AxiosRequestConfig {
     _retry?: boolean;
@@ -41,10 +42,10 @@ export default (baseURL = "/api")=> {
 
             switch(error.response?.status){
                 case 401:
-                    console.log("WE FUCKED UP")
+                    console.log("Apparently there is no token at all")
                     return error;
             }
-            return Promise.reject(error);
+            return error.response ?? error;
         })
         instance.interceptors.request.use((config) => {
             return config;
@@ -56,6 +57,7 @@ export default (baseURL = "/api")=> {
     const household = householdEndpoint(instance)
     const items = itemsEndpoint(instance)
     const storage = storageEndpoint(instance)
+    const config = configEndpoint(instance)
 
     return {
         api: instance,
@@ -63,7 +65,8 @@ export default (baseURL = "/api")=> {
         userEndpoint: user,
         household,
         items,
-        storage
+        storage,
+        config
     }
 
 }

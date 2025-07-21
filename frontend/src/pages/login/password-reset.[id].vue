@@ -6,7 +6,7 @@ import {useI18n} from "vue-i18n";
 import {useRouter} from "vue-router";
 import {useNotification} from "@kyvg/vue3-notification";
 import {VForm} from "vuetify/components";
-
+// TODO WHEN IMPLEMENTING PASSWORD RESET
 const {axios: userEndpoint} = useAxiosOld<UserEndpoint>("user")
 const {t: $t} = useI18n()
 const router = useRouter()

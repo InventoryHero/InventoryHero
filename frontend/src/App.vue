@@ -7,28 +7,24 @@ const router = useRouter()
 const configStore = useConfigStore()
 const authStore = useAuthStore()
 const {t} = useI18n();
+const {config} = useAxios()
 
 const {authorized} = storeToRefs(authStore)
 const isInitialized = ref(false)
 
-const transition = computed(() => {
-  if(configStore.transitions){
-    return {
-      name: "scale",
-      mode: "out-in"
-    }
-  }
-  return {
-    name: "", mode: ""
-  }
-})
 
 async function initializeApp() {
   configStore.init()
   try {
+    const {success, data, error} = await config.getConfig()
+
+    if(!success){
+      // TODO this is sadly unrecoverable
+    }
+    configStore.smtpEnabled = data?.smtp_enabled ?? false
+    configStore.registrationAllowed = data?.registration_allowed ?? false
     await router.isReady();
     await authStore.init()
-    await authStore.isAuthorized()
     if(authorized.value)
     {
       // TODO CONNECT TO SOCKETS

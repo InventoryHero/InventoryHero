@@ -48,39 +48,13 @@
     }
   },
 
-
-
-  "account": {
-    "profile_card": {
-      "title": "You 😊",
-      "username": "Username",
-      "email": "Email",
-      "change_pw": "Change password",
-      "save_changes": "Save",
-      "lastname": "Surname",
-      "firstname": "First name"
-    }
-  },
   "rules": {
     "valid_email": "Please enter a valid email address.",
     "username_fmt_rule": "Username must be 3-25 characters long and can only include letters, numbers, dots, hyphens, and underscores.",
     "min_password_length": "The password needs to have at least 8 characters"
   },
 
-  "login": {
-    "title": "\uD83D\uDE80 Welcome to InventoryHero",
-    "subtitle": "Power up your Inventory Management",
-    "forgot_password_btn": "Forgot password?",
-    "btn": "Login",
-    "username": "Username",
-    "password": "Password",
-    "register": "Sign up now",
-    "email_not_confirmed": "Your email address is not confirmed. Please check your inbox or click this message to request a new confirmation email",
-    "rules": {
-      "username_needed": "An username needs to be supplied",
-      "password_needed": "A password needs to be supplied"
-    }
-  },
+
   "register": {
     "title": "\uD83C\uDF89 Join InventoryHero now",
     "subtitle": "\uD83D\uDE80 Start managing your inventory effortlessly",

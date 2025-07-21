@@ -1,17 +1,24 @@
 from typing import Optional
 
-from fastapi import HTTPException
+from fastapi import HTTPException, APIRouter
 from fastapi_utils.cbv import cbv
 from starlette import status
 
+from ih.routes._base.ControllerBase import ControllerBase
 from ih.schema.households import HouseholdSelection, HouseholdWithMemberPublic
-from ih.schema.user.user import UserPublic, AdminUserCreate, UserUpdate, ChangePasswordForm, ResetPasswordForm
+from ih.schema.user.user import UserPublic, AdminUserCreate, UserUpdate, ChangePasswordForm, ResetPasswordForm, \
+    UserCreate
 from ih.routes._base.AdminApiRouter import AdminAPIRouter
 from ih.routes._base.AdminControllerBase import BaseAdminController
 from ih.routes._base.UserApiRouter import UserAPIRouter
 from ih.routes._base.UserControllerBase import UserControllerBase
 
 user_router = UserAPIRouter(
+    prefix="/user",
+    tags=["user"],
+)
+
+public_user_router = APIRouter(
     prefix="/user",
     tags=["user"],
 )
@@ -63,11 +70,3 @@ class UserController(UserControllerBase):
     @user_router.post("/change-password", status_code=204)
     async def change_password(self, reset: ChangePasswordForm):
         return self.repositories.users.change_password(self.user.id, reset.current_password, reset.new_password, reset.new_password_confirmation)
-
-    @user_router.post("/reset-password", status_code=204)
-    async def reset_password(self, email: ResetPasswordForm):
-        # TODO check if email is enabled
-        # IF NO: sent info to user
-        # IF YES: sent reset instructions to user
-        print(email)
-        pass

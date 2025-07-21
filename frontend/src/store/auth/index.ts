@@ -39,31 +39,6 @@ export const useAuthStore = defineStore('auth', {
             householdSocket.updateHeaders()*/
 
         },
-        async login(username: string, password: string)
-        {
-            // reset auth store, to prevent any poisoning
-            await this.reset()
-            const { auth, userEndpoint} = useAxios()
-            const loginFormData = new FormData()
-            loginFormData.append("username", username)
-            loginFormData.append("password", password)
-            const loginSuccessful = await auth.login(loginFormData)
-            if(!loginSuccessful){
-                // TODO
-                return {
-                    success: false,
-                    message: ""
-                }
-            }
-            const {success, data: user} = await userEndpoint.self()
-            if(!success){
-                // TODO
-            }
-            this.user = user
-            return {
-                success: true
-            }
-        },
         async logout()
         {
             const {auth} = useAxios()
@@ -77,15 +52,6 @@ export const useAuthStore = defineStore('auth', {
             const generalSocketStore = useGeneralSocketStore()
             generalSocketStore.leave()
             await this.reset()
-        },
-        async register(username: string, password: string, email: string)
-        {
-            const data: IRegisterRequest = {
-                username: username,
-                password: password,
-                email: email
-            }
-            // TODO REGISTER
         },
         async isAuthorized(){
             const {userEndpoint} = useAxios()

@@ -25,6 +25,7 @@ export interface UserCreate {
   first_name?: string | null;
   last_name?: string | null;
   password: string;
+  password_confirmation: string;
 }
 export interface UserPublic {
   username: string;
@@ -43,6 +44,13 @@ export interface ChangePasswordForm {
 }
 export interface ResetPasswordForm {
   email: string;
+}
+export interface UserCreateBase {
+  username: string;
+  email: string;
+  first_name?: string | null;
+  last_name?: string | null;
+  password: string;
 }
 export interface UserUpdate {
   username?: string | null;

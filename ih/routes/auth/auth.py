@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, Form, Response, Request
 from pydantic import BaseModel
+from sqlalchemy import or_
 from sqlmodel import Session, select
 from starlette import status
 from ih.core.security.password import verify_password, create_access_token, create_refresh_token
@@ -12,6 +13,8 @@ from ih.db.models.User import User
 from ih.routes._base.UserApiRouter import UserAPIRouter
 
 import jwt
+
+from ih.schema.user.user import ResetPasswordForm, UserCreate
 
 public_router = APIRouter(tags=["authentication"])
 user_router = UserAPIRouter(tags=["authentication"])
@@ -57,6 +60,10 @@ async def get_token(
             detail="username_or_password_incorrect",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+    if not user.confirmed:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="email_not_confirmed")
+
     token_payload = {
             "sub": str(user.id)
         }
@@ -151,3 +158,4 @@ def logout(response: Response, request: Request, session: Session = Depends(get_
         response.delete_cookie("refresh_token", path="/api/auth")
         response.delete_cookie("access_token", path="/")
         return {"detail": "Logged out"}
+

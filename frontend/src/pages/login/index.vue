@@ -1,24 +1,34 @@
 <script setup lang="ts">
 
-import {useAuthStore} from "@/store";
-import useAxiosOld from "@/composables/useAxiosOld.ts";
-import {GeneralEndpoint} from "@/api/http";
+import {useAuthStore, useConfigStore} from "@/store";
 import {useTemplateRef} from "vue";
 import {VForm} from "vuetify/components";
+import {storeToRefs} from "pinia";
 
 const {t} = useI18n()
-const {styling} = useAppStyling()
+const {textFieldStyling, btnStyle} = useAppStyling()
 const route = useRoute();
 const router = useRouter();
+const configStore = useConfigStore()
+const {auth, userEndpoint} = useAxios()
 
+const {smtpEnabled, registrationAllowed} = storeToRefs(configStore)
+smtpEnabled.value = true
 
+const forgotPasswordDialog = ref<boolean>(false)
 const username = ref<string>("")
 const password = ref<string>("")
+const confirmationMissingAlert = ref<boolean>(false)
 
-const rules = {
-  usernameNeeded: (value: string) => value !== '' || t('login.rules.username_needed'),
-  passwordNeeded: (value: string) => value !== '' || t('login.rules.password_needed')
-}
+
+
+const usernameRules = ref([
+  (value: string) => value !== '' || t('login.rules.username_needed')
+])
+
+const passwordRules = ref([
+  (value: string) => value !== '' || t('login.rules.password_needed')
+])
 
 
 const loginForm = useTemplateRef<VForm>("login-form")
@@ -35,161 +45,185 @@ async function login(){
     return
   }
   loading.value = true;
-  authStore.login(username.value, password.value).then(({success, message}) => {
-    const redirectPath = route.query.redirect as string || '/';
-    if(message === "email_not_confirmed"){
-      router.replace("/confirmation-missing")
-    }
-    if(success){
-      router.replace(redirectPath)
-    }
-    if(loginForm.value && success){
-      loginForm.value.reset()
+  const loginFormData = new FormData()
+  loginFormData.append("username", username.value)
+  loginFormData.append("password", password.value)
+  const {success, error} = await auth.login(loginFormData)
+  if(!success){
+    if(error === "email_not_confirmed") {
+      confirmationMissingAlert.value = true
     }
 
-
-    loading.value = false;
-
-  })
+    loading.value = false
+    return
+  }
+  await authStore.whoami()
+  const redirectPath = route.query.redirect as string || '/';
+  router.replace(redirectPath)
+  loginForm.value.reset()
+  loading.value = false;
 }
 
+const requestNewConfirmationCode = async () => {
+  confirmationMissingAlert.value = false
+  const {success, error} = await userEndpoint.requestEmailConfirmation()
+  if(!success){
+    // TODO
+  } else {
+    // TODO NOTIFY SUCCESS
+  }
+}
 
-
-const smtpEnabled = ref(false)
-const {axios: generalEndpoint} = useAxiosOld<GeneralEndpoint>("general")
-onMounted(() => {
-  generalEndpoint.checkSmtp().then((enabled: boolean) => {
-    smtpEnabled.value = enabled
-  })
+onBeforeRouteLeave(() => {
+  return !forgotPasswordDialog.value
 })
 </script>
 
 <template>
-  <v-row
-      justify="center"
-      class="fill-height"
+
+  <forgot-password
+      v-model="forgotPasswordDialog"
+  />
+
+
+
+  <v-card
+      elevation="5"
+      class="d-flex flex-column"
   >
-    <v-col
-        cols="12"
-        lg="4"
-        class="mt-12"
-    >
-      <v-card
-          elevation="5"
-          class="d-flex flex-column"
+    <template v-slot:loader>
+      <v-progress-linear
+        indeterminate
+        :active="loading"
+        color="primary"
+      />
+    </template>
+    <template v-slot:append>
+      <v-icon-btn
+          icon="mdi-cog"
+          to="/login/settings"
+      />
+    </template>
+    <template v-slot:title>
+      <p
+        class="text-wrap"
       >
-        <template v-slot:loader>
-          <v-progress-linear
-            indeterminate
-            :active="loading"
-            color="primary"
-          />
-        </template>
-        <template v-slot:append>
-          <app-icon-btn
-              icon="mdi-cog"
-              to="/login/settings"
-          />
-        </template>
-        <template v-slot:title>
-          {{ t('login.title') }}
-        </template>
-        <v-card-subtitle>
-          {{ $t('login.subtitle') }}
-        </v-card-subtitle>
-        <v-card-text
-            class="mt-3"
+        {{ t('login.title') }}
+      </p>
+    </template>
+    <v-card-subtitle>
+      {{ t('login.subtitle') }}
+    </v-card-subtitle>
+    <v-card-text
+        class="mt-4"
+    >
+
+
+      <v-row
+          dense
+          justify="center"
+      >
+        <v-col
+          cols="12"
+          lg="10"
+          v-if="confirmationMissingAlert"
+          class="mb-4"
         >
-          <v-row
-              dense
-              justify="center"
-          >
-            <v-col
-                cols="12"
-                lg="10"
-            >
-              <v-form
-                  ref="login-form"
-                  @submit.prevent="(event) => event.preventDefault()"
-              >
-                <v-row dense>
-                  <v-col>
-                    <v-text-field
-                        :label="$t('login.username')"
-                        :rules="[rules.usernameNeeded]"
-                        type="text"
-                        v-model="username"
-                        @keyup.enter="login"
-                        v-bind="styling"
-                        hide-details="auto"
-                    />
-                  </v-col>
-                </v-row>
-                <v-row dense>
-                  <v-col>
-                    <app-password-textfield
-                        :rules="[rules.passwordNeeded]"
-                        :label="$t('login.password')"
-                        v-model="password"
-                        :disable-min-length="true"
-                        @keyup.enter="login"
-                        v-bind="styling"
-
-                    />
-                    <div
-                        class="ms-2 mt-1"
-                    >
-                      <a
-
-                          v-if="smtpEnabled"
-                          class="reset-password text-caption text-primary"
-                          @click="router.push('/forgot-password')"
-                      >
-                        {{ $t('login.forgot_password_btn') }}
-                      </a>
-                    </div>
-                  </v-col>
-                </v-row>
-              </v-form>
-            </v-col>
-          </v-row>
-          <v-row
-              class="mt-2"
-              dense
-              justify="center"
-          >
-            <v-col
-              lg="10"
-            >
-              <v-btn
-                  class="fill-width"
-                  color="primary"
-                  rounded="xl"
-                  :text="t('login.btn')"
-                  :loading="loading"
-                  @click="login"
+          <v-hover>
+            <template v-slot:default="{isHovering, props}">
+              <v-alert
+                  v-bind="props"
+                  :style="{
+                    cursor: isHovering ? 'pointer' : undefined
+                  }"
+                  :title="t('login.confirmation_missing.title')"
+                  :text="t('login.confirmation_missing.text')"
+                  @click="requestNewConfirmationCode"
               />
-            </v-col>
-          </v-row>
-          <v-divider class="mb-4 mt-6 border-opacity-25"/>
-          <v-row
-              dense
-              justify="center"
-              class="pa-1"
+            </template>
+          </v-hover>
+        </v-col>
+        <v-col
+            cols="12"
+            lg="10"
+        >
+          <v-form
+              ref="login-form"
+              @submit.prevent="(event) => event.preventDefault()"
           >
-              <v-btn
-                  density="compact"
-                  size="small"
-                  variant="plain"
-                  :text="t('login.register')"
-                  append-icon="mdi-chevron-right"
-                  to="/register"
-              />
-          </v-row>
-        </v-card-text>
-      </v-card>
-    </v-col>
-  </v-row>
+            <v-row dense>
+              <v-col>
+                <v-text-field
+                    :label="t('login.username')"
+                    :rules="usernameRules"
+                    type="text"
+                    v-model="username"
+                    @keyup.enter="login"
+                    v-bind="textFieldStyling"
+                    hide-details="auto"
+                />
+              </v-col>
+            </v-row>
+            <v-row dense>
+              <v-col>
+                <password-text-field
+                    :rules="passwordRules"
+                    :label="t('login.password')"
+                    v-model="password"
+                    @keyup.enter="login"
+                />
+              </v-col>
+            </v-row>
+          </v-form>
+        </v-col>
+      </v-row>
+      <v-row
+          class="mt-4"
+          dense
+          justify="center"
+      >
+        <v-col
+          lg="10"
+          class="d-flex flex-column align-center justify-center"
+        >
+          <v-btn
+              v-bind="btnStyle"
+              class="fill-width"
+              rounded="xl"
+              :text="t('login.btn')"
+              :loading="loading"
+              @click="login"
+          />
+          <v-btn
+              v-if="smtpEnabled"
+              v-bind="btnStyle"
+              variant="plain"
+              color="secondary"
+              class="reset-password text-caption text-primary mt-2"
+              @click="forgotPasswordDialog = true"
+          >
+            {{ t('login.forgot_password_btn') }}
+          </v-btn>
+        </v-col>
+      </v-row>
+      <v-divider class="mb-4 mt-4 border-opacity-25"/>
+      <v-row
+          dense
+          justify="center"
+          class="pa-1"
+          v-if="registrationAllowed"
+      >
+          <v-btn
+              v-bind="btnStyle"
+              variant="plain"
+              :text="t('login.register')"
+              append-icon="mdi-chevron-right"
+              to="/register"
+          />
+      </v-row>
+    </v-card-text>
+  </v-card>
+
 </template>
 
 <style scoped lang="scss">

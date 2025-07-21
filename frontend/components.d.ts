@@ -57,6 +57,7 @@ declare module 'vue' {
     EditItemDialog: typeof import('./src/components/items/modals/EditItemDialog.vue')['default']
     EditItemInstance: typeof import('./src/components/items/modals/EditItemInstance.vue')['default']
     EditItemInstanceDialog: typeof import('./src/components/items/modals/EditItemInstanceDialog.vue')['default']
+    ForgotPassword: typeof import('./src/components/account/forgot-password.vue')['default']
     ForgotPasswordCard: typeof import('./src/components/widgets/Login/ForgotPasswordCard.vue')['default']
     GeneralSettings: typeof import('./src/components/settings/GeneralSettings.vue')['default']
     HouseholdCard: typeof import('./src/components/household/HouseholdCard.vue')['default']

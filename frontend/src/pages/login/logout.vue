@@ -49,6 +49,11 @@ onMounted(() => {
 
 <route>
 {
-  "path": "/logout"
+  "path": "/logout",
+  "meta": {
+    "requiresHousehold": false,
+    "requiresAuth": true,
+    "allowUnauthorized": false
+  }
 }
 </route>

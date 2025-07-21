@@ -3,25 +3,23 @@ import {useLocalStorage} from "@vueuse/core";
 import {Theme} from "./types"
 
 
-
-
-
 export const useConfigStore = defineStore('config', {
-    state: () => {
-        return {
-            initialized: false,
-            config: useLocalStorage("config", {
-                version: 1.0,
-                theme: {
-                    name: "InventoryHero",
-                    dark: true,
-                    color: "#2196f3"
-                } as Theme,
-                useTransitions: true,
-                language: "default"
-            })
-        }
-    },
+    state: () => ({
+        initialized: false,
+        config: useLocalStorage("config", {
+            version: 1.0,
+            theme: {
+                name: "InventoryHero",
+                dark: true,
+                color: "#2196f3"
+            } as Theme,
+            useTransitions: true,
+            language: "default"
+        }),
+        smtpEnabled: false,
+        registrationAllowed: false
+    }),
+
     actions: {
         themeChange(newTheme: Partial<Theme>){
             this.config.theme = {

@@ -1,5 +1,5 @@
 import {AxiosInstance} from "axios"
-import {ChangePasswordForm, ResetPasswordForm, UserPublic, UserUpdate} from "@/api/types/user.ts"
+import {ChangePasswordForm, ResetPasswordForm, UserCreate, UserPublic, UserUpdate} from "@/api/types/user.ts"
 import {ApiResponse} from "@/api/types/ApiResponse.ts"
 import {HouseholdPublic, HouseholdSelection, HouseholdWithMemberPublic} from "@/api/types/households.ts";
 
@@ -72,6 +72,30 @@ export default (api: AxiosInstance) => {
         }
     }
 
+    const register = async (payload: UserCreate): Promise<ApiResponse<void>> => {
+        const response = await api.post("/user/register", payload)
+        return {
+            success: response.status === 201,
+            error: response.data?.detail ?? undefined
+        }
+    }
+
+    const confirmEmail = async (code: string): Promise<ApiResponse<void>> => {
+        const response = await api.post(`/user/confirm-email/${code}`)
+        return {
+            success: response.status === 204,
+            error: response.data?.detail ?? undefined
+        }
+    }
+
+    const requestEmailConfirmation = async (): Promise<ApiResponse<void>> => {
+        const response = await api.get(`/user/request-confirmation`)
+        return {
+            success: response.status === 204,
+            error: response.data?.detail ?? undefined
+        }
+    }
+
     return {
         self,
         setDefaultHousehold,
@@ -79,5 +103,8 @@ export default (api: AxiosInstance) => {
         updateUser,
         changePassword,
         resetPassword,
+        register,
+        confirmEmail,
+        requestEmailConfirmation
     }
 }

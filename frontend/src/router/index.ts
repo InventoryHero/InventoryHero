@@ -1,7 +1,7 @@
 
 import {createRouter, createWebHistory} from "vue-router";
 import {routes} from 'vue-router/auto-routes'
-import {useAuthStore} from "@/store";
+import {useAuthStore, useConfigStore} from "@/store";
 import useContentRefreshStore from "@/store/useContentRefreshStore.ts";
 import {i18n} from "@/lang";
 //@ts-expect-error cannot be found, but it is there
@@ -22,6 +22,7 @@ vueRouter.beforeEach(async (to, from) => {
   const authStore = useAuthStore();
   const loggedIn = await authStore.isAuthorized()
   const household = authStore.household
+  const configStore = useConfigStore();
 
 
   if(loggedIn && !allowAuthorized){
@@ -40,6 +41,10 @@ vueRouter.beforeEach(async (to, from) => {
 
   if(!household && requiresHousehold){
     return {path: "/households", query: {redirect: to.fullPath}}
+  }
+
+  if(to.path === "/register" && !configStore.registrationAllowed){
+    return {path: "/login"}
   }
 
   // TODO ADMIN

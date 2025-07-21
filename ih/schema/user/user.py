@@ -10,10 +10,13 @@ class UserBase(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
 
-class UserCreate(UserBase):
+class UserCreateBase(UserBase):
     password: str
 
-class AdminUserCreate(UserCreate):
+class UserCreate(UserCreateBase):
+    password_confirmation: str
+
+class AdminUserCreate(UserCreateBase):
     admin: bool = False
 
 class UserUpdate(BaseModel):
