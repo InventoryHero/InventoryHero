@@ -140,7 +140,7 @@ onMounted(() => {
     "requiresAuth": false,
     "requiresHousehold": false,
     "title": 'titles.confirmation',
-    "layout": "tokenized"
+    "layout": "unauthorized"
   }
 }
 </route>

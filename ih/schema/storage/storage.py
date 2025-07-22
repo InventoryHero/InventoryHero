@@ -26,7 +26,7 @@ class StorageCreateSchema(StorageBaseSchema):
 class StorageResponseSchema(StorageBaseSchema):
     id: UUID
     parent_id: Optional[UUID] = None
-    model_config = ConfigDict(from_attributes=True)
+    model_config = ConfigDict(from_attributes=True1)
 
 class RoomResponseSchema(StorageResponseSchema):
     num_boxes: Optional[int] = None

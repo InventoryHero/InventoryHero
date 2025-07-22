@@ -34,10 +34,22 @@ class UserPublic(UserBase):
 
     model_config = ConfigDict(from_attributes=True)
 
-class ChangePasswordForm(BaseModel):
+class ChangePasswordFormBase(BaseModel):
+    new_password: str
+    new_password_confirmation: str
+
+class ChangePasswordForm(ChangePasswordFormBase):
     current_password: str
     new_password: str
     new_password_confirmation: str
 
+
 class ResetPasswordForm(BaseModel):
     email: str
+
+class TokenValidationResponse(BaseModel):
+    valid: bool
+    reason: Optional[str]
+
+class ResetPasswordResponse(TokenValidationResponse):
+    pass

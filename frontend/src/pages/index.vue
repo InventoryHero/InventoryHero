@@ -1,6 +1,5 @@
 <script setup lang="ts">
 
-const test = ref(true)
 </script>
 
 <template>
@@ -31,7 +30,8 @@ const test = ref(true)
 {
   "meta": {
     "requiresAuth": true,
-    "requiresHousehold": true
+    "requiresHousehold": true,
+    "showFab": true
   }
 }
 </route>

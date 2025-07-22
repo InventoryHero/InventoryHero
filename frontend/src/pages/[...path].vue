@@ -57,7 +57,7 @@ const router = useRouter()
 <route>
 {
   "meta": {
-    "layout": "tokenized",
+    "layout": "unauthorized",
     "requiresAuth": "false",
     "allowAuthorized": "true",
     "requiresHousehold": "false",

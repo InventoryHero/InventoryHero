@@ -13,8 +13,6 @@ const vueRouter = createRouter({
 })
 
 vueRouter.beforeEach(async (to, from) => {
-  console.log(to.meta)
-
   const allowAuthorized = to.meta.allowAuthorized ?? true
   const requiresAuth = to.meta.requiresAuth ?? true
   const requiresHousehold = to.meta.requiresHousehold ?? true
@@ -23,6 +21,7 @@ vueRouter.beforeEach(async (to, from) => {
   const loggedIn = await authStore.isAuthorized()
   const household = authStore.household
   const configStore = useConfigStore();
+  console.log(to)
 
 
   if(loggedIn && !allowAuthorized){
@@ -43,9 +42,10 @@ vueRouter.beforeEach(async (to, from) => {
     return {path: "/households", query: {redirect: to.fullPath}}
   }
 
-  if(to.path === "/register" && !configStore.registrationAllowed){
+  if(to.name === "/login/register" && !configStore.registrationAllowed){
     return {path: "/login"}
   }
+
 
   // TODO ADMIN
   /*

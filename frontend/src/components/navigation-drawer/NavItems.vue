@@ -98,6 +98,12 @@ onBeforeRouteLeave(() => {
         :title="t('nav.households')"
         color="primary"
     />
+    <v-list-item
+      to="qr"
+      prepend-icon="mdi-qrcode-edit"
+      :title="t('nav.qrcode-edit')"
+      color="primary"
+    />
 
   </v-list>
 </template>

@@ -7,6 +7,7 @@ import useUserNameCharacterRule from "@/composables/useUserNameCharacterRule.ts"
 import useEmailRule from "@/composables/useEmailRule.ts";
 import {VForm} from "vuetify/components";
 
+// TODO ALLOW USER TO LOGIN WITH USERNAME OR EMAIL
 
 const authStore = useAuthStore()
 const {t} = useI18n()

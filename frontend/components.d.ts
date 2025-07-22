@@ -109,6 +109,8 @@ declare module 'vue' {
     RoomSummaryCard: typeof import('./src/components/storage/rooms/RoomSummaryCard.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Scan: typeof import('./src/components/qr/modals/scan.vue')['default']
+    ScanLabel: typeof import('./src/components/qr/modals/ScanLabel.vue')['default']
     ScanQrCodeModal: typeof import('./src/components/widgets/QrCode/Scan/ScanQrCodeModal.vue')['default']
     SearchCard: typeof import('./src/components/ui/SearchCard.vue')['default']
     StorageCard: typeof import('./src/components/widgets/storage/Cards/StorageCard.vue')['default']

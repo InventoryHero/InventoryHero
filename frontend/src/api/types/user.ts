@@ -38,12 +38,24 @@ export interface UserPublic {
   confirmed: boolean;
 }
 export interface ChangePasswordForm {
+  new_password: string;
+  new_password_confirmation: string;
   current_password: string;
+}
+export interface ChangePasswordFormBase {
   new_password: string;
   new_password_confirmation: string;
 }
 export interface ResetPasswordForm {
   email: string;
+}
+export interface ResetPasswordResponse {
+  valid: boolean;
+  reason: string | null;
+}
+export interface TokenValidationResponse {
+  valid: boolean;
+  reason: string | null;
 }
 export interface UserCreateBase {
   username: string;

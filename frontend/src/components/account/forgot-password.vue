@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import {GeneralEndpoint} from "@/api/http";
 import {useI18n} from "vue-i18n";
 import {computed, ref, useTemplateRef} from "vue";
 import {useNotification} from "@kyvg/vue3-notification";
@@ -7,15 +6,11 @@ import useAppStyling from "@/composables/useAppStyling.ts";
 import {VForm} from "vuetify/components";
 import useEmailRule from "@/composables/useEmailRule.ts";
 
-
-
 const router = useRouter()
 const {t} = useI18n()
 const {userEndpoint} = useAxios()
 const {notify} = useNotification()
 const {textFieldStyling, btnStyle} = useAppStyling()
-
-const active = defineModel<boolean>()
 
 
 const email = ref("")
@@ -26,11 +21,13 @@ const text = computed(() => {
   return t('login.reset-password.description')
 })
 
+const emit = defineEmits(["close"])
+
 const {isValidEmailRule} = useEmailRule("login.reset-password.rules.email_needed")
 
 const close = () => {
   emailForm.value.reset()
-  active.value = false
+  emit("close")
 }
 
 async function resetPassword(){
@@ -67,88 +64,81 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <v-dialog
-    v-model="active"
+  <v-card
+      elevation="5"
   >
-    <v-card
-        elevation="5"
-    >
-      <template v-slot:loader>
-        <v-progress-linear
-          indeterminate
-          :active="loading"
-          color="primary"
-        />
-      </template>
-      <template v-slot:append>
-        <v-icon-btn
-          icon="mdi-close"
-          @click="close"
-        />
-      </template>
-      <template v-slot:title>
-          <span class="text-wrap">{{ t('login.reset-password.title') }}</span>
-      </template>
-      <template v-slot:subtitle>
-        {{text}}
-      </template>
-      <v-card-text
+    <template v-slot:loader>
+      <v-progress-linear
+        indeterminate
+        :active="loading"
+        color="primary"
+      />
+    </template>
+    <template v-slot:append>
+      <v-icon-btn
+        icon="mdi-close"
+        @click="close"
+      />
+    </template>
+    <template v-slot:title>
+        <span class="text-wrap">{{ t('login.reset-password.title') }}</span>
+    </template>
+    <v-card-text>
+      <span class="text-subtitle-2 text-medium-emphasis">{{text}}</span>
+      <v-row
+          class="mt-2"
+          dense
+          justify="center"
       >
-        <v-row
-            class="mt-2"
-            dense
-            justify="center"
-        >
-          <v-col
-              cols="12"
-              lg="10"
-          >
-            <v-form
-                @submit.prevent="(event) => event.preventDefault()"
-                ref="emailForm"
-                v-model="valid"
-                class="mb-2"
-            >
-              <v-row>
-                <v-col>
-                  <v-text-field
-                      v-bind="textFieldStyling"
-                      :placeholder="t('login.reset-password.email')"
-                      :label="t('login.reset-password.email')"
-                      v-model="email"
-                      :rules="[isValidEmailRule]"
-                      @keyup.enter="resetPassword"
-                  />
-                </v-col>
-              </v-row>
-            </v-form>
-          </v-col>
-        </v-row>
-        <v-row
-            class="mt-2"
-            dense
-            justify="center"
-        >
-          <v-col
+        <v-col
+            cols="12"
             lg="10"
+        >
+          <v-form
+              @submit.prevent="(event) => event.preventDefault()"
+              ref="emailForm"
+              v-model="valid"
+              class="mb-2"
           >
-            <v-btn
-                v-bind="btnStyle"
-                class="fill-width"
-                color="primary"
-                rounded="xl"
-                :text="t('login.reset-password.btn')"
-                @click="resetPassword"
-                :loading="loading"
-            />
-          </v-col>
-        </v-row>
+            <v-row>
+              <v-col>
+                <v-text-field
+                    v-bind="textFieldStyling"
+                    :placeholder="t('login.reset-password.email')"
+                    :label="t('login.reset-password.email')"
+                    v-model="email"
+                    :rules="[isValidEmailRule]"
+                    @keyup.enter="resetPassword"
+                />
+              </v-col>
+            </v-row>
+          </v-form>
+        </v-col>
+      </v-row>
+      <v-row
+          class="mt-2"
+          dense
+          justify="center"
+      >
+        <v-col
+          lg="10"
+        >
+          <v-btn
+              v-bind="btnStyle"
+              class="fill-width"
+              color="primary"
+              rounded="xl"
+              :text="t('login.reset-password.btn')"
+              @click="resetPassword"
+              :loading="loading"
+          />
+        </v-col>
+      </v-row>
 
 
-      </v-card-text>
+    </v-card-text>
 
-    </v-card>
-  </v-dialog>
+  </v-card>
 </template>
 
 <style scoped lang="scss">

@@ -3,7 +3,8 @@ import {type Component} from "vue";
 export const modals = {
     createRoomModal: defineAsyncComponent(() => import('@/components/storage/rooms/CreateRoomModal.vue')),
     createBoxModal: defineAsyncComponent(() => import('@/components/storage/boxes/CreateBoxModal.vue')),
-    createItemModal: defineAsyncComponent(() => import('@/components/items/modals/CreateItemModal.vue'))
+    createItemModal: defineAsyncComponent(() => import('@/components/items/modals/CreateItemModal.vue')),
+    scanQrCodeModal: defineAsyncComponent(() => import('@/components/qr/modals/ScanLabel.vue'))
 }
 
 export type ModalName = keyof typeof modals

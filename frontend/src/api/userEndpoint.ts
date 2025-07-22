@@ -1,5 +1,12 @@
 import {AxiosInstance} from "axios"
-import {ChangePasswordForm, ResetPasswordForm, UserCreate, UserPublic, UserUpdate} from "@/api/types/user.ts"
+import {
+    ChangePasswordForm, ResetPasswordResponse,
+    ResetPasswordForm,
+    TokenValidationResponse,
+    UserCreate,
+    UserPublic,
+    UserUpdate, ChangePasswordFormBase
+} from "@/api/types/user.ts"
 import {ApiResponse} from "@/api/types/ApiResponse.ts"
 import {HouseholdPublic, HouseholdSelection, HouseholdWithMemberPublic} from "@/api/types/households.ts";
 
@@ -64,12 +71,22 @@ export default (api: AxiosInstance) => {
     }
 
     const resetPassword = async (payload: ResetPasswordForm): Promise<ApiResponse<void>> => {
-        console.log(payload)
         const response = await api.post("/user/reset-password", payload)
         return {
             success: response.status === 200,
             error: response.data?.detail ?? undefined
         }
+    }
+
+    const resetPasswordWithToken = async (code: string, payload: ChangePasswordFormBase): Promise<ApiResponse<ResetPasswordResponse>> => {
+        const response = await api.post(`/user/reset-password/${code}`, payload)
+        const success = response.status === 200
+        return {
+            success: success,
+            data: success ? response.data : undefined,
+            error: success ? undefined : response.data?.detail ?? undefined
+        }
+
     }
 
     const register = async (payload: UserCreate): Promise<ApiResponse<void>> => {
@@ -96,6 +113,16 @@ export default (api: AxiosInstance) => {
         }
     }
 
+    const checkPasswordResetCode = async (code: string): Promise<ApiResponse<TokenValidationResponse>> => {
+        const response = await api.get(`/user/validate-password-token/${code}`)
+        const success = response.status === 200;
+        return {
+            success: success,
+            data: success ? response.data : undefined,
+            error: !success ? response.data?.detail ?? undefined : undefined
+        }
+    }
+
     return {
         self,
         setDefaultHousehold,
@@ -105,6 +132,8 @@ export default (api: AxiosInstance) => {
         resetPassword,
         register,
         confirmEmail,
-        requestEmailConfirmation
+        requestEmailConfirmation,
+        checkPasswordResetCode,
+        resetPasswordWithToken
     }
 }

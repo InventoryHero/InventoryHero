@@ -1,11 +1,12 @@
 <script setup lang="ts">
 
-import {useAuthStore} from "@/store";
+import {useAuthStore, useConfigStore} from "@/store";
 import { ref, useTemplateRef} from "vue";
 import {useI18n} from "vue-i18n";
 import useAppStyling from "@/composables/useAppStyling.ts";
 import {ChangePasswordForm, UserUpdate} from "@/api/types/user.ts";
 import {useNotification} from "@kyvg/vue3-notification";
+import {storeToRefs} from "pinia";
 
 const {t} = useI18n()
 
@@ -13,10 +14,12 @@ const authStore = useAuthStore()
 const {userEndpoint} = useAxios()
 const {textFieldStyling, btnStyle} = useAppStyling()
 const {notify} = useNotification()
+const configStore = useConfigStore()
 
 const userForm = useTemplateRef('userForm')
 const passwordForm = useTemplateRef('passwordResetForm')
 
+const {smtpEnabled} = storeToRefs(configStore)
 const username = ref<string>(authStore.user!.username)
 const firstname = ref<string|null|undefined>(authStore.user!.first_name)
 const lastname = ref<string|null|undefined>(authStore.user!.last_name)
@@ -58,6 +61,7 @@ const passwordFormValid = computed(() => {
 })
 
 const uploadProfilePicture = () => {
+  // TODO
   notify({
     type: 'info',
     title: 'coming soon'
@@ -122,7 +126,8 @@ const forgotPassword = async () => {
     // TODO
   }
   notify({
-    title: 'coming soon password reset',
+    title: t('account.toasts.forgot-password.title'),
+    text: t('account.toasts.forgot-password.text'),
     type: 'info'
   })
 }
@@ -355,6 +360,7 @@ onBeforeMount(() => {
                 class="d-flex justify-end mt-4 flex-wrap-reverse"
             >
               <v-btn
+                v-if="smtpEnabled"
                 v-bind="btnStyle"
                 variant="plain"
                 :text="t('account.password.forgot_password')"

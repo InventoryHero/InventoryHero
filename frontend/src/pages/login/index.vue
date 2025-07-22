@@ -13,7 +13,6 @@ const configStore = useConfigStore()
 const {auth, userEndpoint} = useAxios()
 
 const {smtpEnabled, registrationAllowed} = storeToRefs(configStore)
-smtpEnabled.value = true
 
 const forgotPasswordDialog = ref<boolean>(false)
 const username = ref<string>("")
@@ -80,11 +79,13 @@ onBeforeRouteLeave(() => {
 </script>
 
 <template>
-
-  <forgot-password
+  <v-dialog
       v-model="forgotPasswordDialog"
-  />
-
+  >
+    <forgot-password
+        @close="forgotPasswordDialog = false"
+    />
+  </v-dialog>
 
 
   <v-card

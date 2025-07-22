@@ -299,6 +299,12 @@
         "repeat_not_empty": "Please repeat your new password",
         "mismatch": "The new passwords do not match"
       }
+    },
+    "toasts": {
+      "forgot-password": {
+        "title": "E-Mail sent",
+        "text": "You'll receive an E-Mail with instructions on how to reset your password"
+      }
     }
   },
   "login": {
@@ -322,10 +328,16 @@
       "title": "Reset password",
       "description": "If we can find an account with the specified email, you will receive an email with instructions to reset your password",
       "btn": "Reset",
+      "password": "@:login.password",
+      "repeat_password": "@:register.repeat_password",
       "email": "E-Mail",
+      "back_to_login": "To Login",
       "rules": {
-        "email_needed": "Please enter a valid email"
-      }
+        "email_needed": "Please enter a valid email",
+        "username_needed": "@:login.rules.username_needed",
+        "passwords_not_equal": "@:register.rules.passwords_not_equal"
+      },
+      "token_invalid": "The used reset token has become invalid. Please request a new request token to proceed."
     }
   },
   "register": {
@@ -344,6 +356,15 @@
       "password_needed": "@:login.rules.password_needed",
       "email_needed": "E-Mail must be valid",
       "passwords_not_equal": "Passwords do not match"
+    }
+  },
+  "qr": {
+    "scan": {
+      "camera": "Select camera",
+      "title": "Scan Label",
+      "scanned_room": "Room: {name}",
+      "scanned_box": "Box: {name}",
+      "loading_camera": "Loading camera"
     }
   }
 }

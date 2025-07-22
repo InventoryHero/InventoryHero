@@ -1,5 +1,6 @@
 import hashlib
 import secrets
+from datetime import datetime, timedelta, UTC, timezone
 from typing import Sequence, Optional
 from uuid import UUID
 from fastapi import HTTPException
@@ -11,7 +12,8 @@ from starlette import status
 from ih.core.security.password import hash_password, verify_password
 from ih.db.models.households import HouseholdMember
 from ih.schema.households import HouseholdPublic, HouseholdWithMemberPublic, HouseholdMemberPublic
-from ih.schema.user.user import UserPublic, UserCreate, AdminUserCreate, UserUpdate, UserCreateBase
+from ih.schema.user.user import UserPublic, UserCreate, AdminUserCreate, UserUpdate, UserCreateBase, \
+    ChangePasswordFormBase
 from ih.db.models.User import User
 
 
@@ -153,3 +155,60 @@ class UserRepository:
         user.confirmed = True
         user.confirmation_code = None
         self.session.flush()
+
+    def generate_password_reset_code(self, email: str) -> None:
+        user = self.session.exec(
+            select(User)
+                .where(User.email == email)
+        ).first()
+
+        # just ignore we always send a ok response, otherwise this could be missused to
+        # check for existing accounts
+        if user is None:
+            return
+
+        password_reset_code = secrets.token_urlsafe(32)
+        password_reset_token = hashlib.sha256(password_reset_code.encode()).hexdigest()
+
+        user.password_reset_token = password_reset_token
+        user.password_reset_token_expires_at = datetime.now(timezone.utc) + timedelta(minutes=60)
+
+        self.session.flush()
+
+        print(password_reset_code)
+        # TODO SEND EMAIL
+
+    def validate_password_token(self, code: str) -> bool:
+        password_token = hashlib.sha256(code.encode()).hexdigest()
+        user = self.session.exec(
+            select(User)
+                .where(User.password_reset_token == password_token)
+        ).first()
+
+        if user is None:
+            return False
+
+        if datetime.now(timezone.utc) > user.password_reset_token_expires_at:
+            return False
+
+        return True
+
+    def reset_password(self, code: str, new_password: ChangePasswordFormBase) -> (bool, str):
+        password_token = hashlib.sha256(code.encode()).hexdigest()
+        user = self.session.exec(
+            select(User)
+            .where(User.password_reset_token == password_token)
+        ).first()
+
+        if user is None:
+            return False, ''
+
+        if datetime.now(timezone.utc) > user.password_reset_token_expires_at:
+            return False, 'invalid_token'
+
+        if new_password.new_password != new_password.new_password_confirmation:
+            return False, 'password_dont_match'
+
+        user.password = hash_password(new_password.new_password)
+        self.session.flush()
+        return True, ''

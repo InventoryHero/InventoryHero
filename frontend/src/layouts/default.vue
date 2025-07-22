@@ -86,21 +86,23 @@ onBeforeRouteLeave(() => {
       <v-app-bar-nav-icon
           @click.stop="nav = !nav"
       />
-      <v-app-bar-title>
+      <v-app-bar-title
+      >
         <v-card
             hover
             width="fit-content"
             to="/"
-
+            elevation="0"
         >
           {{ t('app.title') }}
         </v-card>
       </v-app-bar-title>
       <template v-slot:append>
-        <app-icon-btn
+        <v-icon-btn
             icon="mdi-qrcode-scan"
+            variant="plain"
             color="primary"
-            to="/qr/scan"
+            @click="openModal('scanQrCodeModal')"
         />
       </template>
 
