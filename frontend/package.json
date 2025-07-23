@@ -23,7 +23,6 @@
     "axios-jwt": "^4.0.3",
     "date-fns": "^4.1.0",
     "file-saver": "^2.0.5",
-    "floating-vue": "^5.2.2",
     "font-awesome": "^4.7.0",
     "html-to-image": "^1.11.13",
     "pinia": "^3.0.2",

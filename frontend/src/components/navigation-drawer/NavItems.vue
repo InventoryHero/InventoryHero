@@ -99,7 +99,7 @@ onBeforeRouteLeave(() => {
         color="primary"
     />
     <v-list-item
-      to="qr"
+      to="/qr"
       prepend-icon="mdi-qrcode-edit"
       :title="t('nav.qrcode-edit')"
       color="primary"

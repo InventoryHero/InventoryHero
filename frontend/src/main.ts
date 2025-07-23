@@ -6,8 +6,6 @@ import 'vue-virtual-scroller/dist/vue-virtual-scroller.css'
 // import components
 import {createApp, markRaw} from 'vue'
 import VueVirtualScroller from "vue-virtual-scroller"
-// TODO MAYBE THIS PACKAGE CAN BE REMOVED
-import FloatingVue from 'floating-vue'
 import Notifications from '@kyvg/vue3-notification'
 import VueCountdown from '@chenfengyuan/vue-countdown';
 import {VueQrcodeReader} from "vue-qrcode-reader";
@@ -36,7 +34,6 @@ app.component('SWhatsApp', SWhatsApp)
 app.component('STelegram', STelegram)
 app.component('SEmail', SEmail)
 app.use(VueVirtualScroller)
-app.use(FloatingVue)
 app.use(Notifications)
 app.use(VueQrcodeReader)
 
