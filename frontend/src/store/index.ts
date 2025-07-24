@@ -5,7 +5,7 @@ import {useConfigStore} from "@/store/config";
 import {useHouseholdSocketStore} from "./sockets/householdSocketStore.ts";
 import {useGeneralSocketStore} from "./sockets/generalSocketStore.ts"
 
-import printSettings from "@/store/printSettings";
+import printSettings from "@/store/usePrintSettingsStore.ts";
 
 
 const pinia = createPinia()

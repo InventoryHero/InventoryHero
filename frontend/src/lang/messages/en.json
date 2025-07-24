@@ -366,11 +366,16 @@
       "scanned_box": "Box: {name}",
       "loading_camera": "Loading camera"
     },
+    "style": {
+      "margins": {
+        "unit": "mm"
+      }
+    },
     "label": {
       "title_1": "Create Labels",
       "description_1": "Select for which objects you want to create labels",
-      "search_rooms": "Search room...",
-      "search_boxes": "Search box...",
+      "search_room": "Search room...",
+      "search_box": "Search box...",
       "select_all": "Select all",
       "deselect_all": "Deselect all",
       "select_title": "1. Select options",

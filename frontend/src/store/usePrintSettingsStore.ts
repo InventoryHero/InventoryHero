@@ -1,42 +1,21 @@
 import {defineStore} from "pinia";
+import {modals} from "@/composables/useGlobalModal.ts";
 
 export type StorageIconSizes = 'x-small'|'small'|'default'|'large'|'x-large'
 export type Paper = 'A4'|'A5'
 type QrCodeScales = {
     [key: string]: number
 }
-
-
-export const supportedPapers = ['A4', 'A5']
-
-
 export type Margins = {
-    left?: number,
-    right?: number,
-    top?: number,
-    bottom?: number
+    left: number,
+    right: number,
+    top: number,
+    bottom: number
 }
 
-
-interface PrintSettings {
-    qrCodeIconWidth?: number,
-    fontSize?: number,
-    rows?: number,
-    cols?: number,
-    paper?: 'A4'|'A5',
-    storageIconSize?: StorageIconSizes,
-    qrCodeIconVisible?: boolean,
-    qrCodeVisible?: boolean,
-    storageIconVisible?: boolean
-    storageNameVisible?: boolean,
-    storageLabelVisible?: boolean,
-    borderThickness?: number,
-    storageIcon?: string,
-    margins?: Margins
-}
 
 // TODO FIND A BETTER WAY TO GET SCALES
-const paperSizes = {
+export const paperSizes = {
     A4: {
         name: "A4",
         width: 210,
@@ -55,16 +34,32 @@ const paperSizes = {
     },
     // Add more sizes as needed
 };
+type PaperSizes = keyof typeof paperSizes
+
+export default defineStore("printSettings", () => {
+
+    const storageLabelVisible = ref<boolean>(false)
+    const storageNameVisible = ref<boolean>(true)
+    const storageIconVisible = ref<boolean>(true)
+    const borderThickness = ref<number>(2)
+    const qrCodeVisible = ref<boolean>(true)
+    const qrCodeIconVisible = ref<boolean>(true)
+    const qrCodeIconWidth = ref<number>(35)
+    const storageIconSize = ref<number>(24)
+    const fontSize = ref<number>(12)
+    const columns = ref<number>(3)
+    const rows = ref<number>(8)
+    const paper = ref<PaperSizes>('A4')
+    const qrCodeScale = ref<number>(Math.floor((paperSizes[paper.value].height / (rows.value)) / 7))
+    const margins = ref<Margins>({
+        left: 10,
+        right: 10,
+        bottom: 10,
+        top: 10
+    })
 
 
-export default defineStore("printSettings", {
-    state: () => {
-        return {
-            settings: {} as PrintSettings,
-            _previewScale: 68
-        }
-    },
-    actions: {
+    /*actions: {
         setStorageLabel(value: boolean){
             this.settings.storageLabelVisible = value
         },
@@ -114,30 +109,21 @@ export default defineStore("printSettings", {
             this.settings = {}
             this._previewScale = 68
         }
-    },
-    getters: {
-        storageLabelVisible: state => state.settings.storageLabelVisible ?? true,
-        storageNameVisible: state => state.settings.storageNameVisible ?? true,
-        storageIconVisible: state => state.settings.storageIconVisible ?? true,
-        borderThickness: state => state.settings.borderThickness ?? 2,
-        qrCodeVisible: state => state.settings.qrCodeVisible ?? true,
-        qrCodeIconVisible: state => state.settings.qrCodeIconVisible ?? true,
-        qrCodeIconWidth: state => state.settings.qrCodeIconWidth ?? 50,
-        storageIconSize: state => state.settings.storageIconSize ?? 'default',
-        fontSize: state => state.settings.fontSize ?? 12,
-        columns: state => state.settings.cols ?? 3,
-        rows: state => state.settings.rows ?? 8,
-        paper: state => paperSizes[state.settings.paper ?? 'A4'],
-        qrCodeScale: state => Math.floor((297 / (state.settings.rows ?? 8)) / 7),
-        margins: state => {
-            return {
-                left: 10,
-                right: 10,
-                bottom: 10,
-                top: 10,
-                ...state.settings.margins
-            }
-        },
-        previewScale: state => state._previewScale
+    },*/
+    return {
+        storageLabelVisible,
+        storageNameVisible,
+        storageIconVisible,
+        borderThickness,
+        qrCodeVisible,
+        qrCodeIconVisible,
+        qrCodeIconWidth,
+        fontSize,
+        columns,
+        rows,
+        paper,
+        storageIconSize,
+        qrCodeScale,
+        margins,
     }
 })

@@ -116,6 +116,7 @@ const onDetect = async (detectedCodes: Array<DetectedBarcode>) => {
   if(detectedCodes.length == 0){
     return
   }
+  // TODO MAYBE SUPPORT MULTIPLE QR CODE SCANS AT ONCE
   const payload = detectedCodes[0].rawValue
   const parts = payload.split('/');
   const potentialId = parts.filter(part => part.length > 0).pop();
