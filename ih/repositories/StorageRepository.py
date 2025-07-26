@@ -17,7 +17,8 @@ from ih.db.models.User import User
 from ih.db.models.households import Household
 from ih.db.models.storage.Storage import StorageType, Storage
 from ih.schema.items import ItemInstanceReadSchema
-from ih.schema.storage.storage import StorageBaseSchema, StorageResponseSchema, BoxResponseSchema, RoomResponseSchema
+from ih.schema.storage.storage import StorageBaseSchema, StorageResponseSchema, BoxResponseSchema, RoomResponseSchema, \
+    AnyStorageUpdateSchema, BoxUpdateSchema
 
 
 class StorageRepository:
@@ -196,3 +197,24 @@ class StorageRepository:
         # Execute the query
         results = self.session.exec(stmt).all()
         return results
+
+    def delete_storage(self, storage: Storage) -> None:
+        self.session.delete(storage)
+        self.session.flush()
+
+    def update_storage(self, storage: Storage, update_data: AnyStorageUpdateSchema):
+        # update name
+        if 'name' in update_data.model_fields_set:
+            storage.name = update_data.name
+
+        if isinstance(update_data, BoxUpdateSchema) and 'parent_id' in update_data.model_fields_set:
+            parent_id = update_data.parent_id
+            new_parent = self.session.exec(
+                select(Storage).where(Storage.id == parent_id, Storage.household_id == self.household_id)
+            ).first()
+            if new_parent is not None and new_parent.storage_type != "box":
+                storage.parent_id = new_parent.id
+                print("hallo", storage.parent_id)
+
+        self.session.flush()
+        self.session.refresh(storage)

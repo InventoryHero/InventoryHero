@@ -6,6 +6,7 @@
   const {btnStyle} = useAppStyling()
   const  {items: itemEndpoint} = useAxios()
   const router = useRouter()
+  const {openModal} = useGlobalModal()
 
   const item = defineModel<ItemReadSchema>({
     required: true
@@ -22,8 +23,14 @@
   const editDialogVisible = ref<boolean>(false);
 
   const edit = () => {
-    // TODO
-    editDialogVisible.value = true
+    //editDialogVisible.value = true
+
+    openModal("editItemModal", {
+      item: item.value,
+      'onUpdate:item': (newValue: ItemReadSchema) => item.value = newValue,
+    })
+
+
   }
   const deleteItem = () => {
     if(!deleteConfirmationVisible.value) {
@@ -48,10 +55,10 @@
     v-model="deleteConfirmationVisible"
     @delete="deleteItem"
   />
-  <edit-item-dialog
+  <!--<edit-item-dialog
     v-model="editDialogVisible"
     v-model:item="item"
-  />
+  />-->
 
   <v-card
       width="100%"

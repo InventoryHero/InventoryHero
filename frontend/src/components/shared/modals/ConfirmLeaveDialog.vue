@@ -10,6 +10,8 @@ const emit = defineEmits<{
   (e: 'confirm'): void,
 }>()
 
+// TODO TRANSLATE
+
 </script>
 
 <template>

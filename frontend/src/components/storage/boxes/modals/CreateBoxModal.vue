@@ -12,7 +12,7 @@ const {textFieldStyling, btnStyle, selectStyling} = useAppStyling()
 const {storage: storageEndpoint} = useAxios()
 const router = useRouter()
 const route = useRoute()
-const {isDirty, isAwaitingConfirmation, leave, stay, forceClose, close} = useGlobalModal()
+const {isDirty, isAwaitingConfirmation, leave, stay, forceClose, close, onBeforeRouteLeaveHandler} = useGlobalModal()
 
 const active = defineModel<boolean>()
 
@@ -90,7 +90,9 @@ onBeforeMount(() => {
   })
 })
 
-
+onBeforeRouteLeave(() => {
+  return onBeforeRouteLeaveHandler()
+})
 </script>
 
 <template>

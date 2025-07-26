@@ -11,7 +11,7 @@ const {textFieldStyling, btnStyle} = useAppStyling()
 const {storage: storageEndpoint} = useAxios()
 const router = useRouter()
 const route = useRoute()
-const {isDirty, isAwaitingConfirmation, leave, stay, forceClose, close} = useGlobalModal()
+const {isDirty, isAwaitingConfirmation, leave, stay, forceClose, close, onBeforeRouteLeaveHandler} = useGlobalModal()
 
 const active = defineModel<boolean>()
 
@@ -75,6 +75,10 @@ watch(active, () => {
     form.value.reset()
   }
   isDirty.value = false
+})
+
+onBeforeRouteLeave(() => {
+  return onBeforeRouteLeaveHandler()
 })
 
 

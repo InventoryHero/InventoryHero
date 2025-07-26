@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import {defineComponent} from 'vue'
-import useNewAxios from "@/composables/useAxiosOld.ts";
-import {HouseholdEndpoint} from "@/api/http";
 import {useAuthStore} from "@/store";
 import {storeToRefs} from "pinia";
 import {useNotification} from "@kyvg/vue3-notification";
@@ -18,7 +15,6 @@ const {
   code?: string
 }>()
 
-const {returnUrl} = storeToRefs(authStore)
 
 const accepting = ref(false)
 const householdName = ref<string>('')
@@ -39,7 +35,6 @@ const accept = () => {
       errorMessage.value = (error as string|undefined) ?? 'other_error'
       return
     }
-    returnUrl.value = ""
     router.push("/")
   })
 }

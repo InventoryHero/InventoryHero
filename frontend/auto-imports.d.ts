@@ -69,7 +69,6 @@ declare global {
   const useFieldIsNotTakenValidator: typeof import('./src/composables/useFieldIsNotTakenValidator')['default']
   const useGenerateMaterialYouTheme: typeof import('./src/composables/useGenerateMaterialYouTheme')['default']
   const useGlobalModal: typeof import('./src/composables/useGlobalModal')['default']
-  const useGoBackOneLevel: typeof import('./src/composables/useGoBackOneLevel')['default']
   const useHint: typeof import('./src/composables/useHint')['default']
   const useI18n: typeof import('vue-i18n')['useI18n']
   const useId: typeof import('vue')['useId']

@@ -24,6 +24,7 @@ const {
 const room = ref<RoomResponseSchema>()
 const loading = ref<boolean>(false)
 
+
 const tab = ref<string>('items')
 const tabs = shallowRef<Array<Tab>>([
   {

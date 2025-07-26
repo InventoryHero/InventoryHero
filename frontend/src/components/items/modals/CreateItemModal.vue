@@ -23,7 +23,7 @@ const route = useRoute()
 const {  xs, sm  } = useDisplay()
 
 const active = defineModel<boolean>()
-const {isDirty, isAwaitingConfirmation, leave, stay, forceClose, close} = useGlobalModal()
+const {isDirty, isAwaitingConfirmation, leave, stay, forceClose, close, onBeforeRouteLeaveHandler} = useGlobalModal()
 
 const {
   height,
@@ -219,6 +219,10 @@ watch(active, () => {
     form.value.reset()
   }
   isDirty.value = false
+})
+
+onBeforeRouteLeave(() => {
+  return onBeforeRouteLeaveHandler()
 })
 
 onBeforeMount(() => {

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { ref, computed, onBeforeMount } from 'vue'
 import {CategoryReadSchema, ItemSummarySchema} from "@/api/types/items.ts";
-import {onBeforeRouteUpdate} from "vue-router";
 import ItemSummaryList from "@/components/items/ItemSummaryList.vue";
 import itemAddedEventBus from "@/services/itemAddedEventBus.ts";
+import categoryAddedEventBus from "@/services/categoryAddedEventBus.ts";
 import useContentRefreshStore from "@/store/useContentRefreshStore.ts";
 
 const {items: itemsEndpoint} = useAxios()
@@ -69,6 +69,10 @@ itemAddedEventBus.on((id) => {
   })
 })
 
+categoryAddedEventBus.on((category: CategoryReadSchema) => {
+  categories.value.push(category)
+})
+
 
 onBeforeMount(() => {
   loadItems()
@@ -86,7 +90,7 @@ onBeforeMount(() => {
       <v-col>
         <v-menu
             :close-on-content-click="false"
-            scroll-strategy="close"
+            scroll-strategy="block"
             offset-y
             bottom
             nudge-bottom="3"
@@ -97,9 +101,8 @@ onBeforeMount(() => {
                 prepend-icon="mdi-shape"
                 size="small"
                 variant="outlined"
-            >
-              Categories
-            </v-btn>
+                :text="t('items.categories.filter')"
+            />
           </template>
           <v-card
               :width="xs ? '300' : '400'"
@@ -111,6 +114,7 @@ onBeforeMount(() => {
                   v-bind="textFieldStyling"
                   density="compact"
                   :items="categories"
+                  :label="t('items.categories.select_categories')"
                   multiple
                   item-title="name"
                   item-value="id"

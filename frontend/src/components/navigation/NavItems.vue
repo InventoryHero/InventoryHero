@@ -54,19 +54,23 @@ onBeforeRouteLeave(() => {
         >
           <v-list-item
             :title="t('create.item.short_title')"
+            prepend-icon="mdi-invoice-text-plus"
             @click="emit('openCreateItemModal')"
           />
           <v-list-item
             :title="t('create.box.short_title')"
             @click="emit('openCreateBoxModal')"
+            prepend-icon="mdi-package-variant-plus"
           />
           <v-list-item
             :title="t('create.room.short_title')"
             @click="emit('openCreateRoomModal')"
+            prepend-icon="mdi-map-marker-plus"
           />
           <v-list-item
             :title="t('create.category.short_title')"
             @click="emit('openCreateCategoryModal')"
+            prepend-icon="mdi-shape-plus"
           />
         </v-list>
       </v-menu>
@@ -75,7 +79,7 @@ onBeforeRouteLeave(() => {
 
     <v-list-item
         to="/items"
-        prepend-icon="mdi-invoice-list"
+        prepend-icon="mdi-invoice-text"
         :title="t('nav.items')"
         color="primary"
     />
@@ -87,7 +91,7 @@ onBeforeRouteLeave(() => {
     />
     <v-list-item
         to="/storage/rooms"
-        prepend-icon="mdi-door"
+        prepend-icon="mdi-map-marker"
         :title="t('nav.rooms')"
         color="primary"
     />

@@ -5,11 +5,10 @@ import {
     ItemDetailReadSchema, ItemInstanceCreate,
     ItemReadSchema,
     ItemSummarySchema, ItemUpdateSchema,
-    ItemInstanceUpdateData
+    CategoryCreateSchema, ItemInstanceUpdateSchema
 } from "@/api/types/items.ts";
 
 import {ApiResponse} from "@/api/types/ApiResponse.ts";
-import {HouseholdPublic} from "@/api/types/households.ts";
 
 export default (api: AxiosInstance) => {
 
@@ -37,6 +36,17 @@ export default (api: AxiosInstance) => {
         }
         return {
             success: false
+        }
+    }
+
+    const createNewCategory = async (toCreate: CategoryCreateSchema): Promise<ApiResponse<CategoryReadSchema>> => {
+        const response = await api.post("/categories/create", toCreate)
+        const success = response.status === 201
+        return {
+            success: success,
+            data: success ? response.data as CategoryReadSchema : undefined,
+            error: !success ? response.data.detail : undefined
+
         }
     }
 
@@ -115,7 +125,7 @@ export default (api: AxiosInstance) => {
         }
     }
 
-    const updateItemInstance = async(itemId: string, instanceId: string, updateData: ItemInstanceUpdateData): Promise<ApiResponse> => {
+    const updateItemInstance = async(itemId: string, instanceId: string, updateData: ItemInstanceUpdateSchema): Promise<ApiResponse> => {
         const response = await api.patch(`/items/${itemId}/${instanceId}`, updateData)
         return {
             success: response.status == 204,
@@ -150,7 +160,8 @@ export default (api: AxiosInstance) => {
         updateItem,
         updateItemInstance,
         deleteInstances,
-        addItemInstance
+        addItemInstance,
+        createNewCategory
     }
 
 }

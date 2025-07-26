@@ -13,6 +13,7 @@
     "households": "Households",
     "settings": "Settings",
     "logout": "Logout",
+    "qrcode-edit": "Label Designer",
     "administration": "Administration",
     "admin": {
       "overview": "Overview",
@@ -44,6 +45,10 @@
     }
   },
   "items": {
+    "categories": {
+      "filter": "Categories",
+      "select_categories": "Select categories"
+    },
     "all_displayed": "All items have been displayed",
     "content_changed_title": "Your items have changed",
     "content_changed_subtitle": "Click here to reload",
@@ -163,6 +168,18 @@
         "save_and_close": "Save & Close",
         "save": "Save",
         "new_item": "Create a new item {n}"
+      }
+    },
+    "category": {
+      "short_title": "Category",
+      "title": "Create category",
+      "form": {
+        "name": "Category name",
+        "save": "Save",
+        "save_and_close": "Save & Close",
+        "rules": {
+          "name_required": "A name needs to be supplied"
+        }
       }
     }
   },
@@ -366,14 +383,12 @@
       "scanned_box": "Box: {name}",
       "loading_camera": "Loading camera"
     },
-    "style": {
-      "margins": {
-        "unit": "mm"
-      }
-    },
+
     "label": {
       "title_1": "Create Labels",
+      "title_2": "@:qr.label.title_1",
       "description_1": "Select for which objects you want to create labels",
+      "description_2": "Design and print your labels",
       "search_room": "Search room...",
       "search_box": "Search box...",
       "select_all": "Select all",
@@ -383,7 +398,33 @@
       "tabs": {
         "room": "Rooms ({selected}/{amount})",
         "box": "Boxes ({selected}/{amount})"
-      }
+      },
+      "back": "Back to selection",
+      "style": {
+        "paper": "Paper",
+        "rows": "Rows per page",
+        "cols": "Labels per row",
+        "margins": {
+          "title": "Margins",
+          "left": "Left",
+          "top": "Top",
+          "right":  "Right",
+          "bottom": "Bottom",
+          "unit": "mm"
+        },
+        "label_settings": "Label settings",
+        "name_visible": "Show Name",
+        "icon_visible": "Show Type-Icon",
+        "qr_visible": "Show QR-Code",
+        "qr_icon_visible": "Show QR-Code-Icon",
+        "label_icon_size": "Type-Icon Size",
+        "qr_code_icon_size": "QR-Code-Icon Size",
+        "font_size": "Font Size",
+        "border_thickness": "Label Border"
+      },
+      "show_print_modal": "Show Print Preview",
+      "print": "Print",
+      "close_print_dialog": "Close Preview"
     }
   }
 }

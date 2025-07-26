@@ -6,6 +6,7 @@ import {StorageResponseSchema} from "@/api/types/storage.ts";
 const {t} = useI18n();
 const {btnStyle, textFieldStyling, selectStyling, textAreaStyle} = useAppStyling()
 const {items: itemEndpoint} = useAxios()
+const {close, onBeforeRouteLeaveHandler} = useGlobalModal()
 
 const active = defineModel<boolean>({
   required: true
@@ -14,6 +15,13 @@ const active = defineModel<boolean>({
 const item = defineModel<ItemReadSchema>('item', {
   required: true
 })
+
+const {
+  height, width
+} = defineProps<{
+  height: string,
+  width: string
+}>()
 
 const nameRules = ref([
   (v: string|null|ItemSummarySchema) => {
@@ -106,9 +114,7 @@ const handleSave = async () => {
 }
 
 onBeforeRouteLeave(() => {
-  if(active.value) {
-    return false
-  }
+  return onBeforeRouteLeaveHandler()
 })
 onBeforeMount(() => {
   loadCategories()
@@ -119,6 +125,8 @@ onBeforeMount(() => {
 <v-dialog
   v-model="active"
   persistent
+  :height="height"
+  :width="width"
 >
   <v-card
     :loading="loading"
@@ -128,7 +136,7 @@ onBeforeMount(() => {
     <template v-slot:append>
       <v-icon-btn
         icon="mdi-close"
-        @click="active = false"
+        @click="close"
       />
     </template>
     <v-card-text>
@@ -194,7 +202,7 @@ onBeforeMount(() => {
       <v-btn
         v-bind="btnStyle"
         :text="t('items.item.edit.cancel')"
-        @click="active = false"
+        @click="close"
       />
       <v-btn
           v-bind="btnStyle"

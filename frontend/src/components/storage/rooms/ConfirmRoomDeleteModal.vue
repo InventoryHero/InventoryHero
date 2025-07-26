@@ -28,21 +28,21 @@ onBeforeRouteLeave(() => {
   >
     <v-card>
       <v-card-title>
-        {{t('items.item.delete_confirmation.title')}}
+        {{t('rooms.room.delete_confirmation.title')}}
       </v-card-title>
       <v-card-text>
-        {{t('items.item.delete_confirmation.text')}}
+        {{t('rooms.room.delete_confirmation.text')}}
       </v-card-text>
       <v-card-actions>
         <v-btn
             v-bind="btnStyle"
-            :text="t('items.item.delete_confirmation.cancel')"
+            :text="t('rooms.room.delete_confirmation.cancel')"
             @click="deleteConfirmationVisible = false"
         />
         <v-spacer />
         <v-btn
             v-bind="btnStyle"
-            :text="t('items.item.delete_confirmation.confirm')"
+            :text="t('rooms.room.delete_confirmation.confirm')"
             @click="emit('delete')"
         />
       </v-card-actions>

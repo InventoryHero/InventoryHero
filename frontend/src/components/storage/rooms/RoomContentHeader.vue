@@ -3,21 +3,46 @@ import {ItemReadSchema} from "@/api/types/items.ts";
 import {RoomResponseSchema} from "@/api/types/storage.ts";
 
 const {t} = useI18n()
+const {storage} = useAxios()
+const router = useRouter()
+const {openModal} = useGlobalModal()
 
 const room = defineModel<RoomResponseSchema>({
   required: true
 })
 
-const deleteRoom = () => {
-  // TODO
+const roomDeleteConfirmationVisible = ref<boolean>(false)
+
+const deleteRoom = async (confirmed: boolean) => {
+  if(!confirmed){
+    roomDeleteConfirmationVisible.value = true
+    return
+  }
+
+  const {success, error} = await storage.deleteStorage(room.value.id)
+  if(!success){
+    // TODO
+    return
+  }
+  roomDeleteConfirmationVisible.value = false
+  router.push("/storage/rooms")
+
+
 }
 const editRoom = () => {
-  // TODO
+  openModal("editRoomModal", {
+    room: room.value,
+    'onUpdate:room': (newValue: RoomResponseSchema) => room.value = newValue,
+  })
 }
 
 </script>
 
 <template>
+  <confirm-room-delete-modal
+    v-model="roomDeleteConfirmationVisible"
+    @delete="deleteRoom(true)"
+  />
   <v-card>
     <template v-slot:prepend>
       <v-icon
@@ -31,7 +56,7 @@ const editRoom = () => {
       <v-spacer/>
       <v-btn
           prepend-icon="mdi-trash-can"
-          @click="deleteRoom"
+          @click="deleteRoom(false)"
           :text="t('rooms.room.delete')"
           density="comfortable"
           color="error"

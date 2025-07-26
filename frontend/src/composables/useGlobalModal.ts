@@ -2,9 +2,14 @@ import {type Component} from "vue";
 
 export const modals = {
     createRoomModal: defineAsyncComponent(() => import('@/components/storage/rooms/CreateRoomModal.vue')),
-    createBoxModal: defineAsyncComponent(() => import('@/components/storage/boxes/CreateBoxModal.vue')),
+    createBoxModal: defineAsyncComponent(() => import('@/components/storage/boxes/modals/CreateBoxModal.vue')),
     createItemModal: defineAsyncComponent(() => import('@/components/items/modals/CreateItemModal.vue')),
-    scanQrCodeModal: defineAsyncComponent(() => import('@/components/qr/modals/ScanLabel.vue'))
+    createCategoryModal: defineAsyncComponent(() => import('@/components/categories/CreateCategoryModal.vue')),
+    scanQrCodeModal: defineAsyncComponent(() => import('@/components/qr/modals/ScanLabel.vue')),
+    editItemInstanceModal: defineAsyncComponent(() => import('@/components/items/modals/EditItemInstanceDialog.vue')),
+    editItemModal: defineAsyncComponent(() => import('@/components/items/modals/EditItemDialog.vue')),
+    editRoomModal: defineAsyncComponent(() => import("@/components/storage/rooms/modals/EditRoomModal.vue")),
+    editBoxModal: defineAsyncComponent(() => import("@/components/storage/boxes/modals/EditBoxModal.vue"))
 }
 
 export type ModalName = keyof typeof modals
@@ -43,6 +48,19 @@ export default () => {
         return true
     }
 
+    const onBeforeRouteLeaveHandler = () => {
+        if(activeModal.value === null){
+            return true
+        }
+
+        if(isDirty.value){
+            isAwaitingConfirmation.value = true
+            return false
+        }
+        activeModal.value = null
+        return false
+    }
+
     return {
         activeModal,
         isDirty,
@@ -52,5 +70,6 @@ export default () => {
         stay,
         forceClose,
         close,
+        onBeforeRouteLeaveHandler
     }
 }

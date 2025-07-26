@@ -1,13 +1,20 @@
-import {AxiosInstance, AxiosResponse} from "axios";
-import {BoxResponseSchema, RoomResponseSchema, StorageCreateSchema, StorageType} from "@/api/types/storage.ts";
+import {AxiosInstance} from "axios";
+import {
+    BoxResponseSchema,
+    BoxUpdateSchema,
+    RoomResponseSchema, RoomUpdateSchema,
+    StorageCreateSchema,
+    StorageType
+} from "@/api/types/storage.ts";
 import {ApiResponse} from "@/api/types/ApiResponse.ts";
-import {ItemDetailReadSchema, ItemSummarySchema} from "@/api/types/items.ts";
+import {ItemSummarySchema} from "@/api/types/items.ts";
 
-type test = BoxResponseSchema | RoomResponseSchema
+type AnyStorageResponse = BoxResponseSchema | RoomResponseSchema
+type AnyStorageUpdateSchema = BoxUpdateSchema | RoomUpdateSchema
 
 export default (api: AxiosInstance) => {
 
-    const getAllStorage = async (storage_type: StorageType|undefined = undefined): Promise<ApiResponse<Array<test>>> => {
+    const getAllStorage = async (storage_type: StorageType|undefined = undefined): Promise<ApiResponse<Array<AnyStorageResponse>>> => {
         const response = await api.get("/storage/all", {
             params: {
                 storage_type:storage_type
@@ -16,7 +23,7 @@ export default (api: AxiosInstance) => {
         if(response.status === 200){
             return {
                 success: true,
-                data: response.data as Array<test>
+                data: response.data as Array<AnyStorageResponse>
             }
         }
         return {
@@ -53,7 +60,7 @@ export default (api: AxiosInstance) => {
         }
     }
 
-    const getStorageDetail = async (id?: string): Promise<ApiResponse<test>> => {
+    const getStorageDetail = async (id?: string): Promise<ApiResponse<AnyStorageResponse>> => {
         let url = `/storage/${id}/detail`
 
         const response = await api.get(url)
@@ -61,14 +68,14 @@ export default (api: AxiosInstance) => {
             return {
                 success: true,
                 data: response.data
-            } as ApiResponse<test>
+            } as ApiResponse<AnyStorageResponse>
         }
         return {
             success: false
         }
     }
 
-    const createStorage = async (createSchema: StorageCreateSchema): Promise<ApiResponse<test>> => {
+    const createStorage = async (createSchema: StorageCreateSchema): Promise<ApiResponse<AnyStorageResponse>> => {
         let url = `/storage/create`
         try{
             const response = await api.post(url, createSchema)
@@ -76,7 +83,7 @@ export default (api: AxiosInstance) => {
                 return {
                     success: true,
                     data: response.data
-                } as ApiResponse<test>
+                } as ApiResponse<AnyStorageResponse>
             }
         } catch(error){
             return {
@@ -88,7 +95,25 @@ export default (api: AxiosInstance) => {
             success: false
         }
     }
+    const deleteStorage = async (id: string): Promise<ApiResponse<void>> => {
+        let url = `/storage/${id}/`
+        const response = await api.delete(url)
+        const success = response.status === 204
+        return {
+            success: success,
+            error: !success ? response.data.detail : undefined
+        }
+    }
 
+    const updateStorage = async (id: string, updateData: AnyStorageUpdateSchema): Promise<ApiResponse<AnyStorageResponse>> => {
+        const response = await api.put(`/storage/${id}/`, updateData)
+        const success = response.status === 200
+        return {
+            success: success,
+            data: success ? response.data : undefined,
+            error: !success ? response.data.detail : undefined
+        }
+    }
 
     return {
         getAllStorage,
@@ -96,6 +121,8 @@ export default (api: AxiosInstance) => {
         getStorageItems,
         getStorageBoxes,
         createStorage,
+        deleteStorage,
+        updateStorage,
     }
 
 }

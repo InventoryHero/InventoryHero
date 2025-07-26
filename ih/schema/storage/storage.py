@@ -23,6 +23,16 @@ class StorageBaseSchema(BaseModel):
 class StorageCreateSchema(StorageBaseSchema):
      pass
 
+class StorageUpdateSchema(BaseModel):
+    name: Optional[str] = None
+
+class RoomUpdateSchema(StorageUpdateSchema):
+    storage_type: Literal[StorageType.ROOM]
+
+class BoxUpdateSchema(StorageUpdateSchema):
+    storage_type: Literal[StorageType.BOX]
+    parent_id: Optional[UUID] = None
+
 class StorageResponseSchema(StorageBaseSchema):
     id: UUID
     parent_id: Optional[UUID] = None
@@ -45,3 +55,7 @@ AnyStorageResponse = Annotated[
     Field(discriminator="storage_type")
 ]
 
+AnyStorageUpdateSchema = Annotated[
+    Union[RoomUpdateSchema, BoxUpdateSchema],
+    Field(discriminator="storage_type")
+]

@@ -58,16 +58,8 @@ watch(activeModal, (newVal) => {
 
 
 onBeforeRouteLeave(() => {
-  if(activeModal.value === null){
-    return true
-  }
+  console.log(activeModal)
 
-  if(isDirty.value){
-    isAwaitingConfirmation.value = true
-    return false
-  }
-  activeModal.value = null
-  return false
 })
 
 </script>
@@ -119,7 +111,7 @@ onBeforeRouteLeave(() => {
         @open-create-item-modal="openModal('createItemModal')"
         @open-create-box-modal="openModal('createBoxModal')"
         @open-create-room-modal="openModal('createRoomModal')"
-        @open-create-category-modal="() => {}"
+        @open-create-category-modal="openModal('createCategoryModal')"
       />
       <template v-slot:append>
         <v-list-item
@@ -177,28 +169,14 @@ onBeforeRouteLeave(() => {
             color="primary"
         >
           <v-icon icon="mdi-plus"/>
-          <v-speed-dial
-              location="top center"
-              transition="slide-x-transition"
-              v-model="fabOpen"
-              activator="parent"
-          >
-            <v-btn key="1" color="success" icon>
-              <v-icon size="24">$success</v-icon>
-            </v-btn>
 
-            <v-btn key="2" color="info" icon>
-              <v-icon size="24">$info</v-icon>
-            </v-btn>
-
-            <v-btn key="3" color="warning" icon>
-              <v-icon size="24">$warning</v-icon>
-            </v-btn>
-
-            <v-btn key="4" color="error" icon>
-              <v-icon size="24">$error</v-icon>
-            </v-btn>
-          </v-speed-dial>
+          <fab-items
+            v-model="fabOpen"
+            @open-create-item-modal="openModal('createItemModal')"
+            @open-create-box-modal="openModal('createBoxModal')"
+            @open-create-room-modal="openModal('createRoomModal')"
+            @open-create-category-modal="openModal('createCategoryModal')"
+          />
         </v-fab>
         <transition
             :name="transition.name"

@@ -4,6 +4,7 @@ import useAppStyling from "@/composables/useAppStyling.ts";
 const {numberInputStyling} = useAppStyling()
 const {t, d} = useI18n()
 const {items: itemEndpoint} = useAxios()
+const {openModal} = useGlobalModal()
 const {
   itemName,
   storageName,
@@ -27,7 +28,6 @@ const emit = defineEmits<{
 }>()
 
 const quantityLoading = ref<boolean>(false)
-const editItemInstanceDialogVisible = ref<boolean>(false)
 const deleting = ref<boolean>(false)
 
 const formatExpirationDate = (expirationDate: string|null|undefined) => {
@@ -71,7 +71,14 @@ const changeAmount = (newAmount: number) => {
 }
 
 const edit = () => {
-  editItemInstanceDialogVisible.value = true
+  openModal("editItemInstanceModal", {
+    itemName: itemName,
+    storageName: storageName,
+    itemInstance: instance,
+    itemAttributes: attributes,
+    itemId: itemId,
+    onReload: () => emit('reload')
+  })
 }
 const deleteAllInstances = async () => {
   deleting.value = true
@@ -86,15 +93,6 @@ const deleteAllInstances = async () => {
 </script>
 
 <template>
-  <edit-item-instance-dialog
-      v-model="editItemInstanceDialogVisible"
-      :item-name="itemName"
-      :storage-name="storageName"
-      :item-instance="instance"
-      :item-attributes="attributes"
-      :item-id="itemId"
-      @reload="emit('reload')"
-  />
   <v-card
       height="fit-content"
       max-height="400"

@@ -14,6 +14,7 @@ interface Point {
 const {storage} = useAxios();
 const router = useRouter()
 const theme = useTheme()
+const {onBeforeRouteLeaveHandler} = useGlobalModal()
 
 const {t} = useI18n()
 
@@ -189,7 +190,7 @@ watch(scannedId, async (newValue: string|null|undefined) => {
 
 })
 onBeforeRouteLeave(() => {
-  active.value = false
+  return onBeforeRouteLeaveHandler()
 })
 onMounted(async () => {
   await navigator.mediaDevices.getUserMedia({video: true})

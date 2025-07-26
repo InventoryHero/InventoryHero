@@ -3,7 +3,9 @@ import {ItemSummarySchema} from "@/api/types/items.ts";
 import {BoxResponseSchema} from "@/api/types/storage.ts";
 
 const {storage: storageEndpoint} = useAxios()
-const {t} = useI18n();
+const {t} = useI18n()
+const router = useRouter()
+const {openModal} = useGlobalModal()
 
 const {
   id
@@ -15,6 +17,7 @@ const loading = ref<boolean>(false)
 
 const box = ref<BoxResponseSchema>()
 const items = ref<Array<ItemSummarySchema>>([])
+const deleteBoxModalVisible = ref(false)
 
 const loadBox = async () => {
   const {success, data, error} = await storageEndpoint.getStorageDetail(id)
@@ -34,11 +37,25 @@ const loadBoxContent = async () => {
   items.value = data ?? []
 }
 
-const deleteBox = async () => {
-  // TODO
+const deleteBox = async (confirmed: boolean) => {
+  if(!confirmed){
+    deleteBoxModalVisible.value = true
+    return
+  }
+
+  const {success, error} = await storageEndpoint.deleteStorage(id)
+  if(!success){
+    // TODO
+    return
+  }
+  deleteBoxModalVisible.value = false
+  router.push(`/storage/boxes`)
 }
 const editBox = async () => {
-  // TODO
+  openModal("editBoxModal", {
+    box: box.value,
+    'onUpdate:box': (newValue: BoxResponseSchema) => box.value = newValue
+  })
 }
 
 onBeforeMount(async () => {
@@ -50,6 +67,10 @@ onBeforeMount(async () => {
 </script>
 
 <template>
+  <confirm-box-delete-modal
+    v-model="deleteBoxModalVisible"
+    @delete="deleteBox(true)"
+  />
   <div
       v-if="loading"
   >
@@ -72,7 +93,7 @@ onBeforeMount(async () => {
         <v-spacer/>
         <v-btn
             prepend-icon="mdi-trash-can"
-            @click="deleteBox"
+            @click="deleteBox(false)"
             :text="t('boxes.box.delete')"
             density="comfortable"
             color="error"

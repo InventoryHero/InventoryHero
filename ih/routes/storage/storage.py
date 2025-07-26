@@ -12,7 +12,7 @@ from ih.routes._base.UserApiRouter import UserAPIRouter
 from ih.schema.items import ItemSummarySchema
 
 from ih.schema.storage import StorageResponseSchema, StorageCreateSchema, AnyStorageResponse, ContentType, \
-    BoxResponseSchema, RoomResponseSchema
+    BoxResponseSchema, RoomResponseSchema, AnyStorageUpdateSchema, RoomUpdateSchema, BoxUpdateSchema
 
 router = UserAPIRouter(prefix="", tags=["storage"])
 scoped_router = UserAPIRouter(prefix="/{storage_id}", tags=["storage"])
@@ -82,7 +82,6 @@ class StorageScopedController(HouseholdContextController):
                     detail=f"storage_{self.storage.storage_type}_not_support"
                 )
 
-
     @scoped_router.get(
         "/items",
         status_code=status.HTTP_200_OK,
@@ -105,5 +104,16 @@ class StorageScopedController(HouseholdContextController):
                 detail="box_has_only_items"
             )
         return self.repositories.storage.list_boxes(self.storage.id)
+
+    @scoped_router.delete("/", status_code=status.HTTP_204_NO_CONTENT)
+    def delete_storage(self):
+        self.repositories.storage.delete_storage(self.storage)
+
+    @scoped_router.put("/", status_code=status.HTTP_200_OK, response_model=AnyStorageResponse)
+    def update_storage(self, update_data: AnyStorageUpdateSchema) -> AnyStorageResponse:
+        print(update_data)
+
+        self.repositories.storage.update_storage(self.storage, update_data)
+        return self.storage
 
 

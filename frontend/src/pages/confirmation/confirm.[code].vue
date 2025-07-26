@@ -1,7 +1,5 @@
 <script setup lang="ts">
 import {computed, onMounted, ref} from 'vue'
-import {UserEndpoint} from "@/api/http";
-import useAxiosOld from "@/composables/useAxiosOld.ts";
 import { useRouter} from "vue-router";
 import {useI18n} from "vue-i18n";
 

@@ -21,6 +21,11 @@ export interface StorageResponseSchema {
   parent_id?: string | null;
   id: string;
 }
+export interface BoxUpdateSchema {
+  name?: string | null;
+  storage_type: "box";
+  parent_id?: string | null;
+}
 export interface RoomResponseSchema {
   name: string;
   storage_type: "room";
@@ -28,6 +33,10 @@ export interface RoomResponseSchema {
   id: string;
   num_boxes?: number | null;
   num_items?: number | null;
+}
+export interface RoomUpdateSchema {
+  name?: string | null;
+  storage_type: "room";
 }
 export interface StorageBaseSchema {
   name: string;
@@ -38,4 +47,7 @@ export interface StorageCreateSchema {
   name: string;
   storage_type: StorageType;
   parent_id?: string | null;
+}
+export interface StorageUpdateSchema {
+  name?: string | null;
 }

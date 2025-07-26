@@ -10,18 +10,23 @@ import {toISODateString} from "@/utils/date.ts";
 const {t} = useI18n();
 const {btnStyle, textFieldStyling, textAreaStyle, numberInputStyling, dateInputStyling} = useAppStyling()
 const {items: itemEndpoint} = useAxios()
+const {close, onBeforeRouteLeaveHandler} = useGlobalModal()
 
 const active = defineModel<boolean>({
   required: true
 })
 
 const {
+  height,
+  width,
   itemName,
   storageName,
   itemId,
   itemInstance,
   itemAttributes
 } = defineProps<{
+  height: string,
+  width: string,
   itemName: string,
   storageName: string,
   itemId: string,
@@ -61,11 +66,6 @@ const reset = () => {
   }
 }
 
-const close = () => {
-  active.value = false
-
-}
-
 const handleSave = async () => {
   const {valid} = await editForm.value.validate()
   if(!valid){
@@ -96,12 +96,7 @@ watch(active, () => {
 })
 
 onBeforeRouteLeave(() => {
-  if(loading.value){
-    return false
-  }
-  if(active.value) {
-    return false
-  }
+  return onBeforeRouteLeaveHandler()
 })
 
 </script>
@@ -110,6 +105,8 @@ onBeforeRouteLeave(() => {
   <v-dialog
       v-model="active"
       persistent
+      :height="height"
+      :width="width"
   >
     <v-card
       v-if="active"
