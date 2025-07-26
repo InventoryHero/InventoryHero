@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {useAuthStore} from "@/store";
+import useAuthStore from "@/store/useAuthStore";
 import {useNotification} from "@kyvg/vue3-notification";
 import {HouseholdMemberPublic, HouseholdPublic, Role} from "@/api/types/households.ts";
 import {storeToRefs} from "pinia";

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {useAuthStore} from "@/store";
+import useAuthStore from "@/store/useAuthStore";
 import {storeToRefs} from "pinia";
 import {useNotification} from "@kyvg/vue3-notification";
 

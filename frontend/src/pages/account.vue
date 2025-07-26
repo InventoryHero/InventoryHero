@@ -1,6 +1,7 @@
 <script setup lang="ts">
 
-import {useAuthStore, useConfigStore} from "@/store";
+import useAuthStore from "@/store/useAuthStore";
+import useConfigStore from "@/store/useConfigStore.ts"
 import { ref, useTemplateRef} from "vue";
 import {useI18n} from "vue-i18n";
 import useAppStyling from "@/composables/useAppStyling.ts";

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {useConfigStore} from "@/store";
+import useConfigStore from "@/store/useConfigStore.ts"
 import useAppStyling from "@/composables/useAppStyling.ts";
 
 const configStore = useConfigStore()

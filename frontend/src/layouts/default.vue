@@ -1,10 +1,7 @@
 <script setup lang="ts">
-import {
-  useAuthStore,
-  useConfigStore
-} from "@/store"
+import useAuthStore from "@/store/useAuthStore";
 import {Notifications} from "@kyvg/vue3-notification";
-
+import useConfigStore from "@/store/useConfigStore.ts"
 
 const currRoute = useRoute()
 const {t} = useI18n()

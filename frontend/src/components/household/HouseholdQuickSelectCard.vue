@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {useAuthStore} from "@/store";
+import useAuthStore from "@/store/useAuthStore";
 import {useI18n} from "vue-i18n";
 import {useRouter} from "vue-router";
 import useAppStyling from "@/composables/useAppStyling.ts";

@@ -57,7 +57,7 @@ const handleSave = async () => {
     return
   }
 
-  box.value = data!
+  box.value = data! as BoxResponseSchema
   forceClose()
 }
 

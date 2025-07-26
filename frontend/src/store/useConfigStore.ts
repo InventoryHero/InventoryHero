@@ -1,9 +1,14 @@
 import { defineStore } from 'pinia'
 import {useLocalStorage} from "@vueuse/core";
-import {Theme} from "./types"
+
+export type Theme = {
+    name: string,
+    color: string,
+    dark: boolean,
+}
 
 
-export const useConfigStore = defineStore('config', {
+export default defineStore('config', {
     state: () => ({
         initialized: false,
         config: useLocalStorage("config", {

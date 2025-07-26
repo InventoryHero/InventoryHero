@@ -98,7 +98,7 @@ onMounted(() => {
             class="d-flex justify-space-between align-center"
         >
           {{ t('households.invite.title') }}
-          <app-icon-btn
+          <v-icon-btn
               icon="mdi-close"
               @click="emit('close')"
           />
@@ -117,7 +117,7 @@ onMounted(() => {
             :model-value="inviteLink"
           >
             <template v-slot:append>
-              <app-icon-btn
+              <v-icon-btn
                   :disabled="loadingInviteCode"
                   icon="mdi-clipboard-outline"
                   @click="copyToClipboard()"
@@ -137,7 +137,7 @@ onMounted(() => {
           <template
             v-if="webShareApiSupported"
           >
-            <app-icon-btn
+            <v-icon-btn
                 icon="mdi-share-variant"
                 color="primary"
                 size="x-large"
@@ -151,20 +151,20 @@ onMounted(() => {
             <s-email
               :share-options="emailShare"
             >
-              <app-icon-btn
+              <v-icon-btn
                 icon="mdi-email"
+                variant="tonal"
                 color="primary"
-                size="x-large"
                 class="me-1"
               />
             </s-email>
             <s-whats-app
               :share-options="whatsAppShare"
             >
-              <app-icon-btn
+              <v-icon-btn
+                variant="tonal"
                 icon="mdi-whatsapp"
                 color="primary"
-                size="x-large"
                 class="me-1"
               />
             </s-whats-app>

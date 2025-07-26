@@ -3,6 +3,11 @@ import useAppStyling from "@/composables/useAppStyling.ts";
 
 const {t} = useI18n();
 const {btnStyle} = useAppStyling()
+const {
+  name
+} = defineProps<{
+  name: string
+}>()
 
 const deleteConfirmationVisible = defineModel<boolean>({
   required: true
@@ -25,23 +30,32 @@ onBeforeRouteLeave(() => {
       persistent
       :close-on-back="false"
       width="auto"
+      max-width="60vw"
   >
     <v-card>
       <v-card-title>
-        {{t('rooms.room.delete_confirmation.title')}}
+        <i18n-t keypath="rooms.room.delete_confirmation.title">
+          <template #name>
+            <span class="text-primary">{{name}}</span>
+          </template>
+        </i18n-t>
       </v-card-title>
       <v-card-text>
         {{t('rooms.room.delete_confirmation.text')}}
       </v-card-text>
-      <v-card-actions>
+      <v-card-actions
+        justify="end"
+      >
         <v-btn
             v-bind="btnStyle"
+            prepend-icon="mdi-cancel"
             :text="t('rooms.room.delete_confirmation.cancel')"
             @click="deleteConfirmationVisible = false"
         />
-        <v-spacer />
         <v-btn
             v-bind="btnStyle"
+            prepend-icon="mdi-trash-can"
+            color="error"
             :text="t('rooms.room.delete_confirmation.confirm')"
             @click="emit('delete')"
         />

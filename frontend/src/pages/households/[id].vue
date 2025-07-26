@@ -1,14 +1,10 @@
 <script setup lang="ts">
-import {useAuthStore} from "@/store";
-import {HouseholdEndpoint} from "@/api/http";
-import {HouseholdMember} from "@/types";
+import useAuthStore from "@/store/useAuthStore";
 import {useTemplateRef} from "vue";
-import useDialogConfig from "@/composables/useDialogConfig.ts";
 import {notify} from "@kyvg/vue3-notification";
-import {useDisplay} from "vuetify";
 import {HouseholdMemberPublic, HouseholdPublic, HouseholdUpdate} from "@/api/types/households.ts";
 import {storeToRefs} from "pinia";
-import {ROLE_ADMIN, ROLE_MEMBER, ROLE_OWNER} from "@/api/types/householdRoles.ts";
+import {ROLE_ADMIN, ROLE_OWNER} from "@/api/types/householdRoles.ts";
 
 const authStore = useAuthStore()
 const {household: householdEndpoint} = useAxios()

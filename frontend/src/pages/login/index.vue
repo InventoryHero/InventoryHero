@@ -1,6 +1,7 @@
 <script setup lang="ts">
 
-import {useAuthStore, useConfigStore} from "@/store";
+import useAuthStore from "@/store/useAuthStore";
+import useConfigStore from "@/store/useConfigStore.ts"
 import {useTemplateRef} from "vue";
 import {VForm} from "vuetify/components";
 import {storeToRefs} from "pinia";

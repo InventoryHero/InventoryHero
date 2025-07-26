@@ -42,6 +42,7 @@ const editRoom = () => {
   <confirm-room-delete-modal
     v-model="roomDeleteConfirmationVisible"
     @delete="deleteRoom(true)"
+    :name="room.name"
   />
   <v-card>
     <template v-slot:prepend>

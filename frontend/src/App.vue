@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import {useAuthStore, useConfigStore} from "@/store";
+import useAuthStore from "@/store/useAuthStore";
+import useConfigStore from "@/store/useConfigStore.ts"
 import {storeToRefs} from "pinia";
 
 const route = useRoute()

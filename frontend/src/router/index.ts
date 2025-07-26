@@ -1,7 +1,8 @@
 
 import {createRouter, createWebHistory} from "vue-router";
 import {routes} from 'vue-router/auto-routes'
-import {useAuthStore, useConfigStore} from "@/store";
+import useAuthStore from "@/store/useAuthStore";
+import useConfigStore from "@/store/useConfigStore.ts"
 import useContentRefreshStore from "@/store/useContentRefreshStore.ts";
 import {i18n} from "@/lang";
 //@ts-expect-error cannot be found, but it is there

@@ -91,7 +91,7 @@ watch(collapsed, (newValue) => {
       class="d-flex justify-space-between align-center"
     >
       {{ t('households.create_new.title')}}
-      <app-icon-btn
+      <v-icon-btn
           :icon="collapseIcon"
           @click="collapsed=!collapsed"
       />

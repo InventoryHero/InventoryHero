@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import {storeToRefs} from "pinia";
 import useContentRefreshStore from "@/store/useContentRefreshStore.ts";
-import {useConfigStore} from "@/store";
+import useConfigStore from "@/store/useConfigStore.ts"
 const contentRefreshStore = useContentRefreshStore()
 const configStore = useConfigStore()
 

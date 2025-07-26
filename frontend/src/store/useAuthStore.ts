@@ -1,24 +1,17 @@
 import {defineStore} from "pinia";
-import {Household, IRegisterRequest} from "@/types";
-import {useGeneralSocketStore, useHouseholdSocketStore} from "@/store";
-import {Permissions, User} from "@/types/api.ts";
+import {useGeneralSocketStore, useHouseholdSocketStore} from "@/store/index.ts";
 import {HouseholdPublic} from "@/api/types/households.ts";
 import {UserPublic} from "@/api/types/user.ts";
 
 
-interface UserStore {
-    user?: User,
-    household?: Household,
-    authorized?: boolean
-}
 
 
-export const useAuthStore = defineStore('auth', {
+export default defineStore('auth', {
     state: () =>({
         user: undefined as UserPublic|undefined,
         household: undefined as (HouseholdPublic | undefined),
         authorized: false,
-        permissions: {} as Permissions,
+        permissions: {},
     }),
     actions: {
         async whoami(){
@@ -48,9 +41,9 @@ export const useAuthStore = defineStore('auth', {
 
         async destroy(){
             const socketStore = useHouseholdSocketStore()
-            socketStore.leaveHousehold()
+            //socketStore.leaveHousehold()
             const generalSocketStore = useGeneralSocketStore()
-            generalSocketStore.leave()
+            //generalSocketStore.leave()
             await this.reset()
         },
         async isAuthorized(){
@@ -73,7 +66,7 @@ export const useAuthStore = defineStore('auth', {
     },
     getters: {
         isAdmin: state => {
-            return state.permissions.admin ?? false
+            return false
         }
     }
 })

@@ -83,11 +83,8 @@ declare global {
   const useShareMethods: typeof import('./src/composables/useShareMethods')['default']
   const useSlots: typeof import('vue')['useSlots']
   const useStorageHelper: typeof import('./src/composables/useStorageHelper')['default']
-  const useStorageIcon: typeof import('./src/composables/useStorageIcon')['default']
-  const useStorageTitle: typeof import('./src/composables/useStorageTitle')['default']
   const useStrongPasswordRule: typeof import('./src/composables/useStrongPasswordRule')['default']
   const useTemplateRef: typeof import('vue')['useTemplateRef']
-  const useUpdateStorage: typeof import('./src/composables/useUpdateStorage')['default']
   const useUserNameCharacterRule: typeof import('./src/composables/useUserNameCharacterRule')['default']
   const watch: typeof import('vue')['watch']
   const watchEffect: typeof import('vue')['watchEffect']
@@ -99,9 +96,6 @@ declare global {
   // @ts-ignore
   export type { Component, Slot, Slots, ComponentPublicInstance, ComputedRef, DirectiveBinding, ExtractDefaultPropTypes, ExtractPropTypes, ExtractPublicPropTypes, InjectionKey, PropType, Ref, MaybeRef, MaybeRefOrGetter, VNode, WritableComputedRef } from 'vue'
   import('vue')
-  // @ts-ignore
-  export type { AxiosContext } from './src/composables/useAxiosOld'
-  import('./src/composables/useAxiosOld')
   // @ts-ignore
   export type { ModalName } from './src/composables/useGlobalModal'
   import('./src/composables/useGlobalModal')

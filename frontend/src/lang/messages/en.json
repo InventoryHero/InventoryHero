@@ -1,7 +1,7 @@
 {
   "app": {
     "title": "InventoryHero",
-    "loading_content": "Almost ready! \uD83D\uDE80 We’re fine-tuning everything for you. \uD83D\uDEE0\uFE0F"
+    "loading_content": "Almost ready! 🚀 We’re fine-tuning everything for you. 🛠️"
   },
   "nav": {
     "home": "Home",
@@ -95,7 +95,6 @@
         "cancel": "Cancel"
       }
     }
-
   },
   "boxes": {
     "all_displayed": "All boxes have been displayed",
@@ -121,9 +120,15 @@
         "boxes": "Boxes"
       },
       "delete": "Delete",
-      "edit":  "Edit",
+      "edit": "Edit",
       "items_quantity": "No items | One item | {n} items",
-      "boxes_quantity": "No boxes | One box | {n} boxes"
+      "boxes_quantity": "No boxes | One box | {n} boxes",
+      "delete_confirmation": {
+        "text": "This will delete all children of this room. This means that all boxes and items stored inside (and all items stored inside those boxes) will be deleted. This action cannot be undone.",
+        "title": "Delete Room {name}",
+        "cancel": "Cancel",
+        "confirm": "Delete"
+      }
     }
   },
   "create": {
@@ -148,7 +153,7 @@
         "save": "Save"
       }
     },
-    "item":  {
+    "item": {
       "title": "Add or create item",
       "short_title": "Item",
       "form": {
@@ -199,30 +204,28 @@
       "save": "Save household"
     },
     "leave": {
-
       "title": "Leave Household {name}",
       "text": "Leaving this household can not be undone. To rejoin the household you'll need to ask the owner for a new invite.",
       "cancel": "Stay",
       "confirm": "Leave"
-
     },
     "edit": {
       "delete_household": "Delete Household",
       "to_households": "Back to households",
       "invite_link": "Unused invitation link",
       "not_found": {
-        "title": "Household Not Found \uD83D\uDE14",
+        "title": "Household Not Found 😔",
         "text": "We couldn't locate the household you’re looking for. It might have been removed or not available at the moment. Try refreshing the page to see if that helps.",
         "back": "Back to all households"
       },
       "no_rights": {
-        "title": "Permission Required \uD83D\uDD12",
+        "title": "Permission Required 🔒",
         "text": "You don’t have permission to edit this household. Only the creator or owner of the household can make changes. Please suggest your changes to the owner of this household"
       },
       "delete": {
         "confirm": {
           "text": "Are you sure you want to delete this household? This action is <strong class='text-primary'>permanent and cannot be undone</strong>. All data related to the household will be <strong class='text-primary'>permanently removed</strong>, and members will no longer have access to it. Please confirm if you wish to proceed.",
-          "title": "⚠\uFE0F Confirm Household Deletion \uD83D\uDDD1\uFE0F",
+          "title": "⚠️ Confirm Household Deletion 🗑️",
           "abort": "Cancel",
           "confirm": "@:households.edit.delete_household"
         }
@@ -230,7 +233,7 @@
       "transfer_ownership": {
         "confirm": {
           "text": "Are you sure you want to transfer ownership of this household? This action is <strong class='text-primary'>permanent and cannot be undone</strong>. Ownership and all permissions, including the ability to edit, delete, and invite users to the household, will be transferred to the chosen user: {user}. Please confirm if you wish to proceed.",
-          "title": "⚠\uFE0F Confirm Ownership Transfer \uD83C\uDFE0",
+          "title": "⚠️ Confirm Ownership Transfer 🏠",
           "abort": "Cancel",
           "confirm": "Transfer ownership"
         }
@@ -238,7 +241,7 @@
       "kick": {
         "confirm": {
           "text": "Are you sure you want to remove this user from the household? This action will be executed <strong class='text-primary'>immediately and cannot be undone</strong>. The user will be removed from the household, and if they wish to rejoin, a new invite will need to be issued. Please confirm if you wish to proceed.",
-          "title": "\uD83D\uDEAA Confirm User Removal \uD83D\uDEAB",
+          "title": "🚪 Confirm User Removal 🚫",
           "abort": "Cancel",
           "confirm": "Remove User"
         }
@@ -246,7 +249,7 @@
       "delete_invite": {
         "confirm": {
           "text": "Are you sure you want to delete this invite? This action will <strong class='text-primary'>invalidate the invite link</strong>, and any user attempting to join with this link will not be able to. If you want to invite the user again, a new invite will need to be issued. Please confirm if you wish to proceed.",
-          "title": "❌ Confirm Invite Deletion \uD83D\uDEAB",
+          "title": "❌ Confirm Invite Deletion 🚫",
           "abort": "Cancel",
           "confirm": "Delete invite"
         }
@@ -275,7 +278,7 @@
     "invite": {
       "generating_code": "Generating your invite link...",
       "title": "Invite your friend",
-      "text": "Hey! \uD83C\uDF89\n\nLet’s get organized together! \uD83D\uDCE6 \n\nI’ve been using InventoryHero to manage my stuff, and I think you’ll love it too! Check it out and join me here: \n\n{inviteLink}",
+      "text": "Hey! 🎉\n\nLet’s get organized together! 📦 \n\nI’ve been using InventoryHero to manage my stuff, and I think you’ll love it too! Check it out and join me here: \n\n{inviteLink}",
       "copy_to_clipboard": "Copy the invite link into your clipboard...",
       "or": "...or share it directly",
       "email": {
@@ -325,7 +328,7 @@
     }
   },
   "login": {
-    "title": "\uD83D\uDE80 Welcome to InventoryHero",
+    "title": "🚀 Welcome to InventoryHero",
     "subtitle": "Power up your Inventory Management",
     "forgot_password_btn": "Forgot password?",
     "btn": "Login",
@@ -358,8 +361,8 @@
     }
   },
   "register": {
-    "title": "\uD83C\uDF89 Join InventoryHero now",
-    "subtitle": "\uD83D\uDE80 Start managing your inventory effortlessly",
+    "title": "🎉 Join InventoryHero now",
+    "subtitle": "🚀 Start managing your inventory effortlessly",
     "username": "@:login.username",
     "password": "@:login.password",
     "email": "E-Mail",
@@ -383,7 +386,6 @@
       "scanned_box": "Box: {name}",
       "loading_camera": "Loading camera"
     },
-
     "label": {
       "title_1": "Create Labels",
       "title_2": "@:qr.label.title_1",
@@ -408,7 +410,7 @@
           "title": "Margins",
           "left": "Left",
           "top": "Top",
-          "right":  "Right",
+          "right": "Right",
           "bottom": "Bottom",
           "unit": "mm"
         },
@@ -426,5 +428,6 @@
       "print": "Print",
       "close_print_dialog": "Close Preview"
     }
-  }
+  },
+  "description": "Inventory management made easy"
 }

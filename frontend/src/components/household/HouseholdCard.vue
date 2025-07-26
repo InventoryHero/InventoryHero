@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import {useAuthStore, useHouseholdSocketStore} from "@/store";
-import useDialogConfig from "@/composables/useDialogConfig.ts";
+import useAuthStore from "@/store/useAuthStore";
 import HouseholdInvite from "@/components/household/HouseholdInvite.vue";
 import {useNotification} from "@kyvg/vue3-notification";
 import {HouseholdWithMemberPublic} from "@/api/types/households.ts";

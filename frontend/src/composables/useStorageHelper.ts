@@ -1,4 +1,4 @@
-import {StorageTypes} from "@/types";
+
 import {StorageType} from "@/api/types/items.ts";
 
 export default () => {

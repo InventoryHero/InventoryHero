@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import {useAuthStore, useConfigStore} from "@/store";
 import { ref, useTemplateRef} from "vue";
 import {useI18n} from "vue-i18n";
 import useAppStyling from "@/composables/useAppStyling.ts";
@@ -8,8 +7,6 @@ import useEmailRule from "@/composables/useEmailRule.ts";
 import {VForm} from "vuetify/components";
 
 // TODO ALLOW USER TO LOGIN WITH USERNAME OR EMAIL
-
-const authStore = useAuthStore()
 const {t} = useI18n()
 const {textFieldStyling, btnStyle} = useAppStyling()
 const router = useRouter()

@@ -1,18 +1,10 @@
 import {defineStore} from "pinia";
-import {useAuthStore} from "@/store";
-import useNewAxios from "@/composables/useAxiosOld.ts";
-import {UserEndpoint} from "@/api/http";
-import {i18n} from "@/lang";
-import {notify} from "@kyvg/vue3-notification";
 import {io} from "socket.io-client";
-import {SocketResponse} from "@/types/sockets.ts";
 
-const householdSocket = io("/household", {
-    autoConnect: false
-})
 
 export const useHouseholdSocketStore =  defineStore("socket", {
-    state: () => ({
+    // TODO FIX
+    /*state: () => ({
         authStore: useAuthStore(),
         errorCallback: undefined as (undefined | (() => void)),
     }),
@@ -97,5 +89,5 @@ export const useHouseholdSocketStore =  defineStore("socket", {
         disconnect(){
             householdSocket.disconnect()
         }
-    }
+    }*/
 })

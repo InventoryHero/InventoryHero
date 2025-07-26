@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import {useAuthStore} from "@/store";
-import {HouseholdPublic, HouseholdWithMemberPublic} from "@/api/types/households.ts";
+import {HouseholdWithMemberPublic} from "@/api/types/households.ts";
 
 const {t} = useI18n()
 const {household: householdEndpoint} = useAxios()

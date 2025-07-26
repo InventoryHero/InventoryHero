@@ -1,27 +1,19 @@
 import {defineStore} from "pinia";
-import {useAuthStore} from "@/store";
-import useNewAxios from "@/composables/useAxiosOld.ts";
-import {UserEndpoint} from "@/api/http";
 import {io} from "socket.io-client";
-import {getAccessToken} from "axios-jwt";
-import useAxiosOld from "@/composables/useAxiosOld.ts";
-import {SocketResponse} from "@/types/sockets.ts";
 
 type DefaultCallback = () => void
 type TakenCallback = (is_taken: boolean) => void
 
 type Callback = DefaultCallback | TakenCallback;
 
-
-
-
-
 const generalSocket = io("/general", {
     autoConnect: false
 })
 
 export const useGeneralSocketStore =  defineStore("generalSocket", {
-    state: () => ({
+    // TODO FIX
+
+    /*state: () => ({
         authStore: useAuthStore(),
     }),
     actions:{
@@ -148,5 +140,5 @@ export const useGeneralSocketStore =  defineStore("generalSocket", {
                     break
             }
         },
-    }
+    }*/
 })

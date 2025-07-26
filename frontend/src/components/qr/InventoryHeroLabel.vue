@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import {useQRCode} from '@vueuse/integrations/useQRCode'
-import {useConfigStore} from "@/store";
 
 import usePrintSettingsStore from "@/store/usePrintSettingsStore.ts";
 import {storeToRefs} from "pinia";
