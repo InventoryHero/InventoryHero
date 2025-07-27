@@ -88,7 +88,7 @@ onBeforeMount(() => {
   :width="width"
 >
   <v-card
-    :title="t('boxes.box.edit.title')"
+    :title="t('boxes.box.edit.title', {name: box.name})"
   >
     <template v-slot:append>
       <v-icon-btn
@@ -130,11 +130,14 @@ onBeforeMount(() => {
     >
       <v-btn
           v-bind="btnStyle"
+          color="secondary"
+          prepend-icon="mdi-cancel"
           :text="t('boxes.box.edit.cancel')"
           @click="forceClose"
       />
       <v-btn
           v-bind="btnStyle"
+          prepend-icon="mdi-content-save"
           :text="t('boxes.box.edit.save')"
           @click="handleSave"
       />

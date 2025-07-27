@@ -67,7 +67,7 @@ const editRoom = () => {
       <v-btn
           prepend-icon="mdi-pencil"
           @click="editRoom"
-          :text="t('rooms.room.edit')"
+          :text="t('rooms.room.edit.btn')"
           density="comfortable"
           color="primary"
           class="text-none"

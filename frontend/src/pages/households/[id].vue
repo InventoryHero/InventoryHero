@@ -10,6 +10,7 @@ const authStore = useAuthStore()
 const {household: householdEndpoint} = useAxios()
 const {t} = useI18n()
 const router = useRouter()
+const {btnStyle} = useAppStyling()
 
 const {textFieldStyling} = useAppStyling()
 
@@ -23,6 +24,7 @@ const {user} = storeToRefs(authStore)
 
 const householdMembers = ref<Array<HouseholdMemberPublic>>([])
 const loadingMembers = ref(false)
+const deleteConfirmationVisible = ref<boolean>(false)
 
 const householdId = computed(() => {
   return id
@@ -72,21 +74,28 @@ const rules = ref({
 
 const deletingHousehold = ref(false)
 
-const {
-  reallyDo,
-  confirmationDialog,
-  saveAction
-} = useConfirmationSetup(deleteHousehold)
 
-function deleteHousehold(){
+const deleteHousehold = async (confirmed: boolean) => {
+  if(!confirmed){
+    deleteConfirmationVisible.value = true
+    return
+  }
+
   deletingHousehold.value = true
   householdEndpoint.delete(householdId.value).then((success) => {
-
-    if(success){
-      router.push("/households")
+    if(!success){
+      // TODO
+      return
     }
+
+    deleteConfirmationVisible.value = false
+    router.push("/households")
     deletingHousehold.value = false
   })
+}
+
+const cancel = () => {
+  deleteConfirmationVisible.value = false
 }
 
 function removeFromHousehold(id: string){
@@ -122,9 +131,19 @@ async function updateName(){
   })
 }
 
+const saveAction = async () => {
+
+}
+
 function reset(){
   newHouseholdName.value = undefined
 }
+
+onBeforeRouteLeave(() => {
+  if(deleteConfirmationVisible.value){
+    return false
+  }
+})
 
 onBeforeMount(() => {
   loadingMembers.value = true
@@ -162,6 +181,36 @@ onBeforeMount(() => {
 </script>
 
 <template>
+
+  <v-dialog
+    v-model="deleteConfirmationVisible"
+    width="auto"
+  >
+    <v-card
+      :title="t('households.delete.title')"
+    >
+      <v-card-text>
+        {{ t('households.delete.text') }}
+      </v-card-text>
+      <v-card-actions
+        class="justify-end"
+      >
+        <v-btn
+          v-bind="btnStyle"
+          prepend-icon="mdi-cancel"
+          :text="t('households.delete.abort')"
+          @click="cancel"
+        />
+         <v-btn
+          v-bind="btnStyle"
+          prepend-icon="mdi-delete"
+          color="error"
+          :text="t('households.delete.confirm')"
+          @click="deleteHousehold(true)"
+        />
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
   <template  v-if="errorMessage === undefined ">
     <v-breadcrumbs
       :items="breadcrumbs"
@@ -218,7 +267,7 @@ onBeforeMount(() => {
             :text="t('households.edit.delete_household')"
             variant="tonal"
             color="red-accent-1"
-            @click="saveAction"
+            @click="deleteHousehold(false)"
         />
       </v-card-actions>
     </v-card>

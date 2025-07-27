@@ -25,6 +25,7 @@ export default (baseURL = "/api")=> {
         })
         instance.interceptors.response.use((response: AxiosResponse) => response, async (error: AxiosError) => {
             const originalRequest = error.config as CustomAxiosRequestConfig;
+            console.log(error)
             if(error.response?.status === 401 && !originalRequest._retry){
                 originalRequest._retry = true
                 try {
@@ -35,15 +36,16 @@ export default (baseURL = "/api")=> {
                         return instance!(originalRequest);
                     }
                 } catch (refreshError) {
-                    console.error("Token refresh failed:", refreshError);
+
+                    console.error(refreshError);
                 }
             }
 
 
             switch(error.response?.status){
                 case 401:
-                    console.log("Apparently there is no token at all")
-                    return error;
+                    console.error(error)
+                    return error.response
             }
             return error.response ?? error;
         })

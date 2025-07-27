@@ -4,7 +4,6 @@
     "loading_content": "Almost ready! 🚀 We’re fine-tuning everything for you. 🛠️"
   },
   "nav": {
-    "home": "Home",
     "items": "Items overview",
     "boxes": "Box overview",
     "rooms": "Room overview",
@@ -37,7 +36,7 @@
       "language": "Language",
       "languages": {
         "default": "Browser default",
-        "default_short": "Browser",
+        "default_short": "Default",
         "en": "English",
         "de": "Deutsch",
         "it": "Italiano"
@@ -53,7 +52,6 @@
     "content_changed_title": "Your items have changed",
     "content_changed_subtitle": "Click here to reload",
     "quantity": "Qty: {quantity}",
-    "end": "You've reached the end",
     "no_items": "No items here",
     "filtered_all": "No items match the given filter",
     "item": {
@@ -69,9 +67,12 @@
         "title": "Edit {name}",
         "name": "Name",
         "description": "Description",
-        "Categories": "Categories",
         "cancel": "Cancel",
-        "save": "Save"
+        "save": "Save",
+        "name_required": "An item needs to have a name",
+        "description_too_long": "The description provided is too long",
+        "categories": "Categories",
+        "categories_overflow": "+{n}"
       },
       "content_changed_title": "Your item has changed",
       "content_changed_subtitle": "Click here to reload"
@@ -93,7 +94,8 @@
         "notes": "@:items.attributes.notes",
         "save": "Save",
         "cancel": "Cancel"
-      }
+      },
+      "invalid_expiration_set": "Invalid date supplied"
     }
   },
   "boxes": {
@@ -104,9 +106,25 @@
     "filtered_all": "No boxes match the given filter",
     "box": {
       "delete": "Delete",
-      "edit": "Edit",
+      "edit": {
+        "btn": "Edit",
+        "rules": {
+          "name_required": "A box needs to have a name",
+          "parent_required": "A box needs to be placed within another storage"
+        },
+        "title": "Edit {name}",
+        "name": "Name",
+        "cancel": "Cancel",
+        "save": "Save"
+      },
       "stored_at": "Stored at: {parent}",
-      "items_quantity": "No items | One item | {n} items"
+      "items_quantity": "No items | One item | {n} items",
+      "delete_confirmation": {
+        "title": "Delete Box {name}",
+        "text": "This will delete all items inside of this box. This action cannot be undone.",
+        "cancel": "Cancel",
+        "confirm": "Delete"
+      }
     }
   },
   "rooms": {
@@ -120,7 +138,16 @@
         "boxes": "Boxes"
       },
       "delete": "Delete",
-      "edit": "Edit",
+      "edit": {
+        "btn": "Edit",
+        "rules": {
+          "name_required": "A room needs to have a name"
+        },
+        "title": "Edit {name}",
+        "name": "Name",
+        "cancel": "Cancel",
+        "save": "Save"
+      },
       "items_quantity": "No items | One item | {n} items",
       "boxes_quantity": "No boxes | One box | {n} boxes",
       "delete_confirmation": {
@@ -129,7 +156,8 @@
         "cancel": "Cancel",
         "confirm": "Delete"
       }
-    }
+    },
+    "no_rooms": "You currently have no rooms"
   },
   "create": {
     "room": {
@@ -172,7 +200,10 @@
         "notes_too_long": "Your notes are too long",
         "save_and_close": "Save & Close",
         "save": "Save",
-        "new_item": "Create a new item {n}"
+        "new_item": "Create a new item {n}",
+        "quantity_required": "An item needs to have an amount",
+        "categories_overflow": "+{n}",
+        "start_typing": "Start typing to add a new item"
       }
     },
     "category": {
@@ -222,42 +253,16 @@
         "title": "Permission Required 🔒",
         "text": "You don’t have permission to edit this household. Only the creator or owner of the household can make changes. Please suggest your changes to the owner of this household"
       },
-      "delete": {
-        "confirm": {
-          "text": "Are you sure you want to delete this household? This action is <strong class='text-primary'>permanent and cannot be undone</strong>. All data related to the household will be <strong class='text-primary'>permanently removed</strong>, and members will no longer have access to it. Please confirm if you wish to proceed.",
-          "title": "⚠️ Confirm Household Deletion 🗑️",
-          "abort": "Cancel",
-          "confirm": "@:households.edit.delete_household"
-        }
-      },
-      "transfer_ownership": {
-        "confirm": {
-          "text": "Are you sure you want to transfer ownership of this household? This action is <strong class='text-primary'>permanent and cannot be undone</strong>. Ownership and all permissions, including the ability to edit, delete, and invite users to the household, will be transferred to the chosen user: {user}. Please confirm if you wish to proceed.",
-          "title": "⚠️ Confirm Ownership Transfer 🏠",
-          "abort": "Cancel",
-          "confirm": "Transfer ownership"
-        }
-      },
-      "kick": {
-        "confirm": {
-          "text": "Are you sure you want to remove this user from the household? This action will be executed <strong class='text-primary'>immediately and cannot be undone</strong>. The user will be removed from the household, and if they wish to rejoin, a new invite will need to be issued. Please confirm if you wish to proceed.",
-          "title": "🚪 Confirm User Removal 🚫",
-          "abort": "Cancel",
-          "confirm": "Remove User"
-        }
-      },
-      "delete_invite": {
-        "confirm": {
-          "text": "Are you sure you want to delete this invite? This action will <strong class='text-primary'>invalidate the invite link</strong>, and any user attempting to join with this link will not be able to. If you want to invite the user again, a new invite will need to be issued. Please confirm if you wish to proceed.",
-          "title": "❌ Confirm Invite Deletion 🚫",
-          "abort": "Cancel",
-          "confirm": "Delete invite"
-        }
-      },
       "no_member_of_household": {
         "title": "Who are you?",
         "text": "You are not a member of this household. Request an invite from the owner to inventory in this household."
       }
+    },
+    "delete": {
+      "text": "Are you sure you want to delete this household? This action is permanent and cannot be undone. All data related to the household will be permanently removed, and members will no longer have access to it. Please confirm if you wish to proceed.",
+      "title": "⚠️ Confirm Household Deletion 🗑️",
+      "abort": "Cancel",
+      "confirm": "@:households.edit.delete_household"
     },
     "transfer": {
       "title": "Transfer household to {user}?",
@@ -278,12 +283,8 @@
     "invite": {
       "generating_code": "Generating your invite link...",
       "title": "Invite your friend",
-      "text": "Hey! 🎉\n\nLet’s get organized together! 📦 \n\nI’ve been using InventoryHero to manage my stuff, and I think you’ll love it too! Check it out and join me here: \n\n{inviteLink}",
       "copy_to_clipboard": "Copy the invite link into your clipboard...",
-      "or": "...or share it directly",
-      "email": {
-        "subject": "Join my household {household}"
-      }
+      "or": "...or share it directly"
     },
     "join": {
       "title": "{owner} wants you to join their household!",
@@ -355,7 +356,8 @@
       "rules": {
         "email_needed": "Please enter a valid email",
         "username_needed": "@:login.rules.username_needed",
-        "passwords_not_equal": "@:register.rules.passwords_not_equal"
+        "passwords_not_equal": "@:register.rules.passwords_not_equal",
+        "password_needed": "You need to have a password"
       },
       "token_invalid": "The used reset token has become invalid. Please request a new request token to proceed."
     }
@@ -382,8 +384,6 @@
     "scan": {
       "camera": "Select camera",
       "title": "Scan Label",
-      "scanned_room": "Room: {name}",
-      "scanned_box": "Box: {name}",
       "loading_camera": "Loading camera"
     },
     "label": {
@@ -391,11 +391,8 @@
       "title_2": "@:qr.label.title_1",
       "description_1": "Select for which objects you want to create labels",
       "description_2": "Design and print your labels",
-      "search_room": "Search room...",
-      "search_box": "Search box...",
       "select_all": "Select all",
       "deselect_all": "Deselect all",
-      "select_title": "1. Select options",
       "customization_stage": "Next",
       "tabs": {
         "room": "Rooms ({selected}/{amount})",
@@ -429,5 +426,26 @@
       "close_print_dialog": "Close Preview"
     }
   },
-  "description": "Inventory management made easy"
+  "description": "Inventory management made easy",
+  "invite": {
+    "email": {
+      "subject": "Join my household {household}"
+    },
+    "text": "Hey! 🎉\n\nLet’s get organized together! 📦 \n\nI’ve been using InventoryHero to manage my stuff, and I think you’ll love it too! Check it out and join me here: \n\n{inviteLink}"
+  },
+  "rules": {
+    "strong_password": "A strong password needs to be supplied"
+  },
+  "not_found": "The route you were looking for could not be found",
+  "back_to_home": "Back to home",
+  "confirmation": {
+    "email_confirmed": "E-Mail successfully confirmed",
+    "failure": "E-Mail could not be confirmed",
+    "activated": "You can now login with your account! Happy Inventoring! 🤩",
+    "redirect_in": "You'll be redirect to the homepage in {seconds} seconds",
+    "go_to_login": "Go to login",
+    "verifying": "We are verifying your email right now, hang tight."
+  },
+  "home": "Go to home",
+  "logging_out": "Logging out..."
 }

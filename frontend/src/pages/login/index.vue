@@ -20,6 +20,8 @@ const username = ref<string>("")
 const password = ref<string>("")
 const confirmationMissingAlert = ref<boolean>(false)
 
+const userNameOrPasswordInvalidBanner = ref<boolean>(false)
+
 
 
 const usernameRules = ref([
@@ -52,6 +54,9 @@ async function login(){
   if(!success){
     if(error === "email_not_confirmed") {
       confirmationMissingAlert.value = true
+    }
+    if(error === "username_or_password_incorrect"){
+      userNameOrPasswordInvalidBanner.value = true
     }
 
     loading.value = false
@@ -119,8 +124,6 @@ onBeforeRouteLeave(() => {
     <v-card-text
         class="mt-4"
     >
-
-
       <v-row
           dense
           justify="center"
@@ -179,6 +182,23 @@ onBeforeRouteLeave(() => {
           </v-form>
         </v-col>
       </v-row>
+      <v-expand-transition>
+        <v-row
+          v-if="userNameOrPasswordInvalidBanner"
+          justify="center"
+        >
+          <v-col
+            cols="12"
+            class="d-flex justify-center"
+          >
+            <span
+              class="text-error text-subtitle-1 text-medium-emphasis"
+            >
+              {{t('login.rules.username_or_password_invalid')}}
+            </span>
+          </v-col>
+        </v-row>
+      </v-expand-transition>
       <v-row
           class="mt-4"
           dense

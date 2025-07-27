@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import useAppStyling from "@/composables/useAppStyling.ts";
 
+// TODO MAX_WIDTH AND HEIGHT
+
 const {t} = useI18n();
 const {btnStyle} = useAppStyling()
 const {
@@ -30,7 +32,6 @@ onBeforeRouteLeave(() => {
       persistent
       :close-on-back="false"
       width="auto"
-      max-width="60vw"
   >
     <v-card>
       <v-card-title>

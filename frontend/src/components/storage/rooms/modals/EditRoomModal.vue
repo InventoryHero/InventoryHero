@@ -68,7 +68,7 @@ onBeforeRouteLeave(() => {
   :width="width"
 >
   <v-card
-    :title="t('rooms.room.edit.title')"
+    :title="t('rooms.room.edit.title', {name: room.name})"
   >
     <template v-slot:append>
       <v-icon-btn
@@ -96,11 +96,14 @@ onBeforeRouteLeave(() => {
     >
       <v-btn
           v-bind="btnStyle"
+          color="secondary"
+          prepend-icon="mdi-cancel"
           :text="t('rooms.room.edit.cancel')"
           @click="forceClose"
       />
       <v-btn
           v-bind="btnStyle"
+          prepend-icon="mdi-content-save"
           :text="t('rooms.room.edit.save')"
           @click="handleSave"
       />

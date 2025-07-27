@@ -6,6 +6,7 @@ import {useI18n} from "vue-i18n";
 const {userEndpoint} = useAxios()
 const {t} = useI18n()
 const router = useRouter()
+const {btnStyle} = useAppStyling()
 
 const {code=""} = defineProps<{
   code?: string
@@ -97,11 +98,10 @@ onMounted(() => {
           >
 
             <v-btn
+                v-bind="btnStyle"
                 class="fill-width"
-                color="primary"
-                rounded="xl"
                 :text="t('confirmation.go_to_login')"
-                @click="router.replace('/login')"
+                to="/login"
                 :disabled="requestInProgress"
                 :loading="requestInProgress"
             />

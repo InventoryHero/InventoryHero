@@ -2,6 +2,7 @@
 
 const {t} = useI18n()
 const router = useRouter()
+const {btnStyle} = useAppStyling()
 
 </script>
 
@@ -37,9 +38,9 @@ const router = useRouter()
             <v-spacer></v-spacer>
 
             <v-btn
-                color="primary"
+                v-bind="btnStyle"
                 :text="t('back_to_home')"
-                @click="router.push('/')"
+                to="/"
             />
 
             <v-spacer></v-spacer>

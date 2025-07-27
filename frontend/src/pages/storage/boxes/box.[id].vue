@@ -67,16 +67,18 @@ onBeforeMount(async () => {
 </script>
 
 <template>
-  <confirm-box-delete-modal
-    v-model="deleteBoxModalVisible"
-    @delete="deleteBox(true)"
-  />
+  
   <div
       v-if="loading"
   >
     this loading
   </div>
   <template v-else-if="items && box">
+    <confirm-box-delete-modal
+      v-model="deleteBoxModalVisible"
+      @delete="deleteBox(true)"
+      :name="box.name"
+    />
     <v-card>
       <template v-slot:prepend>
         <v-icon
@@ -103,7 +105,7 @@ onBeforeMount(async () => {
         <v-btn
             prepend-icon="mdi-pencil"
             @click="editBox"
-            :text="t('boxes.box.edit')"
+            :text="t('boxes.box.edit.btn')"
             density="comfortable"
             color="primary"
             class="text-none"
