@@ -6,6 +6,19 @@ from sqlmodel import create_engine, Session
 
 from ih.core.config import get_app_settings
 
+from sqlmodel import Field, Relationship, Session, SQLModel, create_engine, MetaData
+
+# 1. Define the same naming convention dictionary
+naming_convention = {
+    "ix": "ix_%(column_0_label)s",
+    "uq": "uq_%(table_name)s_%(column_0_name)s",
+    "ck": "ck_%(table_name)s_%(constraint_name)s",
+    "fk": "fk_%(table_name)s_%(column_0_name)s_%(referred_table_name)s",
+    "pk": "pk_%(table_name)s"
+}
+
+# 2. Apply it directly to the SQLModel metadata object
+SQLModel.metadata.naming_convention = naming_convention
 
 settings = get_app_settings()
 
