@@ -5,17 +5,17 @@ import { VitePWA } from 'vite-plugin-pwa'
 import VueRouter from 'unplugin-vue-router/vite'
 import Components from 'unplugin-vue-components/vite'
 import AutoImport from 'unplugin-auto-import/vite'
-import {i18n} from './src/lang';
-import vuetify from "vite-plugin-vuetify";
+import { i18n } from './src/lang'
+import vuetify from 'vite-plugin-vuetify'
 import basicSsl from '@vitejs/plugin-basic-ssl'
 import Layouts from 'vite-plugin-vue-layouts-next'
 
 //@ts-expect-error node url cannot be found, but it is there
-import {fileURLToPath, URL} from "node:url";
+import { fileURLToPath, URL } from 'node:url'
 
 export default defineConfig({
   build: {
-    target: "esnext",
+    target: 'esnext',
     sourcemap: false
   },
   css: {
@@ -28,8 +28,7 @@ export default defineConfig({
   plugins: [
     basicSsl({
       /** name of certification */
-      name: 'test',
-
+      name: 'test'
     }),
     VueRouter({
       /* options */
@@ -38,41 +37,41 @@ export default defineConfig({
     Layouts({
       layoutsDirs: 'src/layouts',
       pagesDirs: 'src/pages',
-      defaultLayout: 'default',
+      defaultLayout: 'default'
     }),
     vuetify(),
     VitePWA({
       includeAssets: ['favicon.ico', 'apple-touch-icon.png', 'masked-icon.svg'],
       manifest: {
-        name: "InventoryHero",
-        short_name: "IH",
+        name: 'InventoryHero',
+        short_name: 'IH',
         description: i18n.global.t('description'),
-        theme_color: "#64B5F6",
-        display: "standalone",
+        theme_color: '#64B5F6',
+        display: 'standalone',
         icons: [
           {
-            "src": "android-chrome-192x192.png",
-            "sizes": "192x192",
-            "type": "image/png",
-            "purpose": "any"
+            src: 'android-chrome-192x192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'any'
           },
           {
-            "src": "android-chrome-maskable-192x192.png",
-            "sizes": "192x192",
-            "type": "image/png",
-            "purpose": "maskable"
+            src: 'android-chrome-maskable-192x192.png',
+            sizes: '192x192',
+            type: 'image/png',
+            purpose: 'maskable'
           },
           {
-            "src": "android-chrome-512x512.png",
-            "sizes": "512x512",
-            "type": "image/png",
-            "purpose": "any"
+            src: 'android-chrome-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'any'
           },
           {
-            "src": "android-chrome-maskable-512x512.png",
-            "sizes": "512x512",
-            "type": "image/png",
-            "purpose": "maskable"
+            src: 'android-chrome-maskable-512x512.png',
+            sizes: '512x512',
+            type: 'image/png',
+            purpose: 'maskable'
           }
         ]
       },
@@ -92,45 +91,36 @@ export default defineConfig({
       include: [
         /\.[tj]sx?$/, // .ts, .tsx, .js, .jsx
         /\.vue$/,
-        /\.vue\?vue/, // .vue
+        /\.vue\?vue/ // .vue
       ],
-      dirs: [
-        "./src/composables"
-      ],
+      dirs: ['./src/composables'],
       imports: [
         'vue',
         'vue-router',
         {
-          'vue-i18n': [
-              'useI18n'
-          ],
-          'vuetify': [
-              'useDisplay'
-          ]
+          'vue-i18n': ['useI18n'],
+          vuetify: ['useDisplay']
         }
       ]
     }),
-    Components({
-    }),
-
+    Components({})
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
-  server:{
+  server: {
     port: 3000,
     https: true,
     proxy: {
-      "/api": {
+      '/api': {
         target: 'http://127.0.0.1:5000/'
       },
-      "/socket.io": {
+      '/socket.io': {
         target: 'ws://localhost:5000',
-        ws: true,
+        ws: true
       }
     }
   }
 })
-
