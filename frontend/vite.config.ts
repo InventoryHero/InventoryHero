@@ -97,6 +97,7 @@ export default defineConfig({
       imports: [
         'vue',
         'vue-router',
+        'pinia',
         {
           'vue-i18n': ['useI18n'],
           vuetify: ['useDisplay']

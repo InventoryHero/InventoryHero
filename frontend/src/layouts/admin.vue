@@ -6,13 +6,6 @@
   const currRoute = useRoute()
   const { t } = useI18n()
   const { mdAndUp } = useDisplay()
-  const {
-    activeModal,
-    isDirty,
-    isAwaitingConfirmation,
-    openModal,
-    forceClose
-  } = useGlobalModal()
   const configStore = useConfigStore()
   const authStore = useAuthStore()
 
@@ -31,7 +24,6 @@
 
   const nav = ref(false)
   const fabOpen = shallowRef(false)
-  const { user } = storeToRefs(authStore)
 
   const showFab = computed(
     () => (currRoute.meta.showFab ?? false) && !mdAndUp.value
@@ -55,16 +47,6 @@
       nav.value = value
     }
   })
-
-  watch(activeModal, (newVal) => {
-    if (!!newVal && !mdAndUp.value) {
-      nav.value = false
-    }
-  })
-
-  onBeforeRouteLeave(() => {
-    console.log(activeModal)
-  })
 </script>
 
 <template>
@@ -87,14 +69,6 @@
           {{ t('app.title') }}
         </v-card>
       </v-app-bar-title>
-      <template v-slot:append>
-        <v-icon-btn
-          icon="mdi-qrcode-scan"
-          variant="plain"
-          color="primary"
-          @click="openModal('scanQrCodeModal')"
-        />
-      </template>
     </v-app-bar>
 
     <v-navigation-drawer
@@ -102,12 +76,7 @@
       :rail="rail"
       :permanent="mdAndUp"
     >
-      <nav-items
-        @open-create-item-modal="openModal('createItemModal')"
-        @open-create-box-modal="openModal('createBoxModal')"
-        @open-create-room-modal="openModal('createRoomModal')"
-        @open-create-category-modal="openModal('createCategoryModal')"
-      />
+      <admin-nav-items />
       <template v-slot:append>
         <v-list-item
           to="/settings"
@@ -115,62 +84,19 @@
           :title="t('nav.settings')"
           color="primary"
         />
-        <v-spacer />
-        <v-list-item
-          to="/account"
-          prepend-icon="mdi-account"
-          :title="t('nav.account')"
-          color="primary"
-        />
-        <template v-if="user?.admin">
-          <v-list-item
-            to="/administration"
-            prepend-icon="mdi-shield-account"
-            :title="t('nav.administration')"
-            color="primary"
-          />
-        </template>
         <v-divider
           color="primary"
           class="border-opacity-50"
         />
         <v-list-item
-          to="/logout"
-          :title="t('nav.logout')"
-          prepend-icon="mdi-logout"
+          to="/"
+          :title="t('nav.leave_admin')"
+          prepend-icon="mdi-back"
         />
       </template>
     </v-navigation-drawer>
     <router-view v-slot="{ Component, route }">
       <v-main>
-        <component
-          v-if="!!activeModal"
-          :model-value="!!activeModal"
-          @update:model-value="forceClose"
-          :is="activeModal.component"
-          v-bind="{
-            height: mdAndUp ? '700px' : '100%',
-            width: mdAndUp ? '600px' : '100%',
-            ...(activeModal.props ?? {})
-          }"
-        />
-        <v-fab
-          v-if="showFab"
-          app
-          location="right bottom"
-          icon
-          color="primary"
-        >
-          <v-icon icon="mdi-plus" />
-
-          <fab-items
-            v-model="fabOpen"
-            @open-create-item-modal="openModal('createItemModal')"
-            @open-create-box-modal="openModal('createBoxModal')"
-            @open-create-room-modal="openModal('createRoomModal')"
-            @open-create-category-modal="openModal('createCategoryModal')"
-          />
-        </v-fab>
         <transition
           :name="transition.name"
           :mode="transition.mode"

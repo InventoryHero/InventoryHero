@@ -22,10 +22,7 @@
     "paths": {
       "@/*": ["./src/*"]
     },
-    "types": [
-      "node",
-      "vite-plugin-vue-layouts/client"
-    ]
+    "types": ["node", "vite-plugin-vue-layouts/client", "vuetify"]
   },
   "include": [
     "./typed-router.d.ts",

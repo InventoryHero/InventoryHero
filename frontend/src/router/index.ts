@@ -1,10 +1,9 @@
-
-import {createRouter, createWebHistory} from "vue-router";
-import {routes} from 'vue-router/auto-routes'
-import useAuthStore from "@/store/useAuthStore";
-import useConfigStore from "@/store/useConfigStore.ts"
-import useContentRefreshStore from "@/store/useContentRefreshStore.ts";
-import {i18n} from "@/lang";
+import { createRouter, createWebHistory } from 'vue-router'
+import { routes } from 'vue-router/auto-routes'
+import useAuthStore from '@/store/useAuthStore'
+import useConfigStore from '@/store/useConfigStore.ts'
+import useContentRefreshStore from '@/store/useContentRefreshStore.ts'
+import { i18n } from '@/lang'
 //@ts-expect-error cannot be found, but it is there
 import { setupLayouts } from 'virtual:generated-layouts'
 
@@ -18,35 +17,44 @@ vueRouter.beforeEach(async (to, from) => {
   const requiresAuth = to.meta.requiresAuth ?? true
   const requiresHousehold = to.meta.requiresHousehold ?? true
 
-  const authStore = useAuthStore();
+  // TODO the more sane default would be true
+  const requiresAdmin = to.meta.requiresAdmin ?? false
+
+  const authStore = useAuthStore()
   const loggedIn = await authStore.isAuthorized()
+  await authStore.whoami()
   const household = authStore.household
-  const configStore = useConfigStore();
+  const isAdmin = authStore.user?.admin
+  const configStore = useConfigStore()
   console.log(to)
 
-
-  if(loggedIn && !allowAuthorized){
-    return "/"
+  if (loggedIn && !allowAuthorized) {
+    return '/'
   }
 
-  if(!loggedIn && requiresAuth){
-
+  if (!loggedIn && requiresAuth) {
     return {
-      path: "/login",
+      path: '/login',
       query: {
-        redirect: to.fullPath === "/logout" ? '/' : to.fullPath,
+        redirect: to.fullPath === '/logout' ? '/' : to.fullPath
       }
     }
   }
 
-  if(!household && requiresHousehold){
-    return {path: "/households", query: {redirect: to.fullPath}}
+  if (!household && requiresHousehold) {
+    return { path: '/households', query: { redirect: to.fullPath } }
   }
 
-  if(to.name === "/login/register" && !configStore.registrationAllowed){
-    return {path: "/login"}
+  if (to.name === '/login/register' && !configStore.registrationAllowed) {
+    return { path: '/login' }
   }
 
+  if (to.meta.requiresAdmin && !isAdmin) {
+    // TODO NOTIFICATION
+    return {
+      path: '/'
+    }
+  }
 
   // TODO ADMIN
   /*
@@ -66,7 +74,6 @@ vueRouter.beforeEach(async (to, from) => {
 })
 
 vueRouter.beforeEach(async (to, from) => {
-
   const contentRefreshStore = useContentRefreshStore()
   contentRefreshStore.clearBanner()
 
@@ -77,8 +84,4 @@ vueRouter.beforeEach(async (to, from) => {
   });*/
 })
 
-
-
 export default vueRouter
-
-

@@ -3,10 +3,14 @@
     "esbenp.prettier-vscode",
     "dbaeumer.vscode-eslint",
     "vue.volar",
-    "vuetifyjs.vuetify-vscode",
     "formulahendry.auto-close-tag",
     "formulahendry.auto-rename-tag",
     "lokalise.i18n-ally",
-    "pkief.material-icon-theme"
+    "pkief.material-icon-theme",
+    "sdras.vue-vscode-snippets",
+    "mcright.auto-save",
+    "antfu.iconify",
+    "christian-kohler.path-intellisense",
+    "simonhe.common-intellisense"
   ]
 }
