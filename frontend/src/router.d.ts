@@ -1,15 +1,16 @@
 // src/router.d.ts
 
-import 'vue-router';
+import 'vue-router'
 
-export {};
+export {}
 
 declare module 'vue-router' {
-    interface RouteMeta {
-        requiresAuth?: boolean
-        requiresHousehold?: boolean
-        allowAuthorized?: boolean
-        title?: string
-        showFab?: boolean
-    }
+  interface RouteMeta {
+    requiresAuth?: boolean
+    requiresHousehold?: boolean
+    allowAuthorized?: boolean
+    title?: string
+    showFab?: boolean
+    requiresAdmin?: boolean
+  }
 }

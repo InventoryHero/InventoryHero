@@ -4,10 +4,9 @@ from fastapi import HTTPException, APIRouter
 from fastapi_utils.cbv import cbv
 from starlette import status
 
-from ih.routes._base.ControllerBase import ControllerBase
+from uuid import UUID
 from ih.schema.households import HouseholdSelection, HouseholdWithMemberPublic
-from ih.schema.user.user import UserPublic, AdminUserCreate, UserUpdate, ChangePasswordForm, ResetPasswordForm, \
-    UserCreate
+from ih.schema.user.user import UserPublic, AdminUserCreate, UserUpdate, ChangePasswordForm
 from ih.routes._base.AdminApiRouter import AdminAPIRouter
 from ih.routes._base.AdminControllerBase import BaseAdminController
 from ih.routes._base.UserApiRouter import UserAPIRouter
@@ -30,13 +29,17 @@ admin_router = AdminAPIRouter(
 
 @cbv(admin_router)
 class AdminUserController(BaseAdminController):
-    @admin_router.get("/", response_model=list[UserPublic])
+    @admin_router.get("/users", response_model=list[UserPublic])
     async def get_all(self):
         return self.repositories.users.get_all()
 
     @admin_router.post("/create", response_model=UserPublic, status_code=201)
     async def create(self, user: AdminUserCreate):
         return self.repositories.users.create(user)
+
+    @admin_router.get("/{id}", status_code=200, response_model=UserPublic)
+    async def get_user(self, id: UUID):
+        return self.repositories.users.get_user_by_id(id)
 
     @admin_router.delete("/{id}", status_code=204)
     async def delete(self, id: int):

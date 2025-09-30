@@ -1,52 +1,52 @@
 <script setup lang="ts">
-  import useAuthStore from '@/store/useAuthStore'
-  import { Notifications } from '@kyvg/vue3-notification'
-  import useConfigStore from '@/store/useConfigStore.ts'
+import useAuthStore from '@/store/useAuthStore'
+import { Notifications } from '@kyvg/vue3-notification'
+import useConfigStore from '@/store/useConfigStore.ts'
 
-  const currRoute = useRoute()
-  const { t } = useI18n()
-  const { mdAndUp } = useDisplay()
-  const configStore = useConfigStore()
-  const authStore = useAuthStore()
+const currRoute = useRoute()
+const { t } = useI18n()
+const { mdAndUp } = useDisplay()
+const configStore = useConfigStore()
+const authStore = useAuthStore()
 
-  const transition = computed(() => {
-    if (configStore.transitions) {
-      return {
-        name: 'scale',
-        mode: 'out-in'
-      }
-    }
+const transition = computed(() => {
+  if (configStore.transitions) {
     return {
-      name: '',
-      mode: ''
+      name: 'scale',
+      mode: 'out-in'
     }
-  })
+  }
+  return {
+    name: '',
+    mode: ''
+  }
+})
 
-  const nav = ref(false)
-  const fabOpen = shallowRef(false)
+const nav = ref(false)
+const fabOpen = shallowRef(false)
 
-  const showFab = computed(
-    () => (currRoute.meta.showFab ?? false) && !mdAndUp.value
-  )
+const showFab = computed(
+  () => (currRoute.meta.showFab ?? false) && !mdAndUp.value
+)
 
-  const rail = computed(() => {
+const rail = computed(() => {
+  if (mdAndUp.value) {
+    return nav.value
+  }
+  return false
+})
+
+const isDrawerOpen = computed({
+  get() {
     if (mdAndUp.value) {
-      return nav.value
+      return true
     }
-    return false
-  })
-
-  const isDrawerOpen = computed({
-    get() {
-      if (mdAndUp.value) {
-        return true
-      }
-      return nav.value
-    },
-    set(value: boolean) {
-      nav.value = value
-    }
-  })
+    return nav.value
+  },
+  set(value: boolean) {
+    nav.value = value
+  }
+})
 </script>
 
 <template>
@@ -127,9 +127,9 @@
 </template>
 
 <style scoped lang="scss">
-  .content-changed-banner {
-    position: sticky;
-    top: calc(var(--v-layout-top) + 16px);
-    z-index: 2;
-  }
+.content-changed-banner {
+  position: sticky;
+  top: calc(var(--v-layout-top) + 16px);
+  z-index: 2;
+}
 </style>
