@@ -53,6 +53,9 @@ onBeforeMount(() => {
 <route>
 {
     "meta": {
+        "requiresAuth": true,
+        "requiresAdmin": true,
+        "requiresHousehold": false, 
         "layout": false
     }
 }
