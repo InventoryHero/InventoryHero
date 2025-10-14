@@ -1,5 +1,6 @@
 import hashlib
 import secrets
+from Tools.i18n.msgfmt import generate
 from datetime import datetime, timedelta, UTC, timezone
 from typing import Sequence, Optional
 from uuid import UUID
@@ -13,7 +14,7 @@ from ih.core.security.password import hash_password, verify_password
 from ih.db.models.households import HouseholdMember
 from ih.schema.households import HouseholdPublic, HouseholdWithMemberPublic, HouseholdMemberPublic
 from ih.schema.user.user import UserPublic, UserCreate, AdminUserCreate, UserUpdate, UserCreateBase, \
-    ChangePasswordFormBase
+    ChangePasswordFormBase, AdminUserUpdate
 from ih.db.models.User import User
 
 
@@ -121,6 +122,18 @@ class UserRepository:
             member=HouseholdMemberPublic.model_validate(household)
         )
 
+    def update_user_admin(self, user_id: UUID, to_update: AdminUserUpdate) -> UserPublic:
+        # TODO update admin fields
+        update_data = to_update.model_dump(exclude_unset=True)
+        user_fields = {k: v for k, v in update_data.items() if k in UserUpdate.model_fields}
+        admin_fields = {k: v for k, v in update_data.items() if k not in UserUpdate.model_fields}
+        user = self.update_user(user_id, UserUpdate(**user_fields))
+        for field, value in admin_fields.items():
+            setattr(user, field, value)
+        self.session.flush()
+        self.session.refresh(user)
+        return user
+
     def update_user(self, user_id: UUID, to_update: UserUpdate) -> UserPublic:
         update_data = to_update.model_dump(exclude_unset=True)
         user = self.get_user_by_id(user_id)
@@ -156,17 +169,27 @@ class UserRepository:
         user.confirmation_code = None
         self.session.flush()
 
-    def generate_password_reset_code(self, email: str) -> None:
-        user = self.session.exec(
-            select(User)
-                .where(User.email == email)
-        ).first()
+    def request_password_reset_admin(self, user_id: UUID) -> str:
+        print(user_id)
+        user = self.session.exec(select(User).where(User.id == user_id)).first()
+        print(user)
 
-        # just ignore we always send a ok response, otherwise this could be missused to
-        # check for existing accounts
         if user is None:
-            return
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user_not_found")
 
+        code = self.generate_password_reset_code(user)
+        print(code)
+        return code
+
+    def request_password_reset(self, email: str) -> str:
+
+        user = self.session.exec(select(User).where(User.email == email)).first()
+        if user is None:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user_not_found")
+        return self.generate_password_reset_code(user)
+
+
+    def generate_password_reset_code(self, user: User) -> str:
         password_reset_code = secrets.token_urlsafe(32)
         password_reset_token = hashlib.sha256(password_reset_code.encode()).hexdigest()
 
@@ -174,8 +197,8 @@ class UserRepository:
         user.password_reset_token_expires_at = datetime.now(timezone.utc) + timedelta(minutes=60)
 
         self.session.flush()
-
-        print(password_reset_code)
+        return password_reset_code
+        #print(password_reset_code)
         # TODO SEND EMAIL
 
     def validate_password_token(self, code: str) -> bool:

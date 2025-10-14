@@ -25,6 +25,9 @@ class UserUpdate(BaseModel):
     first_name: Optional[str] = None
     last_name: Optional[str] = None
 
+class AdminUserUpdate(UserUpdate):
+    admin: Optional[bool] = None
+
 
 class UserPublic(UserBase):
     id: UUID

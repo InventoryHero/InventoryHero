@@ -26,7 +26,6 @@ vueRouter.beforeEach(async (to, from) => {
   const household = authStore.household
   const isAdmin = authStore.user?.admin
   const configStore = useConfigStore()
-  console.log(to)
 
   if (loggedIn && !allowAuthorized) {
     return '/'

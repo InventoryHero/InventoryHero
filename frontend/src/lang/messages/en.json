@@ -447,5 +447,17 @@
     "verifying": "We are verifying your email right now, hang tight."
   },
   "home": "Go to home",
-  "logging_out": "Logging out..."
+  "logging_out": "Logging out...",
+  "administration": {
+    "users": {
+      "user": {
+        "reset_password": "Reset Password",
+        "breadcrumbs": {
+          "users": "Users"
+        },
+        "is_admin": "Administrator",
+        "save": "Save"
+      }
+    }
+  }
 }

@@ -5,40 +5,78 @@
   />
 
   <template v-else>
-    <!--<v-hover>
-  <template v-slot:default="{isHovering, props}">
-    <v-img
-        v-bind="props"
-        class="mx-auto mt-4"
-        rounded="circle position-relative"
-        aspect-ratio="1/1"
-        height="100"
-        width="100"
-        cover
-        :lazy-src="lazySrc"
-        alt="avatar"
-        :src="profilePictureSrc"
-        @click="uploadProfilePicture"
-        :style="{
-          cursor: isHovering ? 'pointer': undefined
-        }"
-    >
-      <template v-slot:default>
-        <v-overlay
-            :model-value="!!isHovering"
-            contained
-            class="align-center justify-center"
-            scrim="#000000"
-        >
-          <v-icon
-            icon="mdi-camera"
-            size="large"
+    <v-dialog v-model="passwordResetDialog">
+      <v-card>
+        <template v-slot:append>
+          <v-icon-btn icon="mdi-close" />
+        </template>
+        <template v-slot:title>
+          {{ t('administration.users.user.password_reset_title') }}
+        </template>
+
+        <v-card-text>
+          <span>
+            {{ t('administration.users.user.password_reset_text') }}
+          </span>
+          <v-text-field
+            v-bind="textFieldStyling"
+            v-model="passwordResetCode"
+            :clearable="false"
+            :persistent-clear="false"
+            readonly
           />
-        </v-overlay>
+        </v-card-text>
+        <v-card-actions class="justify-end">
+          <v-btn
+            :text="t('administration.users.user.copy_link_to_clipboard')"
+          />
+          <v-btn
+            v-if="smtpEnabled"
+            :text="t('administration.users.user.send_link_per_email')"
+          />
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <v-breadcrumbs :items="breadcrumbs">
+      <template v-slot:divider>
+        <v-icon icon="mdi-chevron-right"></v-icon>
       </template>
-    </v-img>
-  </template>
-</v-hover>-->
+    </v-breadcrumbs>
+    <v-hover>
+      <template v-slot:default="{ isHovering, props }">
+        <v-img
+          v-bind="props"
+          class="mx-auto mt-4"
+          rounded="circle position-relative"
+          aspect-ratio="1/1"
+          height="100"
+          width="100"
+          cover
+          :lazy-src="lazySrc"
+          alt="avatar"
+          :src="profilePictureSrc"
+          @click="uploadProfilePicture"
+          :style="{
+            cursor: isHovering ? 'pointer' : undefined
+          }"
+        >
+          <template v-slot:default>
+            <v-overlay
+              :model-value="!!isHovering"
+              contained
+              class="align-center justify-center"
+              scrim="#000000"
+            >
+              <v-icon
+                icon="mdi-camera"
+                size="large"
+              />
+            </v-overlay>
+          </template>
+        </v-img>
+      </template>
+    </v-hover>
 
     <v-container class="mt-4 mb-4">
       <v-row justify="center">
@@ -54,166 +92,178 @@
               <v-col cols="12">
                 <v-text-field
                   v-bind="textFieldStyling"
-                  v-model="username"
-                  :label="t('administration.user.username')"
-                  :rules="usernameRules"
+                  :model-value="user?.username"
+                  :label="t('administration.users.user.username')"
                   autocomplete="off"
+                  disabled
+                />
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  v-bind="textFieldStyling"
+                  :model-value="user?.email"
+                  :label="t('administration.users.user.email')"
+                  disabled
+                />
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  v-bind="textFieldStyling"
+                  v-model="firstname"
+                  :label="t('administration.users.user.firstname')"
                 >
                   <template v-slot:append-inner>
                     <v-icon
-                      v-if="username !== user!.username"
+                      v-if="firstnameChanged"
                       icon="mdi-refresh"
-                      @click="username = user!.username"
+                      @click="firstname = user!.first_name"
                     />
                   </template>
                 </v-text-field>
               </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  v-bind="textFieldStyling"
+                  v-model="lastname"
+                  :label="t('administration.users.user.lastname')"
+                >
+                  <template v-slot:append-inner>
+                    <v-icon
+                      v-if="lastnameChanged"
+                      icon="mdi-refresh"
+                      @click="lastname = user!.last_name"
+                    />
+                  </template>
+                </v-text-field>
+              </v-col>
+              <v-col>
+                <v-checkbox
+                  v-model="isAdmin"
+                  :label="t('administration.users.user.is_admin')"
+                />
+              </v-col>
             </v-row>
           </v-form>
+          <div class="d-flex justify-end mt-4">
+            <v-btn
+              v-bind="btnStyle"
+              color="error"
+              :text="t('administration.users.user.reset_password')"
+              @click="resetPassword"
+              class="me-2"
+            />
+            <v-btn
+              v-bind="btnStyle"
+              :text="t('administration.users.user.save')"
+              @click="saveUpdatedUserdata"
+              :disabled="!edited"
+            />
+          </div>
         </v-col>
       </v-row>
     </v-container>
   </template>
-  <!--
-            <v-col cols="12">
-              <v-text-field
-                v-bind="textFieldStyling"
-                v-model="email"
-                :label="t('account.email')"
-                :rules="emailRules"
-              >
-                <template v-slot:append-inner>
-                  <v-icon
-                    v-if="email !== authStore.user!.email"
-                    icon="mdi-refresh"
-                    @click="email = authStore.user!.email"
-                  />
-                </template>
-              </v-text-field>
-            </v-col>
-            <v-col cols="12">
-              <v-text-field
-                v-bind="textFieldStyling"
-                v-model="firstname"
-                :label="t('account.firstname')"
-              >
-                <template v-slot:append-inner>
-                  <v-icon
-                    v-if="firstname !== authStore.user!.first_name"
-                    icon="mdi-refresh"
-                    @click="firstname = authStore.user!.first_name"
-                  />
-                </template>
-              </v-text-field>
-            </v-col>
-            <v-col cols="12">
-              <v-text-field
-                v-bind="textFieldStyling"
-                v-model="lastname"
-                :label="t('account.lastname')"
-              >
-                <template v-slot:append-inner>
-                  <v-icon
-                    v-if="lastname !== authStore.user!.last_name"
-                    icon="mdi-refresh"
-                    @click="lastname = authStore.user!.last_name"
-                  />
-                </template>
-              </v-text-field>
-            </v-col>
-          </v-row>
-        </v-form>
-        <div class="d-flex justify-end mt-4">
-          <v-btn
-            v-bind="btnStyle"
-            :text="t('account.save')"
-            @click="saveUpdatedUserdata"
-            :disabled="!edited"
-          />
-        </div>
-
-        <v-divider class="mt-4 mb-4" />
-
-        <div class="d-flex justify-space-between align-center mb-4">
-          {{ t('account.password.password') }}
-          <v-btn
-            v-bind="btnStyle"
-            variant="outlined"
-            :text="
-              !passwordFormVisible
-                ? t('account.password.change_password')
-                : t('account.password.hide_change_password')
-            "
-            @click="showPasswordForm"
-          />
-        </div>
-        <v-scroll-y-transition @after-enter="scrollToBottom">
-          <v-form
-            ref="passwordResetForm"
-            v-if="passwordFormVisible"
-          >
-            <v-row>
-              <v-col cols="12">
-                <password-text-field
-                  :label="t('account.password.current_password')"
-                  v-model="currPassword"
-                  :rules="passwordRules"
-                />
-              </v-col>
-              <v-col cols="12">
-                <password-text-field
-                  :label="t('account.password.new_password')"
-                  v-model="newPassword"
-                  :rules="newPasswordRules"
-                />
-              </v-col>
-              <v-col cols="12">
-                <password-text-field
-                  :label="t('account.password.new_password_repeat')"
-                  v-model="newPasswordRepeat"
-                  :rules="newPasswordRepeatRules"
-                />
-              </v-col>
-            </v-row>
-            <div class="d-flex justify-end mt-4 flex-wrap-reverse">
-              <v-btn
-                v-if="smtpEnabled"
-                v-bind="btnStyle"
-                variant="plain"
-                :text="t('account.password.forgot_password')"
-                @click="forgotPassword"
-              />
-              <v-btn
-                v-bind="btnStyle"
-                :text="t('account.password.change_password')"
-                :disabled="!passwordFormValid"
-                @click="updatePassword"
-              />
-            </div>
-          </v-form>
-        </v-scroll-y-transition>
-      </v-col>
-    </v-row>
-  </v-container>
-  -->
 </template>
 
 <script setup lang="ts">
 import { UserPublic } from '@/api/types/households'
+import { AdminUserUpdate } from '@/api/types/user'
+import useConfigStore from '@/store/useConfigStore'
+import { BreadcrumbItem } from 'vuetify/lib/components/VBreadcrumbs/VBreadcrumbs.mjs'
 
 const { admin } = useAxios()
 const { t } = useI18n()
-const { textFieldStyling } = useAppStyling()
+const { textFieldStyling, btnStyle } = useAppStyling()
+const route = useRoute()
+const configStore = useConfigStore()
 
 const { id } = defineProps<{
   id: string
 }>()
 
-const user = ref<UserPublic | null>(null)
+const { smtpEnabled } = storeToRefs(configStore)
+
+const user = ref<UserPublic | null | undefined>(null)
 const loading = ref<boolean>(false)
 
-const username = ref<string | null>(null)
-const usernameRules = ref([])
+const firstname = ref<string | null | undefined>(null)
+const lastname = ref<string | null | undefined>(null)
+
+const isAdmin = ref<boolean>(false)
+
+const passwordResetCode = ref<string | undefined>(undefined)
+
+const breadcrumbs = computed(() => {
+  return [
+    {
+      title: t('administration.users.user.breadcrumbs.users'),
+      to: '/administration/users',
+      disabled: false
+    },
+    {
+      title: user.value?.username,
+      to: route.fullPath,
+      disabled: true
+    }
+  ] as BreadcrumbItem[]
+})
+
+const edited = computed(() => {
+  return firstnameChanged.value || lastnameChanged.value || adminChanged.value
+})
+
+const firstnameChanged = computed(
+  () => user.value?.first_name !== firstname.value
+)
+const lastnameChanged = computed(() => user.value?.last_name !== lastname.value)
+const adminChanged = computed(() => user.value?.admin !== isAdmin.value)
+
+const lazySrc = computed(
+  () =>
+    `https://api.dicebear.com/8.x/bottts-neutral/svg?seed=${user.value?.username}`
+)
+const profilePictureSrc = computed(() => lazySrc.value)
+
+const passwordResetDialog = computed({
+  get: () => passwordResetCode.value !== undefined,
+  set: (value: boolean) => {
+    passwordResetCode.value = undefined
+  }
+})
+
+const resetPassword = async () => {
+  const { success, data, error } = await admin.resetUserPassword(user.value!.id)
+
+  if (!success) {
+    // TODO
+  }
+  passwordResetCode.value = data!
+}
+
+const resetUser = () => {
+  firstname.value = user.value?.first_name
+  lastname.value = user.value?.last_name
+  isAdmin.value = user.value?.admin ?? false
+}
+
+const saveUpdatedUserdata = async () => {
+  const to_update = {
+    first_name: firstnameChanged.value ? firstname.value : undefined,
+    last_name: lastnameChanged.value ? lastname.value : undefined,
+    admin: adminChanged.value ? isAdmin.value : undefined
+  } as AdminUserUpdate
+
+  const { success, data, error } = await admin.updateUser(
+    user.value?.id!,
+    to_update
+  )
+
+  if (!success) {
+    // TODO
+  }
+  user.value = data!
+  resetUser()
+}
 
 onBeforeMount(() => {
   loading.value = true
@@ -222,7 +272,7 @@ onBeforeMount(() => {
       // TODO
     }
     user.value = data!
-    username.value = user.value.username
+    resetUser()
     loading.value = false
   })
 })

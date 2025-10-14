@@ -6,7 +6,7 @@ from starlette import status
 
 from uuid import UUID
 from ih.schema.households import HouseholdSelection, HouseholdWithMemberPublic
-from ih.schema.user.user import UserPublic, AdminUserCreate, UserUpdate, ChangePasswordForm
+from ih.schema.user.user import UserPublic, AdminUserCreate, UserUpdate, ChangePasswordForm, AdminUserUpdate
 from ih.routes._base.AdminApiRouter import AdminAPIRouter
 from ih.routes._base.AdminControllerBase import BaseAdminController
 from ih.routes._base.UserApiRouter import UserAPIRouter
@@ -42,13 +42,21 @@ class AdminUserController(BaseAdminController):
         return self.repositories.users.get_user_by_id(id)
 
     @admin_router.delete("/{id}", status_code=204)
-    async def delete(self, id: int):
+    async def delete(self, id: UUID):
         if id == 0:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="cannot_delete_user_0")
 
         success: bool = self.repositories.users.delete(id)
         if not success:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="cannot_delete_user_0")
+
+    @admin_router.put("/{user_id}", status_code=200, response_model=UserPublic)
+    async def update_user(self, user_id: UUID, to_update: AdminUserUpdate):
+        return self.repositories.users.update_user(user_id, to_update)
+
+    @admin_router.put("/{user_id}/reset-password", status_code=status.HTTP_200_OK)
+    async def reset_password(self, user_id: UUID):
+        return self.repositories.users.request_password_reset_admin(user_id)
 
 
 @cbv(user_router)

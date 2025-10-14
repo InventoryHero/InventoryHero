@@ -37,6 +37,13 @@ export interface UserPublic {
   registered_on: string;
   confirmed: boolean;
 }
+export interface AdminUserUpdate {
+  username?: string | null;
+  email?: string | null;
+  first_name?: string | null;
+  last_name?: string | null;
+  admin?: boolean | null;
+}
 export interface ChangePasswordForm {
   new_password: string;
   new_password_confirmation: string;

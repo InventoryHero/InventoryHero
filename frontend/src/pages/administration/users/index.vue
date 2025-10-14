@@ -14,11 +14,13 @@
   </template>
   <template v-else>
     <v-list>
-      <v-list-item
-        v-for="user in users"
-        :title="user.username"
-        @click="router.push(`/administration/users/user/${user.id}`)"
-      />
+      <template v-for="user in users">
+        <v-list-item
+          :title="user.username"
+          @click="router.push(`/administration/users/user/${user.id}`)"
+        />
+        <v-divider />
+      </template>
     </v-list>
   </template>
 </template>

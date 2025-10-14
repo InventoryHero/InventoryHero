@@ -1,67 +1,50 @@
-
 @import 'vuetify/lib/styles/main';
 
-@import "scss/card";
-@import "scss/misc";
+@import 'scss/card';
+@import 'scss/misc';
 
-.v-field__clearable
-{
-    width: auto !important;
+.v-field__clearable {
+  width: auto !important;
 }
 
-
-
-:root{
-    --filter-card-height: 80px;
-    --filter-card-margin-bottom: 16px;
-    --header-height: 40px;
+:root {
+  --filter-card-height: 80px;
+  --filter-card-margin-bottom: 16px;
+  --header-height: 40px;
 }
-html{
-    ;
+html {
 }
-
-*::-webkit-scrollbar{
-    display: none !important;
-}
-
-* {
-    scrollbar-width: none;
-}
-
-
 
 /* HIDE ARROWS IN NUMBER INPUT */
 /* Chrome, Safari, Edge, Opera */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+  -webkit-appearance: none;
+  margin: 0;
 }
 
 /* Firefox */
-input[type=number] {
-    -moz-appearance: textfield;
+input[type='number'] {
+  -moz-appearance: textfield;
 }
 
-.vue-notification{
-    &.new-content{
-        background-color: grey;
-        border-left-color: rgba(var(--v-theme-primary));
-
-    }
+.vue-notification {
+  &.new-content {
+    background-color: grey;
+    border-left-color: rgba(var(--v-theme-primary));
+  }
 }
-
 
 .wrapper {
-    padding-top: 0 !important;
-    overflow: hidden;
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    .scroll{
-        height: 100%;
-        scroll-behavior: smooth;
-    }
+  padding-top: 0 !important;
+  overflow: hidden;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  .scroll {
+    height: 100%;
+    scroll-behavior: smooth;
+  }
 }

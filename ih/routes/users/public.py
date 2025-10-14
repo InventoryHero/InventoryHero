@@ -32,7 +32,9 @@ class UserPublicController(PublicControllerBase):
 
     @router.post("/reset-password", status_code=204)
     async def reset_password(self, email: ResetPasswordForm):
-        self.repositories.users.generate_password_reset_code(email.email)
+        code = self.repositories.users.request_password_reset(email.email)
+
+        # TODO SEND CODE
 
     @router.post("/confirm-email/{code}", status_code=status.HTTP_204_NO_CONTENT)
     def confirm_email(self, code: str):
