@@ -1,4 +1,5 @@
 <template>
+  <create-new-user v-model:active="createNew" />
   <template v-if="loading">
     <v-skeleton-loader
       v-if="loading"
@@ -13,6 +14,14 @@
     />
   </template>
   <template v-else>
+    <v-btn
+      :text="t('administration.users.create')"
+      prepend-icon="mdi-plus"
+      color="primary"
+      @click="createNew = true"
+      class="mb-3"
+    />
+
     <v-list>
       <template v-for="user in users">
         <v-list-item
@@ -32,10 +41,12 @@ import { useDisplay } from 'vuetify/lib/composables/display.mjs'
 
 const { admin: adminEndpoint } = useAxios()
 const { mdAndUp } = useDisplay()
+const { t } = useI18n()
 const router = useRouter()
 
 const users = ref<UserPublic[]>([])
 const loading = ref<boolean>(false)
+const createNew = ref<boolean>(false)
 
 const loadUsers = async () => {
   loading.value = true

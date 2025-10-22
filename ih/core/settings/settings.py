@@ -8,7 +8,7 @@ from ih.db.models.User import User
 
 
 class AppSettings(BaseSettings):
-    IH_APP_URL: str = "http://localhost:3000"
+    IH_APP_URL: str = "https://localhost:3000"
 
     # TODO LET FASTAPI SERVE STATIC FILES IN DOCKER
     #STATIC_FILES: str =

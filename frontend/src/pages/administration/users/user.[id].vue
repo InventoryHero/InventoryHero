@@ -5,19 +5,23 @@
   />
 
   <template v-else>
-    <v-dialog v-model="passwordResetDialog">
+    <v-dialog
+      v-model="passwordResetDialog"
+      persistent
+      no-click-animation
+    >
       <v-card>
         <template v-slot:append>
-          <v-icon-btn icon="mdi-close" />
+          <v-icon-btn
+            icon="mdi-close"
+            @click="passwordResetDialog = false"
+          />
         </template>
         <template v-slot:title>
           {{ t('administration.users.user.password_reset_title') }}
         </template>
 
         <v-card-text>
-          <span>
-            {{ t('administration.users.user.password_reset_text') }}
-          </span>
           <v-text-field
             v-bind="textFieldStyling"
             v-model="passwordResetCode"
@@ -28,9 +32,12 @@
         </v-card-text>
         <v-card-actions class="justify-end">
           <v-btn
+            prepend-icon="mdi-clipboard"
             :text="t('administration.users.user.copy_link_to_clipboard')"
+            @click="copyToClipboard"
           />
           <v-btn
+            prepend-icon="mdi-envelope"
             v-if="smtpEnabled"
             :text="t('administration.users.user.send_link_per_email')"
           />
@@ -163,6 +170,18 @@
       </v-row>
     </v-container>
   </template>
+  <v-snackbar
+    :timeout="5000"
+    color="success"
+    rounded="pill"
+    v-model="copied"
+    class="pb-4 ps-4 pe-4"
+    @click="copied = false"
+  >
+    <div class="text-subtitle-1 text-center">
+      {{ t('administration.users.user.copied_reset_link') }}
+    </div>
+  </v-snackbar>
 </template>
 
 <script setup lang="ts">
@@ -192,6 +211,8 @@ const lastname = ref<string | null | undefined>(null)
 const isAdmin = ref<boolean>(false)
 
 const passwordResetCode = ref<string | undefined>(undefined)
+
+const copied = ref<boolean>(false)
 
 const breadcrumbs = computed(() => {
   return [
@@ -238,6 +259,16 @@ const resetPassword = async () => {
     // TODO
   }
   passwordResetCode.value = data!
+}
+
+const copyToClipboard = () => {
+  navigator.clipboard
+    .writeText(passwordResetCode.value)
+    .then(() => {
+      // e.g. show snackbar feedback
+      copied.value = true
+    })
+    .catch(() => {})
 }
 
 const resetUser = () => {

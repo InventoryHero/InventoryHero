@@ -10,6 +10,7 @@ from sqlalchemy.orm import selectinload
 from sqlmodel import Session, select
 from starlette import status
 
+from ih.core.config import get_app_settings
 from ih.core.security.password import hash_password, verify_password
 from ih.db.models.households import HouseholdMember
 from ih.schema.households import HouseholdPublic, HouseholdWithMemberPublic, HouseholdMemberPublic
@@ -195,9 +196,10 @@ class UserRepository:
 
         user.password_reset_token = password_reset_token
         user.password_reset_token_expires_at = datetime.now(timezone.utc) + timedelta(minutes=60)
+        settings = get_app_settings()
 
         self.session.flush()
-        return password_reset_code
+        return f"{settings.IH_APP_URL}/login/password-reset/{password_reset_code}"
         #print(password_reset_code)
         # TODO SEND EMAIL
 

@@ -456,7 +456,10 @@
           "users": "Users"
         },
         "is_admin": "Administrator",
-        "save": "Save"
+        "save": "Save",
+        "send_link_per_email": "E-Mail",
+        "copy_link_to_clipboard": "Copy",
+        "password_reset_title": "Password reset link"
       }
     }
   }
