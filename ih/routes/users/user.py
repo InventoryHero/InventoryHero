@@ -33,7 +33,7 @@ class AdminUserController(BaseAdminController):
     async def get_all(self):
         return self.repositories.users.get_all()
 
-    @admin_router.post("/create", response_model=UserPublic, status_code=201)
+    @admin_router.post("/create", response_model=UserPublic, status_code=status.HTTP_201_CREATED)
     async def create(self, user: AdminUserCreate):
         return self.repositories.users.create(user)
 

@@ -1,5 +1,13 @@
 <template>
-  <create-new-user v-model:active="createNew" />
+  <create-new-user
+    v-model:active="createNew"
+    @user-created="
+      (user: UserPublic) => {
+        users.push(user)
+        createNew = false
+      }
+    "
+  />
   <template v-if="loading">
     <v-skeleton-loader
       v-if="loading"
@@ -27,6 +35,7 @@
         <v-list-item
           :title="user.username"
           @click="router.push(`/administration/users/user/${user.id}`)"
+          append-icon="mdi-trash-can"
         />
         <v-divider />
       </template>

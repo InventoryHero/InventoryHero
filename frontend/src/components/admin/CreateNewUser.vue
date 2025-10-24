@@ -4,16 +4,22 @@
     :height="mdAndUp ? '700px' : '100%'"
     :width="mdAndUp ? '600px' : '100%'"
     scrollable
+    persistent
+    no-click-animation
   >
-    <v-card :title="t('administration.users.create_new.title')">
+    <v-card
+      :title="t('administration.users.create_new.title')"
+      :loading="loading"
+    >
       <template v-slot:append>
         <v-icon-btn
           icon="mdi-close"
-          @click="active = fase"
+          @click="active = false"
         />
       </template>
       <v-card-text class="fill-height overflow-auto">
         <v-form
+          :disabled="loading"
           submit.prevent=""
           ref="newUserForm"
           validate-on="submit lazy"
@@ -36,16 +42,14 @@
               />
             </v-col>
             <v-col cols="12">
-              <v-text-field
-                v-bind="textFieldStyling"
+              <password-text-field
                 v-model="password"
                 :rules="passwordRules"
                 :label="t('administration.users.create_new.password')"
               />
             </v-col>
             <v-col cols="12">
-              <v-text-field
-                v-bind="textFieldStyling"
+              <password-text-field
                 v-model="passwordRepeat"
                 :rules="passwordRepeatRules"
                 :label="t('administration.users.create_new.repeat_password')"
@@ -76,6 +80,7 @@
       </v-card-text>
       <v-card-actions>
         <v-btn
+          :disabled="loading"
           prepend-icon="mdi-content-save"
           :text="t('administration.users.create_new.save')"
           @click="saveUser"
@@ -86,20 +91,32 @@
 </template>
 
 <script setup lang="ts">
+import { UserPublic } from '@/api/types/households'
+import { AdminUserCreate } from '@/api/types/user'
 import useValidationRules from '@/composables/useValidationRules'
 
 const { mdAndUp } = useDisplay()
 const { t } = useI18n()
 const { textFieldStyling } = useAppStyling()
+const { admin } = useAxios()
+
+const active = defineModel<boolean>('active', {
+  required: true
+})
+
+const emit = defineEmits<{
+  (e: 'userCreated', user: UserPublic): void
+}>()
 
 const newUserForm = useTemplateRef('newUserForm')
 const username = ref<string | undefined | null>()
 const email = ref<string | undefined | null>()
-const password = ref<string | undefined | null>()
-const passwordRepeat = ref<string | undefined | null>()
+const password = ref<string | undefined>()
+const passwordRepeat = ref<string | undefined>()
 const lastName = ref<string | undefined | null>()
 const firstName = ref<string | undefined | null>()
 const isAdmin = ref<boolean>(false)
+const loading = ref<boolean>(true)
 
 const { usernameRules, emailRules, passwordRules, passwordRepeatRules } =
   useValidationRules(password)
@@ -110,11 +127,39 @@ const saveUser = async () => {
     return
   }
 
-  console.log('New user with username: ', username.value)
+  const newUser = {
+    username: username.value,
+    password: password.value,
+    email: email.value,
+    last_name: lastName.value,
+    first_name: firstName.value,
+    isAdmin: isAdmin.value
+  } as AdminUserCreate
+
+  loading.value = true
+  const { success, data, error } = await admin.createUser(newUser)
+  if (!success) {
+    // TODO
+    loading.value = false
+    return
+  }
+  emit('userCreated', data!)
+  loading.value = true
 }
 
-const active = defineModel<boolean>('active', {
-  required: true
+watch(active, (value: boolean, oldValue: boolean) => {
+  if (value) {
+    return
+  }
+
+  username.value = undefined
+  email.value = undefined
+  password.value = undefined
+  passwordRepeat.value = undefined
+  lastName.value = undefined
+  firstName.value = undefined
+  isAdmin.value = false
+  loading.value = false
 })
 </script>
 

@@ -1,7 +1,7 @@
 import { AxiosInstance } from 'axios'
 import { UserPublic } from './types/households'
 import { ApiResponse } from './types/ApiResponse'
-import { AdminUserUpdate } from './types/user'
+import { AdminUserCreate, AdminUserUpdate } from './types/user'
 
 export default (api: AxiosInstance) => {
   const getAllUsers = async (): Promise<ApiResponse<UserPublic[]>> => {
@@ -50,10 +50,23 @@ export default (api: AxiosInstance) => {
     }
   }
 
+  const createUser = async (
+    newUser: AdminUserCreate
+  ): Promise<ApiResponse<UserPublic>> => {
+    const response = await api.post('/admin/user/create', newUser)
+    const success = response.status === 201
+    return {
+      success,
+      data: success ? response.data : undefined,
+      error: !success ? response.data.detail : undefined
+    }
+  }
+
   return {
     getAllUsers,
     getUser,
     updateUser,
-    resetUserPassword
+    resetUserPassword,
+    createUser
   }
 }
