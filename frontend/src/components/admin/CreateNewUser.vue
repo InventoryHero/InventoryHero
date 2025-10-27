@@ -116,7 +116,7 @@ const passwordRepeat = ref<string | undefined>()
 const lastName = ref<string | undefined | null>()
 const firstName = ref<string | undefined | null>()
 const isAdmin = ref<boolean>(false)
-const loading = ref<boolean>(true)
+const loading = ref<boolean>(false)
 
 const { usernameRules, emailRules, passwordRules, passwordRepeatRules } =
   useValidationRules(password)

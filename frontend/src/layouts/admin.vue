@@ -91,7 +91,7 @@ const isDrawerOpen = computed({
         <v-list-item
           to="/"
           :title="t('nav.leave_admin')"
-          prepend-icon="mdi-back"
+          prepend-icon="mdi-undo"
         />
       </template>
     </v-navigation-drawer>

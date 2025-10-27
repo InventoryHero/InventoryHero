@@ -17,7 +17,8 @@
     "admin": {
       "overview": "Overview",
       "users": "Users"
-    }
+    },
+    "leave_admin": "Leave Administration"
   },
   "settings": {
     "back": "Back",
@@ -460,7 +461,19 @@
         "send_link_per_email": "E-Mail",
         "copy_link_to_clipboard": "Copy",
         "password_reset_title": "Password reset link"
-      }
+      },
+      "create_new": {
+        "title": "Create new user",
+        "username": "Username",
+        "email": "E-Mail",
+        "password": "Password",
+        "repeat_password": "Repeat password",
+        "first_name": "First name",
+        "last_name": "Last name",
+        "is_admin": "Administrator",
+        "save": "Save user"
+      },
+      "create": "Add new user"
     }
   }
 }
