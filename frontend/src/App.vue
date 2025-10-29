@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { setLanguage } from '@/lang'
-import useAuthStore from '@/store/useAuthStore'
-import useConfigStore from '@/store/useConfigStore.ts'
+import useAuthStore from '@/stores/useAuthStore'
+import useConfigStore from '@/stores/useConfigStore'
 import { storeToRefs } from 'pinia'
 import { useTheme } from 'vuetify'
+import { setI18nLanguage } from './plugins/i18n'
 
-const route = useRoute()
 const router = useRouter()
 const configStore = useConfigStore()
 const authStore = useAuthStore()
@@ -13,26 +12,25 @@ const { t } = useI18n()
 const { config } = useAxios()
 const vuetifyTheme = useTheme()
 
-const { theme, language } = storeToRefs(configStore)
+const { theme, language, smtpEnabled, registrationAllowed } =
+  storeToRefs(configStore)
 
 const { authorized } = storeToRefs(authStore)
 const isInitialized = ref(false)
 
+setI18nLanguage(language.value)
 vuetifyTheme.change(theme.value)
 configStore.applyColor()
-//setLanguage(language.value)
 
 async function initializeApp() {
   try {
     const { success, data, error } = await config.getConfig()
-
     if (!success) {
       // TODO this is sadly unrecoverable
     }
-    configStore.smtpEnabled = data?.smtp_enabled ?? false
-    configStore.registrationAllowed = data?.registration_allowed ?? false
+    smtpEnabled.value = data?.smtp_enabled ?? false
+    registrationAllowed.value = data?.registration_allowed ?? false
     await router.isReady()
-    await authStore.init()
     if (authorized.value) {
       // TODO CONNECT TO SOCKETS
     }
@@ -51,39 +49,7 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <router-view v-if="isInitialized" />
-  <v-app v-else>
-    <v-main>
-      <v-container
-        fluid
-        class="fill-height"
-      >
-        <v-row justify="center">
-          <v-col
-            cols="12"
-            md="10"
-            lg="8"
-            class="pb-16"
-          >
-            <v-card class="fill-width">
-              <template v-slot:loader>
-                <v-progress-linear
-                  indeterminate
-                  active
-                  color="primary"
-                />
-              </template>
-              <template v-slot:text>
-                <span class="d-flex justify-center">
-                  {{ t('app.loading_content') }}
-                </span>
-              </template>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-main>
-  </v-app>
+  <router-view />
 </template>
 
 <style scoped lang="scss"></style>

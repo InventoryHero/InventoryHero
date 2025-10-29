@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { routes } from 'vue-router/auto-routes'
-import useAuthStore from '@/store/useAuthStore'
-import useConfigStore from '@/store/useConfigStore.ts'
-import useContentRefreshStore from '@/store/useContentRefreshStore.ts'
-import { i18n } from '@/lang'
+import useAuthStore from '@/stores/useAuthStore'
+import useConfigStore from '@/stores/useConfigStore'
+import useContentRefreshStore from '@/stores/useContentRefreshStore'
+import { i18n } from '@/plugins/i18n'
 //@ts-expect-error cannot be found, but it is there
 import { setupLayouts } from 'virtual:generated-layouts'
 

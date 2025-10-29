@@ -9,6 +9,7 @@ import { i18n } from './src/plugins/i18n'
 import vuetify from 'vite-plugin-vuetify'
 import mkcert from 'vite-plugin-mkcert'
 import Layouts from 'vite-plugin-vue-layouts-next'
+import Unfonts from 'unplugin-fonts/vite'
 
 //@ts-expect-error node url cannot be found, but it is there
 import { fileURLToPath, URL } from 'node:url'
@@ -26,6 +27,7 @@ export default defineConfig({
     }
   },
   plugins: [
+    Unfonts({}),
     mkcert(),
     VueRouter({
       /* options */

@@ -1,49 +1,50 @@
 <script setup lang="ts">
-import {RoomResponseSchema} from "@/api/types/storage.ts";
-import {storeToRefs} from "pinia";
-import roomAddedEventBus from "@/services/roomAddedEventBus.ts";
-import useContentRefreshStore from "@/store/useContentRefreshStore.ts";
+import { RoomResponseSchema } from '@/api/types/storage.ts'
+import { storeToRefs } from 'pinia'
+import roomAddedEventBus from '@/services/roomAddedEventBus.ts'
+import useContentRefreshStore from '@/stores/useContentRefreshStore'
 
-
-const {t} = useI18n()
+const { t } = useI18n()
 const route = useRoute()
-const {storage: storageEndpoint} = useAxios()
+const { storage: storageEndpoint } = useAxios()
 const contentRefreshStore = useContentRefreshStore()
 
-const needle = ref<string|undefined>();
+const needle = ref<string | undefined>()
 const rooms = ref<RoomResponseSchema[]>([])
 const isLoading = ref(false)
 const filteredRooms = computed(() => {
-  if(!needle.value){
+  if (!needle.value) {
     return rooms.value
   }
-  return rooms.value.filter(room => room.name.toLowerCase().includes(needle.value!.toLowerCase()))
+  return rooms.value.filter((room) =>
+    room.name.toLowerCase().includes(needle.value!.toLowerCase())
+  )
 })
 
 const endReachedContent = computed(() => {
-  if(filteredRooms.value.length > 0){
+  if (filteredRooms.value.length > 0) {
     return {
       title: t('rooms.all_displayed')
     }
   }
-  if(rooms.value.length == 0){
+  if (rooms.value.length == 0) {
     return {
       title: t('rooms.no_rooms'),
-      icon: "mdi-alert-circle-outline",
-      color: "warning"
+      icon: 'mdi-alert-circle-outline',
+      color: 'warning'
     }
   }
   return {
     title: t('rooms.filtered_all'),
-    icon: "mdi-magnify-close",
-    color: "info"
+    icon: 'mdi-magnify-close',
+    color: 'info'
   }
 })
 
 const loadRooms = async () => {
-  isLoading.value = true;
-  const {success, data, error} = await storageEndpoint.getAllStorage("room")
-  if(!success){
+  isLoading.value = true
+  const { success, data, error } = await storageEndpoint.getAllStorage('room')
+  if (!success) {
     //TODO
   }
   rooms.value = (data ?? []) as RoomResponseSchema[]
@@ -51,8 +52,7 @@ const loadRooms = async () => {
 }
 
 const clickOnBanner = () => {
-  loadRooms().then(() => {
-  })
+  loadRooms().then(() => {})
 }
 
 roomAddedEventBus.on(() => {
@@ -69,36 +69,28 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <search-card
-      v-model="needle"
-  />
+  <search-card v-model="needle" />
 
   <template v-if="!isLoading">
     <v-row dense>
       <v-col
-          v-for="room in filteredRooms"
-          cols="12"
-          sm="6"
-          md="6"
-          lg="4"
-          xl="3"
+        v-for="room in filteredRooms"
+        cols="12"
+        sm="6"
+        md="6"
+        lg="4"
+        xl="3"
       >
-        <room-summary-card
-            :room="room"
-        />
+        <room-summary-card :room="room" />
       </v-col>
     </v-row>
     <v-row
-        dense
-        justify="center"
-        class="mt-4 pb-16"
+      dense
+      justify="center"
+      class="mt-4 pb-16"
     >
-      <v-col
-          class="d-flex justify-center"
-      >
-        <all-displayed
-            v-bind="endReachedContent"
-        />
+      <v-col class="d-flex justify-center">
+        <all-displayed v-bind="endReachedContent" />
       </v-col>
     </v-row>
   </template>
@@ -109,9 +101,7 @@ onBeforeMount(() => {
   />
 </template>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>
 <route>
 {
   "meta": {

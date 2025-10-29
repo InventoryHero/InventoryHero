@@ -7,7 +7,7 @@ import * as labsComponents from 'vuetify/labs/components'
 import * as components from 'vuetify/components'
 import { createVueI18nAdapter } from 'vuetify/locale/adapters/vue-i18n'
 import useGenerateMaterialYouTheme from '@/composables/useGenerateMaterialYouTheme.ts'
-import { i18n } from '@/lang'
+import { i18n } from './i18n'
 
 const defaultTheme = useGenerateMaterialYouTheme(colors.blue.base)
 

@@ -28,13 +28,6 @@ input[type='number'] {
   -moz-appearance: textfield;
 }
 
-.vue-notification {
-  &.new-content {
-    background-color: grey;
-    border-left-color: rgba(var(--v-theme-primary));
-  }
-}
-
 .wrapper {
   padding-top: 0 !important;
   overflow: hidden;

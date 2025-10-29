@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import useConfigStore from '@/store/useConfigStore.ts'
+import useConfigStore from '@/stores/useConfigStore'
 import useAppStyling from '@/composables/useAppStyling.ts'
-import { i18n } from '@/lang'
+import { setI18nLanguage } from '@/plugins/i18n'
 
 const configStore = useConfigStore()
 const { selectStyling } = useAppStyling()
@@ -10,7 +10,7 @@ const { t, availableLocales } = useI18n()
 const { language } = storeToRefs(configStore)
 
 watch(language, (_) => {
-  i18n.global.locale.value = language.value
+  setI18nLanguage(language.value)
 })
 </script>
 

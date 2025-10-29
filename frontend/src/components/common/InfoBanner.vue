@@ -1,53 +1,60 @@
 <script setup lang="ts">
-import {storeToRefs} from "pinia";
-import useContentRefreshStore from "@/store/useContentRefreshStore.ts";
-import useConfigStore from "@/store/useConfigStore.ts"
+import { storeToRefs } from 'pinia'
+import useContentRefreshStore from '@/stores/useContentRefreshStore'
+import useConfigStore from '@/stores/useConfigStore'
 const contentRefreshStore = useContentRefreshStore()
 const configStore = useConfigStore()
 
-const {isVisible, actionCallback, title, subtitle} = storeToRefs(contentRefreshStore)
+const { isVisible, actionCallback, title, subtitle } =
+  storeToRefs(contentRefreshStore)
 const handleClickOnRefreshBanner = () => {
-  if(actionCallback.value) {
+  if (actionCallback.value) {
     actionCallback.value()
   }
   contentRefreshStore.clearBanner()
 }
 const transition = computed(() => {
-  if(configStore.transitions){
+  if (configStore.transitions) {
     return {
-      name: "scale",
-      mode: "out-in"
+      name: 'scale',
+      mode: 'out-in'
     }
   }
   return {
-    name: "", mode: ""
+    name: '',
+    mode: ''
   }
 })
-
 </script>
 
 <template>
   <v-hover>
     <template v-slot:default="{ isHovering, props }">
-      <transition :name="transition.name" :mode="transition.mode">
+      <transition
+        :name="transition.name"
+        :mode="transition.mode"
+      >
         <v-alert
-            v-if="isVisible"
-            v-bind="props"
-            density="compact"
-            class="text-center content-changed-banner mb-4"
-            :class="{
-            'hover': isHovering
+          v-if="isVisible"
+          v-bind="props"
+          density="compact"
+          class="text-center content-changed-banner mb-4"
+          :class="{
+            hover: isHovering
           }"
-            width="100%"
-            color="info"
-            @click="handleClickOnRefreshBanner"
+          width="100%"
+          color="info"
+          @click="handleClickOnRefreshBanner"
         >
           <template v-slot:text>
             <span class="text-center text-h5">
               {{ title }}
             </span>
             <br />
-            <span v-if="subtitle" class="text-center text-medium-emphasis">
+            <span
+              v-if="subtitle"
+              class="text-center text-medium-emphasis"
+            >
               {{ subtitle }}
             </span>
           </template>
@@ -58,7 +65,7 @@ const transition = computed(() => {
 </template>
 
 <style scoped lang="scss">
-.hover{
+.hover {
   cursor: pointer;
 }
 </style>

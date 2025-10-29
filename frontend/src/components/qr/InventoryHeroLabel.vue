@@ -1,20 +1,18 @@
 <script setup lang="ts">
-import {useQRCode} from '@vueuse/integrations/useQRCode'
+import { useQRCode } from '@vueuse/integrations/useQRCode'
 
-import usePrintSettingsStore from "@/store/usePrintSettingsStore.ts";
-import {storeToRefs} from "pinia";
-import {RoomResponseSchema, BoxResponseSchema} from "@/api/types/storage.ts";
-import useStorageHelper from "@/composables/useStorageHelper.ts";
+import usePrintSettingsStore from '@/stores/usePrintSettingsStore'
+import { storeToRefs } from 'pinia'
+import { RoomResponseSchema, BoxResponseSchema } from '@/api/types/storage.ts'
+import useStorageHelper from '@/composables/useStorageHelper.ts'
 
 const printSettingStore = usePrintSettingsStore()
 
-const {getStorageIcon, getStoragePath} = useStorageHelper()
+const { getStorageIcon, getStoragePath } = useStorageHelper()
 
 // TODO MAKE QR CODE REALLY RESPONSIVE
-const {
-  object,
-} = defineProps<{
-  object: RoomResponseSchema | BoxResponseSchema,
+const { object } = defineProps<{
+  object: RoomResponseSchema | BoxResponseSchema
 }>()
 
 const {
@@ -31,10 +29,9 @@ const qrCodeIconWidthInPx = computed(() => {
   return `${qrCodeIconWidth.value}px`
 })
 
-const  fontSizeInPx = computed(() => {
+const fontSizeInPx = computed(() => {
   return `${fontSize.value}px`
 })
-
 
 const qrCodePayload = computed(() => {
   let route = getStoragePath(object.id, object.storage_type)
@@ -49,65 +46,58 @@ const qrcode = useQRCode(qrCodePayload.value, {
   errorCorrectionLevel: 'H',
   margin: 0
 })
-
 </script>
 
 <template>
-
-<div
-  class="label"
-  :key="object.id"
-  :id="object.id"
->
   <div
+    class="label"
+    :key="object.id"
+    :id="object.id"
+  >
+    <div
       v-if="qrCodeVisible"
       class="qr-code-wrapper"
-  >
-    <img
+    >
+      <img
         :src="qrcode"
         alt="QR Code"
         class="qr-code"
-    />
+      />
 
-    <img
+      <img
         v-if="qrCodeIconVisible"
         src="/favicon.ico"
         alt="Favicon"
         class="center-image"
-    />
-  </div>
-
-  <div
-      v-if="storageNameVisible || storageIconVisible"
-      class="text-container overflow-hidden"
-  >
-    <div
-        class="label-text"
-        v-if="storageNameVisible"
-    >
-      {{ object.name }}
-    </div>
-    <div
-        v-if="storageIconVisible"
-        class="bottom-right-icon"
-    >
-      <v-icon
-          :size="storageIconSize"
-          :icon="icon"
-          alt="Icon"
       />
     </div>
 
-</div>
-</div>
-
+    <div
+      v-if="storageNameVisible || storageIconVisible"
+      class="text-container overflow-hidden"
+    >
+      <div
+        class="label-text"
+        v-if="storageNameVisible"
+      >
+        {{ object.name }}
+      </div>
+      <div
+        v-if="storageIconVisible"
+        class="bottom-right-icon"
+      >
+        <v-icon
+          :size="storageIconSize"
+          :icon="icon"
+          alt="Icon"
+        />
+      </div>
+    </div>
+  </div>
 </template>
 
 <style scoped lang="scss">
-
-
 .label {
-
   height: 100%;
   width: 100%;
   background: white;
@@ -138,11 +128,11 @@ const qrcode = useQRCode(qrCodePayload.value, {
   }
 
   .text-container {
-    flex: 1 ;
+    flex: 1;
     margin-left: 8px;
     position: relative;
     overflow: hidden;
-    .label-text{
+    .label-text {
       font-size: v-bind(fontSizeInPx);
       color: black;
       white-space: normal;
@@ -158,20 +148,5 @@ const qrcode = useQRCode(qrCodePayload.value, {
       z-index: 1;
     }
   }
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 </style>

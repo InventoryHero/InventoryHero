@@ -6,9 +6,5 @@
     "moduleResolution": "bundler",
     "allowSyntheticDefaultImports": true
   },
-  "include": [
-    "vite.config.ts",
-    "auto-imports.d.ts",
-    "src/lang/index.ts"
-  ]
+  "include": ["vite.config.ts", "auto-imports.d.ts", "src/plugins/i18n.ts"]
 }

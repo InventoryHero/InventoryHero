@@ -187,7 +187,7 @@
 <script setup lang="ts">
 import { UserPublic } from '@/api/types/households'
 import { AdminUserUpdate } from '@/api/types/user'
-import useConfigStore from '@/store/useConfigStore'
+import useConfigStore from '@/stores/useConfigStore'
 import { BreadcrumbItem } from 'vuetify/lib/components/VBreadcrumbs/VBreadcrumbs.mjs'
 
 const { admin } = useAxios()

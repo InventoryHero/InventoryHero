@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import useConfigStore from '@/store/useConfigStore.ts'
+import useConfigStore from '@/stores/useConfigStore'
 import useAppStyling from '@/composables/useAppStyling.ts'
 import { useTheme } from 'vuetify'
 

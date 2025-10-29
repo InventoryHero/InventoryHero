@@ -1,31 +1,30 @@
 <script setup lang="ts">
+import { BoxResponseSchema, StorageType } from '@/api/types/storage.ts'
+import boxAddedEventBus from '@/services/boxAddedEventBus.ts'
+import useContentRefreshStore from '@/stores/useContentRefreshStore'
 
-import {BoxResponseSchema, StorageType} from "@/api/types/storage.ts";
-import boxAddedEventBus from "@/services/boxAddedEventBus.ts";
-import useContentRefreshStore from "@/store/useContentRefreshStore.ts";
-
-const {storage: storageEndpoint} = useAxios()
-const {t} = useI18n()
+const { storage: storageEndpoint } = useAxios()
+const { t } = useI18n()
 const route = useRoute()
 const contentRefreshStore = useContentRefreshStore()
 
-const needle = ref<string|undefined>();
+const needle = ref<string | undefined>()
 const boxes = ref<Array<BoxResponseSchema>>([])
 const loading = ref<boolean>(false)
 
-
-
 const filteredBoxes = computed(() => {
-  if(!needle.value){
+  if (!needle.value) {
     return boxes.value
   }
-  return boxes.value.filter(box => box.name.toLowerCase().includes(needle.value!.toLowerCase()))
+  return boxes.value.filter((box) =>
+    box.name.toLowerCase().includes(needle.value!.toLowerCase())
+  )
 })
 
 const loadBoxes = async () => {
   loading.value = true
-  storageEndpoint.getAllStorage("box").then(({success, data, error}) => {
-    if(!success){
+  storageEndpoint.getAllStorage('box').then(({ success, data, error }) => {
+    if (!success) {
       //TODO
     }
     boxes.value = (data ?? []) as Array<BoxResponseSchema>
@@ -34,8 +33,7 @@ const loadBoxes = async () => {
 }
 
 const clickOnBanner = () => {
-  loadBoxes().then(() => {
-  })
+  loadBoxes().then(() => {})
 }
 
 boxAddedEventBus.on(() => {
@@ -47,20 +45,17 @@ boxAddedEventBus.on(() => {
 })
 
 onBeforeMount(() => {
-
   loadBoxes()
 })
 </script>
 
 <template>
-  <search-card
-    v-model="needle"
-  />
+  <search-card v-model="needle" />
 
   <box-summary-list
-      v-if="!loading"
-      v-model="filteredBoxes"
-      :num-boxes="boxes.length"
+    v-if="!loading"
+    v-model="filteredBoxes"
+    :num-boxes="boxes.length"
   />
   <v-skeleton-loader
     v-else
@@ -69,9 +64,7 @@ onBeforeMount(() => {
   />
 </template>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>
 
 <route>
 {

@@ -1,8 +1,5 @@
 import { defineStore } from 'pinia'
-import {
-  useGeneralSocketStore,
-  useHouseholdSocketStore
-} from '@/store/index.ts'
+import { useGeneralSocketStore, useHouseholdSocketStore } from '@/stores'
 import { HouseholdPublic } from '@/api/types/households.ts'
 import { UserPublic } from '@/api/types/user.ts'
 

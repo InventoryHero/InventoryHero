@@ -65,7 +65,6 @@ export const i18n = createI18n({
 
 function getBrowserOrDefault() {
   const browserLanguage = (navigator.language ?? 'en').split('-')[0]
-  console.log(browserLanguage)
   return browserLanguage
 }
 
@@ -75,17 +74,13 @@ export /*async*/ function setI18nLanguage(locale: string) {
     locale = getBrowserOrDefault()
   }
   i18n.global.locale.value = locale
-
-  return
-
-
   //const { axiosInstance } = useAxios()
   //axiosInstance.defaults.headers.common['Accept-Language'] = locale
 
   // load locale messages with dynamic import
-  // TODO FETCH VUETIFY 
+  // TODO FETCH VUETIFY
   //const messages = await import(
-    /* webpackChunkName: "locale-[request]" */ `@/locales/${locale}.json`
+  ///* webpackChunkName: "locale-[request]" */ `@/locales/${locale}.json`
   //)
 
   /*i18n.global.setLocaleMessage(locale, {
@@ -95,7 +90,5 @@ export /*async*/ function setI18nLanguage(locale: string) {
     ...messages.default
   })*/
 
-  //return nextTick()
-
-  
+  return nextTick()
 }
