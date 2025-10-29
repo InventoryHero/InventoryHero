@@ -29,7 +29,12 @@
       "save_color": "Save",
       "color": "Color",
       "reset": "Reset",
-      "theme": "Dark mode",
+      "theme": {
+        "title": "Theme",
+        "dark": "Dark",
+        "system": "System",
+        "light": "Light"
+      },
       "transitions": "Transitions"
     },
     "general": {
@@ -460,7 +465,13 @@
         "save": "Save",
         "send_link_per_email": "E-Mail",
         "copy_link_to_clipboard": "Copy",
-        "password_reset_title": "Password reset link"
+        "password_reset_title": "Password reset link",
+        "username": "Username",
+        "email": "E-Mail",
+        "first_name": "FIrst Name",
+        "last_name": "Last Name",
+        "confirmed": "Confirmed",
+        "actions": "Actions"
       },
       "create_new": {
         "title": "Create new user",

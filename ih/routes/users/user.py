@@ -41,7 +41,7 @@ class AdminUserController(BaseAdminController):
     async def get_user(self, id: UUID):
         return self.repositories.users.get_user_by_id(id)
 
-    @admin_router.delete("/{id}", status_code=204)
+    @admin_router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
     async def delete(self, id: UUID):
         if id == 0:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="cannot_delete_user_0")

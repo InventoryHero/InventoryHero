@@ -62,11 +62,21 @@ export default (api: AxiosInstance) => {
     }
   }
 
+  const deleteUser = async (id: string): Promise<ApiResponse<void>> => {
+    const response = await api.delete(`/admin/user/${id}`)
+    const success = response.status === 204
+    return {
+      success,
+      error: !success ? response.data.detail : undefined
+    }
+  }
+
   return {
     getAllUsers,
     getUser,
     updateUser,
     resetUserPassword,
-    createUser
+    createUser,
+    deleteUser
   }
 }

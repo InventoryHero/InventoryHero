@@ -1,72 +1,50 @@
 <script setup lang="ts">
-import useConfigStore from "@/store/useConfigStore.ts"
-import useAppStyling from "@/composables/useAppStyling.ts";
+import useConfigStore from '@/store/useConfigStore.ts'
+import useAppStyling from '@/composables/useAppStyling.ts'
+import { i18n } from '@/lang'
 
 const configStore = useConfigStore()
-const {selectStyling} = useAppStyling()
-const {t, availableLocales} = useI18n()
+const { selectStyling } = useAppStyling()
+const { t, availableLocales } = useI18n()
 
+const { language } = storeToRefs(configStore)
 
-
-const locales = computed(() => {
-  return availableLocales.map((value) => {
-    return {
-      key: value,
-      title: t(`settings.general.languages.${value}`)
-    }
-  })
+watch(language, (_) => {
+  i18n.global.locale.value = language.value
 })
-
-const currentLocale = computed({
-  get() {
-    if(configStore.language === "default"){
-      return {
-        key: "default",
-        title: t(`settings.general.languages.default_short`)
-      }
-    }
-
-    return configStore.language
-  },
-  set(locale: string){
-    configStore.languageChange(locale)
-  }
-})
-
-
 </script>
 
 <template>
-<app-settings-card
-  :title="t('settings.general.title')"
->
-  <app-setting
-      :title="t('settings.general.language')"
-  >
-    <v-select
-      ref="language-select"
-      v-bind="selectStyling"
-      density="compact"
-      :clearable="false"
-      v-model="currentLocale"
-      :items="locales"
-      item-title="title"
-      item-value="key"
-    >
-      <template #prepend-item>
-        <v-list-item
-            :active="configStore.language === 'default'"
-            @click="currentLocale = 'default'"
+  <app-settings-card :title="t('settings.general.title')">
+    <app-setting :title="t('settings.general.language')">
+      <v-select
+        ref="language-select"
+        v-bind="selectStyling"
+        density="compact"
+        :clearable="false"
+        v-model="language"
+        :items="availableLocales"
+      >
+        <template #prepend-item>
+          <v-list-item
+            :active="language === 'default'"
+            @click="language = 'default'"
             :title="t('settings.general.languages.default')"
-        >
-        </v-list-item>
-      </template>
-    </v-select>
-  </app-setting>
-  <v-divider/>
-</app-settings-card>
+          ></v-list-item>
+        </template>
+        <template v-slot:item="{ item, props }">
+          <v-list-item
+            v-bind="props"
+            :title="t(`settings.general.languages.${item.raw}`)"
+          />
+        </template>
+        <template v-slot:selection="{ item }">
+          {{ t(`settings.general.languages.${item.raw}`) }}
+        </template>
+      </v-select>
+    </app-setting>
+    <v-divider />
+  </app-settings-card>
 </template>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

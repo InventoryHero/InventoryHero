@@ -7,7 +7,7 @@ import Components from 'unplugin-vue-components/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import { i18n } from './src/lang'
 import vuetify from 'vite-plugin-vuetify'
-import basicSsl from '@vitejs/plugin-basic-ssl'
+import mkcert from 'vite-plugin-mkcert'
 import Layouts from 'vite-plugin-vue-layouts-next'
 
 //@ts-expect-error node url cannot be found, but it is there
@@ -26,10 +26,7 @@ export default defineConfig({
     }
   },
   plugins: [
-    basicSsl({
-      /** name of certification */
-      name: 'test'
-    }),
+    mkcert(),
     VueRouter({
       /* options */
     }),
