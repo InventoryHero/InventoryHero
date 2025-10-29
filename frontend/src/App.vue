@@ -20,7 +20,7 @@ const isInitialized = ref(false)
 
 vuetifyTheme.change(theme.value)
 configStore.applyColor()
-setLanguage(language.value)
+//setLanguage(language.value)
 
 async function initializeApp() {
   try {
