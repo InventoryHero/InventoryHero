@@ -10,6 +10,7 @@ const { getStorageIcon, getStoragePath } = useStorageHelper()
 const route = useRoute()
 const { items: itemEndpoint } = useAxios()
 const { t } = useI18n()
+const router = useRouter()
 
 const item = ref<ItemDetailReadSchema | undefined>()
 const loading = ref<boolean>(true)
@@ -47,7 +48,7 @@ const loadItem = async (
     .getItemDetails(props.id, fromStorageId.value)
     .then(({ success, data, error }) => {
       if (!success) {
-        // TODO ERROR
+        router.push('/items')
         loading.value = false
         return
       }

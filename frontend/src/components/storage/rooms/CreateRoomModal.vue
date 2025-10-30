@@ -1,95 +1,108 @@
 <script setup lang="ts">
-import useAppStyling from "@/composables/useAppStyling.ts";
-import {useTemplateRef} from "vue";
-import {VForm} from "vuetify/components";
+import useAppStyling from '@/composables/useAppStyling.ts'
+import { useTemplateRef } from 'vue'
+import { VForm } from 'vuetify/components'
 
-import roomAddedEventBus from "@/services/roomAddedEventBus.ts";
-import useGlobalModal from "@/composables/useGlobalModal.ts";
+import roomAddedEventBus from '@/services/roomAddedEventBus.ts'
+import ConfirmLeaveDialog from '@/components/common/modals/ConfirmLeaveDialog.vue'
 
-const {t} = useI18n()
-const {textFieldStyling, btnStyle} = useAppStyling()
-const {storage: storageEndpoint} = useAxios()
-const router = useRouter()
+const { t } = useI18n()
+const { textFieldStyling, btnStyle } = useAppStyling()
+const { storage: storageEndpoint } = useAxios()
 const route = useRoute()
-const {isDirty, isAwaitingConfirmation, leave, stay, forceClose, close, onBeforeRouteLeaveHandler} = useGlobalModal()
 
 const active = defineModel<boolean>()
 
-const {
-  height,
-  width
-} = defineProps<{
-  height?: string|number|undefined,
-  width?: string|number|undefined,
+const { height, width } = defineProps<{
+  height?: string | number | undefined
+  width?: string | number | undefined
 }>()
 
 const nameRules = ref([
-  (v: string|null) => !!v || t('create.room.form.name_required')
+  (v: string | null) => !!v || t('create.room.form.name_required')
 ])
 
-const name = ref<string|null>()
-const form = useTemplateRef("form")
+const name = ref<string | null>()
+const form = useTemplateRef('form')
 const loading = ref<boolean>(false)
+const confirmLeaveDialogVisible = ref<boolean>(false)
 
+const dirty = computed(() => {
+  return !!name.value
+})
 
 const saveRoom = async () => {
   //@ts-expect-error
   const { valid } = await form.value.validate()
-  if(!valid){
+  if (!valid) {
     return false
   }
 
   loading.value = true
-  const {success, data, error} = await storageEndpoint.createStorage({
+  const { success, data, error } = await storageEndpoint.createStorage({
     name: name.value!,
-    storage_type: "room"
+    storage_type: 'room'
   })
-  if(!success){
-    // TODO
-    await router.push("/error")
+  if (!success) {
     return false
   }
   loading.value = false
 
-  if(route.name === "/storage/rooms/room.[id]"){
+  if (route.name === '/storage/rooms/room.[id]') {
     roomAddedEventBus.emit()
   }
   name.value = null
   return true
 }
 
-const saveAndClose = () => {
-  saveRoom().then((success: boolean) => {
-    if(success){
-      forceClose()
-    }
-  })
+const saveAndClose = async () => {
+  const success = await saveRoom()
+  if (success) {
+    forceClose()
+  }
 }
 
-watch([name], () => {
-  isDirty.value = true
-})
-
-watch(active, () => {
-  if(form.value){
+const save = async () => {
+  const success = await saveRoom()
+  if (success) {
     form.value.reset()
   }
-  isDirty.value = false
-})
+}
+
+const forceClose = () => {
+  close(true)
+}
+const close = (force: boolean = false) => {
+  if (force) {
+    active.value = false
+  } else if (dirty.value) {
+    confirmLeaveDialogVisible.value = true
+    return
+  } else {
+    active.value = false
+  }
+  form.value.reset()
+}
 
 onBeforeRouteLeave(() => {
-  return onBeforeRouteLeaveHandler()
+  if (dirty.value) {
+    confirmLeaveDialogVisible.value = true
+    return false
+  }
+  if (active.value) {
+    active.value = false
+    return false
+  }
+  return true
 })
-
-
 </script>
 
 <template>
   <v-dialog
-      v-model="active"
-      scrollable
-      :height="height"
-      :width="width"
+    v-model="active"
+    scrollable
+    :height="height"
+    :width="width"
   >
     <v-card
       :loading="loading"
@@ -98,7 +111,7 @@ onBeforeRouteLeave(() => {
       <template v-slot:append>
         <v-icon-btn
           icon="mdi-close"
-          @click="close"
+          @click="close(false)"
         />
       </template>
       <template v-slot:title>
@@ -111,19 +124,19 @@ onBeforeRouteLeave(() => {
           ref="form"
         >
           <v-text-field
-              v-bind="textFieldStyling"
-              v-model="name"
-              :label="t('create.room.form.name')"
-              :rules="nameRules"
+            v-bind="textFieldStyling"
+            v-model="name"
+            :label="t('create.room.form.name')"
+            :rules="nameRules"
           />
         </v-form>
       </v-card-text>
 
       <v-card-actions>
         <v-btn
-            v-bind="btnStyle"
-            :text="t('create.room.form.save')"
-            @click="saveRoom"
+          v-bind="btnStyle"
+          :text="t('create.room.form.save')"
+          @click="save"
         />
         <v-btn
           v-bind="btnStyle"
@@ -134,12 +147,10 @@ onBeforeRouteLeave(() => {
     </v-card>
   </v-dialog>
   <confirm-leave-dialog
-      v-model="isAwaitingConfirmation"
-      @cancel="stay"
-      @confirm="leave"
+    v-model="confirmLeaveDialogVisible"
+    @cancel="confirmLeaveDialogVisible = false"
+    @confirm="forceClose()"
   />
 </template>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

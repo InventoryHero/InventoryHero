@@ -52,57 +52,6 @@ onBeforeMount(() => {
       console.log(data)
     })
 })
-
-/*export default defineComponent({
-  name: "Join",
-  setup(){
-    const {household: householdEndpoint} = useAxios()
-    const authStore = useAuthStore();
-    return {
-      authStore,
-      endpoint: householdEndpoint.axios as HouseholdEndpoint
-    }
-  },
-
-  data(){
-    return {
-      household_meta: {
-        name: "",
-        owner: ""
-      },
-      accepting: false
-    }
-  },
-  methods:{
-    deny(){
-      this.$router.replace("/")
-    },
-    async accept(){
-      this.accepting = true
-      const {success, household} = await this.endpoint.joinHousehold(this.code)
-      if(!success){
-        // TODO
-        return
-      }
-      this.authStore.addHousehold(household!)
-      // reset return url otherwise user will be redirected to this join route again
-      this.authStore.returnUrl = "";
-      this.$router.push("/households")
-
-    }
-  },
-  async mounted(){
-    const {success, owner, name} = await this.endpoint.getHouseholdMeta(this.code)
-    if(!success){
-      this.$router.push("/")
-      return
-    }
-    this.household_meta = {
-      owner: owner,
-      name: name
-    }
-  }
-})*/
 </script>
 
 <template>

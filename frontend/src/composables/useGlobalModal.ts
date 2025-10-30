@@ -36,8 +36,6 @@ const activeModal = ref<{
   component: Component
   props?: Record<string, any>
 } | null>(null)
-const isDirty = ref<boolean>(false)
-const isAwaitingConfirmation = ref(false)
 
 export default () => {
   const openModal = (
@@ -50,49 +48,8 @@ export default () => {
     }
   }
 
-  const leave = () => {
-    isAwaitingConfirmation.value = false
-    activeModal.value = null
-  }
-  const stay = () => {
-    isAwaitingConfirmation.value = false
-  }
-
-  const forceClose = () => {
-    activeModal.value = null
-  }
-
-  const close = () => {
-    if (isDirty.value) {
-      isAwaitingConfirmation.value = true
-      return false
-    }
-    activeModal.value = null
-    return true
-  }
-
-  const onBeforeRouteLeaveHandler = () => {
-    if (activeModal.value === null) {
-      return true
-    }
-
-    if (isDirty.value) {
-      isAwaitingConfirmation.value = true
-      return false
-    }
-    activeModal.value = null
-    return false
-  }
-
   return {
     activeModal,
-    isDirty,
-    isAwaitingConfirmation,
-    openModal,
-    leave,
-    stay,
-    forceClose,
-    close,
-    onBeforeRouteLeaveHandler
+    openModal
   }
 }

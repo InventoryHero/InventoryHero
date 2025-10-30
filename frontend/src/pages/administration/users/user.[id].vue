@@ -7,6 +7,8 @@
   <template v-else>
     <v-dialog
       v-model="passwordResetDialog"
+      :max-height="mdAndUp ? '700px' : '100%'"
+      :width="mdAndUp ? '600px' : '100%'"
       persistent
       no-click-animation
     >
@@ -189,7 +191,6 @@ import { UserPublic } from '@/api/types/households'
 import { AdminUserUpdate } from '@/api/types/user'
 import router from '@/router'
 import useConfigStore from '@/stores/useConfigStore'
-import { useNotification } from '@kyvg/vue3-notification'
 import { BreadcrumbItem } from 'vuetify/lib/components/VBreadcrumbs/VBreadcrumbs.mjs'
 
 const { admin } = useAxios()
@@ -197,6 +198,7 @@ const { t } = useI18n()
 const { textFieldStyling, btnStyle } = useAppStyling()
 const route = useRoute()
 const configStore = useConfigStore()
+const { mdAndUp } = useDisplay()
 
 const { id } = defineProps<{
   id: string
@@ -258,7 +260,7 @@ const resetPassword = async () => {
   const { success, data, error } = await admin.resetUserPassword(user.value!.id)
 
   if (!success) {
-    // TODO
+    return
   }
   passwordResetCode.value = data!
 }
@@ -292,8 +294,6 @@ const saveUpdatedUserdata = async () => {
   )
 
   if (!success) {
-    // TODO
-
     return
   }
   user.value = data!

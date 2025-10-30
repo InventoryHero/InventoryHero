@@ -7,10 +7,11 @@ import categoryAddedEventBus from '@/services/categoryAddedEventBus.ts'
 import useContentRefreshStore from '@/stores/useContentRefreshStore'
 
 const { items: itemsEndpoint } = useAxios()
-const { mdAndUp, xs, sm, md, lg, xl } = useDisplay()
+const { xs } = useDisplay()
 const { textFieldStyling, btnStyle } = useAppStyling()
 const contentRefreshStore = useContentRefreshStore()
 const { t } = useI18n()
+const router = useRouter()
 
 const items = ref<Array<ItemSummarySchema>>([])
 const categories = ref<Array<CategoryReadSchema>>([])
@@ -20,26 +21,18 @@ const categoryFilter = ref<Array<string>>([])
 
 async function loadItems() {
   loading.value = true
-  const {
-    success: itemsSuccess,
-    data,
-    error: itemsError
-  } = await itemsEndpoint.getAllItemsSummary()
+  const { success: itemsSuccess, data } =
+    await itemsEndpoint.getAllItemsSummary()
   if (!itemsSuccess) {
-    // TODO NOTIFY
-    console.log(itemsError)
+    router.push('/')
     return
   }
   items.value = data ?? []
 
-  const {
-    success: categoriesSuccess,
-    data: cats,
-    error: categoriesError
-  } = await itemsEndpoint.getAllCategories()
+  const { success: categoriesSuccess, data: cats } =
+    await itemsEndpoint.getAllCategories()
   if (!categoriesSuccess) {
-    // TODO NOTIFY
-    console.log(categoriesError)
+    router.push('/')
     return
   }
   categories.value = cats ?? []

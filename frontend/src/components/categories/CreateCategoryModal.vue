@@ -1,20 +1,10 @@
 <script setup lang="ts">
 import useAppStyling from '@/composables/useAppStyling.ts'
-import useGlobalModal from '@/composables/useGlobalModal.ts'
-import { templateRef } from '@vueuse/core'
 import categoryAddedEventBus from '@/services/categoryAddedEventBus.ts'
 
 const { t } = useI18n()
 const { textFieldStyling, btnStyle } = useAppStyling()
-const {
-  isDirty,
-  isAwaitingConfirmation,
-  leave,
-  stay,
-  forceClose,
-  close,
-  onBeforeRouteLeaveHandler
-} = useGlobalModal()
+
 const { items } = useAxios()
 const route = useRoute()
 
@@ -26,14 +16,19 @@ const { height, width } = defineProps<{
 
 const name = ref<string | null>(null)
 const loading = ref<boolean>(false)
-const form = templateRef('form')
+const form = useTemplateRef('form')
+const confirmLeaveDialogVisible = ref<boolean>(false)
+
+const dirty = computed(() => {
+  return !!name.value
+})
 
 const nameRules = ref([
   (value: string | null) =>
     !!value || t('create.category.form.rules.name_required')
 ])
 
-const save = async () => {
+const saveCategory = async () => {
   const { valid } = await form.value!.validate()
   if (!valid) {
     return
@@ -49,23 +44,51 @@ const save = async () => {
   if (route.path.startsWith('/items')) {
     categoryAddedEventBus.emit(data!)
   }
-  form.value!.reset()
+
   loading.value = false
   return true
 }
 
 const saveAndClose = async () => {
-  const success = await save()
+  const success = await saveCategory()
   if (success) {
     forceClose()
   }
 }
 
-watch(name, (newValue) => {
-  isDirty.value = newValue !== null
-})
+const save = async () => {
+  const success = await saveCategory()
+  if (success) {
+    form.value!.reset()
+  }
+}
+
+const forceClose = () => {
+  close(true)
+}
+
+const close = (force: boolean = false) => {
+  if (force) {
+    active.value = false
+  } else if (dirty.value) {
+    confirmLeaveDialogVisible.value = true
+    return
+  } else {
+    active.value = false
+  }
+  form.value.reset()
+}
+
 onBeforeRouteLeave(() => {
-  return onBeforeRouteLeaveHandler()
+  if (dirty.value) {
+    confirmLeaveDialogVisible.value = true
+    return false
+  }
+  if (active.value) {
+    active.value = false
+    return false
+  }
+  return true
 })
 </script>
 
@@ -84,7 +107,7 @@ onBeforeRouteLeave(() => {
       <template v-slot:append>
         <v-icon-btn
           icon="mdi-close"
-          @click="close"
+          @click="close(false)"
         />
       </template>
       <v-card-text>
@@ -121,9 +144,9 @@ onBeforeRouteLeave(() => {
     </v-card>
   </v-dialog>
   <confirm-leave-dialog
-    v-model="isAwaitingConfirmation"
-    @cancel="stay"
-    @confirm="leave"
+    v-model="confirmLeaveDialogVisible"
+    @cancel="confirmLeaveDialogVisible = false"
+    @confirm="forceClose"
   />
 </template>
 

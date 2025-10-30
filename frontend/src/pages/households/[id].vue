@@ -87,7 +87,8 @@ const deleteHousehold = async (confirmed: boolean) => {
   deletingHousehold.value = true
   householdEndpoint.delete(householdId.value).then((success) => {
     if (!success) {
-      // TODO
+      deleteConfirmationVisible.value = false
+      deletingHousehold.value = false
       return
     }
 
@@ -158,10 +159,9 @@ onBeforeMount(() => {
   loadingMembers.value = true
   householdEndpoint
     .getAllMembers(householdId.value)
-    .then(({ success, data, error }) => {
+    .then(({ success, data }) => {
       if (!success) {
-        errorMessage.value = error as any as string | undefined
-        // TODO ERROR HANDLING
+        loadingMembers.value = false
         return
       }
 

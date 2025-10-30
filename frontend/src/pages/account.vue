@@ -7,6 +7,7 @@ import useAppStyling from '@/composables/useAppStyling.ts'
 import { ChangePasswordForm, UserUpdate } from '@/api/types/user.ts'
 import { useNotification } from '@kyvg/vue3-notification'
 import { storeToRefs } from 'pinia'
+import router from '@/router'
 
 const { t } = useI18n()
 
@@ -106,7 +107,8 @@ async function saveUpdatedUserdata() {
   saving.value = true
   const { success, data, error } = await userEndpoint.updateUser(payload)
   if (!success) {
-    // TODO
+    saving.value = false
+    return
   }
   authStore.user = data!
   reset()
@@ -127,7 +129,7 @@ const updatePassword = async () => {
 
   const { success, data, error } = await userEndpoint.changePassword(payload)
   if (!success) {
-    // TODO
+    return
   }
   passwordForm.value.reset()
   passwordFormVisible.value = false
@@ -138,11 +140,11 @@ const showPasswordForm = async () => {
 }
 
 const forgotPassword = async () => {
-  const { success, data, error } = await userEndpoint.resetPassword({
+  const { success } = await userEndpoint.resetPassword({
     email: authStore.user!.email
   })
   if (!success) {
-    // TODO
+    return
   }
   notify({
     title: t('account.toasts.forgot-password.title'),
@@ -171,9 +173,10 @@ watch(passwordFormVisible, (newValue: boolean) => {
 onBeforeMount(() => {
   if (!authStore.user) {
     loading.value = true
-    userEndpoint.self().then(({ success, data, error }) => {
+    userEndpoint.self().then(({ success, data }) => {
       if (!success) {
         // TODO
+        return
       }
       authStore.user = data!
       loading.value = false

@@ -4,6 +4,7 @@ import useConfigStore from '@/stores/useConfigStore'
 import { useTemplateRef } from 'vue'
 import { VForm } from 'vuetify/components'
 import { storeToRefs } from 'pinia'
+import { useNotification } from '@kyvg/vue3-notification'
 
 const { t } = useI18n()
 const { textFieldStyling, btnStyle } = useAppStyling()
@@ -11,6 +12,7 @@ const route = useRoute()
 const router = useRouter()
 const configStore = useConfigStore()
 const { auth, userEndpoint } = useAxios()
+const { notify } = useNotification()
 
 const { smtpEnabled, registrationAllowed } = storeToRefs(configStore)
 
@@ -66,11 +68,14 @@ async function login() {
 
 const requestNewConfirmationCode = async () => {
   confirmationMissingAlert.value = false
-  const { success, error } = await userEndpoint.requestEmailConfirmation()
+  const { success } = await userEndpoint.requestEmailConfirmation()
   if (!success) {
-    // TODO
+    return
   } else {
-    // TODO NOTIFY SUCCESS
+    notify({
+      title: t('login.notification.request_new_confirmation_code'),
+      type: 'success'
+    })
   }
 }
 

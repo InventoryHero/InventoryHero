@@ -6,8 +6,8 @@ import useConfigStore from '@/stores/useConfigStore'
 const currRoute = useRoute()
 const { t } = useI18n()
 const { mdAndUp } = useDisplay()
-const { activeModal, isDirty, isAwaitingConfirmation, openModal, forceClose } =
-  useGlobalModal()
+
+const { activeModal, openModal } = useGlobalModal()
 const configStore = useConfigStore()
 const authStore = useAuthStore()
 
@@ -57,7 +57,7 @@ watch(activeModal, (newVal) => {
   }
 })
 
-onBeforeRouteLeave(() => {})
+onBeforeRouteUpdate(() => {})
 </script>
 
 <template>
@@ -139,7 +139,6 @@ onBeforeRouteLeave(() => {})
         <component
           v-if="!!activeModal"
           :model-value="!!activeModal"
-          @update:model-value="forceClose"
           :is="activeModal.component"
           v-bind="{
             height: mdAndUp ? '700px' : '100%',
@@ -147,6 +146,7 @@ onBeforeRouteLeave(() => {})
             ...(activeModal.props ?? {})
           }"
         />
+
         <v-fab
           v-if="showFab"
           app

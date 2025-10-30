@@ -20,7 +20,7 @@ class AppSettings(BaseSettings):
     API_PORT: int = 5000
     API_DOCS: bool = True
 
-    IH_ACCESS_TOKEN_EXPIRATION: int = 15
+    IH_ACCESS_TOKEN_EXPIRATION: int = 15 * 60
     IH_REFRESH_TOKEN_EXPIRATION: int = 3600 * 24 * 7
 
     IH_SECRET_KEY: str = "mysupersecretstring"
