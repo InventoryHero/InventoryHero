@@ -15,8 +15,10 @@ export default defineStore('auth', {
       const { userEndpoint } = useAxios()
       const { success, data: user } = await userEndpoint.self()
       if (!success) {
-        // TODO ERROR AND LOGOUT
+        // TODO HANDLE
+        return
       }
+
       this.user = user
     },
     async reset() {
@@ -41,22 +43,17 @@ export default defineStore('auth', {
       //generalSocketStore.leave()
       await this.reset()
     },
-    async isAuthorized() {
+    async getDefaultHousehold() {
       const { userEndpoint } = useAxios()
       const { success, data: defaultHousehold } =
         await userEndpoint.getDefaultHousehold()
-      this.household = defaultHousehold
-      this.authorized = success
-      return success
-    },
-
-    async init() {
-      const isAuthorized = await this.isAuthorized()
-      if (!isAuthorized) {
-        await this.reset()
+      if (!success) {
+        // TODO HANDLE
+        this.authorized = false
         return
       }
-      await this.whoami()
+      this.household = defaultHousehold
+      this.authorized = true
     }
   },
   getters: {

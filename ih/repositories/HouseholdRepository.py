@@ -13,6 +13,7 @@ from starlette import status
 
 from ih.db.models.User import User
 from ih.db.models.households import Household, HouseholdMember, HouseholdInvite
+from ih.i18n.localizer import Localizer
 from ih.schema.households.household import HouseholdCreate, HouseholdPublic, HouseholdUpdate, \
     HouseholdWithMembersPublic, HouseholdMemberPublic, HouseholdWithMemberPublic, Role, HouseholdMemberUpdateRole
 from ih.schema.households.invite import HouseholdInvitePublic
@@ -23,10 +24,11 @@ class HouseholdRepository:
     user: Optional[User]
     household_id: Optional[UUID]
 
-    def __init__(self, session: Session, user: Optional[User] = None, household: Optional[UUID] = None):
+    def __init__(self, session: Session, localizer: Localizer, user: Optional[User] = None, household: Optional[UUID] = None):
         self.session = session
         self.user = user
         self.household_id = household
+        self.localizer = localizer
 
     def _get_household(self, household_id: UUID) -> Household:
         query = select(Household).where(Household.id == household_id)
@@ -214,8 +216,8 @@ class HouseholdRepository:
         except IntegrityError:
             self.session.rollback()
             raise HTTPException(
-                status_code=status.HTTP_409_CONFLICT,
-                detail="invite_email_household_exists"
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=self.localizer.t("unknown_error")
             )
 
         public_invite = HouseholdInvitePublic(**invite.model_dump(exclude={"code"}), code=raw_code)

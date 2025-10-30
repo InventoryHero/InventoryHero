@@ -58,18 +58,14 @@ async function setAsHousehold() {
   const { success, data: newDefault } = await userEndpoint.setDefaultHousehold({
     id: household.id
   })
-  console.log(success)
   if (!success) {
-    // TODO ERROR
+    return
   }
-
   defaultHousehold.value = newDefault
 
   if (redirectPath) {
     router.replace(redirectPath)
   }
-
-  // TODO ERROR
 }
 
 function leaveHousehold(confirmed: boolean) {
@@ -86,7 +82,7 @@ function leaveHousehold(confirmed: boolean) {
 
   householdEndpoint.leaveHousehold(household.id).then((success) => {
     if (!success) {
-      // TODO ERROR
+      return
     }
     notify({
       title: t('toasts.titles.success.household_left'),

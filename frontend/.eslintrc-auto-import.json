@@ -92,7 +92,6 @@
     "useGlobalModal": true,
     "useI18n": true,
     "useId": true,
-    "useLink": true,
     "useModel": true,
     "useRoute": true,
     "useRouter": true,

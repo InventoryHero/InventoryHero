@@ -21,4 +21,4 @@ class HouseholdContextController(UserControllerBase):
 
     @cached_property
     def repositories(self):
-        return RepositoryFactory(self.session, user=self.user, household=self.household.id)
+        return RepositoryFactory(self.session, self.localizer, user=self.user, household=self.household.id)

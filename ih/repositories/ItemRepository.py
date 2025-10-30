@@ -11,6 +11,7 @@ from starlette import status
 from ih.db.models import ItemStorage, Item, ItemAttributes, Category, Storage
 from ih.db.models.User import User
 from ih.db.models.storage.Storage import StorageType
+from ih.i18n.localizer import Localizer
 from ih.schema.items import ItemSummarySchema, ItemCreateSchema, ItemAttributesCreateSchema, \
     ItemStorageCreateSchema, CategoryCreateSchema, ItemUpdateSchema, ItemAttributesUpdateSchema, ItemStorageUpdateSchema
 
@@ -20,10 +21,11 @@ class ItemRepository:
     user: Optional[User]
     household_id: Optional[UUID]
 
-    def __init__(self, session: Session, user: Optional[User] = None, household: Optional[UUID] = None):
+    def __init__(self, session: Session, localizer: Localizer, user: Optional[User] = None, household: Optional[UUID] = None):
         self.session = session
         self.user = user
         self.household_id = household
+        self.localizer = localizer
 
     def get_by_name(self, name) -> Optional[Item]:
         stmt = (
@@ -232,7 +234,7 @@ class ItemRepository:
         )
         result = self.session.exec(stmt).first()
         if result is not None:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="category_already_exists")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=self.localizer.t("category_already_exists"))
         category = Category(**category.model_dump(), household_id=self.household_id)
         self.session.add(category)
         self.session.flush()
@@ -244,7 +246,8 @@ class ItemRepository:
             select(Category)
             .where(Category.household_id == self.household_id)
         )
-        return self.session.exec(stmt)
+        print(self.household_id)
+        return self.session.exec(stmt).all()
 
     def delete(self, item: Item):
         self.session.delete(item)

@@ -16,30 +16,29 @@ const { theme, language, smtpEnabled, registrationAllowed } =
   storeToRefs(configStore)
 
 const { authorized } = storeToRefs(authStore)
-const isInitialized = ref(false)
-
-setI18nLanguage(language.value)
-vuetifyTheme.change(theme.value)
-configStore.applyColor()
 
 async function initializeApp() {
   try {
+    await setI18nLanguage(language.value)
+
+    vuetifyTheme.change(theme.value)
+    configStore.applyColor()
     const { success, data, error } = await config.getConfig()
     if (!success) {
       // TODO this is sadly unrecoverable
+      // maybe redirect to error view?
+      return
     }
     smtpEnabled.value = data?.smtp_enabled ?? false
     registrationAllowed.value = data?.registration_allowed ?? false
     await router.isReady()
     if (authorized.value) {
+      await authStore.whoami()
       // TODO CONNECT TO SOCKETS
     }
   } catch (error) {
     console.error('Failed to initialize application:', error)
     // Handle initialization error, maybe redirect to an error page
-  } finally {
-    // Once everything is done (or has failed), flip the switch to render the app.
-    isInitialized.value = true
   }
 }
 

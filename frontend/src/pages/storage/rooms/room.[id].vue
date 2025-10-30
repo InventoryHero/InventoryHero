@@ -1,29 +1,26 @@
 <script setup lang="ts">
-import ItemList from "@/components/storage/rooms/ItemList.vue";
-import {ItemSummarySchema} from "@/api/types/items.ts";
-import BoxesList from "@/components/storage/rooms/BoxesList.vue";
-import RoomContentHeader from "@/components/storage/rooms/RoomContentHeader.vue";
-import {RoomResponseSchema} from "@/api/types/storage.ts";
+import ItemList from '@/components/storage/rooms/ItemList.vue'
+import { ItemSummarySchema } from '@/api/types/items.ts'
+import BoxesList from '@/components/storage/rooms/BoxesList.vue'
+import RoomContentHeader from '@/components/storage/rooms/RoomContentHeader.vue'
+import { RoomResponseSchema } from '@/api/types/storage.ts'
 
 type Tab = {
-  icon: string,
-  value: string,
+  icon: string
+  value: string
   component: any
 }
 
-const {storage: storageEndpoint} = useAxios()
-const {t} = useI18n()
-const route = useRoute()
+const { storage: storageEndpoint } = useAxios()
+const { t } = useI18n()
+const router = useRouter()
 
-const {
-  id
-} = defineProps<{
+const { id } = defineProps<{
   id: string
 }>()
 
 const room = ref<RoomResponseSchema>()
 const loading = ref<boolean>(false)
-
 
 const tab = ref<string>('items')
 const tabs = shallowRef<Array<Tab>>([
@@ -41,9 +38,10 @@ const tabs = shallowRef<Array<Tab>>([
 
 const loadRoomDetail = async () => {
   loading.value = true
-  const {success, data, error} = await storageEndpoint.getStorageDetail(id)
-  if(!success) {
-    // TODO
+  const { success, data, error } = await storageEndpoint.getStorageDetail(id)
+  if (!success) {
+    router.push('/storage/rooms')
+    return
   }
   room.value = data! as RoomResponseSchema
   loading.value = false
@@ -52,56 +50,47 @@ const loadRoomDetail = async () => {
 onBeforeMount(() => {
   loadRoomDetail()
 })
-
-
 </script>
 
 <template>
-
   <template v-if="!loading">
-    <room-content-header
-      v-model="room!"
-    />
+    <room-content-header v-model="room!" />
 
     <v-tabs
-        align-tabs="end"
-        show-arrows
-        v-model="tab"
-        :items="tabs"
-        color="white"
-        slider-color="primary"
-        density="comfortable"
-        center-active
-        class="sticky-tabs"
-
+      align-tabs="end"
+      show-arrows
+      v-model="tab"
+      :items="tabs"
+      color="white"
+      slider-color="primary"
+      density="comfortable"
+      center-active
+      class="sticky-tabs"
     >
-      <template v-slot:tab="{item}">
+      <template v-slot:tab="{ item }">
         <v-tab
-            :prepend-icon="item.icon"
-            :text="t(`rooms.room.tabs.${item.value}`)"
-            :value="item.value"
-            class="text-none"
-
+          :prepend-icon="item.icon"
+          :text="t(`rooms.room.tabs.${item.value}`)"
+          :value="item.value"
+          class="text-none"
         />
       </template>
-      <template v-slot:item="{item}">
+      <template v-slot:item="{ item }">
         <v-tabs-window-item
-            :value="item.value"
-            class="mt-2"
+          :value="item.value"
+          class="mt-2"
         >
           <component
-              :is="item.component"
-              :id="id"
+            :is="item.component"
+            :id="id"
           />
         </v-tabs-window-item>
       </template>
-
     </v-tabs>
   </template>
   <template v-else>
     <!-- TODO v-skeleton-loader -->
   </template>
-
 </template>
 
 <style scoped lang="scss">

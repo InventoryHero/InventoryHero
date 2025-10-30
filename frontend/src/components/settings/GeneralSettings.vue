@@ -1,16 +1,22 @@
 <script setup lang="ts">
 import useConfigStore from '@/stores/useConfigStore'
 import useAppStyling from '@/composables/useAppStyling.ts'
-import { setI18nLanguage } from '@/plugins/i18n'
+import { setI18nLanguage, SUPPORT_LOCALES } from '@/plugins/i18n'
 
 const configStore = useConfigStore()
 const { selectStyling } = useAppStyling()
-const { t, availableLocales } = useI18n()
+const { t } = useI18n()
+
+const availableLocales = computed(() => {
+  return ['default', ...SUPPORT_LOCALES]
+})
 
 const { language } = storeToRefs(configStore)
 
 watch(language, (_) => {
-  setI18nLanguage(language.value)
+  setI18nLanguage(language.value).then(() => {
+    console.log('loaded')
+  })
 })
 </script>
 
@@ -25,13 +31,6 @@ watch(language, (_) => {
         v-model="language"
         :items="availableLocales"
       >
-        <template #prepend-item>
-          <v-list-item
-            :active="language === 'default'"
-            @click="language = 'default'"
-            :title="t('settings.general.languages.default')"
-          ></v-list-item>
-        </template>
         <template v-slot:item="{ item, props }">
           <v-list-item
             v-bind="props"

@@ -43,12 +43,12 @@ class AdminUserController(BaseAdminController):
 
     @admin_router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
     async def delete(self, id: UUID):
-        if id == 0:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="cannot_delete_user_0")
+        if id == self.user.id:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=self.localizer.t('self_delete_not_possible'))
 
         success: bool = self.repositories.users.delete(id)
         if not success:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="cannot_delete_user_0")
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=self.localizer.t('self_delete_not_possible'))
 
     @admin_router.put("/{user_id}", status_code=200, response_model=UserPublic)
     async def update_user(self, user_id: UUID, to_update: AdminUserUpdate):

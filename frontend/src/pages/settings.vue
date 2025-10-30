@@ -1,6 +1,4 @@
-<script setup lang="ts">
-
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <general-settings />
@@ -18,6 +16,7 @@
 <route>
 {
   "meta": {
+    "requiresAdmin": false,
     "requiresAuth": false,
     "requiresHousehold": false,
     "title": 'titles.settings'

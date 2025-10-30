@@ -16,6 +16,7 @@ from ih.db.models import Item, ItemStorage, ItemAttributes
 from ih.db.models.User import User
 from ih.db.models.households import Household
 from ih.db.models.storage.Storage import StorageType, Storage
+from ih.i18n.localizer import Localizer
 from ih.schema.items import ItemInstanceReadSchema
 from ih.schema.storage.storage import StorageBaseSchema, StorageResponseSchema, BoxResponseSchema, RoomResponseSchema, \
     AnyStorageUpdateSchema, BoxUpdateSchema
@@ -26,10 +27,11 @@ class StorageRepository:
     user: Optional[User]
     household_id: Optional[UUID]
 
-    def __init__(self, session: Session, user: Optional[User] = None, household: Optional[UUID] = None):
+    def __init__(self, session: Session, localizer: Localizer, user: Optional[User] = None, household: Optional[UUID] = None):
         self.session = session
         self.user = user
         self.household_id = household
+        self.localizer = localizer
 
 
     def get_by_id(self, storage_id: UUID) -> Optional[Storage]:
@@ -44,7 +46,6 @@ class StorageRepository:
         return self.session.exec(stmt).first()
 
     def create_storage(self, storage_type: StorageType, to_create: StorageBaseSchema) -> Storage:
-        # todo check if to_create.parent_id exists and is in household
         parent = None
         if to_create.parent_id is not None:
             query = select(Storage).where(

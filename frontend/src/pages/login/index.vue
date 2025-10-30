@@ -95,12 +95,6 @@ onBeforeRouteLeave(() => {
         color="primary"
       />
     </template>
-    <template v-slot:append>
-      <v-icon-btn
-        icon="mdi-cog"
-        to="/login/settings"
-      />
-    </template>
     <template v-slot:title>
       <p class="text-wrap">
         {{ t('login.title') }}

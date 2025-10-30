@@ -15,13 +15,13 @@ class UserPublicController(PublicControllerBase):
         if self.user:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="already_authenticated"
+                detail=self.localizer.t('already_authenticated')
             )
 
         if not self.settings.IH_REGISTRATION_ALLOWED:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
-                detail="registration_disabled"
+                detail=self.localizer.t('registration_disabled')
             )
 
         need_confirmation = self.settings.IH_SMTP_ENABLED
@@ -48,7 +48,7 @@ class UserPublicController(PublicControllerBase):
     @router.get("/validate-password-token/{code}", response_model=TokenValidationResponse, status_code=status.HTTP_200_OK)
     def validate_password_token(self, code: str) -> TokenValidationResponse:
         valid = self.repositories.users.validate_password_token(code)
-        return TokenValidationResponse(valid=valid, reason='invalid_token')
+        return TokenValidationResponse(valid=valid, reason=self.localizer.t('password_reset.invalid_token'))
 
     @router.post("/reset-password/{code}", response_model=ResetPasswordResponse, status_code=status.HTTP_200_OK)
     def reset_password_with_code(self, code: str, payload: ChangePasswordFormBase):

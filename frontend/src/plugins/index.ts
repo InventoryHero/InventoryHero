@@ -25,8 +25,8 @@ export async function registerPlugins(app: App) {
     store.i18n = markRaw(i18n)
   })
   app
-    .use(vuetify)
     .use(router)
+    .use(vuetify)
     .use(pinia)
     .use(i18n)
     .use(Notifications)

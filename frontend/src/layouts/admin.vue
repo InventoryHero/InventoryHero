@@ -23,11 +23,6 @@ const transition = computed(() => {
 })
 
 const nav = ref(false)
-const fabOpen = shallowRef(false)
-
-const showFab = computed(
-  () => (currRoute.meta.showFab ?? false) && !mdAndUp.value
-)
 
 const rail = computed(() => {
   if (mdAndUp.value) {
@@ -78,12 +73,6 @@ const isDrawerOpen = computed({
     >
       <admin-nav-items />
       <template v-slot:append>
-        <v-list-item
-          to="/settings"
-          prepend-icon="mdi-cog"
-          :title="t('nav.settings')"
-          color="primary"
-        />
         <v-divider
           color="primary"
           class="border-opacity-50"

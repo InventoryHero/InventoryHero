@@ -16,18 +16,38 @@
     height="350px"
     no-click-animation
   >
-    <v-card :title="t('administration.users.user.delete.title')">
-      <v-card-text class="fill-height">
-        {{ t('administration.users.user.delete.text') }}
+    <v-card v-if="toDelete">
+      <template v-slot:title>
+        <i18n-t
+          keypath="administration.users.delete.title"
+          tag="p"
+          scope="global"
+        >
+          <template v-slot:user>
+            <span>{{ toDelete.username }}</span>
+          </template>
+        </i18n-t>
+      </template>
+      <v-card-text
+        class="fill-height text-justify"
+        style="hyphens: auto"
+      >
+        {{ t('administration.users.delete.text') }}
       </v-card-text>
       <v-card-actions>
         <v-btn
-          :text="t('administration.users.user.delete.yes')"
+          v-bind="btnStyle"
+          color="error"
+          :text="t('administration.users.delete.yes')"
           @click="deleteUser"
+          prepend-icon="mdi-trash-can"
         />
+        <v-spacer />
         <v-btn
-          :text="t('administration.users.user.delete.no')"
+          v-bind="btnStyle"
+          :text="t('administration.users.delete.no')"
           @click="toDelete = undefined"
+          prepend-icon="mdi-cancel"
         />
       </v-card-actions>
     </v-card>
@@ -40,12 +60,24 @@
       class="mb-4"
     />
   </template>
-  <template v-else-if="mdAndUp">
+  <template v-else-if="true">
+    <div class="d-flex justify-end">
+      <v-btn
+        :text="t('administration.users.create')"
+        prepend-icon="mdi-plus"
+        color="primary"
+        @click="createNew = true"
+        variant="outlined"
+        class="mt-2 mb-2"
+      />
+    </div>
     <v-data-table
       :items="users"
       :loading="loading"
-      height="100%"
       :headers="headers"
+      :search="search"
+      :mobile="!mdAndUp"
+      class="table"
     >
       <template v-slot:top>
         <v-toolbar
@@ -74,15 +106,25 @@
             single-line
             class="me-2"
           />
-
-          <v-btn
-            :text="t('administration.users.create')"
-            prepend-icon="mdi-plus"
-            color="primary"
-            @click="createNew = true"
-            variant="outlined"
-          />
         </v-toolbar>
+      </template>
+
+      <template v-slot:item.confirmed="{ item }">
+        <v-icon
+          v-if="item.confirmed"
+          icon="mdi-check-circle"
+          color="green"
+        />
+        <v-icon
+          v-else
+          icon="mdi-close-circle"
+          color="red"
+          @click="console.log('resend confirmation')"
+        />
+      </template>
+
+      <template v-slot:item.admin="{ item }">
+        <v-icon :icon="item.admin ? 'mdi-check-circle' : 'mdi-close-circle'" />
       </template>
 
       <template v-slot:item.actions="{ item }">
@@ -98,7 +140,7 @@
             color="medium-emphasis"
             icon="mdi-delete"
             size="small"
-            @click="remove(item.id)"
+            @click="remove(item)"
           ></v-icon>
         </div>
       </template>
@@ -138,22 +180,24 @@
 <script setup lang="ts">
 import { UserPublic } from '@/api/types/households'
 import useAxios from '@/composables/useAxios'
-import { useEventListener } from '@vueuse/core'
 import { useDisplay } from 'vuetify/lib/composables/display.mjs'
+import type { DataTableHeader } from 'vuetify'
 
 const { admin: adminEndpoint } = useAxios()
 const { mdAndUp } = useDisplay()
 const { t } = useI18n()
 const router = useRouter()
+const { btnStyle } = useAppStyling()
 
 const users = ref<UserPublic[]>([])
 const loading = ref<boolean>(false)
 const createNew = ref<boolean>(false)
-const toDelete = ref<string | undefined>(undefined)
+const toDelete = ref<UserPublic | undefined>(undefined)
+const search = ref<string | undefined>()
 
 const deleteConfirmation = computed(() => !!toDelete.value)
 
-const headers = ref([
+const headers = ref<DataTableHeader[]>([
   {
     title: t('administration.users.user.username'),
     key: 'username',
@@ -177,13 +221,19 @@ const headers = ref([
   {
     title: t('administration.users.user.confirmed'),
     key: 'confirmed',
-    sortable: true
+    sortable: true,
+    align: 'end'
+  },
+  {
+    title: t('administration.users.user.admin'),
+    key: 'admin',
+    sortable: true,
+    align: 'end'
   },
   {
     title: t('administration.users.user.actions'),
     key: 'actions',
-    sortable: false,
-    align: 'end'
+    sortable: false
   }
 ])
 
@@ -191,20 +241,20 @@ const edit = (userId: string) => {
   router.push(`/administration/users/user/${userId}`)
 }
 
-const remove = (userId: string) => {
-  toDelete.value = userId
+const remove = (user: UserPublic) => {
+  toDelete.value = user
 }
 const deleteUser = async () => {
   // TODO LOADING
-  if (!toDelete.value) {
+  if (toDelete.value === undefined) {
     return
   }
-  const { success, error } = await adminEndpoint.deleteUser(toDelete.value!)
+  const { success } = await adminEndpoint.deleteUser(toDelete.value.id)
   if (!success) {
-    // TODO
+    toDelete.value = undefined
     return
   }
-  users.value = users.value.filter((x) => x.id !== toDelete.value)
+  users.value = users.value.filter((x) => x.id !== toDelete.value!.id)
   toDelete.value = undefined
 }
 
@@ -237,7 +287,20 @@ onBeforeRouteLeave((_to, _from, next) => {
 })*/
 </script>
 
-<style scoped></style>
+<style scoped lang="scss">
+/* https://github.com/vuetifyjs/vuetify/issues/8243#issuecomment-770313450 */
+.table {
+  height: calc(100dvh - 140px);
+  overflow: auto;
+}
+
+/* Target Vuetify’s internal wrapper safely */
+:deep(.v-data-table__wrapper) {
+  overflow-x: auto; /* allow horizontal scrolling if needed */
+  overflow-y: auto;
+  max-height: inherit;
+}
+</style>
 
 <route>
 {

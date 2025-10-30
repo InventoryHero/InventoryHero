@@ -12,12 +12,28 @@ import storageEndpoint from '@/api/storageEndpoint.ts'
 import configEndpoint from '@/api/configEndpoint.ts'
 import adminEndpoint from '@/api/adminEndpoint'
 
+import type { FastAPIError } from '@/api/types/FastAPIError'
+import { useNotification } from '@kyvg/vue3-notification'
+import { i18n } from '@/plugins/i18n'
+
 interface CustomAxiosRequestConfig extends AxiosRequestConfig {
   _retry?: boolean
 }
 
 let instance: AxiosInstance | null = null
 let refreshInstance: AxiosInstance | null = null
+
+async function refreshToken() {
+  try {
+    // if this fails we know, that the refresh token is invalid
+    const response = await refreshInstance!.get('/auth/refresh')
+    return response.status === 200
+  } catch (refreshError) {
+    // this is user not logged in
+    // check if auth state is correct
+  }
+  return false
+}
 
 export default (baseURL = '/api') => {
   if (!instance) {
@@ -33,26 +49,32 @@ export default (baseURL = '/api') => {
       (response: AxiosResponse) => response,
       async (error: AxiosError) => {
         const originalRequest = error.config as CustomAxiosRequestConfig
-        console.log(error)
+
         if (error.response?.status === 401 && !originalRequest._retry) {
           originalRequest._retry = true
-          try {
-            // if this fails we know, that the refresh token is invalid
-            const success = await refreshToken(refreshInstance!)
-
-            if (success) {
-              return instance!(originalRequest)
-            }
-          } catch (refreshError) {
-            console.error(refreshError)
+          if (await refreshToken()) {
+            return instance!(originalRequest)
+          } else {
+            return error.response
           }
         }
 
-        switch (error.response?.status) {
-          case 401:
-            console.error(error)
-            return error.response
+        const errorPayload: FastAPIError | undefined = error.response?.data
+
+        const { notify } = useNotification()
+        let title = undefined
+        if (typeof errorPayload.detail === 'string') {
+          title = errorPayload.detail
+        } else {
+          title = i18n.global.t('unknown_error')
         }
+
+        console.error(error.response)
+        notify({
+          title: title,
+          type: 'error'
+        })
+
         return error.response ?? error
       }
     )
@@ -61,7 +83,7 @@ export default (baseURL = '/api') => {
     })
   }
 
-  const { refreshToken, ...auth } = authEndpoint(instance)
+  const { ...auth } = authEndpoint(instance)
   const user = userEndpoint(instance)
   const household = householdEndpoint(instance)
   const items = itemsEndpoint(instance)

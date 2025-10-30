@@ -151,13 +151,6 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    '/login/settings': RouteRecordInfo<
-      '/login/settings',
-      '/login/settings',
-      Record<never, never>,
-      Record<never, never>,
-      | never
-    >,
     '/qr/': RouteRecordInfo<
       '/qr/',
       '/qr',
@@ -322,12 +315,6 @@ declare module 'vue-router/auto-routes' {
     'src/pages/login/register.vue': {
       routes:
         | '/login/register'
-      views:
-        | never
-    }
-    'src/pages/login/settings.vue': {
-      routes:
-        | '/login/settings'
       views:
         | never
     }

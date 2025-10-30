@@ -13,6 +13,7 @@ from starlette import status
 from ih.core.config import get_app_settings
 from ih.core.security.password import hash_password, verify_password
 from ih.db.models.households import HouseholdMember
+from ih.i18n.localizer import Localizer
 from ih.schema.households import HouseholdPublic, HouseholdWithMemberPublic, HouseholdMemberPublic
 from ih.schema.user.user import UserPublic, UserCreate, AdminUserCreate, UserUpdate, UserCreateBase, \
     ChangePasswordFormBase, AdminUserUpdate
@@ -25,9 +26,10 @@ class UserRepository:
     user: Optional[User]
     _household_id: UUID | None = None
 
-    def __init__(self, session: Session, user: Optional[User]):
+    def __init__(self, session: Session, localizer: Localizer, user: Optional[User]):
         self.session = session
         self.user = user
+        self.localizer = localizer
 
     @property
     def household_id(self) -> UUID | None:
@@ -43,7 +45,7 @@ class UserRepository:
         user = result.first()
 
         if not user:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=self.localizer.t("user_not_found"))
 
         return user
 
@@ -52,7 +54,7 @@ class UserRepository:
 
     def register(self, user: UserCreate, need_confirmation: bool = False):
         if user.password != user.password_confirmation:
-            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="passwords_dont_match")
+            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=self.localizer.t("passwords_dont_match"))
         self.create(user, need_confirmation, False)
 
     def create(self, user: UserCreateBase, confirmation_needed: bool = False, is_admin: bool = False) -> User | None:
@@ -65,7 +67,7 @@ class UserRepository:
             reason = "email_already_exists" if user.email == existing_user.email else "username_already_exists"
             raise HTTPException(
                 status_code=status.HTTP_409_CONFLICT,
-                detail=reason
+                detail=self.localizer.t(reason)
             )
 
         confirmation_code = None
@@ -99,6 +101,11 @@ class UserRepository:
         if user is None:
             return False
 
+        if user.admin:
+            other_admins = self.session.exec(query.where(User.id != user_id, User.admin)).first()
+            if other_admins is None:
+                raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=self.localizer.t("last_admin"))
+
         self.session.delete(user)
         self.session.commit()
         return True
@@ -113,7 +120,7 @@ class UserRepository:
         if household is None:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
-                detail="user_is_not_member_of_household"
+                detail=self.localizer.t("user_is_not_member_of_household")
             )
         self.user.household = household_id
         self.session.add(self.user)
@@ -124,7 +131,6 @@ class UserRepository:
         )
 
     def update_user_admin(self, user_id: UUID, to_update: AdminUserUpdate) -> UserPublic:
-        # TODO update admin fields
         update_data = to_update.model_dump(exclude_unset=True)
         user_fields = {k: v for k, v in update_data.items() if k in UserUpdate.model_fields}
         admin_fields = {k: v for k, v in update_data.items() if k not in UserUpdate.model_fields}
@@ -148,7 +154,7 @@ class UserRepository:
 
     def change_password(self, user_id: UUID, current_password: str, new_password: str, new_password_confirmation: str) -> None:
         if new_password != new_password_confirmation:
-            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail="passwords_dont_match")
+            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_ENTITY, detail=self.localizer.t("passwords_dont_match"))
         user = self.get_user_by_id(user_id)
         if not verify_password(current_password, user.password):
             raise HTTPException(status_code=status.HTTP_403_FORBIDDEN)
@@ -164,7 +170,7 @@ class UserRepository:
         ).first()
 
         if user is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user_not_found")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=self.localizer.t("user_not_found"))
 
         user.confirmed = True
         user.confirmation_code = None
@@ -176,7 +182,7 @@ class UserRepository:
         print(user)
 
         if user is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user_not_found")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=self.localizer.t("user_not_found"))
 
         code = self.generate_password_reset_code(user)
         print(code)
@@ -186,7 +192,7 @@ class UserRepository:
 
         user = self.session.exec(select(User).where(User.email == email)).first()
         if user is None:
-            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="user_not_found")
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=self.localizer.t("user_not_found"))
         return self.generate_password_reset_code(user)
 
 
@@ -199,7 +205,7 @@ class UserRepository:
         settings = get_app_settings()
 
         self.session.flush()
-        return f"{settings.IH_APP_URL}/login/password-reset/{password_reset_code}"
+        return f"{settings.IH_APP_URL}/password-reset/{password_reset_code}"
         #print(password_reset_code)
         # TODO SEND EMAIL
 
@@ -229,10 +235,10 @@ class UserRepository:
             return False, ''
 
         if datetime.now(timezone.utc) > user.password_reset_token_expires_at:
-            return False, 'invalid_token'
+            return False, self.localizer.t('password_reset.invalid_token')
 
         if new_password.new_password != new_password.new_password_confirmation:
-            return False, 'password_dont_match'
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=self.localizer.t('password_reset.passwords_dont_match'))
 
         user.password = hash_password(new_password.new_password)
         self.session.flush()

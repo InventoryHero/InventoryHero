@@ -5,7 +5,6 @@ export type Theme = 'dark' | 'system' | 'light'
 
 export default defineStore('config', {
   state: () => ({
-    initialized: false,
     theme: useLocalStorage('theme', 'system'),
     color: useLocalStorage('color', '#2196f3'),
     useTransitions: useLocalStorage('transitions', true),
@@ -21,6 +20,8 @@ export default defineStore('config', {
       this.vuetify.theme.themes.value.dark.colors = newThemes.dark.colors
     },
     reset() {
+      this.language = 'default'
+      this.useTransitions = true
       this.theme = 'system'
       this.color = '#2196f3'
     }

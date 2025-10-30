@@ -3,6 +3,7 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { VitePWA } from 'vite-plugin-pwa'
 import VueRouter from 'unplugin-vue-router/vite'
+import { VueRouterAutoImports } from 'unplugin-vue-router'
 import Components from 'unplugin-vue-components/vite'
 import AutoImport from 'unplugin-auto-import/vite'
 import { i18n } from './src/plugins/i18n'
@@ -95,7 +96,7 @@ export default defineConfig({
       dirs: ['./src/composables'],
       imports: [
         'vue',
-        'vue-router',
+        VueRouterAutoImports,
         'pinia',
         {
           'vue-i18n': ['useI18n'],
@@ -115,12 +116,13 @@ export default defineConfig({
     https: true,
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:5000/'
-      },
+        target: 'http://127.0.0.1:5000/',
+        ws: true
+      } /*,
       '/socket.io': {
         target: 'ws://localhost:5000',
         ws: true
-      }
+      }*/
     }
   }
 })

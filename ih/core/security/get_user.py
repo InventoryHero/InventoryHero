@@ -1,6 +1,6 @@
 from fastapi import Depends, HTTPException, Request, status, Path
 from fastapi.security import OAuth2PasswordBearer
-from jwt import PyJWTError
+from jwt import PyJWTError, ExpiredSignatureError
 import jwt
 from sqlmodel import select, Session
 from uuid import UUID
@@ -46,8 +46,9 @@ async def get_current_user(
         if uuid_str is None:
             raise credentials_exception
         uuid: UUID = UUID(uuid_str)
-    except PyJWTError as error:
-        raise credentials_exception from error
+    except PyJWTError:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+
     query = select(User).where(User.id == uuid)
     user = session.exec(query).first()
 

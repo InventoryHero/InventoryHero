@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import useShareMethods from "@/composables/useShareMethods.ts";
-import {HouseholdWithMemberPublic} from "@/api/types/households.ts";
+import useShareMethods from '@/composables/useShareMethods.ts'
+import { HouseholdWithMemberPublic } from '@/api/types/households.ts'
 
-const {household: householdEndpoint} = useAxios()
-const {t} = useI18n()
-const {household} = defineProps<{
+const { household: householdEndpoint } = useAxios()
+const { t } = useI18n()
+const { household } = defineProps<{
   household: HouseholdWithMemberPublic
 }>()
 
@@ -12,30 +12,29 @@ const emit = defineEmits<{
   (e: 'close'): void
 }>()
 
-const {textFieldStyling} = useAppStyling()
+const { textFieldStyling } = useAppStyling()
 
 const loadingInviteCode = ref(false)
-const inviteCode = ref<string>("")
-
+const inviteCode = ref<string>('')
 
 const inviteLink = computed(() => {
-  if(loadingInviteCode.value){
+  if (loadingInviteCode.value) {
     return t('households.invite.generating_code')
   }
   return `${window.location.origin}/households/join/${inviteCode.value}`
 })
 
-function generateInviteCode(){
+function generateInviteCode() {
   loadingInviteCode.value = true
-  householdEndpoint.createInvite(household.id).then(({success, data, error}) => {
-    console.log(data)
-    if(success){
-      inviteCode.value = data?.code!
-    }
-
-  // TODO HANDLE ERROR
-    loadingInviteCode.value = false
-  })
+  householdEndpoint
+    .createInvite(household.id)
+    .then(({ success, data, error }) => {
+      console.log(data)
+      if (success) {
+        inviteCode.value = data?.code!
+      }
+      loadingInviteCode.value = false
+    })
 }
 
 const {
@@ -47,38 +46,32 @@ const {
   copyToClipboard
 } = useShareMethods(inviteLink, ref(household.name))
 
-function share(){
+function share() {
   navigatorShare()
 }
 
 onMounted(() => {
   generateInviteCode()
 })
-
 </script>
 
 <template>
-  <v-row
-    justify="center"
-  >
+  <v-row justify="center">
     <v-col
       cols="12"
       lg="6"
     >
       <v-snackbar
-          v-model="copiedConfirm"
-          :timeout="2000"
-          elevation="24"
-          rounded="pill"
-          color="success"
-          :multi-line="false"
-          @click="copiedConfirm=false"
-
+        v-model="copiedConfirm"
+        :timeout="2000"
+        elevation="24"
+        rounded="pill"
+        color="success"
+        :multi-line="false"
+        @click="copiedConfirm = false"
       >
-        <p
-            class="d-flex justify-center"
-        >
-          {{ t('toasts.titles.success.copied_to_clipboard')}}
+        <p class="d-flex justify-center">
+          {{ t('toasts.titles.success.copied_to_clipboard') }}
         </p>
       </v-snackbar>
 
@@ -94,21 +87,18 @@ onMounted(() => {
           />
         </template>
 
-        <v-card-title
-            class="d-flex justify-space-between align-center"
-        >
+        <v-card-title class="d-flex justify-space-between align-center">
           {{ t('households.invite.title') }}
           <v-icon-btn
-              icon="mdi-close"
-              @click="emit('close')"
+            icon="mdi-close"
+            @click="emit('close')"
           />
         </v-card-title>
         <v-card-subtitle>
-          {{ t('households.invite.copy_to_clipboard')}}
+          {{ t('households.invite.copy_to_clipboard') }}
         </v-card-subtitle>
 
         <v-card-text>
-
           <v-text-field
             v-bind="textFieldStyling"
             :clearable="false"
@@ -118,39 +108,29 @@ onMounted(() => {
           >
             <template v-slot:append>
               <v-icon-btn
-                  :disabled="loadingInviteCode"
-                  icon="mdi-clipboard-outline"
-                  @click="copyToClipboard()"
-                  size="large"
+                :disabled="loadingInviteCode"
+                icon="mdi-clipboard-outline"
+                @click="copyToClipboard()"
+                size="large"
               />
             </template>
           </v-text-field>
         </v-card-text>
-        <v-card-subtitle
-          class="d-flex justify-end"
-        >
-          {{ t('households.invite.or')}}
+        <v-card-subtitle class="d-flex justify-end">
+          {{ t('households.invite.or') }}
         </v-card-subtitle>
-        <v-card-actions
-          class="justify-end"
-        >
-          <template
-            v-if="webShareApiSupported"
-          >
+        <v-card-actions class="justify-end">
+          <template v-if="webShareApiSupported">
             <v-icon-btn
-                icon="mdi-share-variant"
-                color="primary"
-                size="x-large"
-                class="me-2"
-                @click="share"
+              icon="mdi-share-variant"
+              color="primary"
+              size="x-large"
+              class="me-2"
+              @click="share"
             />
           </template>
-          <template
-            v-else
-          >
-            <s-email
-              :share-options="emailShare"
-            >
+          <template v-else>
+            <s-email :share-options="emailShare">
               <v-icon-btn
                 icon="mdi-email"
                 variant="tonal"
@@ -158,9 +138,7 @@ onMounted(() => {
                 class="me-1"
               />
             </s-email>
-            <s-whats-app
-              :share-options="whatsAppShare"
-            >
+            <s-whats-app :share-options="whatsAppShare">
               <v-icon-btn
                 variant="tonal"
                 icon="mdi-whatsapp"
@@ -175,6 +153,4 @@ onMounted(() => {
   </v-row>
 </template>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

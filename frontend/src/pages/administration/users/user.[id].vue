@@ -187,7 +187,9 @@
 <script setup lang="ts">
 import { UserPublic } from '@/api/types/households'
 import { AdminUserUpdate } from '@/api/types/user'
+import router from '@/router'
 import useConfigStore from '@/stores/useConfigStore'
+import { useNotification } from '@kyvg/vue3-notification'
 import { BreadcrumbItem } from 'vuetify/lib/components/VBreadcrumbs/VBreadcrumbs.mjs'
 
 const { admin } = useAxios()
@@ -291,6 +293,8 @@ const saveUpdatedUserdata = async () => {
 
   if (!success) {
     // TODO
+
+    return
   }
   user.value = data!
   resetUser()
@@ -300,7 +304,8 @@ onBeforeMount(() => {
   loading.value = true
   admin.getUser(id).then(({ success, data, error }) => {
     if (!success) {
-      // TODO
+      router.push('/administration/users')
+      return
     }
     user.value = data!
     resetUser()

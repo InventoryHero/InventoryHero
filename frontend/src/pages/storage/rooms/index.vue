@@ -43,9 +43,11 @@ const endReachedContent = computed(() => {
 
 const loadRooms = async () => {
   isLoading.value = true
-  const { success, data, error } = await storageEndpoint.getAllStorage('room')
+  const { success, data } = await storageEndpoint.getAllStorage('room')
   if (!success) {
-    //TODO
+    rooms.value = []
+    isLoading.value = false
+    return
   }
   rooms.value = (data ?? []) as RoomResponseSchema[]
   isLoading.value = false

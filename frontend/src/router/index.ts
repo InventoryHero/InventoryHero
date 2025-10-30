@@ -3,35 +3,36 @@ import { routes } from 'vue-router/auto-routes'
 import useAuthStore from '@/stores/useAuthStore'
 import useConfigStore from '@/stores/useConfigStore'
 import useContentRefreshStore from '@/stores/useContentRefreshStore'
-import { i18n } from '@/plugins/i18n'
+import { i18n, setI18nLanguage } from '@/plugins/i18n'
 //@ts-expect-error cannot be found, but it is there
 import { setupLayouts } from 'virtual:generated-layouts'
 
-const vueRouter = createRouter({
+const router = createRouter({
   history: createWebHistory(),
   routes: setupLayouts(routes)
 })
 
-vueRouter.beforeEach(async (to, from) => {
+router.beforeEach(async (to, from) => {
   const allowAuthorized = to.meta.allowAuthorized ?? true
   const requiresAuth = to.meta.requiresAuth ?? true
   const requiresHousehold = to.meta.requiresHousehold ?? true
-
-  // TODO the more sane default would be true
-  const requiresAdmin = to.meta.requiresAdmin ?? false
+  const requiresAdmin = to.meta.layout === 'admin'
 
   const authStore = useAuthStore()
-  const loggedIn = await authStore.isAuthorized()
-  await authStore.whoami()
-  const household = authStore.household
-  const isAdmin = authStore.user?.admin
   const configStore = useConfigStore()
 
-  if (loggedIn && !allowAuthorized) {
+  const { household, authorized, user } = storeToRefs(authStore)
+  const { registrationAllowed } = storeToRefs(configStore)
+
+  // TODO MERGE THESE TWO
+
+  await authStore.getDefaultHousehold()
+
+  if (authorized.value && !allowAuthorized) {
     return '/'
   }
 
-  if (!loggedIn && requiresAuth) {
+  if (!authorized.value && requiresAuth) {
     return {
       path: '/login',
       query: {
@@ -40,39 +41,23 @@ vueRouter.beforeEach(async (to, from) => {
     }
   }
 
-  if (!household && requiresHousehold) {
+  if (!household.value && requiresHousehold) {
     return { path: '/households', query: { redirect: to.fullPath } }
   }
 
-  if (to.name === '/login/register' && !configStore.registrationAllowed) {
+  if (to.name === '/login/register' && !registrationAllowed.value) {
     return { path: '/login' }
   }
 
-  if (to.meta.requiresAdmin && !isAdmin) {
+  if (requiresAdmin && !(user.value?.admin ?? false)) {
     // TODO NOTIFICATION
     return {
       path: '/'
     }
   }
-
-  // TODO ADMIN
-  /*
-  if(!(to.meta.requiresAdmin ?? false)){
-    return
-  }
-
-  await authStore.fetchPermissions()
-  if((to.meta.requiresAdmin ?? false) && !authStore.isAdmin) {
-    notificationStore.addNotification({
-      title: i18n.global.t('toasts.titles.warning.insufficient_permissions'),
-      text: i18n.global.t('toasts.text.warning.insufficient_permissions'),
-      type: 'warning'
-    })
-    return "/"
-  }*/
 })
 
-vueRouter.beforeEach(async (to, from) => {
+router.beforeEach(async (to, from) => {
   const contentRefreshStore = useContentRefreshStore()
   contentRefreshStore.clearBanner()
 
@@ -83,4 +68,4 @@ vueRouter.beforeEach(async (to, from) => {
   });*/
 })
 
-export default vueRouter
+export default router

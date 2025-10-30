@@ -365,7 +365,7 @@
         "passwords_not_equal": "@:register.rules.passwords_not_equal",
         "password_needed": "You need to have a password"
       },
-      "token_invalid": "The used reset token has become invalid. Please request a new request token to proceed."
+      "unknown_token_error": "Unknown error with your password reset token. Please request a new one!"
     }
   },
   "register": {
@@ -456,6 +456,7 @@
   "logging_out": "Logging out...",
   "administration": {
     "users": {
+      "title": "Users",
       "user": {
         "reset_password": "Reset Password",
         "breadcrumbs": {
@@ -471,7 +472,8 @@
         "first_name": "FIrst Name",
         "last_name": "Last Name",
         "confirmed": "Confirmed",
-        "actions": "Actions"
+        "actions": "Actions",
+        "admin": "Is Admin"
       },
       "create_new": {
         "title": "Create new user",
@@ -484,7 +486,19 @@
         "is_admin": "Administrator",
         "save": "Save user"
       },
+      "delete": {
+        "title": "Delete {user}",
+        "text": "This action is irreversible. Every household the user is a single member of will be deleted. Therefore also all items inside the households will be deleted.",
+        "yes": "Delete",
+        "no": "Cancel"
+      },
       "create": "Add new user"
     }
+  },
+  "unknown_error": "An unknown error ocurred",
+  "leave_confirmation": {
+    "stay": "Stay",
+    "discard": "Discard changes",
+    "text": "You have unsaved changes, are you sure you want to leave?"
   }
 }

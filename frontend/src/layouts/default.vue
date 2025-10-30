@@ -200,3 +200,11 @@ onBeforeRouteLeave(() => {})
   z-index: 2;
 }
 </style>
+
+<route>
+  {
+    "meta": {
+      "requiresAdmin": false
+    }
+  }
+</route>

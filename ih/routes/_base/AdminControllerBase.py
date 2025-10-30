@@ -13,4 +13,4 @@ class BaseAdminController(UserControllerBase):
 
     @cached_property
     def repositories(self):
-        return RepositoryFactory(self.session, user=self.user)
+        return RepositoryFactory(self.session, self.localizer, user=self.user)

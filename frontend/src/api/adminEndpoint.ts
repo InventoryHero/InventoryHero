@@ -66,8 +66,7 @@ export default (api: AxiosInstance) => {
     const response = await api.delete(`/admin/user/${id}`)
     const success = response.status === 204
     return {
-      success,
-      error: !success ? response.data.detail : undefined
+      success
     }
   }
 

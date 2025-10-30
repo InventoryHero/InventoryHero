@@ -1,25 +1,30 @@
 <script setup lang="ts">
-
-import {Notifications} from "@kyvg/vue3-notification";
+import { Notifications } from '@kyvg/vue3-notification'
 </script>
 
 <template>
   <v-app>
     <notifications
-        position="top right"
-        classes="vue-notification mt-2 me-8"
-        :max="2"
+      position="top right"
+      classes="vue-notification mt-2 me-8"
+      :max="2"
     />
-    <router-view v-slot="{Component, route}" >
+    <router-view v-slot="{ Component, route }">
       <v-main :key="route.fullPath">
         <v-container>
-          <component :is="Component"  />
+          <component :is="Component" />
         </v-container>
       </v-main>
     </router-view>
   </v-app>
 </template>
 
-<style scoped lang="scss">
+<style scoped lang="scss"></style>
 
-</style>
+<route>
+  {
+    "meta": {
+      "requiresAdmin": false
+    }
+  }
+</route>

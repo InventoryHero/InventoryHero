@@ -1,40 +1,40 @@
 <script setup lang="ts">
-
-
+const { t } = useI18n()
 const isAwaitingConfirmation = defineModel<boolean>({
   required: true
 })
 
 const emit = defineEmits<{
-  (e: 'cancel'): void,
-  (e: 'confirm'): void,
+  (e: 'cancel'): void
+  (e: 'confirm'): void
 }>()
-
-// TODO TRANSLATE
-
 </script>
 
 <template>
-
   <v-dialog
-      v-model="isAwaitingConfirmation"
-      persistent
-      width="auto"
+    v-model="isAwaitingConfirmation"
+    persistent
+    width="auto"
   >
-    <v-card class="pa-4" >
-      <v-card-title class="text-h6">Unsaved Changes</v-card-title>
+    <v-card class="pa-4">
       <v-card-text>
-        Are you sure you want to leave? Your changes will be lost.
+        {{ t('leave_confirmation.text') }}
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn @click="emit('cancel')">Stay</v-btn>
-        <v-btn color="error" variant="tonal" @click="emit('confirm')">Discard Changes</v-btn>
+        <v-btn
+          @click="emit('cancel')"
+          :text="t('leave_confirmation.stay')"
+        />
+        <v-btn
+          color="error"
+          variant="tonal"
+          @click="emit('confirm')"
+          :text="t('leave_confirmation.discard')"
+        />
       </v-card-actions>
     </v-card>
   </v-dialog>
 </template>
 
-<style scoped lang="scss">
-
-</style>
+<style scoped lang="scss"></style>

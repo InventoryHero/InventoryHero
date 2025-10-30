@@ -137,9 +137,8 @@ const saveUser = async () => {
   } as AdminUserCreate
 
   loading.value = true
-  const { success, data, error } = await admin.createUser(newUser)
+  const { success, data } = await admin.createUser(newUser)
   if (!success) {
-    // TODO
     loading.value = false
     return
   }

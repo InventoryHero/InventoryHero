@@ -23,13 +23,14 @@ const filteredBoxes = computed(() => {
 
 const loadBoxes = async () => {
   loading.value = true
-  storageEndpoint.getAllStorage('box').then(({ success, data, error }) => {
-    if (!success) {
-      //TODO
-    }
-    boxes.value = (data ?? []) as Array<BoxResponseSchema>
+  const { success, data } = await storageEndpoint.getAllStorage('box')
+  if (!success) {
+    boxes.value = []
     loading.value = false
-  })
+    return
+  }
+  boxes.value = (data ?? []) as Array<BoxResponseSchema>
+  loading.value = false
 }
 
 const clickOnBanner = () => {

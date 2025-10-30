@@ -1,14 +1,22 @@
 <script setup lang="ts">
+import { setI18nLanguage } from '@/plugins/i18n'
 import useAuthStore from '@/stores/useAuthStore'
+import useConfigStore from '@/stores/useConfigStore'
+import { useTheme } from 'vuetify'
 
 const authStore = useAuthStore()
+const configStore = useConfigStore()
 const { t } = useI18n()
 const router = useRouter()
+const theme = useTheme()
 
-onMounted(() => {
-  authStore.logout().then(() => {
-    router.push('/login')
-  })
+onMounted(async () => {
+  await authStore.logout()
+  configStore.reset()
+  setI18nLanguage(configStore.language)
+  configStore.applyColor()
+  theme.change(configStore.theme)
+  router.push('/login')
 })
 </script>
 
