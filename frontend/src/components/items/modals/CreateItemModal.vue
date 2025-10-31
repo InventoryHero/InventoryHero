@@ -256,6 +256,11 @@ const close = (force: boolean = false) => {
   form.value.reset()
 }
 
+onBeforeRouteUpdate(() => {
+  active.value = false
+  return false
+})
+
 onBeforeMount(() => {
   loadStorage()
   loadItems()

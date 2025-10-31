@@ -8,27 +8,35 @@ from ih.db.models.User import User
 
 
 class AppSettings(BaseSettings):
-    IH_APP_URL: str = "https://localhost:3000"
-
-    # TODO LET FASTAPI SERVE STATIC FILES IN DOCKER
     #STATIC_FILES: str =
 
     IH_DEMO: bool = False
 
     HOST_IP: str = "*"
-    API_HOST: str = "0.0.0.0"
-    API_PORT: int = 5000
+    HOST: str = "0.0.0.0"
+    PORT: int = 5000
     API_DOCS: bool = True
+
+    IH_APP_URL: str = f"http://{HOST}:{PORT}"
 
     IH_ACCESS_TOKEN_EXPIRATION: int = 15 * 60
     IH_REFRESH_TOKEN_EXPIRATION: int = 3600 * 24 * 7
 
     IH_SECRET_KEY: str = "mysupersecretstring"
-    #SESSION_SECRET: str
 
     IH_REGISTRATION_ALLOWED: bool = False
 
     IH_DB_ENGINE: str = "sqlite"
+
+    IH_SMTP_HOST: str|None = None
+    IH_SMTP_PORT: int | None = None
+    IH_SMTP_USER: str | None = None
+    IH_SMTP_PASSWORD: str | None = None
+    IH_SMTP_FROM_NAME: str | None = None
+    IH_SMTP_FROM_EMAIL: str | None = None
+    IH_SMTP_AUTH_METHOD: str | None = "NONE"
+
+
     DB_PROVIDER: Provider | None = None
 
     PRODUCTION: bool = True
@@ -39,13 +47,10 @@ class AppSettings(BaseSettings):
         return self.DB_PROVIDER.db_url if self.DB_PROVIDER else None
 
     @property
-    def IH_SMTP(self) -> None:
-        # TODO IMPLEMENT SMTP
-        return None
-
-    @property
     def IH_SMTP_ENABLED(self) -> bool:
-        return self.IH_SMTP is not None
+        # TODO AUTH METHOD CHECKING ETC
+
+        return self.IH_SMTP_HOST is not None and self.IH_SMTP_PORT is not None and self.IH_SMTP_FROM_NAME is not None and self.IH_SMTP_FROM_EMAIL is not None
 
     @property
     def LOG_LEVEL(self) -> int:

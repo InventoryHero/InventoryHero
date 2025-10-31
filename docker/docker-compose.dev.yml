@@ -1,0 +1,20 @@
+services:
+  ih-mail:
+    image: axllent/mailpit:latest
+    container_name: ih_mail
+    restart: no
+    environment:
+      - "MP_SMTP_AUTH_ACCEPT_ANY=true"
+      - "MP_SMTP_AUTH_ALLOW_INSECURE=true"
+    ports:
+      - "8025:8025"
+      - "1026:1025"
+  ih-postgres:
+    container_name: ih_postgres
+    image: postgres:latest
+    restart: no
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: ih
+      POSTGRES_USER: ih

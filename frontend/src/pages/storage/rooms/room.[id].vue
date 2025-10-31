@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import ItemList from '@/components/storage/rooms/ItemList.vue'
-import { ItemSummarySchema } from '@/api/types/items.ts'
 import BoxesList from '@/components/storage/rooms/BoxesList.vue'
 import RoomContentHeader from '@/components/storage/rooms/RoomContentHeader.vue'
 import { RoomResponseSchema } from '@/api/types/storage.ts'
@@ -53,8 +52,8 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <template v-if="!loading">
-    <room-content-header v-model="room!" />
+  <template v-if="!loading && room">
+    <room-content-header v-model="room" />
 
     <v-tabs
       align-tabs="end"

@@ -7,11 +7,10 @@ import uvicorn
 def main():
 
     settings = get_app_settings()
-
     uvicorn.run(
         "ih.app:app",
-        host=settings.API_HOST,
-        port=settings.API_PORT,
+        host=settings.HOST,
+        port=settings.PORT,
         #workers=1,
         reload=True,
         forwarded_allow_ips=settings.HOST_IP,
@@ -22,5 +21,4 @@ def main():
 
 
 if __name__ == "__main__":
-    init_db()
     main()

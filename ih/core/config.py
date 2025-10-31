@@ -14,20 +14,14 @@ dotenv.load_dotenv(ENV)
 PRODUCTION = os.getenv("PRODUCTION", "True").lower() in ["true", "1"]
 TESTING = os.getenv("TESTING", "False").lower() in ["true", "1"]
 
-DATA_DIR = os.getenv("DATA_DIR")
-
-
-
 def get_data_dir() -> Path:
-    global PRODUCTION, TESTING, DATA_DIR, BASE_DIR
+    global PRODUCTION, TESTING, BASE_DIR
+
 
     if TESTING:
         return BASE_DIR.joinpath("tests/.temp")
 
-    if PRODUCTION:
-        return Path(DATA_DIR if DATA_DIR else "/data")
-
-    return BASE_DIR.joinpath("data")
+    return BASE_DIR / "data"
 
 @lru_cache()
 def get_app_settings() -> AppSettings:

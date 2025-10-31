@@ -1,0 +1,20 @@
+services:
+  inventoryhero:
+    container_name: inventoryhero
+    image: ih:dev
+    build:
+      context: ../
+      target: backend
+      dockerfile: ./docker/Dockerfile
+    restart: always
+    volumes:
+      - ih-data:/app/data/
+    ports:
+      - 8080:8000
+    environment:
+      IH_REGISTRATION_ALLOWED: "false"
+      IH_APP_URL: "http://localhost:8080"
+
+volumes:
+  ih-data:
+    driver: local

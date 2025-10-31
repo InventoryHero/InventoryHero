@@ -1,9 +1,9 @@
 files/
 dist/
 logs/
-docs/
+../docs/
 
-Dockerfile
+docker/Dockerfile
 docker-manifest.tmpl
 docker-manifest-unstable.tmpl
 *.db

@@ -1,6 +1,5 @@
 import hashlib
 import secrets
-from Tools.i18n.msgfmt import generate
 from datetime import datetime, timedelta, UTC, timezone
 from typing import Sequence, Optional
 from uuid import UUID
