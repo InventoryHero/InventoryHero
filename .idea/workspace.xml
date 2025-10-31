@@ -5,47 +5,9 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5440ea04-9904-442d-98fc-95ab41cdc237" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/prettier.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docker/Dockerfile" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docker/docker-compose.dev.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/docker/docker-compose.yml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/poetry.lock" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/poetry.toml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.dockerignore" beforeDir="false" afterPath="$PROJECT_DIR$/.dockerignore" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/InventoryHero.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/InventoryHero.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations/Generate_TS_Interfaces.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations/InventoryHero__FastAPI_.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations/init_db.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Dockerfile" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.dev.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker-compose.yml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker/default.conf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker/entrypoint.sh" beforeDir="false" afterPath="$PROJECT_DIR$/docker/entrypoint.sh" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/docker/nginx.conf" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/.vitepress/config.mts" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/index.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/installation/.gitkeep" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/intro/about.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/public/logo.ico" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/docs/usage/.gitkeep" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/components/items/modals/CreateItemModal.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/items/modals/CreateItemModal.vue" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/src/pages/storage/rooms/room.[id].vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/pages/storage/rooms/room.[id].vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ih/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ih/core/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/core/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ih/core/settings/settings.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/core/settings/settings.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ih/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/main.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ih/repositories/UserRepository.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/repositories/UserRepository.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ih/requirements.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -55,37 +17,37 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 0
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
   <component name="ProjectId" id="34pH4HE195ytZTkpnYCKWN6vRA6" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Docker.docker.inventoryhero: Compose Deployment.executor": "Run",
-    "Docker.docker/docker-compose.dev.yml.ih-mail: Compose Deployment.executor": "Run",
-    "Docker.docker/docker-compose.dev.yml.ih-postgres: Compose Deployment.executor": "Run",
-    "Docker.docker/docker-compose.dev.yml: Compose Deployment.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "Python.main.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
-    "git-widget-placeholder": "api-rewrite",
-    "last_opened_file_path": "/media/data/Projects/InventoryHero/docker",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "prettierjs.PrettierConfiguration.Package": "/media/data/Projects/InventoryHero/node_modules/prettier",
-    "settings.editor.selected.configurable": "com.intellij.pycharm.community.ide.impl.configuration.PythonContentEntriesConfigurable",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Docker.docker.inventoryhero: Compose Deployment.executor&quot;: &quot;Run&quot;,
+    &quot;Docker.docker/docker-compose.dev.yml.ih-mail: Compose Deployment.executor&quot;: &quot;Run&quot;,
+    &quot;Docker.docker/docker-compose.dev.yml.ih-postgres: Compose Deployment.executor&quot;: &quot;Run&quot;,
+    &quot;Docker.docker/docker-compose.dev.yml: Compose Deployment.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;api-rewrite&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/media/data/Projects/InventoryHero/docker&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;prettierjs.PrettierConfiguration.Package&quot;: &quot;/media/data/Projects/InventoryHero/node_modules/prettier&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;com.intellij.pycharm.community.ide.impl.configuration.PythonContentEntriesConfigurable&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/docker" />
@@ -94,7 +56,7 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.main">
+  <component name="RunManager" selected="Docker.docker.inventoryhero: Compose Deployment">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="InventoryHero" />
       <option name="ENV_FILES" value="" />
@@ -104,8 +66,9 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
+      <option name="SDK_NAME" value="Poetry (InventoryHero)" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
-      <option name="IS_MODULE_SDK" value="true" />
+      <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
@@ -119,7 +82,9 @@
       <method v="2" />
     </configuration>
     <configuration default="true" type="docker-deploy" factoryName="docker-compose.yml" temporary="true">
-      <deployment type="docker-compose.yml" />
+      <deployment type="docker-compose.yml">
+        <settings />
+      </deployment>
       <method v="2" />
     </configuration>
     <configuration name="docker/docker-compose.dev.yml: Compose Deployment" type="docker-deploy" factoryName="docker-compose.yml" temporary="true" server-name="Podman">
@@ -152,8 +117,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Docker.docker/docker-compose.dev.yml: Compose Deployment" />
         <item itemvalue="Docker.docker.inventoryhero: Compose Deployment" />
+        <item itemvalue="Docker.docker/docker-compose.dev.yml: Compose Deployment" />
       </list>
     </recent_temporary>
   </component>
@@ -172,7 +137,9 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1761903402177</updated>
-      <workItem from="1761903403242" duration="2775000" />
+      <workItem from="1761903403242" duration="3465000" />
+      <workItem from="1761906881230" duration="28000" />
+      <workItem from="1761907813022" duration="1918000" />
     </task>
     <servers />
   </component>
@@ -180,6 +147,6 @@
     <option name="version" value="3" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/InventoryHero$main.coverage" NAME="main Coverage Results" MODIFIED="1761906101095" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/InventoryHero$main.coverage" NAME="main Coverage Results" MODIFIED="1761909504423" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

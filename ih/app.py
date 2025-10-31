@@ -1,4 +1,6 @@
 from contextlib import asynccontextmanager
+from http.client import HTTPException
+
 from fastapi import FastAPI
 from fastapi_utils.tasks import repeat_every
 from fastapi.middleware.cors import CORSMiddleware
@@ -14,6 +16,7 @@ from email.mime.text import MIMEText
 
 settings = get_app_settings()
 
+
 # Start periodic background tasks
 @repeat_every(seconds=10)  # every hour
 async def scheduled_invite_cleanup_task() -> None:
@@ -22,17 +25,20 @@ async def scheduled_invite_cleanup_task() -> None:
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     from ih.db.init_db import init_db
+    print("HIII")
     init_db()
     # TODO PROPER LOGGING AND SMTP SENDING
     print("database init finished")
-    msg = MIMEText("hi")
-    msg["Subject"] = "test"
-    msg["From"] = f"{settings.IH_SMTP_FROM_NAME} <{settings.IH_SMTP_FROM_EMAIL}>"
-    msg["To"] = 'test@test.com'
-    print(settings.IH_SMTP_HOST)
-    print(settings.IH_SMTP_PORT)
-    with smtplib.SMTP(settings.IH_SMTP_HOST, settings.IH_SMTP_PORT) as server:
-        server.send_message(msg)
+    if settings.IH_SMTP_ENABLED:
+
+        msg = MIMEText("hi")
+        msg["Subject"] = "test"
+        msg["From"] = f"{settings.IH_SMTP_FROM_NAME} <{settings.IH_SMTP_FROM_EMAIL}>"
+        msg["To"] = 'test@test.com'
+        print(settings.IH_SMTP_HOST)
+        print(settings.IH_SMTP_PORT)
+        with smtplib.SMTP(settings.IH_SMTP_HOST, settings.IH_SMTP_PORT) as server:
+            server.send_message(msg)
     setup_scheduler()
     # You can add more startup code here if needed...
     yield
@@ -53,6 +59,7 @@ if not settings.PRODUCTION:
 
 if settings.PRODUCTION:
     dist_path = Path(__file__).resolve().parent / "frontend"
+    print(dist_path)
     # Serve all static assets under /assets, etc.
     app.mount("/", StaticFiles(directory=dist_path, html=True), name="spa")
 
