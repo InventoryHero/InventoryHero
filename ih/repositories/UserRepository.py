@@ -17,7 +17,7 @@ from ih.schema.households import HouseholdPublic, HouseholdWithMemberPublic, Hou
 from ih.schema.user.user import UserPublic, UserCreate, AdminUserCreate, UserUpdate, UserCreateBase, \
     ChangePasswordFormBase, AdminUserUpdate
 from ih.db.models.User import User
-
+from ih.services.email.email import send_confirmation_email
 
 
 class UserRepository:
@@ -75,8 +75,7 @@ class UserRepository:
             confirmation_code = secrets.token_urlsafe(32)
             confirmation_hash = hashlib.sha256(confirmation_code.encode()).hexdigest()
 
-        # TODO SEND EMAIL
-        print(confirmation_code)
+        send_confirmation_email(user.email, user.username, confirmation_code)
 
         new_user = User(
             email=user.email,

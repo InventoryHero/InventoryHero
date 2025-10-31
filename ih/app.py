@@ -14,6 +14,8 @@ from ih.routes import router
 import smtplib
 from email.mime.text import MIMEText
 
+from ih.services.email.email import send_confirmation_email
+
 settings = get_app_settings()
 
 
@@ -30,15 +32,8 @@ async def lifespan(app: FastAPI):
     # TODO PROPER LOGGING AND SMTP SENDING
     print("database init finished")
     if settings.IH_SMTP_ENABLED:
+        send_confirmation_email("test@test.com", "mytest", "https://google.at")
 
-        msg = MIMEText("hi")
-        msg["Subject"] = "test"
-        msg["From"] = f"{settings.IH_SMTP_FROM_NAME} <{settings.IH_SMTP_FROM_EMAIL}>"
-        msg["To"] = 'test@test.com'
-        print(settings.IH_SMTP_HOST)
-        print(settings.IH_SMTP_PORT)
-        with smtplib.SMTP(settings.IH_SMTP_HOST, settings.IH_SMTP_PORT) as server:
-            server.send_message(msg)
     setup_scheduler()
     # You can add more startup code here if needed...
     yield
