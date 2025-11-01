@@ -149,6 +149,7 @@ onBeforeRouteUpdate(() => {})
         <component
           v-if="!!activeModal"
           :model-value="!!activeModal"
+          @update:modelValue="activeModal = null"
           :is="activeModal.component"
           v-bind="{
             height: mdAndUp ? '700px' : '100%',

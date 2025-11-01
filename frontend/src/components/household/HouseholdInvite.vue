@@ -29,7 +29,6 @@ function generateInviteCode() {
   householdEndpoint
     .createInvite(household.id)
     .then(({ success, data, error }) => {
-      console.log(data)
       if (success) {
         inviteCode.value = data?.code!
       }

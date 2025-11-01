@@ -73,7 +73,8 @@ onBeforeMount(() => {
     "requiresAuth": true,
     "requiresHousehold": true,
     "title": 'titles.boxes',
-    "showFab": true
+    "showFab": true,
+    "layout": "default"
   }
 }
 </route>

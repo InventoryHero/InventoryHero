@@ -37,7 +37,6 @@ const accept = () => {
 }
 
 onBeforeMount(() => {
-  console.log(code)
   householdEndpoint
     .checkInviteValidity(code)
     .then(({ success, data, error }) => {
@@ -49,7 +48,6 @@ onBeforeMount(() => {
 
       householdName.value = data?.household_name ?? ''
       inviterName.value = data?.inviter_name ?? ''
-      console.log(data)
     })
 })
 </script>
@@ -118,7 +116,8 @@ onBeforeMount(() => {
   "meta": {
     "requiresAuth": true,
     "requiresHousehold": false,
-    "title": 'titles.join_household'
+    "title": 'titles.join_household',
+    "layout": "default"
   }
 }
 </route>

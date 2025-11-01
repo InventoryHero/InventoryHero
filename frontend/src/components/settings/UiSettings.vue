@@ -15,6 +15,7 @@ const newColor = ref<string>(configStore.color)
 
 const saveColor = () => {
   color.value = newColor.value
+  colorMenu.value = false
 }
 
 watch(colorMenu, () => {
@@ -79,9 +80,16 @@ watch(color, (newColor: string, oldColor: string) => {
             v-model="newColor"
           />
           <v-card-actions>
+            <v-btn
+              prepend-icon="mdi-close"
+              @click="colorMenu = false"
+              :text="t('settings.ui.close')"
+            />
             <v-spacer />
+
             <v-btn
               v-bind="btnStyle"
+              prepend-icon="mdi-content-save"
               :text="t('settings.ui.save_color')"
               @click="saveColor"
             />

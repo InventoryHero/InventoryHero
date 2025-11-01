@@ -36,7 +36,8 @@
         "system": "System",
         "light": "Light"
       },
-      "transitions": "Transitions"
+      "transitions": "Transitions",
+      "close": "Close"
     },
     "general": {
       "title": "General Settings",

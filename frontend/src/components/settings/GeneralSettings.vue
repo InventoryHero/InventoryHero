@@ -14,9 +14,7 @@ const availableLocales = computed(() => {
 const { language } = storeToRefs(configStore)
 
 watch(language, (_) => {
-  setI18nLanguage(language.value).then(() => {
-    console.log('loaded')
-  })
+  setI18nLanguage(language.value).then(() => {})
 })
 </script>
 

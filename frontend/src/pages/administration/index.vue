@@ -1,15 +1,18 @@
-<script lang="ts"></script>
+<template>
+  <v-btn to="/administration/users">users</v-btn>
+</template>
 
-<template></template>
+<script setup lang="ts"></script>
 
-<style lang="scss" scoped></style>
+<style scoped lang="scss"></style>
 
 <route>
 {
     "meta": {
         "requiresAuth": true,
         "requiresAdmin": true,
-        "requiresHousehold": false,  
+        "requiresHousehold": false, 
+        "layout": "admin"
     }
 }
 </route>

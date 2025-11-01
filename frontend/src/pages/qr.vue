@@ -295,7 +295,8 @@ onBeforeMount(() => {
   "meta": {
     "requiresAuth": true,
     "requiresHousehold": true,
-    "title": "titles.qr"
+    "title": "titles.qr",
+    "layout": "default"
   }
 }
 </route>

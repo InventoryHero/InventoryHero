@@ -44,15 +44,6 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    '/administration': RouteRecordInfo<
-      '/administration',
-      '/administration',
-      Record<never, never>,
-      Record<never, never>,
-      | '/administration/'
-      | '/administration/users/'
-      | '/administration/users/user.[id]'
-    >,
     '/administration/': RouteRecordInfo<
       '/administration/',
       '/administration',
@@ -74,16 +65,9 @@ declare module 'vue-router/auto-routes' {
       { id: ParamValue<false> },
       | never
     >,
-    '/confirmation': RouteRecordInfo<
-      '/confirmation',
-      '/confirmation',
-      Record<never, never>,
-      Record<never, never>,
-      | '/confirmation/confirm.[code]'
-    >,
-    '/confirmation/confirm.[code]': RouteRecordInfo<
-      '/confirmation/confirm.[code]',
-      '/confirmation/confirm/:code',
+    '/confirm.[code]': RouteRecordInfo<
+      '/confirm.[code]',
+      '/confirm/:code',
       { code: ParamValue<true> },
       { code: ParamValue<false> },
       | never
@@ -151,8 +135,8 @@ declare module 'vue-router/auto-routes' {
       Record<never, never>,
       | never
     >,
-    '/qr/': RouteRecordInfo<
-      '/qr/',
+    '/qr': RouteRecordInfo<
+      '/qr',
       '/qr',
       Record<never, never>,
       Record<never, never>,
@@ -161,6 +145,13 @@ declare module 'vue-router/auto-routes' {
     '/settings': RouteRecordInfo<
       '/settings',
       '/settings',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
+    '/storage/': RouteRecordInfo<
+      '/storage/',
+      '/storage',
       Record<never, never>,
       Record<never, never>,
       | never
@@ -224,15 +215,6 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/administration.vue': {
-      routes:
-        | '/administration'
-        | '/administration/'
-        | '/administration/users/'
-        | '/administration/users/user.[id]'
-      views:
-        | 'default'
-    }
     'src/pages/administration/index.vue': {
       routes:
         | '/administration/'
@@ -251,16 +233,9 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/confirmation.vue': {
+    'src/pages/confirm.[code].vue': {
       routes:
-        | '/confirmation'
-        | '/confirmation/confirm.[code]'
-      views:
-        | 'default'
-    }
-    'src/pages/confirmation/confirm.[code].vue': {
-      routes:
-        | '/confirmation/confirm.[code]'
+        | '/confirm.[code]'
       views:
         | never
     }
@@ -318,15 +293,21 @@ declare module 'vue-router/auto-routes' {
       views:
         | never
     }
-    'src/pages/qr/index.vue': {
+    'src/pages/qr.vue': {
       routes:
-        | '/qr/'
+        | '/qr'
       views:
         | never
     }
     'src/pages/settings.vue': {
       routes:
         | '/settings'
+      views:
+        | never
+    }
+    'src/pages/storage/index.vue': {
+      routes:
+        | '/storage/'
       views:
         | never
     }

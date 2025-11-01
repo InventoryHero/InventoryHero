@@ -41,7 +41,6 @@ const register = async () => {
     email: email.value
   }
   const { success, error } = await userEndpoint.register(payload)
-  console.log(error)
   if (!success) {
     switch (error) {
       case 'username_already_exists':

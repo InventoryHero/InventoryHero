@@ -300,7 +300,8 @@ onBeforeMount(() => {
   "props": true,
   "meta": {
     "requiresAuth": true,
-    "requiresHousehold": false
+    "requiresHousehold": false,
+    "layout": "default"
   }
 }
 </route>

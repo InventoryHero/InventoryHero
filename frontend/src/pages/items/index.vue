@@ -61,7 +61,6 @@ const clickOnBanner = () => {
 }
 
 itemAddedEventBus.on((id) => {
-  console.log(id)
   contentRefreshStore.showBanner({
     title: t('items.content_changed_title'),
     subtitle: t('items.content_changed_subtitle'),
@@ -146,7 +145,8 @@ onBeforeMount(() => {
     "requiresAuth": true,
     "requiresHousehold": true,
     "showFab": true,
-    "title": "titles.items"
+    "title": "titles.items",
+    "layout": "default"
 
   }
 }

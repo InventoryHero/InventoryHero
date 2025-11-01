@@ -130,7 +130,6 @@ const handleCreateNewItem = async () => {
     } as ItemStorageBaseSchema
   } as ItemCreateSchema
   loading.value = true
-  console.log(newItem)
   const { success, data } = await itemEndpoint.createNewItem(newItem)
   if (!success) {
     loading.value = false
@@ -256,7 +255,11 @@ const close = (force: boolean = false) => {
   form.value.reset()
 }
 
-onBeforeRouteUpdate(() => {
+onBeforeRouteLeave(() => {
+  if (dirty.value) {
+    confirmLeaveDialogVisible.value = true
+    return false
+  }
   active.value = false
   return false
 })

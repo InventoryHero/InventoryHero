@@ -108,7 +108,6 @@ const handleSave = async () => {
     categories_to_add: [...currentSet].filter((id) => !originalSet.has(id)),
     categories_to_remove: [...originalSet].filter((id) => !currentSet.has(id))
   }
-  console.log(updateData)
   const { success, data, error } = await itemEndpoint.updateItem(
     item.value.id,
     updateData

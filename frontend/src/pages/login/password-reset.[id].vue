@@ -48,7 +48,6 @@ async function resetPassword() {
       new_password_confirmation: passwordRepeat.value
     }
   )
-  console.log(data, error, success)
   if (!success) {
     resettingPassword.value = false
     return false

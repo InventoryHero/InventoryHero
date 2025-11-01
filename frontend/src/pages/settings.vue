@@ -19,7 +19,8 @@
     "requiresAdmin": false,
     "requiresAuth": false,
     "requiresHousehold": false,
-    "title": 'titles.settings'
+    "title": 'titles.settings',
+    "layout": "default"
   }
 }
 </route>

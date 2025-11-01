@@ -435,6 +435,7 @@ watch(currPassword, (_) => (currPasswordInvalid.value = false))
     "requiresAuth": true,
     "requiresHousehold": false,
     "title": 'titles.account',
+    "layout": "default"
   }
 }
 </route>

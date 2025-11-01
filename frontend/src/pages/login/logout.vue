@@ -54,7 +54,8 @@ onMounted(async () => {
   "meta": {
     "requiresHousehold": false,
     "requiresAuth": true,
-    "allowUnauthorized": false
+    "allowUnauthorized": false,
+    "layout": "unauthorized"
   }
 }
 </route>

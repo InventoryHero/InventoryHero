@@ -3,7 +3,7 @@ import { routes } from 'vue-router/auto-routes'
 import useAuthStore from '@/stores/useAuthStore'
 import useConfigStore from '@/stores/useConfigStore'
 import useContentRefreshStore from '@/stores/useContentRefreshStore'
-import { i18n, setI18nLanguage } from '@/plugins/i18n'
+import { i18n } from '@/plugins/i18n'
 //@ts-expect-error cannot be found, but it is there
 import { setupLayouts } from 'virtual:generated-layouts'
 
@@ -65,6 +65,21 @@ router.beforeEach(async (to, from) => {
     group: 'newContent',
     clean: true,
   });*/
+})
+
+router.beforeEach((to, from) => {
+  /*
+  For every layer in the pages there needs to be an index.vue, see: 
+  https://github.com/JohnCampionJr/vite-plugin-vue-layouts/issues/148
+
+  hopefully this is soon fixed in https://github.com/loicduong/vite-plugin-vue-layouts-next/issues/6
+
+  this navigation guard prevents routing to these routes, it just redirects to the homepage
+  those routes should only be accessible by directly entering a url (i.e. they should not be reachable by "correct" navigation inside the app)
+  */
+  if (to.meta.emptyRoute ?? false) {
+    return '/'
+  }
 })
 
 export default router

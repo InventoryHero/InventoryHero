@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import { useGeneralSocketStore, useHouseholdSocketStore } from '@/stores'
 import { HouseholdPublic } from '@/api/types/households.ts'
 import { UserPublic } from '@/api/types/user.ts'
 
@@ -19,16 +18,11 @@ export default defineStore('auth', {
       }
 
       this.user = data
-      console.log(this.user)
     },
     async reset() {
       this.user = undefined
       this.household = undefined
       this.authorized = false
-      /*const generalSocket = useGeneralSocketStore()
-            const householdSocket = useHouseholdSocketStore()
-            generalSocket.updateHeaders()
-            householdSocket.updateHeaders()*/
     },
     async logout() {
       const { auth } = useAxios()
@@ -37,10 +31,6 @@ export default defineStore('auth', {
     },
 
     async destroy() {
-      const socketStore = useHouseholdSocketStore()
-      //socketStore.leaveHousehold()
-      const generalSocketStore = useGeneralSocketStore()
-      //generalSocketStore.leave()
       await this.reset()
     },
     async getDefaultHousehold() {

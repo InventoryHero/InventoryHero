@@ -109,7 +109,8 @@ onBeforeMount(() => {
     "requiresAuth": true,
     "requiresHousehold": true,
     "title": 'titles.rooms',
-    "showFab": true
+    "showFab": true,
+    "layout": "default"
 
   }
 }

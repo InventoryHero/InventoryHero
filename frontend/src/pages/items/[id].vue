@@ -155,7 +155,8 @@ itemAddedEventBus.on((item_id) => {
   "meta": {
     "requiresAuth": true,
     "requiresHousehold": true,
-    "showFab": true
+    "showFab": true,
+    "layout": "default"
   }
 }
 </route>

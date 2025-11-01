@@ -71,7 +71,23 @@ const isDrawerOpen = computed({
       :rail="rail"
       :permanent="mdAndUp"
     >
-      <admin-nav-items />
+      <v-list
+        density="compact"
+        nav
+      >
+        <v-list-item
+          to="/administration"
+          prepend-icon="mdi-view-dashboard"
+          :title="$t('nav.admin.overview')"
+          color="primary"
+        />
+        <v-list-item
+          to="/administration/users"
+          prepend-icon="mdi-account-group"
+          :title="$t('nav.admin.users')"
+          color="primary"
+        />
+      </v-list>
       <template v-slot:append>
         <v-divider
           color="primary"
@@ -91,7 +107,7 @@ const isDrawerOpen = computed({
           :mode="transition.mode"
         >
           <v-container
-            :key="route.fullPath"
+            :key="route"
             :class="{
               'fill-width': true,
               'fill-height': route.meta?.fillHeight ?? false

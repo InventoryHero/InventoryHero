@@ -60,121 +60,91 @@
       class="mb-4"
     />
   </template>
-  <template v-else-if="true">
-    <div class="d-flex justify-end">
-      <v-btn
-        :text="t('administration.users.create')"
-        prepend-icon="mdi-plus"
-        color="primary"
-        @click="createNew = true"
-        variant="outlined"
-        class="mt-2 mb-2"
-      />
-    </div>
-    <v-data-table
-      :items="users"
-      :loading="loading"
-      :headers="headers"
-      :search="search"
-      :mobile="!mdAndUp"
-      class="table"
-    >
-      <template v-slot:top>
-        <v-toolbar
-          flat
-          density="compact"
-        >
-          <v-toolbar-title>
-            <v-icon
-              color="medium-emphasis"
-              icon="mdi-account-group"
-              size="x-small"
-              start
-            ></v-icon>
 
-            {{ t('administration.users.title') }}
-          </v-toolbar-title>
-
-          <v-text-field
-            v-model="search"
-            density="compact"
-            label="Search"
-            prepend-inner-icon="mdi-magnify"
-            variant="solo-filled"
-            flat
-            hide-details
-            single-line
-            class="me-2"
-          />
-        </v-toolbar>
-      </template>
-
-      <template v-slot:item.confirmed="{ item }">
-        <v-icon
-          v-if="item.confirmed"
-          icon="mdi-check-circle"
-          color="green"
-        />
-        <v-icon
-          v-else
-          icon="mdi-close-circle"
-          color="red"
-          @click="resendConfirmation(item.id)"
-        />
-      </template>
-
-      <template v-slot:item.admin="{ item }">
-        <v-icon :icon="item.admin ? 'mdi-check-circle' : 'mdi-close-circle'" />
-      </template>
-
-      <template v-slot:item.actions="{ item }">
-        <div class="d-flex ga-2 justify-end">
-          <v-icon
-            color="medium-emphasis"
-            icon="mdi-pencil"
-            size="small"
-            @click="edit(item.id)"
-          ></v-icon>
-
-          <v-icon
-            color="medium-emphasis"
-            icon="mdi-delete"
-            size="small"
-            @click="remove(item)"
-          ></v-icon>
-        </div>
-      </template>
-    </v-data-table>
-  </template>
-  <template v-else>
+  <div class="d-flex justify-end">
     <v-btn
       :text="t('administration.users.create')"
       prepend-icon="mdi-plus"
       color="primary"
       @click="createNew = true"
-      class="mb-3"
+      variant="outlined"
+      class="mt-2 mb-2"
     />
-
-    <v-list>
-      <v-list-item
-        v-for="user in users"
-        :title="user.username"
-        class="mb-2 mt-2"
+  </div>
+  <v-data-table
+    :items="users"
+    :loading="loading"
+    :headers="headers"
+    :search="search"
+    :mobile="!mdAndUp"
+    class="table"
+  >
+    <template v-slot:top>
+      <v-toolbar
+        flat
+        density="compact"
       >
-        <template v-slot:append>
-          <v-icon-btn
-            icon="mdi-trash-can"
-            @click.stop="console.log('delete trash')"
-            class="me-2"
-          />
-          <v-icon-btn
-            icon="mdi-chevron-right"
-            @click="router.push(`/administration/users/user/${user.id}`)"
-          />
-        </template>
-      </v-list-item>
-    </v-list>
-  </template>
+        <v-toolbar-title>
+          <v-icon
+            color="medium-emphasis"
+            icon="mdi-account-group"
+            size="x-small"
+            start
+          ></v-icon>
+
+          {{ t('administration.users.title') }}
+        </v-toolbar-title>
+
+        <v-text-field
+          v-model="search"
+          density="compact"
+          label="Search"
+          prepend-inner-icon="mdi-magnify"
+          variant="solo-filled"
+          flat
+          hide-details
+          single-line
+          class="me-2"
+        />
+      </v-toolbar>
+    </template>
+
+    <template v-slot:item.confirmed="{ item }">
+      <v-icon
+        v-if="item.confirmed"
+        icon="mdi-check-circle"
+        color="green"
+      />
+      <v-icon
+        v-else
+        icon="mdi-close-circle"
+        color="red"
+        @click="resendConfirmation(item.id)"
+      />
+    </template>
+
+    <template v-slot:item.admin="{ item }">
+      <v-icon :icon="item.admin ? 'mdi-check-circle' : 'mdi-close-circle'" />
+    </template>
+
+    <template v-slot:item.actions="{ item }">
+      <div class="d-flex ga-2 justify-end">
+        <v-icon
+          color="medium-emphasis"
+          icon="mdi-pencil"
+          size="small"
+          @click="edit(item.id)"
+        ></v-icon>
+
+        <v-icon
+          color="medium-emphasis"
+          icon="mdi-delete"
+          size="small"
+          @click="remove(item)"
+        ></v-icon>
+      </div>
+    </template>
+  </v-data-table>
 </template>
 
 <script setup lang="ts">
@@ -273,7 +243,9 @@ const resendConfirmation = async (userId: string) => {
 const loadUsers = async () => {
   loading.value = true
   const { success, data, error } = await adminEndpoint.getAllUsers()
-  console.log(data)
+
+  // TODO HANDLE ERROR / NOTIFY
+
   users.value = data as UserPublic[]
   loading.value = false
 }
@@ -320,7 +292,7 @@ onBeforeRouteLeave((_to, _from, next) => {
         "requiresAuth": true,
         "requiresAdmin": true,
         "requiresHousehold": false, 
-        "layout": false
+        "layout": "admin"
     }
 }
 </route>

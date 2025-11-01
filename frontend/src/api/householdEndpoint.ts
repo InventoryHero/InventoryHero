@@ -103,21 +103,12 @@ export default (api: AxiosInstance) => {
     householdId: string,
     newOwnerId: string
   ): Promise<ApiResponse> => {
-    try {
-      const response = await api.post(
-        `/household/${householdId}/transfer-ownership/${newOwnerId}`
-      )
-      return {
-        success: response.status === 200,
-        error: response.data ?? ''
-      }
-    } catch (error: any) {
-      error = error as AxiosError
-      console.log(error)
-      return {
-        success: false,
-        error: error.response.data
-      }
+    const response = await api.post(
+      `/household/${householdId}/transfer-ownership/${newOwnerId}`
+    )
+    return {
+      success: response.status === 200,
+      error: response.data ?? ''
     }
   }
 

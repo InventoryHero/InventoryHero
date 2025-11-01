@@ -37,7 +37,7 @@ def send_confirmation_email(to: str, username: str, reset_code: str) -> bool:
         upper_part="Thanks for trusting InventoryHero. To get you started you need to confirm your e-mail address by clicking below.",
         btn={
             "text": "Confirm E-Mail",
-            "href": f"{settings.IH_APP_URL}/confirmation/confirm/{reset_code}"
+            "href": f"{settings.IH_APP_URL}/confirm/{reset_code}"
         },
         lower_part="",
         current_year=datetime.now().year,

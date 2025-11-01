@@ -1,5 +1,4 @@
 import { defineStore } from 'pinia'
-import { modals } from '@/composables/useGlobalModal.ts'
 
 export type StorageIconSizes =
   | 'x-small'
@@ -77,57 +76,6 @@ export default defineStore('printSettings', () => {
     top: 10
   })
 
-  /*actions: {
-        setStorageLabel(value: boolean){
-            this.settings.storageLabelVisible = value
-        },
-        setStorageNameVisible(value: boolean){
-            this.settings.storageNameVisible = value
-        },
-        setStorageIconVisible(value: boolean){
-            this.settings.storageIconVisible = value
-        },
-        setBorderThickness(value: number){
-            this.settings.borderThickness = Math.max(Math.min(8, value), 0)
-        },
-        setQrCodeVisible(value: boolean){
-            this.settings.qrCodeVisible = value
-        },
-        setQrCodeIconVisible(value: boolean){
-            this.settings.qrCodeIconVisible = value
-        },
-        setQrCodeIconWidth(value: number){
-            this.settings.qrCodeIconWidth = Math.max(0, Math.min(value, 50))
-        },
-        setStorageIconSize(value: StorageIconSizes){
-            this.settings.storageIconSize = value
-        },
-        setFontSize(value: number){
-            this.settings.fontSize = value
-        },
-        setColumns(value: number){
-            this.settings.cols = Math.max(Math.min(5, value), 1)
-        },
-        setRows(value: number){
-            this.settings.rows = Math.max(Math.min(15, value), 1)
-        },
-        setPaper(value: Paper){
-            this.settings.paper = value
-        },
-        setMargin(margin: 'left'|'right'|'top'|'bottom', value: number){
-            this.settings.margins = {
-                ...this.settings.margins,
-            }
-            this.settings.margins[margin] = Math.min(Math.max(0, value), 30)
-        },
-        setPreviewScale(value: number){
-            this._previewScale = Math.max(0, Math.min(100, value))
-        },
-        reset(){
-            this.settings = {}
-            this._previewScale = 68
-        }
-    },*/
   return {
     storageLabelVisible,
     storageNameVisible,

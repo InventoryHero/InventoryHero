@@ -15,7 +15,6 @@ const { household: householdEndpoint, userEndpoint } = useAxios()
 const route = useRoute()
 const router = useRouter()
 
-//TODO const householdSocket = useHouseholdSocketStore()
 const { notify } = useNotification()
 const { t } = useI18n()
 

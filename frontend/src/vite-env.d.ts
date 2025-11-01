@@ -31,6 +31,7 @@ declare module 'pinia' {
 
 declare module 'vue-router' {
   interface RouteMeta {
+    emptyRoute?: boolean
     requiresAuth?: boolean
     requiresHousehold?: boolean
     allowAuthorized?: boolean

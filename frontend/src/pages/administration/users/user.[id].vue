@@ -319,7 +319,7 @@ onBeforeMount(() => {
             "requiresAuth": true,
             "requiresAdmin": true,
             "requiresHousehold": false, 
-            "layout": false
+            "layout": 'admin'
         }
     }
 </route>
