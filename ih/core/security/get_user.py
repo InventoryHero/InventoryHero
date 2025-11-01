@@ -8,7 +8,9 @@ from uuid import UUID
 from ih.db.db_setup import get_session
 from ih.db.models.User import User
 from . import settings, ALGORITHM
+from ..exceptions.exceptions import InventoryHeroAPIException
 from ...db.models.households import HouseholdMember
+from ...schema.common.error_response import ErrorResponse
 from ...schema.households import Role
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/token", auto_error=False)
@@ -47,7 +49,10 @@ async def get_current_user(
             raise credentials_exception
         uuid: UUID = UUID(uuid_str)
     except PyJWTError:
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED)
+        raise InventoryHeroAPIException(status_code=status.HTTP_401_UNAUTHORIZED, detail=ErrorResponse(
+            message="unauthorized",
+            toast=False,
+        ))
 
     query = select(User).where(User.id == uuid)
     user = session.exec(query).first()

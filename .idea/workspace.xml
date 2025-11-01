@@ -6,24 +6,15 @@
   <component name="ChangeListManager">
     <list default="true" id="5440ea04-9904-442d-98fc-95ab41cdc237" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ih/alembic/env.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/alembic/env.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ih/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/app.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ih/core/jobs/scheduler.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/core/jobs/scheduler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ih/core/jobs/services/invite_cleanup.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/core/jobs/services/invite_cleanup.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ih/core/logging/logger.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/core/logging/logger.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ih/core/logging/logging_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/core/logging/logging_config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ih/core/security/password.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/core/security/password.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ih/db/init_db.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/db/init_db.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ih/locales/en.json" beforeDir="false" afterPath="$PROJECT_DIR$/ih/locales/en.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/docker/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/docker/docker-compose.yml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/App.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/App.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/components/account/forgot-password.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/components/account/forgot-password.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/layouts/default.vue" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/layouts/default.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/src/locales/en.json" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/src/locales/en.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ih/alembic/script.py.mako" beforeDir="false" afterPath="$PROJECT_DIR$/ih/alembic/script.py.mako" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ih/core/security/get_user.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/core/security/get_user.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ih/db/models/User.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/db/models/User.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ih/repositories/UserRepository.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/repositories/UserRepository.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ih/routes/_base/ControllerBase.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/routes/_base/ControllerBase.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ih/routes/auth/auth.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/routes/auth/auth.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ih/routes/config/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/routes/config/routes.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ih/routes/users/public.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/routes/users/public.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ih/routes/users/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/routes/users/user.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ih/schema/common/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/schema/common/__init__.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ih/services/email/email.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/services/email/email.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ih/services/email/templates/standard.html" beforeDir="false" afterPath="$PROJECT_DIR$/ih/services/email/templates/standard.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/poetry.lock" beforeDir="false" afterPath="$PROJECT_DIR$/poetry.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
     </list>
@@ -86,7 +77,7 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.generate_ts">
+  <component name="RunManager" selected="Python.main">
     <configuration name="generate_ts" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="InventoryHero" />
       <option name="ENV_FILES" value="" />
@@ -171,9 +162,9 @@
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Docker.docker.inventoryhero: Compose Deployment" />
         <item itemvalue="Python.generate_ts" />
         <item itemvalue="Docker.docker/docker-compose.dev.yml: Compose Deployment" />
-        <item itemvalue="Docker.docker.inventoryhero: Compose Deployment" />
       </list>
     </recent_temporary>
   </component>
@@ -196,7 +187,7 @@
       <workItem from="1761906881230" duration="28000" />
       <workItem from="1761907813022" duration="1918000" />
       <workItem from="1761941656240" duration="2682000" />
-      <workItem from="1761984778073" duration="11745000" />
+      <workItem from="1761984778073" duration="15051000" />
     </task>
     <servers />
   </component>
@@ -205,6 +196,6 @@
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/InventoryHero$generate_ts.coverage" NAME="generate_ts Coverage Results" MODIFIED="1761990851845" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/dev" />
-    <SUITE FILE_PATH="coverage/InventoryHero$main.coverage" NAME="main Coverage Results" MODIFIED="1761984801051" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/InventoryHero$main.coverage" NAME="main Coverage Results" MODIFIED="1762002764233" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

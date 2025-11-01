@@ -12,7 +12,7 @@ const configStore = useConfigStore()
 const authStore = useAuthStore()
 
 const transition = computed(() => {
-  if (configStore.transitions) {
+  if (configStore.useTransitions) {
     return {
       name: 'scale',
       mode: 'out-in'
@@ -179,7 +179,7 @@ onBeforeRouteUpdate(() => {})
           :mode="transition.mode"
         >
           <v-container
-            :key="route.fullPath"
+            :key="route"
             :class="{
               'fill-width': true,
               'fill-height': route.meta?.fillHeight ?? false

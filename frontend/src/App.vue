@@ -19,6 +19,19 @@ const { authorized } = storeToRefs(authStore)
 
 const initialized = ref<boolean>(false)
 
+const transition = computed(() => {
+  if (configStore.useTransitions) {
+    return {
+      name: 'layout-fade-scale',
+      mode: 'out-in'
+    }
+  }
+  return {
+    name: '',
+    mode: ''
+  }
+})
+
 async function initializeApp() {
   try {
     await setI18nLanguage(language.value)
@@ -52,7 +65,34 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <router-view v-if="initialized" />
+  <router-view
+    v-if="initialized"
+    v-slot="{ Component, route }"
+  >
+    <transition v-bind="transition">
+      <component
+        :is="Component"
+        :key="route.meta.layout"
+      />
+    </transition>
+  </router-view>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.layout-fade-scale-enter-active,
+.layout-fade-scale-leave-active {
+  transition:
+    opacity 0.4s ease,
+    transform 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+  transform-origin: center center;
+}
+
+.layout-fade-scale-enter-from {
+  opacity: 0;
+  transform: scale(0.98);
+}
+.layout-fade-scale-leave-to {
+  opacity: 0;
+  transform: scale(1.02);
+}
+</style>

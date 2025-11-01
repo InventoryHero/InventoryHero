@@ -1,7 +1,8 @@
 {
   "app": {
     "title": "InventoryHero",
-    "loading_content": "Almost ready! 🚀 We’re fine-tuning everything for you. 🛠️"
+    "loading_content": "Almost ready! 🚀 We’re fine-tuning everything for you. 🛠️",
+    "title_admin": "InventoryHero Admin"
   },
   "nav": {
     "items": "Items overview",

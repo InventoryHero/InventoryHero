@@ -27,8 +27,8 @@ const { isValidEmailRule } = useEmailRule(
 )
 
 const close = () => {
-  emailForm.value.reset()
   active.value = false
+  emailForm.value.reset()
 }
 
 async function resetPassword() {

@@ -15,29 +15,19 @@ const { id } = defineProps<{
   id: string
 }>()
 
-const tokenValid = ref(false)
 const preflightCheck = ref(true)
 const password = ref('')
 const passwordRepeat = ref('')
 const valid = ref(false)
 const resettingPassword = ref(false)
-
 const tokenWasInvalid = ref(false)
 const tokenInvalidMessage = ref<string | undefined>()
 
-const passwordForm = useTemplateRef<VForm>('passwordForm')
+const { passwordRules, passwordRepeatRules } = useValidationRules(password, {
+  validatePassword: true
+})
 
-const passwordRules = ref([
-  (value: string) =>
-    value !== '' || t('login.reset-password.rules.password_needed')
-])
-const passwordRepeatRules = ref([
-  (value: string) =>
-    value !== '' || t('login.reset-password.rules.password_needed'),
-  (value: string) =>
-    value === password.value ||
-    t('login.reset-password.rules.passwords_not_equal')
-])
+const passwordForm = useTemplateRef<VForm>('passwordForm')
 
 async function resetPassword() {
   if (resettingPassword.value) {
@@ -58,7 +48,7 @@ async function resetPassword() {
       new_password_confirmation: passwordRepeat.value
     }
   )
-
+  console.log(data, error, success)
   if (!success) {
     resettingPassword.value = false
     return false
@@ -75,7 +65,7 @@ async function resetPassword() {
 
   resettingPassword.value = false
 
-  router.replace('/').then(() => {
+  router.replace('/login').then(() => {
     notify({
       title: t(`toasts.titles.success.password_reset`),
       text: t(`toasts.text.success.password_reset`),
@@ -114,7 +104,7 @@ onBeforeMount(async () => {
       :text="tokenInvalidMessage"
       class="mb-4"
     />
-    <forgot-password @close="router.replace('/')" />
+    <forgot-password @close="router.replace('/login')" />
     <div class="d-flex justify-center mt-4">
       <v-btn
         v-bind="btnStyle"
@@ -152,7 +142,7 @@ onBeforeMount(async () => {
         >
           <v-form
             ref="passwordForm"
-            @submit.prevent="(event) => event.preventDefault()"
+            @submit.prevent="resetPassword"
             :disabled="resettingPassword"
             v-model="valid"
           >
@@ -179,14 +169,16 @@ onBeforeMount(async () => {
       </v-row>
 
       <v-row
-        class="mt-2"
+        class="mt-4"
         dense
-        justify="center"
       >
-        <v-col lg="10">
+        <v-col
+          lg="12"
+          class="d-flex justify-center"
+        >
           <v-btn
             v-bind="btnStyle"
-            class="fill-width"
+            variant="elevated"
             color="primary"
             rounded="xl"
             :text="t('login.reset-password.btn')"
@@ -195,14 +187,14 @@ onBeforeMount(async () => {
           />
         </v-col>
       </v-row>
-      <v-divider class="mb-4 mt-6 border-opacity-25" />
+      <v-divider class="mb-4 mt-4 border-opacity-25" />
       <v-row
         dense
         justify="center"
       >
         <v-col
-          cols="8"
-          class="d-inline-block text-break text-center"
+          cols="12"
+          class="d-flex justify-center align-center"
         >
           <v-btn
             v-bind="btnStyle"

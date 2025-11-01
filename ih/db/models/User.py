@@ -1,12 +1,12 @@
-from sqlalchemy import DateTime
-from sqlmodel import SQLModel, Field, Relationship
+from time import timezone
+from sqlmodel import SQLModel, Field, Relationship, DateTime
+from sqlalchemy_utc import UtcDateTime
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, timezone
 from uuid import UUID, uuid4
 
 from ih.db.models.RefreshToken import RefreshToken
 from ih.db.models.households.HouseholdMember import HouseholdMember
-
 
 
 class User(SQLModel, table=True):
@@ -17,7 +17,7 @@ class User(SQLModel, table=True):
     last_name: Optional[str] = None
     password: str = Field(nullable=False)
     admin: bool = False
-    registered_on: datetime = Field(default_factory=lambda: datetime.now())
+    registered_on: datetime = Field(default_factory=lambda: datetime.now(timezone.utc), sa_type=UtcDateTime)
     household: Optional[UUID] = Field(default=None, foreign_key="household.id", ondelete="SET NULL")
 
     # email confirmed
@@ -29,7 +29,7 @@ class User(SQLModel, table=True):
     password_reset_token: Optional[str] = None
     password_reset_token_expires_at: Optional[datetime] = Field(
         default=None,
-        sa_type=DateTime(timezone=True)  # <-- And here
+        sa_type=UtcDateTime # <-- And here
     )
 
     reset: Optional[bool] = False

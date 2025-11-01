@@ -10,7 +10,7 @@ const configStore = useConfigStore()
 const authStore = useAuthStore()
 
 const transition = computed(() => {
-  if (configStore.transitions) {
+  if (configStore.useTransitions) {
     return {
       name: 'scale',
       mode: 'out-in'
@@ -58,10 +58,10 @@ const isDrawerOpen = computed({
         <v-card
           hover
           width="fit-content"
-          to="/"
+          to="/administration"
           elevation="0"
         >
-          {{ t('app.title') }}
+          {{ t('app.title_admin') }}
         </v-card>
       </v-app-bar-title>
     </v-app-bar>

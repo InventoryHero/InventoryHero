@@ -273,7 +273,7 @@ class UserRepository:
         ).first()
 
         if user is None:
-            return False, ''
+            return False, self.localizer.t('password_reset.invalid_token')
 
         if datetime.now(timezone.utc) > user.password_reset_token_expires_at:
             return False, self.localizer.t('password_reset.invalid_token')
@@ -286,6 +286,9 @@ class UserRepository:
                     toast=True
                 )
             )
+
+        user.password_reset_token_expires_at = None
+        user.password_reset_token = None
 
         user.password = hash_password(new_password.new_password)
         self.session.flush()

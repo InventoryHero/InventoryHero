@@ -14,7 +14,7 @@ const handleClickOnRefreshBanner = () => {
   contentRefreshStore.clearBanner()
 }
 const transition = computed(() => {
-  if (configStore.transitions) {
+  if (configStore.useTransitions) {
     return {
       name: 'scale',
       mode: 'out-in'
