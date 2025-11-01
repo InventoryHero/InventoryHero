@@ -1,6 +1,6 @@
 import uuid
 from datetime import timedelta, datetime, timezone
-from passlib.context import CryptContext
+from pwdlib import PasswordHash
 from sqlmodel import Session
 from uuid import UUID
 
@@ -10,13 +10,13 @@ import jwt
 
 from ...db.models.RefreshToken import RefreshToken
 
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
+password_hash = PasswordHash.recommended()
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
+    return password_hash.verify(plain_password, hashed_password)
 
 def hash_password(plain_password: str) -> str:
-    return pwd_context.hash(plain_password)
+    return password_hash.hash(plain_password)
 
 def create_access_token(data: dict):
     to_encode = data.copy()

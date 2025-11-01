@@ -38,11 +38,6 @@
             :text="t('administration.users.user.copy_link_to_clipboard')"
             @click="copyToClipboard"
           />
-          <v-btn
-            prepend-icon="mdi-envelope"
-            v-if="smtpEnabled"
-            :text="t('administration.users.user.send_link_per_email')"
-          />
         </v-card-actions>
       </v-card>
     </v-dialog>

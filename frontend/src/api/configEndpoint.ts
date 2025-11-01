@@ -9,7 +9,7 @@ export default (api: AxiosInstance) => {
     return {
       success: success,
       data: success ? response.data : undefined,
-      error: !success ? (response.data?.detail ?? undefined) : undefined
+      error: !success ? (response.data ?? undefined) : undefined
     }
   }
 

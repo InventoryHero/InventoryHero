@@ -2,9 +2,6 @@
 import { ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import useAppStyling from '@/composables/useAppStyling.ts'
-import useUserNameCharacterRule from '@/composables/useUserNameCharacterRule.ts'
-import useEmailRule from '@/composables/useEmailRule.ts'
-import { VForm } from 'vuetify/components'
 
 // TODO ALLOW USER TO LOGIN WITH USERNAME OR EMAIL
 const { t } = useI18n()
@@ -17,33 +14,18 @@ const username = ref('')
 const password = ref('')
 const passwordRepeat = ref('')
 const email = ref('')
-const registerForm = useTemplateRef<VForm>('register-form')
+const registerForm = useTemplateRef('registerForm')
 
-const repeatRules = ref([
-  (value: string | undefined | null) =>
-    !!value || t('register.rules.password_needed'),
-  (value: string) =>
-    value === password.value || t('register.rules.passwords_not_equal')
-])
+const {
+  usernameAlreadyInUse,
+  usernameRules,
+  emailAlreadyInUse,
+  emailRules,
+  passwordRules,
+  passwordRepeatRules
+} = useValidationRules(password, { validatePassword: true })
 
-const passwordRules = ref([
-  (value: string | undefined | null) =>
-    !!value || t('register.rules.password_needed')
-])
-
-const { usernameCharacterRule } = useUserNameCharacterRule(
-  'register.rules.username_fmt_rule'
-)
-const usernameRules = ref([
-  (value: string) =>
-    (value && value !== '') || t('register.rules.username_needed'),
-  usernameCharacterRule
-])
-
-const { isValidEmailRule } = useEmailRule('register.rules.email_needed')
-const emailRules = ref([isValidEmailRule])
-
-async function register() {
+const register = async () => {
   if (!registerForm.value) {
     return
   }
@@ -58,8 +40,22 @@ async function register() {
     password_confirmation: passwordRepeat.value,
     email: email.value
   }
-  const { success } = await userEndpoint.register(payload)
+  const { success, error } = await userEndpoint.register(payload)
+  console.log(error)
   if (!success) {
+    switch (error) {
+      case 'username_already_exists':
+        usernameAlreadyInUse.value = true
+
+        break
+      case 'email_already_exists':
+        emailAlreadyInUse.value = true
+        break
+      default:
+      // TODO TOAST
+    }
+    registerForm.value.validate()
+
     loading.value = false
     return
   }
@@ -75,6 +71,8 @@ function reset() {
     registerForm.value.reset()
   }
 }
+watch(email, (_) => (emailAlreadyInUse.value = false))
+watch(username, (_) => (usernameAlreadyInUse.value = false))
 </script>
 
 <template>
@@ -95,8 +93,8 @@ function reset() {
           lg="10"
         >
           <v-form
-            @submit.prevent="(event) => event.preventDefault()"
-            ref="register-form"
+            @submit.prevent="register"
+            ref="registerForm"
           >
             <v-row dense>
               <v-col>
@@ -105,7 +103,6 @@ function reset() {
                   type="text"
                   v-model="username"
                   :rules="usernameRules"
-                  @keyup.enter="register"
                   v-bind="textFieldStyling"
                 />
               </v-col>
@@ -117,7 +114,6 @@ function reset() {
                   type="email"
                   v-model="email"
                   :rules="emailRules"
-                  @keyup.enter="register"
                   v-bind="textFieldStyling"
                 />
               </v-col>
@@ -128,7 +124,6 @@ function reset() {
                   v-model="password"
                   :label="t('register.password')"
                   :rules="passwordRules"
-                  @keyup.enter="register"
                 />
               </v-col>
             </v-row>
@@ -137,8 +132,7 @@ function reset() {
                 <password-text-field
                   :label="t('register.repeat_password')"
                   v-model="passwordRepeat"
-                  :rules="repeatRules"
-                  @keyup.enter="register"
+                  :rules="passwordRepeatRules"
                 />
               </v-col>
             </v-row>
@@ -146,13 +140,16 @@ function reset() {
         </v-col>
       </v-row>
       <v-row
-        class="mt-2"
+        class="mt-4"
         dense
         justify="center"
       >
-        <v-col lg="10">
+        <v-col
+          cols="12"
+          class="d-flex justify-center"
+        >
           <v-btn
-            class="fill-width"
+            v-bind="btnStyle"
             color="primary"
             rounded="xl"
             :text="t('register.btn')"
@@ -161,7 +158,7 @@ function reset() {
           />
         </v-col>
       </v-row>
-      <v-divider class="mb-4 mt-6 border-opacity-25" />
+      <v-divider class="mb-4 mt-4 border-opacity-25" />
       <v-row
         dense
         justify="center"
@@ -176,7 +173,6 @@ function reset() {
           <v-btn
             v-bind="btnStyle"
             variant="plain"
-            varaint="small"
             color="secondary"
             to="/login"
             :text="t('register.back_to_login')"

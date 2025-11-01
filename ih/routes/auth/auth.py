@@ -5,6 +5,9 @@ from pydantic import BaseModel
 from sqlalchemy import or_
 from sqlmodel import Session, select
 from starlette import status
+from urllib3.exceptions import ResponseError
+
+from ih.core.exceptions.exceptions import InventoryHeroAPIException
 from ih.core.security.password import verify_password, create_access_token, create_refresh_token
 from ih.core.security import settings, ALGORITHM
 from ih.db.db_setup import get_session
@@ -14,6 +17,7 @@ from ih.routes._base.UserApiRouter import UserAPIRouter
 
 import jwt
 
+from ih.schema.common.error_response import ErrorResponse
 from ih.schema.user.user import ResetPasswordForm, UserCreate
 
 public_router = APIRouter(tags=["authentication"])
@@ -48,21 +52,25 @@ async def get_token(
     user = session.exec(query).first()
 
     if user is None:
-        raise HTTPException(
+        raise InventoryHeroAPIException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="username_or_password_incorrect"
+            detail=ErrorResponse(
+                message="username_or_password_incorrect",
+                toast=False
+            )
         )
 
 
     if not verify_password(form_data.password, user.password):
-        raise HTTPException(
+        raise InventoryHeroAPIException(
             status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="username_or_password_incorrect",
+            detail=ErrorResponse(
+                message="username_or_password_incorrect",
+                toast=False
+            ),
             headers={"WWW-Authenticate": "Bearer"},
         )
 
-    if not user.confirmed:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="email_not_confirmed")
 
     token_payload = {
             "sub": str(user.id)

@@ -1,7 +1,17 @@
 import validator from 'validator'
 
-export default (password: Ref<string | undefined | null>) => {
+type ValidationOptions = {
+  validatePassword: boolean
+}
+
+export default (
+  password: Ref<string | undefined | null>,
+  options: ValidationOptions = { validatePassword: false }
+) => {
   const { t } = useI18n()
+
+  const usernameAlreadyInUse = ref<boolean>(false)
+  const emailAlreadyInUse = ref<boolean>(false)
 
   const usernameRules = ref([
     (value: string | undefined | null) =>
@@ -10,20 +20,36 @@ export default (password: Ref<string | undefined | null>) => {
     (value: string) => value.length <= 256 || t('validation.username.too_long'),
     (value: string) =>
       validator.isAlphanumeric(value) ||
-      t('validation.username.invalid_characters')
+      t('validation.username.invalid_characters'),
+    (value: string) =>
+      !usernameAlreadyInUse.value || t('validation.username.already_in_use')
   ])
 
   const emailRules = ref([
     (value: string | undefined | null) =>
       !!value || t('validation.email.required'),
     (value: string) =>
-      validator.isEmail(value) || t('validation.email.invalid_email')
+      validator.isEmail(value) || t('validation.email.invalid_email'),
+    (value: string) =>
+      !emailAlreadyInUse.value || t('validation.email.already_in_use')
   ])
 
   // TODO PASSWORD VALIDATION
   const passwordRules = ref([
     (value: string | undefined | null) =>
-      !!value || t('validation.password.required')
+      !!value || t('validation.password.required'),
+    ...(options.validatePassword
+      ? [
+          (value: string) =>
+            validator.isStrongPassword(value || '', {
+              minLength: 8,
+              minLowercase: 1,
+              minUppercase: 1,
+              minNumbers: 1,
+              minSymbols: 1
+            }) || 'weak'
+        ]
+      : [])
   ])
 
   const passwordRepeatRules = ref([
@@ -35,6 +61,9 @@ export default (password: Ref<string | undefined | null>) => {
   ])
 
   return {
+    usernameAlreadyInUse,
+    emailAlreadyInUse,
+
     usernameRules,
     emailRules,
     passwordRules,

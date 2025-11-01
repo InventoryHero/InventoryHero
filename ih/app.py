@@ -1,6 +1,4 @@
 from contextlib import asynccontextmanager
-from http.client import HTTPException
-
 from fastapi import FastAPI
 from fastapi_utils.tasks import repeat_every
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,31 +7,19 @@ from pathlib import Path
 
 from ih.core.jobs.scheduler import setup_scheduler
 from ih.core.config import get_app_settings
+from ih.core.logging.logger import get_logger
 from ih.routes import router
 
-import smtplib
-from email.mime.text import MIMEText
-
-from ih.services.email.email import send_confirmation_email
+# TODO merge all raise HTTPException to raise InventoryHeroAPIException
 
 settings = get_app_settings()
-
-
-# Start periodic background tasks
-@repeat_every(seconds=10)  # every hour
-async def scheduled_invite_cleanup_task() -> None:
-    pass
+logger = get_logger()
 
 @asynccontextmanager
-async def lifespan(app: FastAPI):
+async def lifespan(ih_app: FastAPI):
     from ih.db.init_db import init_db
-    print("HIII")
     init_db()
-    # TODO PROPER LOGGING AND SMTP SENDING
-    print("database init finished")
-    if settings.IH_SMTP_ENABLED:
-        send_confirmation_email("test@test.com", "mytest", "https://google.at")
-
+    logger.info("database configured")
     setup_scheduler()
     # You can add more startup code here if needed...
     yield
@@ -54,7 +40,6 @@ if not settings.PRODUCTION:
 
 if settings.PRODUCTION:
     dist_path = Path(__file__).resolve().parent / "frontend"
-    print(dist_path)
     # Serve all static assets under /assets, etc.
     app.mount("/", StaticFiles(directory=dist_path, html=True), name="spa")
 

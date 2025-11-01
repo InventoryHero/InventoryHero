@@ -10,7 +10,7 @@ export default (api: AxiosInstance) => {
     return {
       success: success,
       data: success ? (response.data as UserPublic[]) : undefined,
-      error: !success ? response.data.detail : undefined
+      error: !success ? response.data : undefined
     }
   }
 
@@ -20,7 +20,7 @@ export default (api: AxiosInstance) => {
     return {
       success,
       data: success ? (response.data as UserPublic) : undefined,
-      error: !success ? response.data.detail : undefined
+      error: !success ? response.data : undefined
     }
   }
 
@@ -34,7 +34,7 @@ export default (api: AxiosInstance) => {
     return {
       success,
       data: success ? (response.data as UserPublic) : undefined,
-      error: !success ? response.data.detail : undefined
+      error: !success ? response.data : undefined
     }
   }
 
@@ -46,7 +46,7 @@ export default (api: AxiosInstance) => {
     return {
       success,
       data: success ? (response.data as string) : undefined,
-      error: !success ? response.data.detail : undefined
+      error: !success ? response.data : undefined
     }
   }
 
@@ -58,7 +58,7 @@ export default (api: AxiosInstance) => {
     return {
       success,
       data: success ? response.data : undefined,
-      error: !success ? response.data.detail : undefined
+      error: !success ? response.data : undefined
     }
   }
 
@@ -70,12 +70,22 @@ export default (api: AxiosInstance) => {
     }
   }
 
+  const resendEmailConfirmation = async (
+    id: string
+  ): Promise<ApiResponse<void>> => {
+    const response = await api.post(`/admin/user/${id}/resend-confirmation`)
+    return {
+      success: response.status === 204
+    }
+  }
+
   return {
     getAllUsers,
     getUser,
     updateUser,
     resetUserPassword,
     createUser,
-    deleteUser
+    deleteUser,
+    resendEmailConfirmation
   }
 }

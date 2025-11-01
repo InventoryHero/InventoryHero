@@ -8,5 +8,10 @@
   "invite_email_household_exists": "A user with this email already received an invite for this household",
   "password_reset": {
     "invalid_token": "The token became invalid, please request a new one!"
+  },
+  "email_confirmation": {
+    "user_not_found": "The requested user does not exist",
+    "smtp_disabled": "SMTP is disabled, cannot send emails",
+    "code_not_found": "The requested confirmation code could not be found. Either it expired, or it doesn't exist"
   }
 }

@@ -40,7 +40,7 @@ LOGGING_CONFIG = {
         },
         "ih.app": {  # your app
             "handlers": ["default"],
-            "level": settings.LOG_LEVEL,
+            "level": "INFO",
             "propagate": False,
         },
     },

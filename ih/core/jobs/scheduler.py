@@ -11,7 +11,7 @@ from apscheduler.events import EVENT_JOB_EXECUTED, EVENT_JOB_ERROR
 
 scheduler = AsyncIOScheduler()
 settings = get_app_settings()
-logger = get_logger("ih.scheduled_tasks")
+logger = get_logger("ih.scheduler")
 
 
 def scheduler_listener(event):
@@ -30,8 +30,6 @@ def setup_scheduler():
         id="invite_cleanup_job",
         replace_existing=True,
     )
-
-
     scheduler.add_listener(scheduler_listener, EVENT_JOB_EXECUTED | EVENT_JOB_ERROR)
 
     for job in scheduler.get_jobs():

@@ -332,7 +332,10 @@
         "title": "E-Mail sent",
         "text": "You'll receive an E-Mail with instructions on how to reset your password"
       }
-    }
+    },
+    "email_not_confirmed": "Resend Confirmation",
+    "resend_confirmation_success": "Please check your e-mail, the verification e-mail was sent successfully",
+    "password_changed_successfully": "Password updated!"
   },
   "login": {
     "title": "🚀 Welcome to InventoryHero",
@@ -366,7 +369,8 @@
         "password_needed": "You need to have a password"
       },
       "unknown_token_error": "Unknown error with your password reset token. Please request a new one!"
-    }
+    },
+    "username_or_password_invalid": "Username or password is invalid"
   },
   "register": {
     "title": "🎉 Join InventoryHero now",
@@ -447,10 +451,11 @@
   "confirmation": {
     "email_confirmed": "E-Mail successfully confirmed",
     "failure": "E-Mail could not be confirmed",
-    "activated": "You can now login with your account! Happy Inventoring! 🤩",
+    "activated": "Happy Inventoring! 🤩",
     "redirect_in": "You'll be redirect to the homepage in {seconds} seconds",
     "go_to_login": "Go to login",
-    "verifying": "We are verifying your email right now, hang tight."
+    "verifying": "We are verifying your email right now, hang tight.",
+    "unknown_error": "Unknown error while confirming your email. Please request a new confirmation code"
   },
   "home": "Go to home",
   "logging_out": "Logging out...",
@@ -500,5 +505,39 @@
     "stay": "Stay",
     "discard": "Discard changes",
     "text": "You have unsaved changes, are you sure you want to leave?"
+  },
+  "validation": {
+    "username": {
+      "required": "A username is required",
+      "too_short": "Your username needs to be at least three characters long",
+      "too_long": "Your username can be at most 256 characters long",
+      "invalid_characters": "Your username can only contain letters (A-Z, a-z) and numbers (0-9)",
+      "already_in_use": "This username is already in use"
+    },
+    "email": {
+      "required": "An email is required",
+      "invalid_email": "The email needs to be valid",
+      "already_in_use": "This email is already in use"
+    },
+    "password": {
+      "required": "A password is required",
+      "weak": {
+        "title": "Your password is weak.",
+        "subtitle": "It should include:",
+        "num_characters": "At least 8 characters",
+        "lower_case": "At least one lower case letter",
+        "upper_case": "At least one upper case letter",
+        "number": "At least one number",
+        "symbol": "At least one symbol"
+      },
+      "curr_password_invalid": "Your current password is not correct"
+    },
+    "repeat_password": {
+      "required": "Please repeat the password",
+      "password_mismatch": "The passwords do not match"
+    },
+    "passord": {
+      "weak": "Password is too weak. It should be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one symbol."
+    }
   }
 }

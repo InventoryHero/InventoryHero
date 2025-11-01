@@ -143,9 +143,13 @@
       <p>{{ upper_part }}</p>
 
       {% if btn %}
-      <p style="text-align: center;">
+      <div style="text-align: center;">
         <a href="{{ btn.href }}" class="button">{{ btn.text }}</a>
-      </p>
+        <div style="font-size: 13px; color: #6b7280; word-break: break-all; margin-top: 4px;">
+          If the button doesn’t work, copy and paste this link into your browser:<br/>
+          <a href="{{ btn.href }}" style="color: #2563eb;">{{ btn.href }}</a>
+        </div>
+      </div>
       {% endif %}
 
       <p>{{ lower_part }}</p>

@@ -119,7 +119,7 @@
           v-else
           icon="mdi-close-circle"
           color="red"
-          @click="console.log('resend confirmation')"
+          @click="resendConfirmation(item.id)"
         />
       </template>
 
@@ -182,12 +182,14 @@ import { UserPublic } from '@/api/types/households'
 import useAxios from '@/composables/useAxios'
 import { useDisplay } from 'vuetify/lib/composables/display.mjs'
 import type { DataTableHeader } from 'vuetify'
+import { useNotification } from '@kyvg/vue3-notification'
 
 const { admin: adminEndpoint } = useAxios()
 const { mdAndUp } = useDisplay()
 const { t } = useI18n()
 const router = useRouter()
 const { btnStyle } = useAppStyling()
+const { notify } = useNotification()
 
 const users = ref<UserPublic[]>([])
 const loading = ref<boolean>(false)
@@ -256,6 +258,16 @@ const deleteUser = async () => {
   }
   users.value = users.value.filter((x) => x.id !== toDelete.value!.id)
   toDelete.value = undefined
+}
+
+const resendConfirmation = async (userId: string) => {
+  const { success } = await adminEndpoint.resendEmailConfirmation(userId)
+  if (success) {
+    notify({
+      title: t('administration.users.resent_confirmation'),
+      type: 'success'
+    })
+  }
 }
 
 const loadUsers = async () => {

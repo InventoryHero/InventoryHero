@@ -18,7 +18,6 @@ class ControllerBase(ABC):
     session: Session = Depends(get_session)
     localizer: Localizer = Depends(get_localizer)
 
-
     @cached_property
     def settings(self) -> AppSettings:
         return get_app_settings()

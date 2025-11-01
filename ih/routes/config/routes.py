@@ -24,9 +24,6 @@ class ConfigController(ControllerBase):
     def get_config(self):
         app_settings = get_app_settings()
 
-        print(self.localizer.t('test'))
-        print(self.localizer.t('test2'))
-
         return ConfigPublic(
             smtp_enabled=app_settings.IH_SMTP_ENABLED,
             registration_allowed=app_settings.IH_REGISTRATION_ALLOWED

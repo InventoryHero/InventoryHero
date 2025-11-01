@@ -8,6 +8,7 @@ from ih.db.models.households import HouseholdInvite
 
 
 async def cleanup_invites():
+
     logger = get_logger("ih.scheduled_tasks.invite_cleanup")
     now = datetime.now()
     try:

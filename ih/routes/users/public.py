@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 from fastapi_utils.cbv import cbv
 from starlette import status
 
+
 from ih.schema.user.user import UserCreate, ResetPasswordForm, TokenValidationResponse, ChangePasswordFormBase, \
     ResetPasswordResponse
 from ih.routes._base.PublicControllerBase import PublicControllerBase
@@ -24,26 +25,18 @@ class UserPublicController(PublicControllerBase):
                 detail=self.localizer.t('registration_disabled')
             )
 
-        need_confirmation = self.settings.IH_SMTP_ENABLED
 
         assert not getattr(user, "admin", False), "Public registration cannot set admin=True"
-        self.repositories.users.register(user, need_confirmation=need_confirmation)
+        self.repositories.users.register(user)
         return
 
-    @router.post("/reset-password", status_code=204)
+    @router.post("/reset-password", status_code=status.HTTP_204_NO_CONTENT)
     async def reset_password(self, email: ResetPasswordForm):
-        code = self.repositories.users.request_password_reset(email.email)
-
-        # TODO SEND CODE
+        self.repositories.users.request_password_reset(email.email)
 
     @router.post("/confirm-email/{code}", status_code=status.HTTP_204_NO_CONTENT)
     def confirm_email(self, code: str):
         self.repositories.users.confirm_email(code)
-
-    @router.get("/request-confirmation", status_code=status.HTTP_204_NO_CONTENT)
-    def request_confirmation(self):
-        # TODO RESEND CONFIRMATION
-        pass
 
     @router.get("/validate-password-token/{code}", response_model=TokenValidationResponse, status_code=status.HTTP_200_OK)
     def validate_password_token(self, code: str) -> TokenValidationResponse:

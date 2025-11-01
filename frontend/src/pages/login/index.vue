@@ -21,15 +21,9 @@ const username = ref<string>('')
 const password = ref<string>('')
 const confirmationMissingAlert = ref<boolean>(false)
 
+const { usernameRules, passwordRules } = useValidationRules(password)
+
 const userNameOrPasswordInvalidBanner = ref<boolean>(false)
-
-const usernameRules = ref([
-  (value: string) => value !== '' || t('login.rules.username_needed')
-])
-
-const passwordRules = ref([
-  (value: string) => value !== '' || t('login.rules.password_needed')
-])
 
 const loginForm = useTemplateRef<VForm>('login-form')
 const loading = ref(false)
@@ -49,9 +43,6 @@ async function login() {
   loginFormData.append('password', password.value)
   const { success, error } = await auth.login(loginFormData)
   if (!success) {
-    if (error === 'email_not_confirmed') {
-      confirmationMissingAlert.value = true
-    }
     if (error === 'username_or_password_incorrect') {
       userNameOrPasswordInvalidBanner.value = true
     }
@@ -85,10 +76,7 @@ onBeforeRouteLeave(() => {
 </script>
 
 <template>
-  <v-dialog v-model="forgotPasswordDialog">
-    <forgot-password @close="forgotPasswordDialog = false" />
-  </v-dialog>
-
+  <forgot-password v-model:active="forgotPasswordDialog" />
   <v-card
     elevation="5"
     class="d-flex flex-column"
@@ -177,7 +165,7 @@ onBeforeRouteLeave(() => {
             class="d-flex justify-center"
           >
             <span class="text-error text-subtitle-1 text-medium-emphasis">
-              {{ t('login.rules.username_or_password_invalid') }}
+              {{ t('login.username_or_password_invalid') }}
             </span>
           </v-col>
         </v-row>

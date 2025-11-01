@@ -8,6 +8,7 @@ import { ChangePasswordForm, UserUpdate } from '@/api/types/user.ts'
 import { useNotification } from '@kyvg/vue3-notification'
 import { storeToRefs } from 'pinia'
 import router from '@/router'
+import { updateFormatted } from 'vuetify/lib/labs/VCalendar/util/timestamp.mjs'
 
 const { t } = useI18n()
 
@@ -21,31 +22,30 @@ const userForm = useTemplateRef('userForm')
 const passwordForm = useTemplateRef('passwordResetForm')
 
 const { smtpEnabled } = storeToRefs(configStore)
-const username = ref<string>(authStore.user!.username)
-const firstname = ref<string | null | undefined>(authStore.user!.first_name)
-const lastname = ref<string | null | undefined>(authStore.user!.last_name)
-const email = ref<string>(authStore.user!.email)
+const { user } = storeToRefs(authStore)
+
+const updated = ref({ ...user.value })
+
 const saving = ref(false)
 const passwordFormVisible = ref<boolean>(false)
 const currPassword = ref<string | undefined>(undefined)
 const newPassword = ref<string | undefined>(undefined)
 const newPasswordRepeat = ref<string | undefined>(undefined)
 const loading = ref<boolean>(false)
+const currPasswordInvalid = ref<boolean>(false)
 
-const passwordRules = ref([
+const {
+  passwordRules: newPasswordRules,
+  passwordRepeatRules: newPasswordRepeatRules
+} = useValidationRules(newPassword, { validatePassword: true })
+
+const currPasswordRules = ref([
   (value: string | null | undefined) =>
-    !!value || t('account.password.rules.old_not_empty')
-])
-const newPasswordRules = ref([
-  (value: string | null | undefined) =>
-    !!value || t('account.password.rules.new_not_empty')
-])
-const newPasswordRepeatRules = ref([
-  (value: string | null | undefined) =>
-    !!value || t('account.password.rules.repeat_not_empty'),
+    !!value || t('account.password.rules.old_not_empty'),
   (value: string) =>
-    value === newPassword.value || t('account.password.rules.mismatch')
+    !currPasswordInvalid.value || t('validation.password.curr_password_invalid')
 ])
+
 const usernameRules = ref([
   (value: string | null | undefined) =>
     !!value || t('account.rules.username_required')
@@ -55,16 +55,28 @@ const emailRules = ref([
     !!value || t('account.rules.email_required')
 ])
 
+const usernameEdited = computed(
+  () => updated.value?.username !== user.value?.username
+)
+const emailEdited = computed(() => updated.value?.email !== user.value?.email)
+const firstNameEdited = computed(
+  () => updated.value?.last_name !== user.value?.first_name
+)
+const lastNamedEdited = computed(
+  () => updated.value?.last_name !== user.value?.last_name
+)
+
 const edited = computed(() => {
   return (
-    username.value !== authStore.user!.username ||
-    firstname.value !== authStore.user!.first_name ||
-    lastname.value !== authStore.user!.last_name ||
-    email.value !== authStore.user!.email
+    usernameEdited.value ||
+    firstNameEdited.value ||
+    lastNamedEdited.value ||
+    emailEdited.value
   )
 })
 const lazySrc = computed(
-  () => `https://api.dicebear.com/8.x/bottts-neutral/svg?seed=${username.value}`
+  () =>
+    `https://api.dicebear.com/8.x/bottts-neutral/svg?seed=${user.value?.username}`
 )
 const profilePictureSrc = computed(() => lazySrc.value)
 const passwordFormValid = computed(() => {
@@ -82,10 +94,17 @@ const uploadProfilePicture = () => {
 }
 
 const reset = () => {
-  username.value = authStore.user!.username
-  email.value = authStore.user!.email
-  lastname.value = authStore.user!.last_name
-  firstname.value = authStore.user!.first_name
+  updated.value = { ...user.value }
+}
+
+const resendConfirmationEmail = async () => {
+  const { success } = await userEndpoint.requestEmailConfirmation()
+  if (success) {
+    notify({
+      title: t('account.resend_confirmation_success'),
+      type: 'success'
+    })
+  }
 }
 
 async function saveUpdatedUserdata() {
@@ -94,15 +113,10 @@ async function saveUpdatedUserdata() {
     return
   }
   let payload = {
-    username:
-      username.value === authStore.user!.username ? undefined : username.value,
-    email: email.value === authStore.user!.email ? undefined : email.value,
-    first_name:
-      firstname.value === authStore.user!.first_name
-        ? undefined
-        : firstname.value,
-    last_name:
-      lastname.value === authStore.user!.last_name ? undefined : lastname.value
+    username: !usernameEdited.value ? undefined : updated.value?.username,
+    email: !emailEdited.value ? undefined : updated.value?.email,
+    first_name: !firstNameEdited.value ? undefined : updated.value?.first_name,
+    last_name: !lastNamedEdited.value ? undefined : updated.value?.last_name
   } as UserUpdate
   saving.value = true
   const { success, data, error } = await userEndpoint.updateUser(payload)
@@ -129,8 +143,21 @@ const updatePassword = async () => {
 
   const { success, data, error } = await userEndpoint.changePassword(payload)
   if (!success) {
+    switch (error) {
+      case 'wrong_password':
+        currPasswordInvalid.value = true
+        break
+      default:
+        // TODO notify?
+        break
+    }
+    passwordForm.value.validate()
     return
   }
+  notify({
+    title: t('account.password_changed_successfully'),
+    type: 'success'
+  })
   passwordForm.value.reset()
   passwordFormVisible.value = false
 }
@@ -183,6 +210,8 @@ onBeforeMount(() => {
     })
   }
 })
+
+watch(currPassword, (_) => (currPasswordInvalid.value = false))
 </script>
 
 <template>
@@ -191,188 +220,211 @@ onBeforeMount(() => {
     v-if="loading"
   />
 
-  <v-hover>
-    <template v-slot:default="{ isHovering, props }">
-      <v-img
-        v-bind="props"
-        class="mx-auto mt-4"
-        rounded="circle position-relative"
-        aspect-ratio="1/1"
-        height="100"
-        width="100"
-        cover
-        :lazy-src="lazySrc"
-        alt="avatar"
-        :src="profilePictureSrc"
-        @click="uploadProfilePicture"
-        :style="{
-          cursor: isHovering ? 'pointer' : undefined
-        }"
-      >
-        <template v-slot:default>
-          <v-overlay
-            :model-value="!!isHovering"
-            contained
-            class="align-center justify-center"
-            scrim="#000000"
-          >
-            <v-icon
-              icon="mdi-camera"
-              size="large"
-            />
-          </v-overlay>
-        </template>
-      </v-img>
-    </template>
-  </v-hover>
-
-  <v-container class="mt-4 mb-4">
-    <v-row justify="center">
-      <v-col
-        lg="6"
-        cols="12"
-      >
-        <v-form
-          ref="userForm"
-          @submit.prevent=""
+  <template v-else>
+    <v-hover>
+      <template v-slot:default="{ isHovering, props }">
+        <v-img
+          v-bind="props"
+          class="mx-auto mt-4"
+          rounded="circle position-relative"
+          aspect-ratio="1/1"
+          height="100"
+          width="100"
+          cover
+          :lazy-src="lazySrc"
+          alt="avatar"
+          :src="profilePictureSrc"
+          @click="uploadProfilePicture"
+          :style="{
+            cursor: isHovering ? 'pointer' : undefined
+          }"
         >
-          <v-row>
-            <v-col cols="12">
-              <v-text-field
-                v-bind="textFieldStyling"
-                v-model="username"
-                :label="t('account.username')"
-                :rules="usernameRules"
-              >
-                <template v-slot:append-inner>
-                  <v-icon
-                    v-if="username !== authStore.user!.username"
-                    icon="mdi-refresh"
-                    @click="username = authStore.user!.username"
-                  />
-                </template>
-              </v-text-field>
-            </v-col>
-            <v-col cols="12">
-              <v-text-field
-                v-bind="textFieldStyling"
-                v-model="email"
-                :label="t('account.email')"
-                :rules="emailRules"
-              >
-                <template v-slot:append-inner>
-                  <v-icon
-                    v-if="email !== authStore.user!.email"
-                    icon="mdi-refresh"
-                    @click="email = authStore.user!.email"
-                  />
-                </template>
-              </v-text-field>
-            </v-col>
-            <v-col cols="12">
-              <v-text-field
-                v-bind="textFieldStyling"
-                v-model="firstname"
-                :label="t('account.firstname')"
-              >
-                <template v-slot:append-inner>
-                  <v-icon
-                    v-if="firstname !== authStore.user!.first_name"
-                    icon="mdi-refresh"
-                    @click="firstname = authStore.user!.first_name"
-                  />
-                </template>
-              </v-text-field>
-            </v-col>
-            <v-col cols="12">
-              <v-text-field
-                v-bind="textFieldStyling"
-                v-model="lastname"
-                :label="t('account.lastname')"
-              >
-                <template v-slot:append-inner>
-                  <v-icon
-                    v-if="lastname !== authStore.user!.last_name"
-                    icon="mdi-refresh"
-                    @click="lastname = authStore.user!.last_name"
-                  />
-                </template>
-              </v-text-field>
-            </v-col>
-          </v-row>
-        </v-form>
-        <div class="d-flex justify-end mt-4">
-          <v-btn
-            v-bind="btnStyle"
-            :text="t('account.save')"
-            @click="saveUpdatedUserdata"
-            :disabled="!edited"
-          />
-        </div>
+          <template v-slot:default>
+            <v-overlay
+              :model-value="!!isHovering"
+              contained
+              class="align-center justify-center"
+              scrim="#000000"
+            >
+              <v-icon
+                icon="mdi-camera"
+                size="large"
+              />
+            </v-overlay>
+          </template>
+        </v-img>
+      </template>
+    </v-hover>
 
-        <v-divider class="mt-4 mb-4" />
-
-        <div class="d-flex justify-space-between align-center mb-4">
-          {{ t('account.password.password') }}
-          <v-btn
-            v-bind="btnStyle"
-            variant="outlined"
-            :text="
-              !passwordFormVisible
-                ? t('account.password.change_password')
-                : t('account.password.hide_change_password')
-            "
-            @click="showPasswordForm"
-          />
-        </div>
-        <v-scroll-y-transition @after-enter="scrollToBottom">
+    <v-container class="mt-4 mb-4">
+      <v-row justify="center">
+        <v-col
+          lg="8"
+          cols="12"
+        >
           <v-form
-            ref="passwordResetForm"
-            v-if="passwordFormVisible"
+            ref="userForm"
+            @submit.prevent=""
           >
             <v-row>
               <v-col cols="12">
-                <password-text-field
-                  :label="t('account.password.current_password')"
-                  v-model="currPassword"
-                  :rules="passwordRules"
-                />
+                <v-text-field
+                  v-bind="textFieldStyling"
+                  v-model="updated.username"
+                  :label="t('account.username')"
+                  :rules="usernameRules"
+                >
+                  <template v-slot:append-inner>
+                    <v-icon
+                      v-if="usernameEdited"
+                      icon="mdi-refresh"
+                      @click="updated.username = user?.username"
+                    />
+                  </template>
+                  <template #prepend-inner="slotProps"></template>
+                </v-text-field>
               </v-col>
               <v-col cols="12">
-                <password-text-field
-                  :label="t('account.password.new_password')"
-                  v-model="newPassword"
-                  :rules="newPasswordRules"
-                />
+                <v-row>
+                  <v-col
+                    cols="12"
+                    :md="!user?.confirmed ? '8' : '12'"
+                  >
+                    <v-text-field
+                      v-bind="textFieldStyling"
+                      v-model="updated.email"
+                      :label="t('account.email')"
+                      :rules="emailRules"
+                    >
+                      <template v-slot:append-inner>
+                        <v-icon
+                          v-if="emailEdited"
+                          icon="mdi-refresh"
+                          @click="updated.email = user?.email"
+                        />
+                      </template>
+                    </v-text-field>
+                  </v-col>
+                  <v-col
+                    v-if="!user?.confirmed"
+                    cols="12"
+                    md="4"
+                    class="d-flex align-center justify-center"
+                  >
+                    <v-btn
+                      color="warning"
+                      @click="resendConfirmationEmail"
+                    >
+                      {{ t('account.email_not_confirmed') }}
+                    </v-btn>
+                  </v-col>
+                </v-row>
               </v-col>
               <v-col cols="12">
-                <password-text-field
-                  :label="t('account.password.new_password_repeat')"
-                  v-model="newPasswordRepeat"
-                  :rules="newPasswordRepeatRules"
-                />
+                <v-text-field
+                  v-bind="textFieldStyling"
+                  v-model="updated.first_name"
+                  :label="t('account.firstname')"
+                >
+                  <template v-slot:append-inner>
+                    <v-icon
+                      v-if="firstNameEdited"
+                      icon="mdi-refresh"
+                      @click="updated.first_name = user?.first_name"
+                    />
+                  </template>
+                </v-text-field>
+              </v-col>
+              <v-col cols="12">
+                <v-text-field
+                  v-bind="textFieldStyling"
+                  v-model="updated.last_name"
+                  :label="t('account.lastname')"
+                >
+                  <template v-slot:append-inner>
+                    <v-icon
+                      v-if="lastNamedEdited"
+                      icon="mdi-refresh"
+                      @click="updated.last_name = user?.last_name"
+                    />
+                  </template>
+                </v-text-field>
               </v-col>
             </v-row>
-            <div class="d-flex justify-end mt-4 flex-wrap-reverse">
-              <v-btn
-                v-if="smtpEnabled"
-                v-bind="btnStyle"
-                variant="plain"
-                :text="t('account.password.forgot_password')"
-                @click="forgotPassword"
-              />
-              <v-btn
-                v-bind="btnStyle"
-                :text="t('account.password.change_password')"
-                :disabled="!passwordFormValid"
-                @click="updatePassword"
-              />
-            </div>
           </v-form>
-        </v-scroll-y-transition>
-      </v-col>
-    </v-row>
-  </v-container>
+          <div class="d-flex justify-end mt-4">
+            <v-btn
+              v-bind="btnStyle"
+              :text="t('account.save')"
+              @click="saveUpdatedUserdata"
+              :disabled="!edited"
+            />
+          </div>
+
+          <v-divider class="mt-4 mb-4" />
+
+          <div class="d-flex justify-space-between align-center mb-4">
+            {{ t('account.password.password') }}
+            <v-btn
+              v-bind="btnStyle"
+              variant="outlined"
+              :text="
+                !passwordFormVisible
+                  ? t('account.password.change_password')
+                  : t('account.password.hide_change_password')
+              "
+              @click="showPasswordForm"
+            />
+          </div>
+          <v-scroll-y-transition @after-enter="scrollToBottom">
+            <v-form
+              ref="passwordResetForm"
+              v-if="passwordFormVisible"
+            >
+              <v-row>
+                <v-col cols="12">
+                  <password-text-field
+                    :label="t('account.password.current_password')"
+                    v-model="currPassword"
+                    :rules="currPasswordRules"
+                  />
+                </v-col>
+                <v-col cols="12">
+                  <password-text-field
+                    :label="t('account.password.new_password')"
+                    v-model="newPassword"
+                    :rules="newPasswordRules"
+                  />
+                </v-col>
+                <v-col cols="12">
+                  <password-text-field
+                    :label="t('account.password.new_password_repeat')"
+                    v-model="newPasswordRepeat"
+                    :rules="newPasswordRepeatRules"
+                  />
+                </v-col>
+              </v-row>
+              <div class="d-flex justify-end mt-4 flex-wrap-reverse">
+                <v-btn
+                  v-if="smtpEnabled"
+                  v-bind="btnStyle"
+                  variant="plain"
+                  :text="t('account.password.forgot_password')"
+                  @click="forgotPassword"
+                />
+                <v-btn
+                  v-bind="btnStyle"
+                  :text="t('account.password.change_password')"
+                  :disabled="!passwordFormValid"
+                  @click="updatePassword"
+                />
+              </div>
+            </v-form>
+          </v-scroll-y-transition>
+        </v-col>
+      </v-row>
+    </v-container>
+  </template>
 </template>
 
 <style scoped lang="scss"></style>

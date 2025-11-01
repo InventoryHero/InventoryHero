@@ -24,8 +24,7 @@ router.beforeEach(async (to, from) => {
   const { household, authorized, user } = storeToRefs(authStore)
   const { registrationAllowed } = storeToRefs(configStore)
 
-  // TODO MERGE THESE TWO
-
+  await authStore.whoami()
   await authStore.getDefaultHousehold()
 
   if (authorized.value && !allowAuthorized) {

@@ -8,7 +8,7 @@ export default (api: AxiosInstance) => {
     const success = !(response.status < 200 || response.status > 299)
     return {
       success: success,
-      error: !success ? (response.data.detail ?? '') : undefined
+      error: !success ? (response.data ?? '') : undefined
     }
   }
 

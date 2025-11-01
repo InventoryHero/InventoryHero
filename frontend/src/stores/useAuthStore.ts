@@ -13,13 +13,13 @@ export default defineStore('auth', {
   actions: {
     async whoami() {
       const { userEndpoint } = useAxios()
-      const { success, data: user } = await userEndpoint.self()
+      const { success, data } = await userEndpoint.self()
       if (!success) {
-        // TODO HANDLE
         return
       }
 
-      this.user = user
+      this.user = data
+      console.log(this.user)
     },
     async reset() {
       this.user = undefined

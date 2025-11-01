@@ -15,3 +15,19 @@ export interface BreadcrumbSchema {
   type: StorageType;
   id: string;
 }
+export interface FastAPIError {
+  detail: ValidationErrorItem[] | string | ErrorResponse;
+}
+export interface ValidationErrorItem {
+  loc: (string | number)[];
+  msg: string;
+  type: string;
+}
+/**
+ * Represents a single link in the breadcrumb trail.
+ */
+export interface ErrorResponse {
+  message: string;
+  toast?: boolean;
+  toast_type?: "success" | "info" | "warning" | "error";
+}

@@ -1,7 +1,8 @@
 import os
 from pathlib import Path
 from alembic.config import Config
-from alembic import command
+from alembic import command, config, script
+from alembic.runtime import migration
 from ih.db.db_setup import engine
 from ih.db.models.User import User
 from ih.core.security.password import hash_password
@@ -11,18 +12,13 @@ from sqlmodel import Session, select
 ALEMBIC_DIR = Path(__file__).resolve().parent.parent / "alembic"
 
 def init_db():
+
     alembic_cfg_path = os.getenv("ALEMBIC_CONFIG_FILE", default=str(ALEMBIC_DIR / "alembic.ini"))
-
-    # Path to the Alembic config
     alembic_cfg = Config(alembic_cfg_path)
-
-    # Run migrations
     command.upgrade(alembic_cfg, "head")
-
 
     # initialize database with admin user
     settings = get_app_settings()
-
     with Session(engine) as session:
         existing = session.exec(select(User)).first()
 

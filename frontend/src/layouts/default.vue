@@ -111,10 +111,20 @@ onBeforeRouteUpdate(() => {})
         <v-spacer />
         <v-list-item
           to="/account"
-          prepend-icon="mdi-account"
           :title="t('nav.account')"
           color="primary"
-        />
+        >
+          <template v-slot:prepend>
+            <v-badge
+              dot
+              location="top right"
+              color="error"
+              :model-value="!user?.confirmed"
+            >
+              <v-icon icon="mdi-account" />
+            </v-badge>
+          </template>
+        </v-list-item>
         <template v-if="user?.admin">
           <v-list-item
             to="/administration"

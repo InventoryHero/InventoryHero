@@ -17,6 +17,8 @@ const { theme, language, smtpEnabled, registrationAllowed } =
 
 const { authorized } = storeToRefs(authStore)
 
+const initialized = ref<boolean>(false)
+
 async function initializeApp() {
   try {
     await setI18nLanguage(language.value)
@@ -36,6 +38,8 @@ async function initializeApp() {
       await authStore.whoami()
       // TODO CONNECT TO SOCKETS
     }
+
+    initialized.value = true
   } catch (error) {
     console.error('Failed to initialize application:', error)
     // Handle initialization error, maybe redirect to an error page
@@ -48,7 +52,7 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <router-view />
+  <router-view v-if="initialized" />
 </template>
 
 <style scoped lang="scss"></style>

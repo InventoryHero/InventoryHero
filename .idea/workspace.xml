@@ -6,8 +6,24 @@
   <component name="ChangeListManager">
     <list default="true" id="5440ea04-9904-442d-98fc-95ab41cdc237" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ih/alembic/env.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/alembic/env.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ih/app.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/app.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ih/core/jobs/scheduler.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/core/jobs/scheduler.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ih/core/jobs/services/invite_cleanup.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/core/jobs/services/invite_cleanup.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ih/core/logging/logger.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/core/logging/logger.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ih/core/logging/logging_config.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/core/logging/logging_config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ih/core/security/password.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/core/security/password.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ih/db/init_db.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/db/init_db.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ih/locales/en.json" beforeDir="false" afterPath="$PROJECT_DIR$/ih/locales/en.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ih/repositories/UserRepository.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/repositories/UserRepository.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ih/routes/_base/ControllerBase.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/routes/_base/ControllerBase.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ih/routes/auth/auth.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/routes/auth/auth.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ih/routes/config/routes.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/routes/config/routes.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ih/routes/users/public.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/routes/users/public.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ih/routes/users/user.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/routes/users/user.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ih/schema/common/__init__.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/schema/common/__init__.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ih/services/email/email.py" beforeDir="false" afterPath="$PROJECT_DIR$/ih/services/email/email.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ih/services/email/templates/standard.html" beforeDir="false" afterPath="$PROJECT_DIR$/ih/services/email/templates/standard.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/poetry.lock" beforeDir="false" afterPath="$PROJECT_DIR$/poetry.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pyproject.toml" beforeDir="false" afterPath="$PROJECT_DIR$/pyproject.toml" afterDir="false" />
     </list>
@@ -20,25 +36,15 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Python Script" />
-        <option value="HTML File" />
       </list>
     </option>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
-  "lastFilter": {
-    "state": "OPEN",
-    "assignee": "aurarius1"
-  }
-}]]></component>
-  <component name="GithubPullRequestsUISettings"><![CDATA[{
-  "selectedUrlAndAccountId": {
-    "url": "https://github.com/InventoryHero/InventoryHero.git",
-    "accountId": "89230afb-ab12-44e7-9774-a466c88e5afb"
-  }
-}]]></component>
+  <component name="ProblemsViewState">
+    <option name="selectedTabId" value="ProjectErrors" />
+  </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 0
 }</component>
@@ -49,12 +55,12 @@
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "DefaultHtmlFileTemplate": "HTML File",
     "Docker.docker.inventoryhero: Compose Deployment.executor": "Run",
     "Docker.docker/docker-compose.dev.yml.ih-mail: Compose Deployment.executor": "Run",
     "Docker.docker/docker-compose.dev.yml.ih-postgres: Compose Deployment.executor": "Run",
     "Docker.docker/docker-compose.dev.yml: Compose Deployment.executor": "Run",
     "ModuleVcsDetector.initialDetectionPerformed": "true",
+    "Python.generate_ts.executor": "Run",
     "Python.main.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
@@ -67,6 +73,7 @@
     "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
     "prettierjs.PrettierConfiguration.Package": "/media/data/Projects/InventoryHero/node_modules/prettier",
+    "run.code.analysis.last.selected.profile": "aDefault",
     "settings.editor.selected.configurable": "com.intellij.pycharm.community.ide.impl.configuration.PythonContentEntriesConfigurable",
     "vue.rearranger.settings.migration": "true"
   }
@@ -79,7 +86,30 @@
       <recent name="$PROJECT_DIR$" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.main">
+  <component name="RunManager" selected="Python.generate_ts">
+    <configuration name="generate_ts" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="InventoryHero" />
+      <option name="ENV_FILES" value="" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/dev" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/dev/generate_ts.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="InventoryHero" />
       <option name="ENV_FILES" value="" />
@@ -137,9 +167,11 @@
       <item itemvalue="Docker.docker.inventoryhero: Compose Deployment" />
       <item itemvalue="Docker.docker/docker-compose.dev.yml: Compose Deployment" />
       <item itemvalue="Python.main" />
+      <item itemvalue="Python.generate_ts" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.generate_ts" />
         <item itemvalue="Docker.docker/docker-compose.dev.yml: Compose Deployment" />
         <item itemvalue="Docker.docker.inventoryhero: Compose Deployment" />
       </list>
@@ -148,8 +180,8 @@
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
-        <option value="bundled-js-predefined-d6986cc7102b-b26f3e71634d-JavaScript-PY-251.26094.141" />
-        <option value="bundled-python-sdk-9f8e2b94138c-36ea0e71a18c-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.26094.141" />
+        <option value="bundled-js-predefined-d6986cc7102b-f27c65a3e318-JavaScript-PY-251.23774.444" />
+        <option value="bundled-python-sdk-890ed5b35930-d9c5bdb153f4-com.jetbrains.pycharm.pro.sharedIndexes.bundled-PY-251.23774.444" />
       </set>
     </attachedChunks>
   </component>
@@ -163,7 +195,8 @@
       <workItem from="1761903403242" duration="3465000" />
       <workItem from="1761906881230" duration="28000" />
       <workItem from="1761907813022" duration="1918000" />
-      <workItem from="1761937095305" duration="3245000" />
+      <workItem from="1761941656240" duration="2682000" />
+      <workItem from="1761984778073" duration="11745000" />
     </task>
     <servers />
   </component>
@@ -171,6 +204,7 @@
     <option name="version" value="3" />
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/InventoryHero$main.coverage" NAME="main Coverage Results" MODIFIED="1761938839880" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
+    <SUITE FILE_PATH="coverage/InventoryHero$generate_ts.coverage" NAME="generate_ts Coverage Results" MODIFIED="1761990851845" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/dev" />
+    <SUITE FILE_PATH="coverage/InventoryHero$main.coverage" NAME="main Coverage Results" MODIFIED="1761984801051" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="false" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$" />
   </component>
 </project>

@@ -56,7 +56,12 @@ class AdminUserController(BaseAdminController):
 
     @admin_router.put("/{user_id}/reset-password", status_code=status.HTTP_200_OK)
     async def reset_password(self, user_id: UUID):
-        return self.repositories.users.request_password_reset_admin(user_id)
+        return self.repositories.users.request_password_reset_admin(user_id, self.user.username)
+
+    @admin_router.post("/{user_id}/resend-confirmation", status_code=status.HTTP_204_NO_CONTENT)
+    async def resend_confirmation(self, user_id: UUID):
+        self.repositories.users.resend_confirmation(user_id)
+
 
 
 @cbv(user_router)
@@ -81,3 +86,7 @@ class UserController(UserControllerBase):
     @user_router.post("/change-password", status_code=204)
     async def change_password(self, reset: ChangePasswordForm):
         return self.repositories.users.change_password(self.user.id, reset.current_password, reset.new_password, reset.new_password_confirmation)
+
+    @user_router.get("/request-confirmation", status_code=status.HTTP_204_NO_CONTENT)
+    def request_confirmation(self):
+        self.repositories.users.resend_confirmation(user_id=self.user.id)

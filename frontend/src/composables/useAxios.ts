@@ -12,7 +12,7 @@ import storageEndpoint from '@/api/storageEndpoint.ts'
 import configEndpoint from '@/api/configEndpoint.ts'
 import adminEndpoint from '@/api/adminEndpoint'
 
-import type { FastAPIError } from '@/api/types/FastAPIError'
+import type { FastAPIError, ErrorResponse } from '@/api/types/common'
 import { useNotification } from '@kyvg/vue3-notification'
 import { i18n } from '@/plugins/i18n'
 
@@ -54,28 +54,39 @@ export default (baseURL = '/api') => {
           originalRequest._retry = true
           if (await refreshToken()) {
             return instance!(originalRequest)
-          } else {
-            return error.response
           }
         }
 
-        const errorPayload: FastAPIError | undefined = error.response?.data
+        if (!error.response?.data) {
+          return error.response ?? error
+        }
+
+        const errorPayload: FastAPIError = error.response.data as FastAPIError
 
         const { notify } = useNotification()
-        let title = undefined
-        if (typeof errorPayload.detail === 'string') {
-          title = errorPayload.detail
+
+        let errorMessage: string = ''
+        let showToast: boolean = true
+        if (typeof errorPayload.detail === 'object') {
+          if ('toast' in errorPayload.detail) {
+            showToast = errorPayload.detail.toast ?? true
+            errorMessage = errorPayload.detail.message
+          } else {
+            errorMessage = i18n.global.t('unknown_error')
+          }
         } else {
-          title = i18n.global.t('unknown_error')
+          errorMessage = errorPayload.detail
         }
 
         console.error(error.response)
-        notify({
-          title: title,
-          type: 'error'
-        })
-
-        return error.response ?? error
+        if (showToast) {
+          notify({
+            title: errorMessage,
+            type: 'error'
+          })
+        }
+        error.response.data = errorMessage
+        return error.response
       }
     )
     instance.interceptors.request.use((config) => {

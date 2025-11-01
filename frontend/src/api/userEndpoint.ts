@@ -76,9 +76,10 @@ export default (api: AxiosInstance) => {
     passwordForm: ChangePasswordForm
   ): Promise<ApiResponse<void>> => {
     const response = await api.post('/user/change-password', passwordForm)
+    const success = response.status === 204
     return {
-      success: response.status === 200,
-      error: response.data?.detail ?? undefined
+      success,
+      error: !success ? response.data : undefined
     }
   }
 
@@ -87,8 +88,7 @@ export default (api: AxiosInstance) => {
   ): Promise<ApiResponse<void>> => {
     const response = await api.post('/user/reset-password', payload)
     return {
-      success: response.status === 200,
-      error: response.data?.detail ?? undefined
+      success: response.status === 204
     }
   }
 
@@ -101,7 +101,7 @@ export default (api: AxiosInstance) => {
     return {
       success: success,
       data: success ? response.data : undefined,
-      error: success ? undefined : (response.data?.detail ?? undefined)
+      error: success ? undefined : (response.data ?? undefined)
     }
   }
 
@@ -109,15 +109,18 @@ export default (api: AxiosInstance) => {
     const response = await api.post('/user/register', payload)
     return {
       success: response.status === 201,
-      error: response.data?.detail ?? undefined
+      error: response.data ?? undefined
     }
   }
 
   const confirmEmail = async (code: string): Promise<ApiResponse<void>> => {
     const response = await api.post(`/user/confirm-email/${code}`)
+
+    const success = response.status === 204
+
     return {
-      success: response.status === 204,
-      error: response.data?.detail ?? undefined
+      success: success,
+      error: !success ? response.data : undefined
     }
   }
 
@@ -125,7 +128,7 @@ export default (api: AxiosInstance) => {
     const response = await api.get(`/user/request-confirmation`)
     return {
       success: response.status === 204,
-      error: response.data?.detail ?? undefined
+      error: response.data ?? undefined
     }
   }
 
@@ -137,7 +140,7 @@ export default (api: AxiosInstance) => {
     return {
       success: success,
       data: success ? response.data : undefined,
-      error: !success ? (response.data?.detail ?? undefined) : undefined
+      error: !success ? (response.data ?? undefined) : undefined
     }
   }
 
