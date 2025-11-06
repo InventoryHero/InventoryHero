@@ -1,7 +1,9 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field, validator
 from typing import Optional
 from datetime import datetime
 from uuid import UUID
+
+from ih.core.security.provider import AuthenticationProvider
 
 
 class UserBase(BaseModel):
@@ -9,6 +11,8 @@ class UserBase(BaseModel):
     email: str
     first_name: Optional[str] = None
     last_name: Optional[str] = None
+
+    auth_provider: AuthenticationProvider = Field(default=AuthenticationProvider.local)
 
 class UserCreateBase(UserBase):
     password: str
@@ -34,6 +38,8 @@ class UserPublic(UserBase):
     admin: bool
     registered_on: datetime
     confirmed: bool
+
+    auth_provider: AuthenticationProvider
 
     model_config = ConfigDict(from_attributes=True)
 

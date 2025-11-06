@@ -5,6 +5,7 @@ import { useTemplateRef } from 'vue'
 import { VForm } from 'vuetify/components'
 import { storeToRefs } from 'pinia'
 import { useNotification } from '@kyvg/vue3-notification'
+import { LocationQueryValue } from 'vue-router'
 
 definePage({
   meta: {
@@ -23,7 +24,8 @@ const configStore = useConfigStore()
 const { auth, userEndpoint } = useAxios()
 const { notify } = useNotification()
 
-const { smtpEnabled, registrationAllowed } = storeToRefs(configStore)
+const { smtpEnabled, registrationAllowed, oidcEnabled, oidcName } =
+  storeToRefs(configStore)
 
 const forgotPasswordDialog = ref<boolean>(false)
 const username = ref<string>('')
@@ -79,6 +81,31 @@ const requestNewConfirmationCode = async () => {
   }
 }
 
+const loginWithSso = () => {
+  window.location.href = `/api/auth/oidc/token`
+}
+onMounted(() => {
+  const error: LocationQueryValue | LocationQueryValue[] = route.query.error
+  // NO ERROR
+  if (error === null || error === undefined || error.length === 0) {
+    return
+  }
+  if (error === 'conflict') {
+    notify({
+      title: t('login.error.oidc_conflict.title'),
+      text: t('login.error.oidc_conflict.text'),
+      type: 'error',
+      duration: 10000
+    })
+  } else {
+    notify({
+      title: t('login.error.unknown_error.title'),
+      text: t('login.error.unknown_error.text'),
+      type: 'error',
+      duration: 10000
+    })
+  }
+})
 onBeforeRouteLeave(() => {
   return !forgotPasswordDialog.value
 })
@@ -195,6 +222,14 @@ onBeforeRouteLeave(() => {
             :text="t('login.btn')"
             :loading="loading"
             @click="login"
+          />
+          <v-btn
+            v-if="oidcEnabled"
+            v-bind="btnStyle"
+            rounded="xl"
+            class="mt-1"
+            :text="t('login.sso', { name: oidcName })"
+            @click="loginWithSso"
           />
           <v-btn
             v-if="smtpEnabled"

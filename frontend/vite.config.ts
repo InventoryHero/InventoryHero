@@ -117,7 +117,8 @@ export default defineConfig({
     proxy: {
       '/api': {
         target: 'http://127.0.0.1:5000/',
-        ws: true
+        ws: true,
+        changeOrigin: true
       } /*,
       '/socket.io': {
         target: 'ws://localhost:5000',

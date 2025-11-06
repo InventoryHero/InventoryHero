@@ -188,6 +188,9 @@ import router from '@/router'
 import useConfigStore from '@/stores/useConfigStore'
 import { BreadcrumbItem } from 'vuetify/lib/components/VBreadcrumbs/VBreadcrumbs.mjs'
 
+// TODO DISABLE ACCOUNT SETTINGS (only available for admin to manage conflicts etc.) FOR NON LOCAL AUTH METHODS
+// DO THIS FOR ALL ROUTES AND ALSO VERIFY IN THE BACKEND (i.e. forgot password etc.)
+
 definePage({
   props: true,
   meta: {

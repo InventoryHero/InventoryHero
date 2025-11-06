@@ -4,7 +4,9 @@ from pathlib import Path
 from pydantic_settings import BaseSettings
 
 from ih.core.settings.provider import Provider, db_factory
+from ih.core.settings.oidc import OidcSettings
 from ih import __version__
+
 
 
 class AppSettings(BaseSettings):
@@ -35,14 +37,9 @@ class AppSettings(BaseSettings):
     IH_SMTP_FROM_EMAIL: str | None = None
     IH_SMTP_AUTH_METHOD: str | None = "NONE"
 
-    IH_OIDC_ISSUER: str | None = None
-    IH_OIDC_CLIENT_ID: str | None = None
-    IH_OIDC_CLIENT_SECRET: str | None = None
-    IH_OIDC_REDIRECT_URI: str | None = None
-
-
-
     DB_PROVIDER: Provider | None = None
+
+    OIDC: OidcSettings | None = None
 
     PRODUCTION: bool = True
     TESTING: bool = False
@@ -100,14 +97,7 @@ class AppSettings(BaseSettings):
     def IH_APP_URL_SET(self) -> bool:
         return self.IH_APP_URL != self._IH_APP_URL
 
-    @property
-    def IH_OIDC_ENABLED(self) -> bool:
-        return all([
-            self.IH_OIDC_ISSUER,
-            self.IH_OIDC_CLIENT_ID,
-            self.IH_OIDC_CLIENT_SECRET,
-            self.IH_OIDC_REDIRECT_URI,
-        ])
+
 
     _IH_DEFAULT_USERNAME: str = "admin"
     _IH_DEFAULT_EMAIL: str = "changeme@change.me"
@@ -122,4 +112,5 @@ def build_app_settings(env_file: Path,  data_dir: Path) -> AppSettings:
         data_dir,
         env_file=env_file,
     )
+    app_settings.OIDC = OidcSettings()
     return app_settings

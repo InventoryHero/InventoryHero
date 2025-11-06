@@ -19,4 +19,6 @@ export interface AppConfig {
 export interface ConfigPublic {
   smtp_enabled: boolean;
   registration_allowed: boolean;
+  oidc_enabled: boolean;
+  oidc_name?: string | null;
 }

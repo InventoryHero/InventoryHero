@@ -5,11 +5,18 @@
 /* Do not modify it by hand - just update the pydantic models and then re-run the script
 */
 
+export type AuthenticationProvider = "local" | "oidc";
+export type AuthenticationProvider1 = "local" | "oidc";
+export type AuthenticationProvider2 = "local" | "oidc";
+export type AuthenticationProvider3 = "local" | "oidc";
+export type AuthenticationProvider4 = "local" | "oidc";
+
 export interface AdminUserCreate {
   username: string;
   email: string;
   first_name?: string | null;
   last_name?: string | null;
+  auth_provider?: AuthenticationProvider;
   password: string;
   admin?: boolean;
 }
@@ -18,12 +25,14 @@ export interface UserBase {
   email: string;
   first_name?: string | null;
   last_name?: string | null;
+  auth_provider?: AuthenticationProvider1;
 }
 export interface UserCreate {
   username: string;
   email: string;
   first_name?: string | null;
   last_name?: string | null;
+  auth_provider?: AuthenticationProvider2;
   password: string;
   password_confirmation: string;
 }
@@ -32,6 +41,7 @@ export interface UserPublic {
   email: string;
   first_name?: string | null;
   last_name?: string | null;
+  auth_provider: AuthenticationProvider3;
   id: string;
   admin: boolean;
   registered_on: string;
@@ -69,6 +79,7 @@ export interface UserCreateBase {
   email: string;
   first_name?: string | null;
   last_name?: string | null;
+  auth_provider?: AuthenticationProvider4;
   password: string;
 }
 export interface UserUpdate {

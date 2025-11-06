@@ -1,5 +1,5 @@
 import uuid
-from datetime import timedelta, datetime, timezone
+from datetime import timedelta, datetime, timezone, UTC
 from pwdlib import PasswordHash
 from sqlmodel import Session
 from uuid import UUID
@@ -34,3 +34,12 @@ def create_refresh_token(data: dict, session: Session, user_id: UUID):
     session.add(RefreshToken(jti=jti, user_id=user_id, expires_at=expire, revoked=False))
     session.commit()
     return encoded_jwt, jti
+
+def token_expires_soon(exp, threshold_seconds: int = 60):
+    try:
+        exp = datetime.fromtimestamp(exp, UTC)
+        return (exp - datetime.now(UTC)).total_seconds() < threshold_seconds
+    except Exception:
+        # TODO LOG
+        pass
+    return False

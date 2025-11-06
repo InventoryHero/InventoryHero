@@ -126,7 +126,9 @@
     <template v-slot:item.admin="{ item }">
       <v-icon :icon="item.admin ? 'mdi-check-circle' : 'mdi-close-circle'" />
     </template>
-
+    <template v-slot:item.auth_provider="{ item }">
+      {{ t(`administration.auth_provider.${item.auth_provider}`) }}
+    </template>
     <template v-slot:item.actions="{ item }">
       <div class="d-flex ga-2 justify-end">
         <v-icon
@@ -191,12 +193,12 @@ const headers = ref<DataTableHeader[]>([
   },
   {
     title: t('administration.users.user.first_name'),
-    key: 'firstName',
+    key: 'first_name',
     sortable: false
   },
   {
     title: t('administration.users.user.last_name'),
-    key: 'lastName',
+    key: 'last_name',
     sortable: false
   },
   {
@@ -212,9 +214,16 @@ const headers = ref<DataTableHeader[]>([
     align: 'end'
   },
   {
+    title: t('administration.users.user.auth_provider'),
+    key: 'auth_provider',
+    sortable: true,
+    align: 'end'
+  },
+  {
     title: t('administration.users.user.actions'),
     key: 'actions',
-    sortable: false
+    sortable: false,
+    align: 'end'
   }
 ])
 

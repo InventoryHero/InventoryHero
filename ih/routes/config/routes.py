@@ -26,7 +26,9 @@ class ConfigController(ControllerBase):
 
         return ConfigPublic(
             smtp_enabled=self.settings.IH_SMTP_ENABLED,
-            registration_allowed=self.settings.IH_REGISTRATION_ALLOWED
+            registration_allowed=self.settings.IH_REGISTRATION_ALLOWED,
+            oidc_enabled=self.settings.OIDC.enabled,
+            oidc_name=self.settings.OIDC.IH_OIDC_NAME,
         )
 
 @cbv(admin_router)
@@ -42,7 +44,7 @@ class AdminConfigController(BaseAdminController):
             database_type=self.settings.DB_PROVIDER.db_type,
             database_connection=self.settings.DB_PROVIDER.db_url_public, # TODO THIS SHOULD BE A PUBLIC STRING
             deployment=self.localizer.t('deployment.production') if self.settings.PRODUCTION else self.localizer.t('deployment.development'),
-            oidc_enabled=self.settings.IH_OIDC_ENABLED
+            oidc_enabled=self.settings.OIDC.enabled
         )
 
     @admin_router.post("/email/test", status_code=status.HTTP_204_NO_CONTENT)

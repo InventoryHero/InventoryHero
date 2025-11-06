@@ -22,6 +22,7 @@ from ih.schema.households import HouseholdPublic, HouseholdWithMemberPublic, Hou
 from ih.schema.user.user import UserPublic, UserCreate, AdminUserCreate, UserUpdate, UserCreateBase, \
     ChangePasswordFormBase, AdminUserUpdate
 from ih.db.models.User import User
+from ih.core.security.provider import AuthenticationProvider
 from ih.services.email.email import send_confirmation_email, send_password_reset_email
 
 
@@ -43,6 +44,24 @@ class UserRepository:
     def get_all(self) -> Sequence[User]:
         return self.session.exec(select(User)).all()
 
+    def get_user_by_oidc_sub(self, sub: str) -> Optional[User]:
+        result = self.session.exec(
+            select(User).where(User.oidc_sub == sub)
+        ).first()
+        return result
+
+    def get_user_by_username(self, username: str) -> Optional[User]:
+        result = self.session.exec(
+            select(User).where(User.username == username)
+        ).first()
+        return result
+
+    def get_user_by_email(self, email: str) -> Optional[User]:
+        result = self.session.exec(
+            select(User).where(User.email == email)
+        ).first()
+        return result
+
     def get_user_by_id(self, user_id: UUID):
         result = self.session.exec(
             select(User).where(User.id == user_id)
@@ -53,6 +72,7 @@ class UserRepository:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=self.localizer.t("user_not_found"))
 
         return user
+
 
     def create_user_admin(self, user: AdminUserCreate):
         return self.create(user, user.admin)
@@ -84,27 +104,30 @@ class UserRepository:
 
         confirmation_code = None
         confirmation_hash = None
-        if settings.IH_SMTP_ENABLED:
+        if settings.IH_SMTP_ENABLED and user.auth_provider == AuthenticationProvider.local:
             confirmation_code = secrets.token_urlsafe(32)
             confirmation_hash = hashlib.sha256(confirmation_code.encode()).hexdigest()
+
 
         new_user = User(
             email=user.email,
             username=user.username,
             first_name=user.first_name,
             last_name=user.last_name,
-            password=hash_password(user.password),
+            password=(hash_password(user.password) if user.auth_provider == AuthenticationProvider.local else 'oidc_user'),
             admin=is_admin,
-            confirmed=not settings.IH_SMTP_ENABLED,
-            confirmation_code=confirmation_hash
+            confirmed=(not settings.IH_SMTP_ENABLED or user.auth_provider != AuthenticationProvider.local),
+            confirmation_code=confirmation_hash,
+            authentication_provider=user.auth_provider,
         )
 
         self.session.add(new_user)
         self.session.flush()
         self.session.refresh(new_user)
 
-        self._logger.info(f"User: {new_user.username} successfully created")
-        send_confirmation_email(user.email, user.username, confirmation_code)
+        self._logger.info(f"User: {new_user.username} successfully created, auth provider: {user.auth_provider}")
+        if confirmation_code:
+            send_confirmation_email(user.email, user.username, confirmation_code)
         return new_user
 
     def delete(self, user_id: UUID) -> bool:
@@ -321,4 +344,57 @@ class UserRepository:
         send_confirmation_email(user.email, user.username, confirmation_code)
         self.session.flush()
 
+    def update_auth_provider(self, user: User, auth_provider: AuthenticationProvider, sub: str) -> None:
+        user.auth_provider = auth_provider
+        user.oidc_sub = sub
+        user.password = 'oidc_user'
+        if not user.confirmed:
+            user.confirmed = True
+            user.confirmation_code = None
+        user.password_reset_token = None
+        user.password_reset_token_expires_at = None
+        self.session.flush()
+        self.session.refresh(user)
+
+    def update_against_auth_provider(self, user: User, lastname: str, firstname: str, email: str, username: str) -> None:
+        changed = False
+        if user.email != email:
+            self._logger.info(f"Updating email of {user.email} to {email}")
+            if self.session.exec(select(User).where(User.email == email)).first():
+                # TODO NICE ERROR MESSAGE
+                raise InventoryHeroAPIException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail=ErrorResponse(
+                        message=self.localizer.t("oidc.email_already_exists"),
+                        toast = False
+                    )
+                )
+            user.email = email
+            changed = True
+        if user.username != username:
+            self._logger.info(f"Updating email of {user.username} to {username}")
+            if self.session.exec(select(User).where(User.username == username)).first():
+                # TODO NICE ERROR MESSAGE
+                raise InventoryHeroAPIException(
+                    status_code=status.HTTP_409_CONFLICT,
+                    detail=ErrorResponse(
+                        message=self.localizer.t("oidc.username_exists"),
+                        toast = False
+                    )
+                )
+            user.username = username
+            changed = True
+
+        if user.last_name != lastname:
+            self._logger.info(f"Updating last name of {user.last_name} to {lastname}")
+            user.last_name = lastname
+            changed = True
+        if user.first_name != firstname:
+            self._logger.info(f"Updating last name of {user.first_name} to {firstname}")
+            user.first_name = firstname
+            changed = True
+
+        if changed:
+            self.session.flush()
+            self.session.refresh(user)
 

@@ -1,6 +1,7 @@
 
 # ide
 .idea/workspace.xml
+.idea/dataSources
 .idea/usage.statistics.xml
 .idea/shelf
 
@@ -68,3 +69,5 @@ instance/
 
 node_modules
 
+.idea/dataSources.local.xml
+.idea/dataSources.xml

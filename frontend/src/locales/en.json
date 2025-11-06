@@ -383,7 +383,18 @@
       },
       "unknown_token_error": "Unknown error with your password reset token. Please request a new one!"
     },
-    "username_or_password_invalid": "Username or password is invalid"
+    "username_or_password_invalid": "Username or password is invalid",
+    "error": {
+      "oidc_conflict": {
+        "title": "OIDC Conflict",
+        "text": "Couldn't update / create your user due to an internal conflict. Please contact an administrator"
+      },
+      "unknown_error": {
+        "text": "Please contact an administrator",
+        "title": "Unknown Error"
+      }
+    },
+    "sso": "Login with {name}"
   },
   "register": {
     "title": "🎉 Join InventoryHero now",
@@ -473,6 +484,10 @@
   "home": "Go to home",
   "logging_out": "Logging out...",
   "administration": {
+    "auth_provider": {
+      "local": "Local",
+      "oidc": "OIDC"
+    },
     "users": {
       "title": "Users",
       "user": {
@@ -491,7 +506,8 @@
         "last_name": "Last Name",
         "confirmed": "Confirmed",
         "actions": "Actions",
-        "admin": "Is Admin"
+        "admin": "Is Admin",
+        "auth_provider": "Auth Provider"
       },
       "create_new": {
         "title": "Create new user",

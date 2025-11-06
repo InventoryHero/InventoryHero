@@ -12,8 +12,14 @@ const { t } = useI18n()
 const { config } = useAxios()
 const vuetifyTheme = useTheme()
 
-const { theme, language, smtpEnabled, registrationAllowed } =
-  storeToRefs(configStore)
+const {
+  theme,
+  language,
+  smtpEnabled,
+  registrationAllowed,
+  oidcEnabled,
+  oidcName
+} = storeToRefs(configStore)
 
 const { authorized } = storeToRefs(authStore)
 
@@ -46,6 +52,8 @@ async function initializeApp() {
     }
     smtpEnabled.value = data?.smtp_enabled ?? false
     registrationAllowed.value = data?.registration_allowed ?? false
+    oidcEnabled.value = data?.oidc_enabled ?? false
+    oidcName.value = data?.oidc_name ?? 'SSO'
     await router.isReady()
     if (authorized.value) {
       await authStore.whoami()

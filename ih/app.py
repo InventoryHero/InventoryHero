@@ -5,6 +5,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from pathlib import Path
 
+from starlette.middleware.sessions import SessionMiddleware
+
 from ih.core.jobs.scheduler import setup_scheduler
 from ih.core.config import get_app_settings
 from ih.core.logging.logger import get_logger
@@ -30,6 +32,7 @@ async def lifespan(ih_app: FastAPI):
     # (Optional) Cleanup code on shutdown here
 
 app = FastAPI(lifespan=lifespan)
+app.add_middleware(SessionMiddleware, secret_key=settings.IH_SECRET_KEY)
 app.include_router(router)
 
 if not settings.PRODUCTION:

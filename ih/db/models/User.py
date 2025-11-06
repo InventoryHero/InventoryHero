@@ -1,12 +1,13 @@
 from time import timezone
-from sqlmodel import SQLModel, Field, Relationship, DateTime
+from sqlmodel import SQLModel, Field, Relationship, DateTime, String
 from sqlalchemy_utc import UtcDateTime
 from typing import Optional
 from datetime import datetime, timezone
 from uuid import UUID, uuid4
-
+from ih.core.security.provider import AuthenticationProvider
 from ih.db.models.RefreshToken import RefreshToken
 from ih.db.models.households.HouseholdMember import HouseholdMember
+
 
 
 class User(SQLModel, table=True):
@@ -31,6 +32,13 @@ class User(SQLModel, table=True):
         default=None,
         sa_type=UtcDateTime # <-- And here
     )
+
+    auth_provider: AuthenticationProvider = Field(
+        default=AuthenticationProvider.local,
+        sa_type=String(length=50),
+        nullable=False
+    )
+    oidc_sub: Optional[str] = Field(default=None, index=True, unique=True, nullable=True)
 
     reset: Optional[bool] = False
 

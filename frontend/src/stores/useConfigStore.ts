@@ -14,6 +14,8 @@ export default defineStore('config', () => {
   const language = useLocalStorage<string>('language', 'default')
   const smtpEnabled = ref<boolean>(false)
   const registrationAllowed = ref<boolean>(false)
+  const oidcEnabled = ref<boolean>(false)
+  const oidcName = ref<string>('SSO')
 
   // --- Actions ---
   function applyColor() {
@@ -38,6 +40,8 @@ export default defineStore('config', () => {
     language,
     smtpEnabled,
     registrationAllowed,
+    oidcEnabled,
+    oidcName,
     applyColor,
     reset
   }

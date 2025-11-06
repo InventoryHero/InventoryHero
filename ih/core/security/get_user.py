@@ -8,7 +8,9 @@ from uuid import UUID
 from ih.db.db_setup import get_session
 from ih.db.models.User import User
 from . import settings, ALGORITHM
+from .password import token_expires_soon, create_access_token
 from ..exceptions.exceptions import InventoryHeroAPIException
+from ..logging.logger import get_logger
 from ...db.models.households import HouseholdMember
 from ...schema.common.error_response import ErrorResponse
 from ...schema.households import Role
@@ -22,6 +24,7 @@ credentials_exception = HTTPException(
     headers={"WWW-Authenticate": "Bearer"},
 )
 
+logger = get_logger()
 
 
 async def try_get_current_user(
@@ -59,6 +62,11 @@ async def get_current_user(
 
     if user is None:
         raise credentials_exception
+
+    if token_expires_soon(payload["exp"]):
+        logger.warning("Token will expire soon")
+        # TODO IMPLEMENT SLIDING SESSIOn
+
     return user
 
 async def get_admin_user(current_user: User = Depends(get_current_user)) -> User:

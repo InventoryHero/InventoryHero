@@ -6,6 +6,7 @@
 */
 
 export type Role = "owner" | "admin" | "member";
+export type AuthenticationProvider = "local" | "oidc";
 
 export interface HouseholdBase {
   name: string;
@@ -49,6 +50,7 @@ export interface UserPublic {
   email: string;
   first_name?: string | null;
   last_name?: string | null;
+  auth_provider: AuthenticationProvider;
   id: string;
   admin: boolean;
   registered_on: string;
