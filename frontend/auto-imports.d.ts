@@ -77,6 +77,7 @@ declare global {
   const useCssModule: typeof import('vue').useCssModule
   const useCssVars: typeof import('vue').useCssVars
   const useDialogConfig: typeof import('./src/composables/useDialogConfig')['default']
+  const useDialogSize: typeof import('./src/composables/useDialogSize').default
   const useDisplay: typeof import('vuetify').useDisplay
   const useEditBtnStyle: typeof import('./src/composables/useEditBtnStyle')['default']
   const useEmailRule: typeof import('./src/composables/useEmailRule').default

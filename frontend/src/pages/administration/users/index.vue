@@ -154,6 +154,15 @@ import { useDisplay } from 'vuetify/lib/composables/display.mjs'
 import type { DataTableHeader } from 'vuetify'
 import { useNotification } from '@kyvg/vue3-notification'
 
+definePage({
+  meta: {
+    requiresAuth: true,
+    requiresAdmin: true,
+    requiresHousehold: false,
+    layout: 'admin'
+  }
+})
+
 const { admin: adminEndpoint } = useAxios()
 const { mdAndUp } = useDisplay()
 const { t } = useI18n()
@@ -285,14 +294,3 @@ onBeforeRouteLeave((_to, _from, next) => {
   max-height: inherit;
 }
 </style>
-
-<route>
-{
-    "meta": {
-        "requiresAuth": true,
-        "requiresAdmin": true,
-        "requiresHousehold": false, 
-        "layout": "admin"
-    }
-}
-</route>

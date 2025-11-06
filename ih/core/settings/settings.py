@@ -4,12 +4,10 @@ from pathlib import Path
 from pydantic_settings import BaseSettings
 
 from ih.core.settings.provider import Provider, db_factory
-from ih.db.models.User import User
+from ih import __version__
 
 
 class AppSettings(BaseSettings):
-    #STATIC_FILES: str =
-
     IH_DEMO: bool = False
 
     HOST_IP: str = "*"
@@ -17,7 +15,8 @@ class AppSettings(BaseSettings):
     PORT: int = 5000
     API_DOCS: bool = True
 
-    IH_APP_URL: str = f"http://{HOST}:{PORT}"
+    _IH_APP_URL: str = f"http://localhost:8080"
+    IH_APP_URL: str = _IH_APP_URL
 
     IH_ACCESS_TOKEN_EXPIRATION: int = 15 * 60
     IH_REFRESH_TOKEN_EXPIRATION: int = 3600 * 24 * 7
@@ -30,7 +29,7 @@ class AppSettings(BaseSettings):
 
     IH_SMTP_HOST: str|None = None
     IH_SMTP_PORT: int | None = None
-    IH_SMTP_USER: str | None = None
+    IH_SMTP_USERNAME: str | None = None
     IH_SMTP_PASSWORD: str | None = None
     IH_SMTP_FROM_NAME: str | None = None
     IH_SMTP_FROM_EMAIL: str | None = None
@@ -48,9 +47,35 @@ class AppSettings(BaseSettings):
 
     @property
     def IH_SMTP_ENABLED(self) -> bool:
-        # TODO AUTH METHOD CHECKING ETC
 
-        return self.IH_SMTP_HOST is not None and self.IH_SMTP_PORT is not None and self.IH_SMTP_FROM_NAME is not None and self.IH_SMTP_FROM_EMAIL is not None
+        if self.IH_SMTP_AUTH_METHOD.upper() == "NONE":
+            return all([
+                self.IH_SMTP_HOST,
+                self.IH_SMTP_PORT,
+                self.IH_SMTP_FROM_NAME,
+                self.IH_SMTP_FROM_EMAIL,
+            ])
+
+        if self.IH_SMTP_AUTH_METHOD.upper() not in ["TLS", "SSL"]:
+            return False
+
+
+        return all([
+            self.IH_SMTP_HOST,
+            self.IH_SMTP_PORT,
+            self.IH_SMTP_FROM_NAME,
+            self.IH_SMTP_FROM_EMAIL,
+            self.IH_SMTP_USERNAME,
+            self.IH_SMTP_PASSWORD
+        ])
+
+    @property
+    def IH_SMTP_USE_SSL(self) -> bool:
+        return self.IH_SMTP_AUTH_METHOD.upper() == "SSL"
+
+    @property
+    def IH_SMTP_USE_TLS(self) -> bool:
+        return self.IH_SMTP_AUTH_METHOD.upper() == "TLS"
 
     @property
     def LOG_LEVEL(self) -> int:
@@ -58,9 +83,16 @@ class AppSettings(BaseSettings):
             return logging.WARNING
         if self.TESTING:
             return logging.INFO
+
         return logging.DEBUG
 
+    @property
+    def IH_APP_VERSION(self) -> str:
+        return __version__
 
+    @property
+    def IH_APP_URL_SET(self) -> bool:
+        return self.IH_APP_URL != self._IH_APP_URL
 
     _IH_DEFAULT_USERNAME: str = "admin"
     _IH_DEFAULT_EMAIL: str = "changeme@change.me"

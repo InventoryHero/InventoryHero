@@ -100,19 +100,18 @@ onBeforeRouteLeave(() => {
 </script>
 
 <template>
+  <household-invite
+    v-model:active="inviteDialogVisible"
+    :household="household"
+  />
+
   <v-dialog
-    :model-value="inviteDialogVisible || leaveConfirmationDialog"
+    :model-value="leaveConfirmationDialog"
     persistent
     no-click-animation
   >
-    <household-invite
-      v-if="inviteDialogVisible"
-      :household="household"
-      @close="inviteDialogVisible = false"
-    />
-
     <v-card
-      v-else-if="leaveConfirmationDialog"
+      v-if="leaveConfirmationDialog"
       :title="t('households.leave.title')"
       :text="t('households.leave.text')"
       :loading="requestInProgress"

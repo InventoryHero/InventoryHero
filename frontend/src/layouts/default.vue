@@ -72,7 +72,6 @@ onBeforeRouteUpdate(() => {})
       <v-app-bar-nav-icon @click.stop="nav = !nav" />
       <v-app-bar-title>
         <v-card
-          hover
           width="fit-content"
           to="/"
           elevation="0"

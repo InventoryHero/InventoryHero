@@ -72,12 +72,7 @@ class HouseholdInviteController(HouseholdAdminControllerBase):
     @router.post("/", response_model=HouseholdInvitePublic, status_code=status.HTTP_200_OK)
     def create_and_send_invite(self):
         invite = self.repositories.households.create_invite()
-
-        if not self.settings.IH_SMTP_ENABLED:
-            return invite
-
-        # TODO SEND EMAIL
-        return invite
+        return f"{self.settings.IH_APP_URL}//households/join/{invite}"
 
     @router.delete("/{invite_id}", status_code=status.HTTP_204_NO_CONTENT)
     def delete_invite(self, invite_id: UUID):

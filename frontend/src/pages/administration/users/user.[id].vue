@@ -188,6 +188,16 @@ import router from '@/router'
 import useConfigStore from '@/stores/useConfigStore'
 import { BreadcrumbItem } from 'vuetify/lib/components/VBreadcrumbs/VBreadcrumbs.mjs'
 
+definePage({
+  props: true,
+  meta: {
+    requiresAuth: true,
+    requiresAdmin: true,
+    requiresHousehold: false,
+    layout: 'admin'
+  }
+})
+
 const { admin } = useAxios()
 const { t } = useI18n()
 const { textFieldStyling, btnStyle } = useAppStyling()
@@ -310,16 +320,3 @@ onBeforeMount(() => {
 </script>
 
 <style scoped lang="scss"></style>
-
-<route>
-    {
-        
-        "props": true,
-        "meta": {
-            "requiresAuth": true,
-            "requiresAdmin": true,
-            "requiresHousehold": false, 
-            "layout": 'admin'
-        }
-    }
-</route>

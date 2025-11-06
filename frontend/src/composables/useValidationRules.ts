@@ -5,7 +5,7 @@ type ValidationOptions = {
 }
 
 export default (
-  password: Ref<string | undefined | null>,
+  password?: Ref<string | undefined | null>,
   options: ValidationOptions = { validatePassword: false }
 ) => {
   const { t } = useI18n()
@@ -34,7 +34,6 @@ export default (
       !emailAlreadyInUse.value || t('validation.email.already_in_use')
   ])
 
-  // TODO PASSWORD VALIDATION
   const passwordRules = ref([
     (value: string | undefined | null) =>
       !!value || t('validation.password.required'),
@@ -56,7 +55,7 @@ export default (
     (value: string | undefined | null) =>
       !!value || t('validation.repeat_password.required'),
     (value: string) =>
-      value === password.value ||
+      value === password?.value ||
       t('validation.repeat_password.password_mismatch')
   ])
 

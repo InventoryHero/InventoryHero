@@ -8,6 +8,7 @@ from starlette import status
 from urllib3.exceptions import ResponseError
 
 from ih.core.exceptions.exceptions import InventoryHeroAPIException
+from ih.core.logging.logger import get_logger
 from ih.core.security.password import verify_password, create_access_token, create_refresh_token
 from ih.core.security import settings, ALGORITHM
 from ih.db.db_setup import get_session
@@ -40,6 +41,7 @@ class CredentialsRequestForm:
         self.username = username
         self.password = password
 
+logger = get_logger()
 
 @public_router.post("/token")
 async def get_token(
@@ -159,9 +161,7 @@ def logout(response: Response, request: Request, session: Session = Depends(get_
         session.delete(token_row)
         session.commit()
     except Exception as e:
-        # TODO log error
-
-        pass
+        logger.error(e)
     finally:
         response.delete_cookie("refresh_token", path="/api/auth")
         response.delete_cookie("access_token", path="/")

@@ -4,6 +4,17 @@ import BoxesList from '@/components/storage/rooms/BoxesList.vue'
 import RoomContentHeader from '@/components/storage/rooms/RoomContentHeader.vue'
 import { RoomResponseSchema } from '@/api/types/storage.ts'
 
+definePage({
+  props: true,
+  meta: {
+    requiresAuth: true,
+    requiresHousehold: true,
+    title: 'titles.rooms',
+    showFab: true,
+    layout: 'default'
+  }
+})
+
 type Tab = {
   icon: string
   value: string
@@ -39,7 +50,7 @@ const loadRoomDetail = async () => {
   loading.value = true
   const { success, data, error } = await storageEndpoint.getStorageDetail(id)
   if (!success) {
-    router.push('/storage/rooms')
+    await router.push('/storage/rooms')
     return
   }
   room.value = data! as RoomResponseSchema
@@ -52,7 +63,12 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <template v-if="!loading && room">
+  <v-skeleton-loader
+    v-if="loading || !room"
+    type="heading, subtitle, paragraph, actions, divider, actions, divider, list-item@4"
+  />
+
+  <template v-else>
     <room-content-header v-model="room" />
 
     <v-tabs
@@ -87,9 +103,6 @@ onBeforeMount(() => {
       </template>
     </v-tabs>
   </template>
-  <template v-else>
-    <!-- TODO v-skeleton-loader -->
-  </template>
 </template>
 
 <style scoped lang="scss">
@@ -101,17 +114,3 @@ onBeforeMount(() => {
   background-color: rgb(var(--v-theme-surface));
 }
 </style>
-
-<route>
-{
-  "props": true,
-  "meta": {
-    "requiresAuth": true,
-    "requiresHousehold": true,
-    "title": 'titles.rooms',
-    "showFab": true,
-    "layout": "default"
-
-  }
-}
-</route>

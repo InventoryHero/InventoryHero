@@ -5,6 +5,17 @@ import { useRouter } from 'vue-router'
 import { useNotification } from '@kyvg/vue3-notification'
 import { VForm } from 'vuetify/components'
 
+definePage({
+  path: '/password-reset/:id',
+  props: true,
+  meta: {
+    requiresAuth: false,
+    requiresHousehold: false,
+    title: 'titles.password_reset',
+    layout: 'unauthorized'
+  }
+})
+
 const { userEndpoint } = useAxios()
 const { t } = useI18n()
 const router = useRouter()
@@ -210,16 +221,3 @@ onBeforeMount(async () => {
 </template>
 
 <style scoped lang="scss"></style>
-
-<route>
-{
-  "path": "/password-reset/:id",
-  "props": true,
-  "meta": {
-    "requiresAuth": false,
-    "requiresHousehold": false,
-    "title": 'titles.password_reset',
-    "layout": "unauthorized"
-  }
-}
-</route>

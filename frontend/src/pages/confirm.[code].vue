@@ -1,41 +1,3 @@
-<script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { useI18n } from 'vue-i18n'
-
-const { userEndpoint } = useAxios()
-const { t } = useI18n()
-const router = useRouter()
-const { btnStyle } = useAppStyling()
-
-const { code = '' } = defineProps<{
-  code?: string
-}>()
-
-const countdown = ref(5)
-const time = ref(5)
-const verified = ref(false)
-const status = ref('')
-const requestInProgress = ref(false)
-
-const progressBarState = computed(() => {
-  return (countdown.value - time.value) * (100 / countdown.value)
-})
-
-onMounted(() => {
-  requestInProgress.value = true
-  userEndpoint.confirmEmail(code).then(({ success, error }) => {
-    if (!success) {
-      requestInProgress.value = false
-      status.value = error ?? t('confirmation.unknown_error')
-      return
-    }
-    requestInProgress.value = false
-    verified.value = success
-  })
-})
-</script>
-
 <template>
   <v-card
     v-if="!requestInProgress"
@@ -105,16 +67,52 @@ onMounted(() => {
   </v-card>
 </template>
 
-<style scoped lang="scss"></style>
+<script setup lang="ts">
+import { computed, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
+import { useI18n } from 'vue-i18n'
 
-<route>
-{
-  "props": true,
-  "meta": {
-    "requiresAuth": false,
-    "requiresHousehold": false,
-    "title": 'titles.confirmation',
-    "layout": "unauthorized"
+definePage({
+  props: true,
+  meta: {
+    requiresAuth: false,
+    requiresHousehold: false,
+    title: 'titles.confirmation',
+    layout: 'unauthorized'
   }
-}
-</route>
+})
+
+const { userEndpoint } = useAxios()
+const { t } = useI18n()
+const router = useRouter()
+const { btnStyle } = useAppStyling()
+
+const { code = '' } = defineProps<{
+  code?: string
+}>()
+
+const countdown = ref(5)
+const time = ref(5)
+const verified = ref(false)
+const status = ref('')
+const requestInProgress = ref(false)
+
+const progressBarState = computed(() => {
+  return (countdown.value - time.value) * (100 / countdown.value)
+})
+
+onMounted(() => {
+  requestInProgress.value = true
+  userEndpoint.confirmEmail(code).then(({ success, error }) => {
+    if (!success) {
+      requestInProgress.value = false
+      status.value = error ?? t('confirmation.unknown_error')
+      return
+    }
+    requestInProgress.value = false
+    verified.value = success
+  })
+})
+</script>
+
+<style scoped lang="scss"></style>

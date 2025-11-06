@@ -1,17 +1,16 @@
 <script setup lang="ts">
 import { useI18n } from 'vue-i18n'
-import { computed, ref, useTemplateRef } from 'vue'
+import { ref, useTemplateRef } from 'vue'
 import { useNotification } from '@kyvg/vue3-notification'
 import useAppStyling from '@/composables/useAppStyling.ts'
 import { VForm } from 'vuetify/components'
-import useEmailRule from '@/composables/useEmailRule.ts'
-// TODO ONCE EMAILS ARE IMPLEMENTED
-const router = useRouter()
+
 const { t } = useI18n()
 const { userEndpoint } = useAxios()
 const { notify } = useNotification()
 const { textFieldStyling, btnStyle } = useAppStyling()
 const { mdAndUp } = useDisplay()
+const { emailRules } = useValidationRules()
 
 const active = defineModel<boolean>('active', {
   required: true
@@ -22,16 +21,11 @@ const valid = ref(false)
 const emailForm = useTemplateRef<VForm>('emailForm')
 const loading = ref(false)
 
-const { isValidEmailRule } = useEmailRule(
-  'login.reset-password.rules.email_needed'
-)
-
 const close = () => {
   active.value = false
-  emailForm.value.reset()
 }
-
-async function resetPassword() {
+const resetPassword = async () => {
+  console.log('HALLO')
   if (!emailForm.value) {
     return
   }
@@ -63,6 +57,12 @@ async function resetPassword() {
 
 onBeforeRouteUpdate(() => {
   return false
+})
+
+watch(active, (_) => {
+  if (emailForm.value) {
+    emailForm.value.reset()
+  }
 })
 </script>
 
@@ -112,7 +112,7 @@ onBeforeRouteUpdate(() => {
                     :placeholder="t('login.reset-password.email')"
                     :label="t('login.reset-password.email')"
                     v-model="email"
-                    :rules="[isValidEmailRule]"
+                    :rules="emailRules"
                     @keyup.enter="resetPassword"
                   />
                 </v-col>

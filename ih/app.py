@@ -10,6 +10,10 @@ from ih.core.config import get_app_settings
 from ih.core.logging.logger import get_logger
 from ih.routes import router
 
+from ih import __version__
+
+print(__version__)
+
 # TODO merge all raise HTTPException to raise InventoryHeroAPIException
 
 settings = get_app_settings()

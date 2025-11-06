@@ -20,9 +20,14 @@ declare module 'vue' {
     BoxSummaryList: typeof import('./src/components/storage/boxes/BoxSummaryList.vue')['default']
     CategoryChip: typeof import('./src/components/common/CategoryChip.vue')['default']
     ConfirmBoxDeleteModal: typeof import('./src/components/storage/boxes/ConfirmBoxDeleteModal.vue')['default']
+    ConfirmHouseholdActionDialog: typeof import('./src/components/household/dialogs/ConfirmHouseholdActionDialog.vue')['default']
+    ConfirmHouseholdDeleteDialog: typeof import('./src/components/household/dialogs/ConfirmHouseholdDeleteDialog.vue')['default']
     ConfirmItemDeleteDialog: typeof import('./src/components/items/modals/ConfirmItemDeleteDialog.vue')['default']
+    ConfirmKickFromHouseholdDialog: typeof import('./src/components/household/dialogs/ConfirmKickFromHouseholdDialog.vue')['default']
+    COnfirmKickFromHouseholdDialog: typeof import('./src/components/household/dialogs/COnfirmKickFromHouseholdDialog.vue')['default']
     ConfirmLeaveDialog: typeof import('./src/components/common/modals/ConfirmLeaveDialog.vue')['default']
     ConfirmRoomDeleteModal: typeof import('./src/components/storage/rooms/modals/ConfirmRoomDeleteModal.vue')['default']
+    ConfirmTransferHouseholdDialog: typeof import('./src/components/household/dialogs/ConfirmTransferHouseholdDialog.vue')['default']
     CreateBoxModal: typeof import('./src/components/storage/boxes/modals/CreateBoxModal.vue')['default']
     CreateCategoryModal: typeof import('./src/components/categories/CreateCategoryModal.vue')['default']
     CreateHouseholdCard: typeof import('./src/components/household/CreateHouseholdCard.vue')['default']
@@ -61,6 +66,7 @@ declare module 'vue' {
     ScanLabel: typeof import('./src/components/qr/modals/ScanLabel.vue')['default']
     SearchCard: typeof import('./src/components/common/SearchCard.vue')['default']
     TabView: typeof import('./src/components/qr/TabView.vue')['default']
+    TestEmailDialog: typeof import('./src/components/admin/TestEmailDialog.vue')['default']
     UiSettings: typeof import('./src/components/settings/UiSettings.vue')['default']
   }
 }

@@ -4,6 +4,16 @@ import useAuthStore from '@/stores/useAuthStore'
 import useConfigStore from '@/stores/useConfigStore'
 import { useTheme } from 'vuetify'
 
+definePage({
+  path: '/logout',
+  meta: {
+    requiresHousehold: false,
+    requiresAuth: true,
+    allowUnauthorized: false,
+    layout: 'unauthorized'
+  }
+})
+
 const authStore = useAuthStore()
 const configStore = useConfigStore()
 const { t } = useI18n()
@@ -47,15 +57,3 @@ onMounted(async () => {
 </template>
 
 <style scoped lang="scss"></style>
-
-<route>
-{
-  "path": "/logout",
-  "meta": {
-    "requiresHousehold": false,
-    "requiresAuth": true,
-    "allowUnauthorized": false,
-    "layout": "unauthorized"
-  }
-}
-</route>

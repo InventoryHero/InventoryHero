@@ -14,12 +14,30 @@ logger = get_logger()
 template_dir = Path(__file__).parent / "templates"
 
 
+def send_email(msg: EmailMessage) -> bool:
+    server_class = smtplib.SMTP_SSL if settings.IH_SMTP_USE_SSL else smtplib.SMTP
+    try:
+        with server_class(settings.IH_SMTP_HOST, settings.IH_SMTP_PORT) as server:
+            if settings.IH_SMTP_USE_TLS:
+                server.starttls()
+
+            if settings.IH_SMTP_USERNAME and settings.IH_SMTP_PASSWORD:
+                server.login(settings.IH_SMTP_USERNAME, settings.IH_SMTP_PASSWORD)
+
+            server.send_message(msg)
+
+        logger.info(f"Email sent to {msg['To']}")
+        return True
+
+    except Exception as e:
+        logger.error(f"Failed to send email (to: {msg['To']}): {e}")
+        return False
+
 
 def send_confirmation_email(to: str, username: str, reset_code: str) -> bool:
     """
     Sends a password reset email using Jinja2 HTML template.
     """
-
     if not settings.IH_SMTP_ENABLED:
         return False
     env = Environment(
@@ -32,7 +50,7 @@ def send_confirmation_email(to: str, username: str, reset_code: str) -> bool:
     html_content = template.render(
         subject="Confirm your E-Mail",
         title="Inventory Hero",
-        logo_url="https://raw.githubusercontent.com/InventoryHero/InventoryHero/15c18f9d54ff042c41d9747a7b946aa99c9d80ed/frontend/public/android-chrome-512x512.png", # TODO
+        logo_url="https://raw.githubusercontent.com/InventoryHero/InventoryHero/15c18f9d54ff042c41d9747a7b946aa99c9d80ed/frontend/public/android-chrome-512x512.png",
         username=username,  # You’d pass the actual username here
         upper_part="Thanks for trusting InventoryHero. To get you started you need to confirm your e-mail address by clicking below.",
         btn={
@@ -50,20 +68,7 @@ def send_confirmation_email(to: str, username: str, reset_code: str) -> bool:
     msg["To"] = to
     msg.set_content("Please view this email in HTML format.")  # plain text fallback
     msg.add_alternative(html_content, subtype="html")
-
-    try:
-        with smtplib.SMTP(settings.IH_SMTP_HOST, settings.IH_SMTP_PORT) as server:
-            # TODO LOGIN, SSL/TLS
-            # TODO confirmation view
-            #smtp.login("no-reply@inventoryhero.app", "YOUR_APP_PASSWORD")
-            server.send_message(msg)
-        logger.info(f"Email confirmation email sent to {to}")
-        return True
-    except Exception as e:
-        logger.error(f"Failed to send email: {e}")
-        return False
-
-
+    return send_email(msg)
 
 def send_password_reset_email(to: str, username: str, reset_url: str, admin_username: Optional[str] = None) -> bool:
     """
@@ -108,15 +113,15 @@ def send_password_reset_email(to: str, username: str, reset_url: str, admin_user
     msg["To"] = to
     msg.set_content("Please view this email in HTML format.")  # plain text fallback
     msg.add_alternative(html_content, subtype="html")
+    return send_email(msg)
 
-    try:
-        with smtplib.SMTP(settings.IH_SMTP_HOST, settings.IH_SMTP_PORT) as server:
-            # TODO LOGIN, SSL/TLS
-            # TODO confirmation view
-            #smtp.login("no-reply@inventoryhero.app", "YOUR_APP_PASSWORD")
-            server.send_message(msg)
-        logger.info(f"Password reset email sent to {to}")
-        return True
-    except Exception as e:
-        logger.error(f"Failed to send password reset email: {e}")
-        return False
+
+def send_test_email(to: str) -> bool:
+    msg = EmailMessage()
+    msg["Subject"] = "E-Mail test"
+    msg["From"] = f"{settings.IH_SMTP_FROM_NAME} <{settings.IH_SMTP_FROM_EMAIL}>"
+    msg["To"] = to
+    msg.set_content("this is a test email")  # plain text fallback
+    msg.add_alternative("this is a test email", subtype="plain")
+    # TODO NICE TEMPLATE
+    return send_email(msg)

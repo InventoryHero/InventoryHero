@@ -3,6 +3,17 @@ import { ref, useTemplateRef } from 'vue'
 import { useI18n } from 'vue-i18n'
 import useAppStyling from '@/composables/useAppStyling.ts'
 
+definePage({
+  path: '/register',
+  meta: {
+    requiresAuth: false,
+    allowAuthorized: false,
+    requiresHousehold: false,
+    title: 'titles.register',
+    layout: 'unauthorized'
+  }
+})
+
 // TODO ALLOW USER TO LOGIN WITH USERNAME OR EMAIL
 const { t } = useI18n()
 const { textFieldStyling, btnStyle } = useAppStyling()
@@ -190,16 +201,3 @@ watch(username, (_) => (usernameAlreadyInUse.value = false))
   }
 }
 </style>
-
-<route>
-{
-  "path": "/register",
-  "meta": {
-    "requiresAuth": false,
-    "allowAuthorized": false,
-    "requiresHousehold": false,
-    "title": 'titles.register',
-    "layout": "unauthorized"
-  }
-}
-</route>

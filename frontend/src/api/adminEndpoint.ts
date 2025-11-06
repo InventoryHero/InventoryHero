@@ -2,6 +2,7 @@ import { AxiosInstance } from 'axios'
 import { UserPublic } from './types/households'
 import { ApiResponse } from './types/ApiResponse'
 import { AdminUserCreate, AdminUserUpdate } from './types/user'
+import { AppConfig } from './types/config'
 
 export default (api: AxiosInstance) => {
   const getAllUsers = async (): Promise<ApiResponse<UserPublic[]>> => {
@@ -79,6 +80,26 @@ export default (api: AxiosInstance) => {
     }
   }
 
+  const getAppConfig = async (): Promise<ApiResponse<AppConfig>> => {
+    const response = await api.get('/admin/config/')
+    const success = response.status === 200
+    return {
+      success,
+      data: success ? response.data : undefined
+    }
+  }
+
+  const sendTestEmail = async (email: string): Promise<ApiResponse> => {
+    const response = await api.post('/admin/config/email/test', null, {
+      params: {
+        email
+      }
+    })
+    return {
+      success: response.status === 204
+    }
+  }
+
   return {
     getAllUsers,
     getUser,
@@ -86,6 +107,8 @@ export default (api: AxiosInstance) => {
     resetUserPassword,
     createUser,
     deleteUser,
-    resendEmailConfirmation
+    resendEmailConfirmation,
+    getAppConfig,
+    sendTestEmail
   }
 }

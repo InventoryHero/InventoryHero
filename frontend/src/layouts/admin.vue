@@ -56,7 +56,6 @@ const isDrawerOpen = computed({
       <v-app-bar-nav-icon @click.stop="nav = !nav" />
       <v-app-bar-title>
         <v-card
-          hover
           width="fit-content"
           to="/administration"
           elevation="0"

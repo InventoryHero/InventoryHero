@@ -1,6 +1,14 @@
 <script setup lang="ts">
 import { HouseholdWithMemberPublic } from '@/api/types/households.ts'
 
+definePage({
+  meta: {
+    requiresAuth: true,
+    requiresHousehold: false,
+    layout: 'default'
+  }
+})
+
 const { t } = useI18n()
 const { household: householdEndpoint } = useAxios()
 
@@ -77,13 +85,3 @@ onMounted(async () => {
   z-index: 2;
 }
 </style>
-
-<route>
-{
-  "meta": {
-    "requiresAuth": true,
-    "requiresHousehold": false,
-    "layout": "default"
-  }
-}
-</route>

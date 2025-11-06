@@ -1,56 +1,3 @@
-<script setup lang="ts">
-import { ref } from 'vue'
-import {
-  BoxResponseSchema,
-  RoomResponseSchema,
-  StorageType
-} from '@/api/types/storage.ts'
-import useAppStyling from '@/composables/useAppStyling.ts'
-import PageConfiguration from '@/components/qr/PageConfiguration.vue'
-const { t } = useI18n()
-const { storage } = useAxios()
-const { mdAndUp } = useDisplay()
-const { btnStyle } = useAppStyling()
-
-const tab = ref<'rooms' | 'boxes' | 'items'>('rooms')
-const stage = ref<'selectObjects' | 'designLabels'>('selectObjects')
-const mobileDialogVisible = ref<boolean>(false)
-
-const selectedItems = ref<{ [key in StorageType]: Array<string> }>({
-  room: [],
-  box: []
-})
-
-const rooms = ref<Array<RoomResponseSchema>>([])
-const boxes = ref<Array<BoxResponseSchema>>([])
-
-const numSelectedRooms = computed(() => selectedItems.value['room'].length)
-const numSelectedBoxes = computed(() => selectedItems.value['box'].length)
-
-onBeforeRouteLeave(() => {
-  if (mobileDialogVisible.value) {
-    mobileDialogVisible.value = false
-    return false
-  }
-})
-
-onBeforeMount(() => {
-  storage.getAllStorage('room').then(({ success, data }) => {
-    if (!success) {
-      return
-    }
-    rooms.value = (data ?? []) as Array<RoomResponseSchema>
-  })
-
-  storage.getAllStorage('box').then(({ success, data }) => {
-    if (!success) {
-      return
-    }
-    boxes.value = (data ?? []) as Array<BoxResponseSchema>
-  })
-})
-</script>
-
 <template>
   <v-container
     fluid
@@ -288,15 +235,67 @@ onBeforeMount(() => {
   </v-container>
 </template>
 
-<style scoped></style>
+<script setup lang="ts">
+import { ref } from 'vue'
+import {
+  BoxResponseSchema,
+  RoomResponseSchema,
+  StorageType
+} from '@/api/types/storage.ts'
+import useAppStyling from '@/composables/useAppStyling.ts'
+import PageConfiguration from '@/components/qr/PageConfiguration.vue'
 
-<route>
-{
-  "meta": {
-    "requiresAuth": true,
-    "requiresHousehold": true,
-    "title": "titles.qr",
-    "layout": "default"
+definePage({
+  meta: {
+    requiresAuth: true,
+    requiresHousehold: true,
+    title: 'titles.qr',
+    layout: 'default'
   }
-}
-</route>
+})
+
+const { t } = useI18n()
+const { storage } = useAxios()
+const { mdAndUp } = useDisplay()
+const { btnStyle } = useAppStyling()
+
+const tab = ref<'rooms' | 'boxes' | 'items'>('rooms')
+const stage = ref<'selectObjects' | 'designLabels'>('selectObjects')
+const mobileDialogVisible = ref<boolean>(false)
+
+const selectedItems = ref<{ [key in StorageType]: Array<string> }>({
+  room: [],
+  box: []
+})
+
+const rooms = ref<Array<RoomResponseSchema>>([])
+const boxes = ref<Array<BoxResponseSchema>>([])
+
+const numSelectedRooms = computed(() => selectedItems.value['room'].length)
+const numSelectedBoxes = computed(() => selectedItems.value['box'].length)
+
+onBeforeRouteLeave(() => {
+  if (mobileDialogVisible.value) {
+    mobileDialogVisible.value = false
+    return false
+  }
+})
+
+onBeforeMount(() => {
+  storage.getAllStorage('room').then(({ success, data }) => {
+    if (!success) {
+      return
+    }
+    rooms.value = (data ?? []) as Array<RoomResponseSchema>
+  })
+
+  storage.getAllStorage('box').then(({ success, data }) => {
+    if (!success) {
+      return
+    }
+    boxes.value = (data ?? []) as Array<BoxResponseSchema>
+  })
+})
+</script>
+
+<style scoped></style>

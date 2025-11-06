@@ -18,6 +18,7 @@ const { theme, language, smtpEnabled, registrationAllowed } =
 const { authorized } = storeToRefs(authStore)
 
 const initialized = ref<boolean>(false)
+const initializeFailed = ref<boolean>(false)
 
 const transition = computed(() => {
   if (configStore.useTransitions) {
@@ -40,8 +41,7 @@ async function initializeApp() {
     configStore.applyColor()
     const { success, data, error } = await config.getConfig()
     if (!success) {
-      // TODO this is sadly unrecoverable
-      // maybe redirect to error view?
+      initializeFailed.value = true
       return
     }
     smtpEnabled.value = data?.smtp_enabled ?? false
@@ -49,7 +49,6 @@ async function initializeApp() {
     await router.isReady()
     if (authorized.value) {
       await authStore.whoami()
-      // TODO CONNECT TO SOCKETS
     }
 
     initialized.value = true
@@ -66,7 +65,7 @@ onBeforeMount(() => {
 
 <template>
   <router-view
-    v-if="initialized"
+    v-if="initialized && !initializeFailed"
     v-slot="{ Component, route }"
   >
     <transition v-bind="transition">
@@ -76,6 +75,11 @@ onBeforeMount(() => {
       />
     </transition>
   </router-view>
+  <template v-else-if="!initialized"></template>
+
+  <template v-else-if="initializeFailed">
+    <!-- TODO display something here-->
+  </template>
 </template>
 
 <style scoped lang="scss">

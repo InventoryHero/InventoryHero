@@ -45,41 +45,23 @@ const transferringOwnership = ref(false)
 const kickingUserDialog = ref<boolean>(false)
 const kickingUser = ref(false)
 
-// TODO INVITES
-/*
-const invite = computed(() => `${window.location.origin}/join/${householdMember.invite}`)
-const {
-  webShareApiSupported,
-  copiedConfirm,
-  emailShare,
-  whatsAppShare,
-  navigatorShare,
-  copyToClipboard
-} = useShareMethods(invite, householdName)
-*/
-
-// TODO FIX KICKED LOGIC
-const kicked = ref(false)
-
-function kickFromHousehold(kickConfirmed: boolean) {
+const kickFromHousehold = async (kickConfirmed: boolean) => {
   if (!kickConfirmed) {
     kickingUserDialog.value = true
     return
   }
   kickingUser.value = true
-  householdEndpoint
-    .removeMember(household.id, householdMember.user_id)
-    .then(({ success }) => {
-      // TODO ERROR HANDLING
+  const { success } = await householdEndpoint.removeMember(
+    household.id,
+    householdMember.user_id
+  )
 
-      if (success) {
-        kicked.value = true
-        emit('kicked')
-      }
+  if (success) {
+    emit('kicked')
+  }
 
-      kickingUserDialog.value = false
-      kickingUser.value = false
-    })
+  kickingUserDialog.value = false
+  kickingUser.value = false
 }
 function transferHousehold(confirmed: boolean = false) {
   if (!confirmed) {
@@ -123,85 +105,31 @@ function updateRole(role: Role) {
 }
 
 onBeforeRouteLeave(() => {
-  return !transferHouseholdDialog.value && !kickingUserDialog.value
+  if (transferHouseholdDialog.value) {
+    return false
+  }
+
+  if (kickingUserDialog.value) {
+    return false
+  }
 })
 </script>
 <template>
-  <v-dialog
-    :model-value="transferHouseholdDialog || kickingUserDialog"
-    persistent
-    no-click-animation
-  >
-    <v-card
-      v-if="transferHouseholdDialog"
-      :loading="transferringOwnership"
-      :disabled="transferringOwnership"
-    >
-      <template v-slot:title>
-        <i18n-t keypath="households.transfer.title">
-          <template #user>
-            <span class="text-primary">{{ username }}</span>
-          </template>
-        </i18n-t>
-      </template>
-      <v-card-text>
-        {{ t('households.transfer.text', { user: username }) }}
-      </v-card-text>
-      <v-card-actions>
-        <v-btn
-          :text="t('households.transfer.cancel')"
-          @click="transferHouseholdDialog = false"
-        />
-        <v-btn
-          :text="t('households.transfer.confirm')"
-          @click="transferHousehold(true)"
-        />
-      </v-card-actions>
-    </v-card>
-    <v-card v-else-if="kickingUserDialog">
-      <template v-slot:title>
-        <i18n-t keypath="households.kick.title">
-          <template #user>
-            <span class="text-primary">{{ username }}</span>
-          </template>
-        </i18n-t>
-      </template>
-      <v-card-text>
-        {{ t('households.kick.text', { user: username }) }}
-      </v-card-text>
-      <v-card-actions>
-        <v-btn
-          :text="t('households.kick.cancel')"
-          @click="kickingUserDialog = false"
-        />
-        <v-btn
-          :text="t('households.transfer.confirm')"
-          @click="kickFromHousehold(true)"
-        />
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
+  <confirm-kick-from-household-dialog
+    v-model:active="kickingUserDialog"
+    :loading="kickingUser"
+    :username="username"
+    @kick="kickFromHousehold(true)"
+  />
 
-  <!--
-    <v-snackbar
-        v-model="copiedConfirm"
-        :timeout="2000"
-        elevation="24"
-        rounded="pill"
-        color="success"
-        :multi-line="false"
-        @click="copiedConfirm=false"
+  <confirm-transfer-household-dialog
+    v-model:active="transferHouseholdDialog"
+    :loading="transferringOwnership"
+    :username="username"
+    @transfer="transferHousehold(true)"
+  />
 
-    >
-      <p
-          class="d-flex justify-center"
-      >
-        {{ $t('toasts.titles.success.copied_to_clipboard')}}
-      </p>
-    </v-snackbar>
-  -->
-  <v-card
-    v-if="!kicked"
+  <v-list-item
     density="compact"
     elevation="0"
     :disabled="disabled || transferringOwnership || kickingUser"
@@ -209,79 +137,12 @@ onBeforeRouteLeave(() => {
     :title="username"
     :subtitle="t(`household.roles.${role}`)"
   >
-    <template v-slot:loader>
-      <v-progress-linear
-        indeterminate
-        :active="transferringOwnership || kickingUser"
-        color="primary"
-      />
-    </template>
     <template v-slot:append>
-      <!--<span
-        v-if="householdMember.joined"
-        class="d-inline-block text-wrap flex-1-1"
-      >
-        {{ username }}
-      </span>
-      <span
-        v-else
-        class="flex-1-1"
-      >
-        <v-text-field
-          v-bind="styling"
-          :label="t('households.edit.invite_link')"
-          :clearable="false"
-          :model-value="invite"
-          density="compact"
-          readonly
-        >
-          <template v-slot:append>
-            <v-icon-btn
-              icon="mdi-clipboard-outline"
-              color="primary"
-              @click="copyToClipboard()"
-            />
-            <template v-if="webShareApiSupported">
-               <v-icon-btn
-                   icon="mdi-share-variant"
-                   @click="navigatorShare"
-               />
-            </template>
-            <template v-else>
-              <s-email
-                  :share-options="emailShare"
-              >
-                <v-icon-btn
-                    icon="mdi-email"
-                    color="primary"
-                />
-              </s-email>
-              <s-whats-app
-                  :share-options="whatsAppShare"
-              >
-                <v-icon-btn
-                    icon="mdi-whatsapp"
-                    color="primary"
-                />
-              </s-whats-app>
-            </template>
-          </template>
-        </v-text-field>
-      </span>
-      -->
-
       <template v-if="role !== ROLE_OWNER && !disabled">
         <v-icon-btn
-          v-if="role === ROLE_MEMBER"
           variant="text"
-          icon="mdi-shield"
-          @click="updateRole(ROLE_ADMIN)"
-        />
-        <v-icon-btn
-          v-if="role === ROLE_ADMIN"
-          variant="text"
-          icon="mdi-shield-off"
-          @click="updateRole(ROLE_MEMBER)"
+          :icon="role === ROLE_MEMBER ? 'mdi-shield' : 'mdi-shield-off'"
+          @click="updateRole(role === ROLE_MEMBER ? ROLE_ADMIN : ROLE_MEMBER)"
         />
         <v-icon-btn
           v-if="isOwner"
@@ -296,8 +157,8 @@ onBeforeRouteLeave(() => {
         />
       </template>
     </template>
-    <v-divider color="primary" />
-  </v-card>
+  </v-list-item>
+  <v-divider color="primary" />
 </template>
 
 <style scoped lang="scss">

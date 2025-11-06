@@ -1,11 +1,19 @@
 <script setup lang="ts">
 import { RoomResponseSchema } from '@/api/types/storage.ts'
-import { storeToRefs } from 'pinia'
 import roomAddedEventBus from '@/services/roomAddedEventBus.ts'
 import useContentRefreshStore from '@/stores/useContentRefreshStore'
 
+definePage({
+  meta: {
+    requiresAuth: true,
+    requiresHousehold: true,
+    title: 'titles.rooms',
+    showFab: true,
+    layout: 'default'
+  }
+})
+
 const { t } = useI18n()
-const route = useRoute()
 const { storage: storageEndpoint } = useAxios()
 const contentRefreshStore = useContentRefreshStore()
 
@@ -104,15 +112,3 @@ onBeforeMount(() => {
 </template>
 
 <style scoped lang="scss"></style>
-<route>
-{
-  "meta": {
-    "requiresAuth": true,
-    "requiresHousehold": true,
-    "title": 'titles.rooms',
-    "showFab": true,
-    "layout": "default"
-
-  }
-}
-</route>

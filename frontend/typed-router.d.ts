@@ -86,6 +86,13 @@ declare module 'vue-router/auto-routes' {
       { id: ParamValue<false> },
       | never
     >,
+    '/households/error/': RouteRecordInfo<
+      '/households/error/',
+      '/households/error',
+      Record<never, never>,
+      Record<never, never>,
+      | never
+    >,
     '/households/join.[code]': RouteRecordInfo<
       '/households/join.[code]',
       '/households/join/:code',
@@ -248,6 +255,12 @@ declare module 'vue-router/auto-routes' {
     'src/pages/households/[id].vue': {
       routes:
         | '/households/[id]'
+      views:
+        | never
+    }
+    'src/pages/households/error/index.vue': {
+      routes:
+        | '/households/error/'
       views:
         | never
     }

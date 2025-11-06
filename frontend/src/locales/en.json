@@ -301,6 +301,17 @@
       "deny": "Inventory' alone!",
       "invite_invalid": "Looks like this invite is not valid",
       "user_already_member_of_household": "You are already a member of this household, just select it form your household selection and you can start inventorying!"
+    },
+    "error": {
+      "no_access": {
+        "text": "It looks like you don't have the correct permission to view this household.",
+        "title": "No Access "
+      },
+      "unknown_error": {
+        "title": "Something went wrong",
+        "text": "An unexpected error occurred while trying to load the household."
+      },
+      "back": "Back to Households"
     }
   },
   "account": {
@@ -541,5 +552,23 @@
     "passord": {
       "weak": "Password is too weak. It should be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one symbol."
     }
+  },
+  "household": {
+    "household_updated": "Household updated",
+    "kicked_from_household": "Removed {user} from household"
+  },
+  "configuration": {
+    "title": "Configuration",
+    "app_version": "App Version",
+    "base_url": "App URL",
+    "registration_allowed": "Registration Allowed",
+    "smtp_enabled": "SMTP Enabled",
+    "send_test_email": "Test",
+    "database": "Database",
+    "test_email": {
+      "sent": "Test E-Mail sent"
+    },
+    "base_url_is_default": "Your App URL is set to the default value. This can lead to problems if you don't run under this URL",
+    "smtp_not_set_or_invalid": "Either you did not configure SMTP or your settings are invalid"
   }
 }

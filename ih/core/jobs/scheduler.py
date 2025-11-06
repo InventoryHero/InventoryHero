@@ -22,7 +22,6 @@ def scheduler_listener(event):
 
 def setup_scheduler():
     scheduler.start()
-    # TODO MAKE CONFIGURABLE
     scheduler.add_job(
         func=cleanup_invites,
         #trigger=CronTrigger(hour=0, minute=0, timezone="UTC"),

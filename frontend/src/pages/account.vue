@@ -1,219 +1,3 @@
-<script setup lang="ts">
-import useAuthStore from '@/stores/useAuthStore'
-import useConfigStore from '@/stores/useConfigStore'
-import { ref, useTemplateRef } from 'vue'
-import { useI18n } from 'vue-i18n'
-import useAppStyling from '@/composables/useAppStyling.ts'
-import { ChangePasswordForm, UserUpdate } from '@/api/types/user.ts'
-import { useNotification } from '@kyvg/vue3-notification'
-import { storeToRefs } from 'pinia'
-import router from '@/router'
-import { updateFormatted } from 'vuetify/lib/labs/VCalendar/util/timestamp.mjs'
-
-const { t } = useI18n()
-
-const authStore = useAuthStore()
-const { userEndpoint } = useAxios()
-const { textFieldStyling, btnStyle } = useAppStyling()
-const { notify } = useNotification()
-const configStore = useConfigStore()
-
-const userForm = useTemplateRef('userForm')
-const passwordForm = useTemplateRef('passwordResetForm')
-
-const { smtpEnabled } = storeToRefs(configStore)
-const { user } = storeToRefs(authStore)
-
-const updated = ref({ ...user.value })
-
-const saving = ref(false)
-const passwordFormVisible = ref<boolean>(false)
-const currPassword = ref<string | undefined>(undefined)
-const newPassword = ref<string | undefined>(undefined)
-const newPasswordRepeat = ref<string | undefined>(undefined)
-const loading = ref<boolean>(false)
-const currPasswordInvalid = ref<boolean>(false)
-
-const {
-  passwordRules: newPasswordRules,
-  passwordRepeatRules: newPasswordRepeatRules
-} = useValidationRules(newPassword, { validatePassword: true })
-
-const currPasswordRules = ref([
-  (value: string | null | undefined) =>
-    !!value || t('account.password.rules.old_not_empty'),
-  (value: string) =>
-    !currPasswordInvalid.value || t('validation.password.curr_password_invalid')
-])
-
-const usernameRules = ref([
-  (value: string | null | undefined) =>
-    !!value || t('account.rules.username_required')
-])
-const emailRules = ref([
-  (value: string | null | undefined) =>
-    !!value || t('account.rules.email_required')
-])
-
-const usernameEdited = computed(
-  () => updated.value?.username !== user.value?.username
-)
-const emailEdited = computed(() => updated.value?.email !== user.value?.email)
-const firstNameEdited = computed(
-  () => updated.value?.last_name !== user.value?.first_name
-)
-const lastNamedEdited = computed(
-  () => updated.value?.last_name !== user.value?.last_name
-)
-
-const edited = computed(() => {
-  return (
-    usernameEdited.value ||
-    firstNameEdited.value ||
-    lastNamedEdited.value ||
-    emailEdited.value
-  )
-})
-const lazySrc = computed(
-  () =>
-    `https://api.dicebear.com/8.x/bottts-neutral/svg?seed=${user.value?.username}`
-)
-const profilePictureSrc = computed(() => lazySrc.value)
-const passwordFormValid = computed(() => {
-  return (
-    !!currPassword.value && !!newPassword.value && !!newPasswordRepeat.value
-  )
-})
-
-const uploadProfilePicture = () => {
-  // TODO
-  notify({
-    type: 'info',
-    title: 'coming soon'
-  })
-}
-
-const reset = () => {
-  updated.value = { ...user.value }
-}
-
-const resendConfirmationEmail = async () => {
-  const { success } = await userEndpoint.requestEmailConfirmation()
-  if (success) {
-    notify({
-      title: t('account.resend_confirmation_success'),
-      type: 'success'
-    })
-  }
-}
-
-async function saveUpdatedUserdata() {
-  const { valid } = await userForm.value.validate()
-  if (!valid) {
-    return
-  }
-  let payload = {
-    username: !usernameEdited.value ? undefined : updated.value?.username,
-    email: !emailEdited.value ? undefined : updated.value?.email,
-    first_name: !firstNameEdited.value ? undefined : updated.value?.first_name,
-    last_name: !lastNamedEdited.value ? undefined : updated.value?.last_name
-  } as UserUpdate
-  saving.value = true
-  const { success, data, error } = await userEndpoint.updateUser(payload)
-  if (!success) {
-    saving.value = false
-    return
-  }
-  authStore.user = data!
-  reset()
-  saving.value = false
-}
-
-const updatePassword = async () => {
-  const { valid } = await passwordForm.value.validate()
-  if (!valid) {
-    return
-  }
-
-  let payload = {
-    current_password: currPassword.value,
-    new_password: newPassword.value,
-    new_password_confirmation: newPasswordRepeat.value
-  } as ChangePasswordForm
-
-  const { success, data, error } = await userEndpoint.changePassword(payload)
-  if (!success) {
-    switch (error) {
-      case 'wrong_password':
-        currPasswordInvalid.value = true
-        break
-      default:
-        // TODO notify?
-        break
-    }
-    passwordForm.value.validate()
-    return
-  }
-  notify({
-    title: t('account.password_changed_successfully'),
-    type: 'success'
-  })
-  passwordForm.value.reset()
-  passwordFormVisible.value = false
-}
-
-const showPasswordForm = async () => {
-  passwordFormVisible.value = !passwordFormVisible.value
-}
-
-const forgotPassword = async () => {
-  const { success } = await userEndpoint.resetPassword({
-    email: authStore.user!.email
-  })
-  if (!success) {
-    return
-  }
-  notify({
-    title: t('account.toasts.forgot-password.title'),
-    text: t('account.toasts.forgot-password.text'),
-    type: 'info'
-  })
-}
-
-// This function stops the loop once the transition is finished
-const scrollToBottom = () => {
-  if (!passwordFormVisible.value) {
-    return
-  }
-  window.scrollTo({
-    top: document.documentElement.scrollHeight,
-    behavior: 'smooth'
-  })
-}
-
-watch(passwordFormVisible, (newValue: boolean) => {
-  if (!newValue) {
-    passwordForm.value.reset()
-  }
-})
-
-onBeforeMount(() => {
-  if (!authStore.user) {
-    loading.value = true
-    userEndpoint.self().then(({ success, data }) => {
-      if (!success) {
-        // TODO
-        return
-      }
-      authStore.user = data!
-      loading.value = false
-    })
-  }
-})
-
-watch(currPassword, (_) => (currPasswordInvalid.value = false))
-</script>
-
 <template>
   <v-skeleton-loader
     type="image, divider, heading"
@@ -427,15 +211,222 @@ watch(currPassword, (_) => (currPasswordInvalid.value = false))
   </template>
 </template>
 
-<style scoped lang="scss"></style>
+<script setup lang="ts">
+import useAuthStore from '@/stores/useAuthStore'
+import useConfigStore from '@/stores/useConfigStore'
+import { ref, useTemplateRef } from 'vue'
+import { useI18n } from 'vue-i18n'
+import useAppStyling from '@/composables/useAppStyling.ts'
+import { ChangePasswordForm, UserUpdate } from '@/api/types/user.ts'
+import { useNotification } from '@kyvg/vue3-notification'
+import { storeToRefs } from 'pinia'
 
-<route>
-{
-  "meta": {
-    "requiresAuth": true,
-    "requiresHousehold": false,
-    "title": 'titles.account',
-    "layout": "default"
+definePage({
+  meta: {
+    requiresAuth: true,
+    requiresHousehold: false,
+    title: 'titles.account',
+    layout: 'default'
+  }
+})
+
+const { t } = useI18n()
+
+const authStore = useAuthStore()
+const { userEndpoint } = useAxios()
+const { textFieldStyling, btnStyle } = useAppStyling()
+const { notify } = useNotification()
+const configStore = useConfigStore()
+
+const userForm = useTemplateRef('userForm')
+const passwordForm = useTemplateRef('passwordResetForm')
+
+const { smtpEnabled } = storeToRefs(configStore)
+const { user } = storeToRefs(authStore)
+
+const updated = ref({ ...user.value })
+
+const saving = ref(false)
+const passwordFormVisible = ref<boolean>(false)
+const currPassword = ref<string | undefined>(undefined)
+const newPassword = ref<string | undefined>(undefined)
+const newPasswordRepeat = ref<string | undefined>(undefined)
+const loading = ref<boolean>(false)
+const currPasswordInvalid = ref<boolean>(false)
+
+const {
+  passwordRules: newPasswordRules,
+  passwordRepeatRules: newPasswordRepeatRules
+} = useValidationRules(newPassword, { validatePassword: true })
+
+const currPasswordRules = ref([
+  (value: string | null | undefined) =>
+    !!value || t('account.password.rules.old_not_empty'),
+  (value: string) =>
+    !currPasswordInvalid.value || t('validation.password.curr_password_invalid')
+])
+
+const usernameRules = ref([
+  (value: string | null | undefined) =>
+    !!value || t('account.rules.username_required')
+])
+const emailRules = ref([
+  (value: string | null | undefined) =>
+    !!value || t('account.rules.email_required')
+])
+
+const usernameEdited = computed(
+  () => updated.value?.username !== user.value?.username
+)
+const emailEdited = computed(() => updated.value?.email !== user.value?.email)
+const firstNameEdited = computed(
+  () => updated.value?.last_name !== user.value?.first_name
+)
+const lastNamedEdited = computed(
+  () => updated.value?.last_name !== user.value?.last_name
+)
+
+const edited = computed(() => {
+  return (
+    usernameEdited.value ||
+    firstNameEdited.value ||
+    lastNamedEdited.value ||
+    emailEdited.value
+  )
+})
+const lazySrc = computed(
+  () =>
+    `https://api.dicebear.com/8.x/bottts-neutral/svg?seed=${user.value?.username}`
+)
+const profilePictureSrc = computed(() => lazySrc.value)
+const passwordFormValid = computed(() => {
+  return (
+    !!currPassword.value && !!newPassword.value && !!newPasswordRepeat.value
+  )
+})
+
+const uploadProfilePicture = () => {
+  // TODO
+  notify({
+    type: 'info',
+    title: 'coming soon'
+  })
+}
+
+const reset = () => {
+  updated.value = { ...user.value }
+}
+
+const resendConfirmationEmail = async () => {
+  const { success } = await userEndpoint.requestEmailConfirmation()
+  if (success) {
+    notify({
+      title: t('account.resend_confirmation_success'),
+      type: 'success'
+    })
   }
 }
-</route>
+
+async function saveUpdatedUserdata() {
+  const { valid } = await userForm.value.validate()
+  if (!valid) {
+    return
+  }
+  let payload = {
+    username: !usernameEdited.value ? undefined : updated.value?.username,
+    email: !emailEdited.value ? undefined : updated.value?.email,
+    first_name: !firstNameEdited.value ? undefined : updated.value?.first_name,
+    last_name: !lastNamedEdited.value ? undefined : updated.value?.last_name
+  } as UserUpdate
+  saving.value = true
+  const { success, data, error } = await userEndpoint.updateUser(payload)
+  if (!success) {
+    saving.value = false
+    return
+  }
+  authStore.user = data!
+  reset()
+  saving.value = false
+}
+
+const updatePassword = async () => {
+  const { valid } = await passwordForm.value.validate()
+  if (!valid) {
+    return
+  }
+
+  let payload = {
+    current_password: currPassword.value,
+    new_password: newPassword.value,
+    new_password_confirmation: newPasswordRepeat.value
+  } as ChangePasswordForm
+
+  const { success, data, error } = await userEndpoint.changePassword(payload)
+  if (!success) {
+    switch (error) {
+      case 'wrong_password':
+        currPasswordInvalid.value = true
+        break
+      default:
+        // TODO notify?
+        break
+    }
+    passwordForm.value.validate()
+    return
+  }
+  notify({
+    title: t('account.password_changed_successfully'),
+    type: 'success'
+  })
+  passwordForm.value.reset()
+  passwordFormVisible.value = false
+}
+
+const showPasswordForm = async () => {
+  passwordFormVisible.value = !passwordFormVisible.value
+}
+
+const forgotPassword = async () => {
+  const { success } = await userEndpoint.resetPassword({
+    email: authStore.user!.email
+  })
+  if (!success) {
+    return
+  }
+  notify({
+    title: t('account.toasts.forgot-password.title'),
+    text: t('account.toasts.forgot-password.text'),
+    type: 'info'
+  })
+}
+
+// This function stops the loop once the transition is finished
+const scrollToBottom = () => {
+  if (!passwordFormVisible.value) {
+    return
+  }
+  window.scrollTo({
+    top: document.documentElement.scrollHeight,
+    behavior: 'smooth'
+  })
+}
+
+watch(passwordFormVisible, (newValue: boolean) => {
+  if (!newValue) {
+    passwordForm.value.reset()
+  }
+})
+
+onBeforeMount(async () => {
+  if (!authStore.user) {
+    loading.value = true
+
+    await authStore.whoami()
+    loading.value = false
+  }
+})
+
+watch(currPassword, (_) => (currPasswordInvalid.value = false))
+</script>
+
+<style scoped lang="scss"></style>

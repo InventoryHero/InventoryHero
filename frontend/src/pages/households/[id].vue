@@ -3,49 +3,73 @@ import useAuthStore from '@/stores/useAuthStore'
 import { useTemplateRef } from 'vue'
 import { notify } from '@kyvg/vue3-notification'
 import {
-  HouseholdMemberPublic,
-  HouseholdPublic,
-  HouseholdUpdate
+  HouseholdUpdate,
+  HouseholdWithMembersPublic
 } from '@/api/types/households.ts'
 import { storeToRefs } from 'pinia'
 import { ROLE_ADMIN, ROLE_OWNER } from '@/api/types/householdRoles.ts'
+import { BreadcrumbItem } from 'vuetify/lib/components/VBreadcrumbs/VBreadcrumbs.mjs'
+
+definePage({
+  props: true,
+  meta: {
+    requiresAuth: true,
+    requiresHousehold: false,
+    layout: 'default'
+  }
+})
 
 const authStore = useAuthStore()
 const { household: householdEndpoint } = useAxios()
 const { t } = useI18n()
 const router = useRouter()
-const { btnStyle } = useAppStyling()
-
-const { textFieldStyling } = useAppStyling()
+const route = useRoute()
+const { textFieldStyling, btnStyle } = useAppStyling()
 
 const { id = '' } = defineProps<{
   id?: string
 }>()
 
 const { user } = storeToRefs(authStore)
+const nameField = useTemplateRef('name-field')
 
-const householdMembers = ref<Array<HouseholdMemberPublic>>([])
-const loadingMembers = ref(false)
+const loading = ref(false)
 const deleteConfirmationVisible = ref<boolean>(false)
+const household = ref<HouseholdWithMembersPublic>()
+const newHouseholdName = ref<string | undefined>()
+const deletingHousehold = ref(false)
 
+const householdMembers = computed(() => {
+  return (
+    household.value?.members?.sort((a, b) => {
+      if (a.user_id === authStore.user?.id) {
+        return -1
+      }
+      if (b.user_id === authStore.user?.id) {
+        return 1
+      }
+
+      return 0
+    }) ?? []
+  )
+})
 const householdId = computed(() => {
   return id
 })
 
-const household = ref<HouseholdPublic | undefined>()
-const newHouseholdName = ref<string | undefined>()
-
-const breadcrumbs = ref<
-  Array<{
-    title: string
-    to?: string
-  }>
->([
-  {
-    title: t('nav.households'),
-    to: '/households'
-  }
-])
+const breadcrumbs = computed(
+  () =>
+    [
+      {
+        title: t('nav.households'),
+        to: '/households'
+      },
+      {
+        to: route.fullPath,
+        title: household.value?.name
+      }
+    ] as BreadcrumbItem[]
+)
 
 const householdName = computed({
   get() {
@@ -60,23 +84,15 @@ const householdName = computed({
 })
 
 const myself = computed(() =>
-  householdMembers.value.find((x) => x.user_id === user.value?.id)
+  householdMembers.value?.find((x) => x.user_id === user.value?.id)
 )
 const isOwner = computed(() => ROLE_OWNER === myself.value?.role)
-const isAdmin = computed(() => ROLE_ADMIN === myself.value?.role)
 
-const errorMessage = ref<string | undefined>()
-
-const nameField = useTemplateRef('name-field')
-
-const rules = ref({
-  nameRequired: (value: string) =>
-    value.length > 0 || t('households.rules.name_required'),
-  nameShorterThan: (value: string) =>
+const rules = computed(() => [
+  (value: string) => value.length > 0 || t('households.rules.name_required'),
+  (value: string) =>
     value.length <= 25 || t('households.rules.name_shorter_than')
-})
-
-const deletingHousehold = ref(false)
+])
 
 const deleteHousehold = async (confirmed: boolean) => {
   if (!confirmed) {
@@ -85,39 +101,31 @@ const deleteHousehold = async (confirmed: boolean) => {
   }
 
   deletingHousehold.value = true
-  householdEndpoint.delete(householdId.value).then((success) => {
-    if (!success) {
-      deleteConfirmationVisible.value = false
-      deletingHousehold.value = false
-      return
-    }
-
+  const { success } = await householdEndpoint.delete(householdId.value)
+  if (!success) {
     deleteConfirmationVisible.value = false
-    router.push('/households')
     deletingHousehold.value = false
-  })
-}
+    return
+  }
 
-const cancel = () => {
   deleteConfirmationVisible.value = false
+  router.push('/households')
+  deletingHousehold.value = false
 }
 
 function removeFromHousehold(id: string) {
-  const member = householdMembers.value.find((member) => member.id === id)
+  const member = household.value?.members.find((member) => member.id === id)
   if (member) {
+    household.value!.members = household.value!.members.filter(
+      (m) => m.id !== id
+    )
     notify({
-      title: t(
-        `toasts.titles.success.${member.joined ? 'kicked' : 'removed'}_from_household`
-      ),
-      text: t(
-        `toasts.text.success.${member.joined ? 'kicked' : 'removed'}_from_household`
-      ),
+      title: t('household.kicked_from_household', {
+        user: member.user.username
+      }),
       type: 'success'
     })
   }
-  householdMembers.value = householdMembers.value.filter(
-    (member) => member.id !== id
-  )
 }
 
 async function updateName() {
@@ -133,96 +141,73 @@ async function updateName() {
     .then(({ success, data }) => {
       if (success) {
         reset()
-        household.value = data
+        household.value = {
+          ...household.value!,
+          ...data
+        }
         notify({
-          title: t(`toasts.titles.success.household_updated`),
-          text: t(`toasts.text.success.household_updated`),
+          title: t(`household.household_updated`),
           type: 'success'
         })
       }
     })
 }
 
-const saveAction = async () => {}
-
 function reset() {
   newHouseholdName.value = undefined
 }
+
+onBeforeMount(async () => {
+  loading.value = true
+  const { success, data, error } = await householdEndpoint.getAllMembers(
+    householdId.value
+  )
+
+  if (!success) {
+    await router.push(`/households/error?message=${error}`)
+    return
+  }
+
+  household.value = data as HouseholdWithMembersPublic
+  loading.value = false
+})
 
 onBeforeRouteLeave(() => {
   if (deleteConfirmationVisible.value) {
     return false
   }
 })
-
-onBeforeMount(() => {
-  loadingMembers.value = true
-  householdEndpoint
-    .getAllMembers(householdId.value)
-    .then(({ success, data }) => {
-      if (!success) {
-        loadingMembers.value = false
-        return
-      }
-
-      household.value = data as HouseholdPublic
-      breadcrumbs.value.push({
-        title: household.value?.name
-      })
-      householdMembers.value = (data?.members ?? []).sort((a, b) => {
-        if (a.user_id === authStore.user?.id) {
-          return -1
-        }
-        if (b.user_id === authStore.user?.id) {
-          return 1
-        }
-        if (a.joined && !b.joined) {
-          return -1
-        }
-        if (!a.joined && b.joined) {
-          return 1
-        }
-
-        return 0
-      })
-      loadingMembers.value = false
-    })
-})
 </script>
 
 <template>
-  <v-dialog
-    v-model="deleteConfirmationVisible"
-    width="auto"
+  <confirm-household-delete-dialog
+    v-model:active="deleteConfirmationVisible"
+    :loading="deletingHousehold"
+    @delete="deleteHousehold(true)"
+  />
+
+  <v-skeleton-loader
+    type="text"
+    width="250px"
+    class="mb-2"
+    :loading="loading"
   >
-    <v-card :title="t('households.delete.title')">
-      <v-card-text>
-        {{ t('households.delete.text') }}
-      </v-card-text>
-      <v-card-actions class="justify-end">
-        <v-btn
-          v-bind="btnStyle"
-          prepend-icon="mdi-cancel"
-          :text="t('households.delete.abort')"
-          @click="cancel"
-        />
-        <v-btn
-          v-bind="btnStyle"
-          prepend-icon="mdi-delete"
-          color="error"
-          :text="t('households.delete.confirm')"
-          @click="deleteHousehold(true)"
-        />
-      </v-card-actions>
-    </v-card>
-  </v-dialog>
-  <template v-if="errorMessage === undefined">
     <v-breadcrumbs :items="breadcrumbs" />
-    <v-card :disabled="loadingMembers || deletingHousehold">
-      <template v-slot:loader>
+  </v-skeleton-loader>
+
+  <v-skeleton-loader
+    :loading="loading"
+    type="text,list-item-two-line@5,actions"
+  >
+    <v-card
+      :disabled="loading || deletingHousehold"
+      :loading="deletingHousehold"
+      class="household-card"
+    >
+      <template v-slot:loader="{ isActive }">
         <v-progress-linear
           indeterminate
-          :active="loadingMembers || deletingHousehold"
+          :active="isActive"
           color="primary"
         />
       </template>
@@ -230,15 +215,19 @@ onBeforeMount(() => {
         <v-text-field
           ref="name-field"
           v-bind="textFieldStyling"
+          density="compact"
           v-model="householdName"
           @click:clear="householdName = ''"
-          :rules="[rules.nameRequired, rules.nameShorterThan]"
+          :rules="rules"
         >
           <template v-slot:append>
-            <v-icon
+            <v-icon-btn
               :disabled="newHouseholdName === undefined"
+              color="primary"
+              variant="plain"
               icon="mdi-content-save"
               @click="updateName"
+              class="ms-n2 me-n2"
             />
           </template>
           <template v-slot:append-inner>
@@ -250,19 +239,22 @@ onBeforeMount(() => {
           </template>
         </v-text-field>
       </template>
-      <v-card-text>
-        <household-member-card
-          v-for="item in householdMembers"
-          :is-owner="isOwner"
-          :household-member="item"
-          :household="household!"
-          @kicked="removeFromHousehold(item.id)"
-        />
+      <v-card-text class="overflow-auto">
+        <v-list>
+          <household-member-card
+            v-for="item in householdMembers"
+            :is-owner="isOwner"
+            :household-member="item"
+            :household="household!"
+            @kicked="removeFromHousehold(item.id)"
+          />
+        </v-list>
       </v-card-text>
 
       <v-card-actions>
         <v-spacer />
         <v-btn
+          v-bind="btnStyle"
           v-if="isOwner"
           prepend-icon="mdi-trash-can"
           :text="t('households.edit.delete_household')"
@@ -272,36 +264,13 @@ onBeforeMount(() => {
         />
       </v-card-actions>
     </v-card>
-  </template>
-
-  <template v-else>
-    <!--TODO-->
-    <v-card
-      :text="t(`households.edit.${errorMessage}.text`)"
-      :title="t(`households.edit.${errorMessage}.title`)"
-    >
-      <v-card-actions class="d-flex justify-end">
-        <v-btn
-          color="primary"
-          :text="t('households.edit.not_found.back')"
-          variant="tonal"
-          to="/households"
-        />
-      </v-card-actions>
-    </v-card>
-    <div class="fill-height" />
-  </template>
+  </v-skeleton-loader>
 </template>
 
-<style scoped lang="scss"></style>
-
-<route>
-{
-  "props": true,
-  "meta": {
-    "requiresAuth": true,
-    "requiresHousehold": false,
-    "layout": "default"
-  }
+<style scoped lang="scss">
+.household-card {
+  height: calc(100dvh - 140px);
+  display: flex;
+  flex-direction: column;
 }
-</route>
+</style>

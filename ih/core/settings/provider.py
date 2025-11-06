@@ -10,6 +10,14 @@ class Provider(ABC):
     @abstractmethod
     def db_url(self) -> str: ...
 
+    @property
+    @abstractmethod
+    def db_type(self) -> str: ...
+
+    @property
+    @abstractmethod
+    def db_url_public(self) -> str: ...
+
 
 class SQLiteProvider(Provider, BaseModel):
     data_dir: Path
@@ -29,6 +37,14 @@ class SQLiteProvider(Provider, BaseModel):
     def db_url(self) -> str:
         return f"sqlite:///{self.db_path.absolute()!s}"
 
+    @property
+    def db_url_public(self) -> str:
+        return self.db_url
+
+    @property
+    def db_type(self) -> str:
+        return 'SQLite'
+
 
 class PostgresProvider(Provider, BaseSettings):
 
@@ -41,6 +57,10 @@ class PostgresProvider(Provider, BaseSettings):
     model_config = SettingsConfigDict(arbitrary_types_allowed=True, extra="allow")
 
     @property
+    def db_type(self) -> str:
+        return "Postgres"
+
+    @property
     def db_url(self) -> str:
         return str(
             PostgresDsn.build(
@@ -51,6 +71,11 @@ class PostgresProvider(Provider, BaseSettings):
                 path=f"{self.IH_DB_NAME or ''}",
             )
         )
+
+    @property
+    def db_url_public(self) -> str:
+        # TODO remove username and password
+        return self.db_url
 
 
 def db_factory(provider: str, data_dir: Path, env_file: Path):

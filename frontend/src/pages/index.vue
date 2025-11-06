@@ -1,5 +1,3 @@
-<script setup lang="ts"></script>
-
 <template>
   <v-row
     dense
@@ -19,15 +17,15 @@
   </v-row>
 </template>
 
-<style scoped lang="scss"></style>
-
-<route>
-{
-  "meta": {
-    "requiresAuth": true,
-    "requiresHousehold": true,
-    "showFab": true,
-    "layout": "default"
+<script setup lang="ts">
+definePage({
+  meta: {
+    requiresAuth: true,
+    requiresHousehold: true,
+    showFab: true,
+    layout: 'default'
   }
-}
-</route>
+})
+</script>
+
+<style scoped lang="scss"></style>

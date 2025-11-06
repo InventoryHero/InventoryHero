@@ -80,7 +80,7 @@ async def get_household_member(
     ).first()
 
     if not membership:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="no_member_of_household")
+        raise InventoryHeroAPIException(status_code=status.HTTP_403_FORBIDDEN, detail=ErrorResponse(message="", toast=False))
 
     return membership.role
 

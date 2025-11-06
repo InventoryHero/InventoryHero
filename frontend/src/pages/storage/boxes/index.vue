@@ -3,9 +3,18 @@ import { BoxResponseSchema, StorageType } from '@/api/types/storage.ts'
 import boxAddedEventBus from '@/services/boxAddedEventBus.ts'
 import useContentRefreshStore from '@/stores/useContentRefreshStore'
 
+definePage({
+  meta: {
+    requiresAuth: true,
+    requiresHousehold: true,
+    title: 'titles.boxes',
+    showFab: true,
+    layout: 'default'
+  }
+})
+
 const { storage: storageEndpoint } = useAxios()
 const { t } = useI18n()
-const route = useRoute()
 const contentRefreshStore = useContentRefreshStore()
 
 const needle = ref<string | undefined>()
@@ -66,15 +75,3 @@ onBeforeMount(() => {
 </template>
 
 <style scoped lang="scss"></style>
-
-<route>
-{
-  "meta": {
-    "requiresAuth": true,
-    "requiresHousehold": true,
-    "title": 'titles.boxes',
-    "showFab": true,
-    "layout": "default"
-  }
-}
-</route>

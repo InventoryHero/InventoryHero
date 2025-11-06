@@ -1,8 +1,8 @@
 <template>
   <v-dialog
     v-model="active"
-    :height="mdAndUp ? '700px' : '100%'"
-    :width="mdAndUp ? '600px' : '100%'"
+    :height="height"
+    :width="width"
     scrollable
     persistent
     no-click-animation
@@ -99,6 +99,7 @@ const { mdAndUp } = useDisplay()
 const { t } = useI18n()
 const { textFieldStyling } = useAppStyling()
 const { admin } = useAxios()
+const { width, height } = useDialogSize()
 
 const active = defineModel<boolean>('active', {
   required: true

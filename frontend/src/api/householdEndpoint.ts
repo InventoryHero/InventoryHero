@@ -83,19 +83,30 @@ export default (api: AxiosInstance) => {
   const getAllMembers = async (
     householdId: string
   ): Promise<ApiResponse<HouseholdWithMembersPublic>> => {
-    try {
-      const response = await api.get(`/household/${householdId}/member/`)
-      return {
-        success: response.status === 200,
-        data: response.data,
-        error: response.data ?? undefined
-      }
-    } catch (error: any) {
-      error = error as AxiosError
-      return {
-        success: false,
-        error: error.response.data
-      }
+    const router = useRouter()
+
+    const response = await api.get(`/household/${householdId}/member/`)
+    let success = false
+
+    let errorMessage = undefined
+    switch (response.status) {
+      case 200:
+        success = true
+        break
+      case 403:
+        errorMessage = 'no_access'
+        break
+      case 404:
+        errorMessage = 'household_not_found'
+        break
+      default:
+        errorMessage = response.data
+    }
+
+    return {
+      success: success,
+      data: response.data,
+      error: !success ? errorMessage : undefined
     }
   }
 

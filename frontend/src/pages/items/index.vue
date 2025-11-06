@@ -6,6 +6,16 @@ import itemAddedEventBus from '@/services/itemAddedEventBus.ts'
 import categoryAddedEventBus from '@/services/categoryAddedEventBus.ts'
 import useContentRefreshStore from '@/stores/useContentRefreshStore'
 
+definePage({
+  meta: {
+    requiresAuth: true,
+    requiresHousehold: true,
+    showFab: true,
+    title: 'titles.items',
+    layout: 'default'
+  }
+})
+
 const { items: itemsEndpoint } = useAxios()
 const { xs } = useDisplay()
 const { textFieldStyling, btnStyle } = useAppStyling()
@@ -138,16 +148,3 @@ onBeforeMount(() => {
 </template>
 
 <style scoped lang="scss"></style>
-
-<route>
-{
-  "meta": {
-    "requiresAuth": true,
-    "requiresHousehold": true,
-    "showFab": true,
-    "title": "titles.items",
-    "layout": "default"
-
-  }
-}
-</route>

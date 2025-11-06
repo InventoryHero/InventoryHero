@@ -24,7 +24,6 @@ router.beforeEach(async (to, from) => {
   const { household, authorized, user } = storeToRefs(authStore)
   const { registrationAllowed } = storeToRefs(configStore)
 
-  await authStore.whoami()
   await authStore.getDefaultHousehold()
 
   if (authorized.value && !allowAuthorized) {
@@ -39,6 +38,8 @@ router.beforeEach(async (to, from) => {
       }
     }
   }
+
+  await authStore.whoami()
 
   if (!household.value && requiresHousehold) {
     return { path: '/households', query: { redirect: to.fullPath } }
@@ -65,21 +66,6 @@ router.beforeEach(async (to, from) => {
     group: 'newContent',
     clean: true,
   });*/
-})
-
-router.beforeEach((to, from) => {
-  /*
-  For every layer in the pages there needs to be an index.vue, see: 
-  https://github.com/JohnCampionJr/vite-plugin-vue-layouts/issues/148
-
-  hopefully this is soon fixed in https://github.com/loicduong/vite-plugin-vue-layouts-next/issues/6
-
-  this navigation guard prevents routing to these routes, it just redirects to the homepage
-  those routes should only be accessible by directly entering a url (i.e. they should not be reachable by "correct" navigation inside the app)
-  */
-  if (to.meta.emptyRoute ?? false) {
-    return '/'
-  }
 })
 
 export default router

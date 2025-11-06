@@ -1,12 +1,16 @@
 <script setup lang="ts">
-import useAuthStore from '@/stores/useAuthStore'
-import { storeToRefs } from 'pinia'
-import { useNotification } from '@kyvg/vue3-notification'
+definePage({
+  props: true,
+  meta: {
+    requiresAuth: true,
+    requiresHousehold: false,
+    title: 'titles.join_household',
+    layout: 'default'
+  }
+})
 
 const { household: householdEndpoint } = useAxios()
-const authStore = useAuthStore()
 const router = useRouter()
-const { notify } = useNotification()
 const { t } = useI18n()
 
 const { code = '' } = defineProps<{
@@ -50,6 +54,7 @@ onBeforeMount(() => {
       inviterName.value = data?.inviter_name ?? ''
     })
 })
+// TODO ERROR HANDLING (DISABLE TOAST, REDIRECT TO ERROR VIEW)
 </script>
 
 <template>
@@ -109,15 +114,3 @@ onBeforeMount(() => {
   color: rgba(var(--v-theme-primary), 1);
 }
 </style>
-
-<route>
-{
-  "props": true,
-  "meta": {
-    "requiresAuth": true,
-    "requiresHousehold": false,
-    "title": 'titles.join_household',
-    "layout": "default"
-  }
-}
-</route>

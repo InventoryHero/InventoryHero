@@ -4,13 +4,15 @@ import { HouseholdWithMemberPublic } from '@/api/types/households.ts'
 
 const { household: householdEndpoint } = useAxios()
 const { t } = useI18n()
+const { width, height } = useDialogSize()
+
 const { household } = defineProps<{
   household: HouseholdWithMemberPublic
 }>()
 
-const emit = defineEmits<{
-  (e: 'close'): void
-}>()
+const active = defineModel<boolean>('active', {
+  required: true
+})
 
 const { textFieldStyling } = useAppStyling()
 
@@ -21,7 +23,7 @@ const inviteLink = computed(() => {
   if (loadingInviteCode.value) {
     return t('households.invite.generating_code')
   }
-  return `${window.location.origin}/households/join/${inviteCode.value}`
+  return inviteCode.value
 })
 
 function generateInviteCode() {
@@ -38,7 +40,7 @@ function generateInviteCode() {
 
 const {
   webShareApiSupported,
-  copiedConfirm,
+  copyToClipboardIcon,
   emailShare,
   whatsAppShare,
   navigatorShare,
@@ -55,101 +57,135 @@ onMounted(() => {
 </script>
 
 <template>
-  <v-row justify="center">
-    <v-col
-      cols="12"
-      lg="6"
+  <v-dialog
+    v-model="active"
+    persistent
+    no-click-animation
+    :max-width="width"
+    :max-height="height"
+  >
+    <v-card
+      :loading="loadingInviteCode"
+      :disabled="loadingInviteCode"
+      :title="t('households.invite.title')"
     >
-      <v-snackbar
-        v-model="copiedConfirm"
-        :timeout="2000"
-        elevation="24"
-        rounded="pill"
-        color="success"
-        :multi-line="false"
-        @click="copiedConfirm = false"
-      >
-        <p class="d-flex justify-center">
-          {{ t('toasts.titles.success.copied_to_clipboard') }}
-        </p>
-      </v-snackbar>
+      <template v-slot:loader="{ isActive }">
+        <v-progress-linear
+          color="primary"
+          :active="isActive"
+          indeterminate
+        />
+      </template>
+      <template v-slot:append>
+        <v-icon-btn
+          icon="mdi-close"
+          @click="active = false"
+        />
+      </template>
 
-      <v-card
-        :loading="loadingInviteCode"
-        :disabled="loadingInviteCode"
-      >
-        <template v-slot:loader="{ isActive }">
-          <v-progress-linear
+      <v-card-text>
+        <span class="text-medium-emphasis">
+          {{ t('households.invite.copy_to_clipboard') }}
+        </span>
+        <v-text-field
+          v-bind="textFieldStyling"
+          class="mt-4 mb-4"
+          :clearable="false"
+          :loading="loadingInviteCode"
+          readonly
+          :model-value="inviteLink"
+        >
+          <template v-slot:append>
+            <v-icon-btn
+              :disabled="loadingInviteCode"
+              variant="plain"
+              @click="copyToClipboard()"
+              size="large"
+              class="ms-n3 me-n3"
+            >
+              <transition
+                name="icon-morph"
+                mode="out-in"
+              >
+                <v-icon
+                  :key="copyToClipboardIcon"
+                  :icon="copyToClipboardIcon"
+                  size="large"
+                  :color="
+                    copyToClipboardIcon === 'mdi-check-bold'
+                      ? 'success'
+                      : undefined
+                  "
+                />
+              </transition>
+            </v-icon-btn>
+          </template>
+        </v-text-field>
+        <div class="text-end text-medium-emphasis">
+          {{ t('households.invite.or') }}
+        </div>
+      </v-card-text>
+
+      <v-card-actions>
+        <v-spacer />
+        <template v-if="webShareApiSupported">
+          <v-icon-btn
+            icon="mdi-share-variant"
             color="primary"
-            :active="isActive"
-            indeterminate
+            size="large"
+            @click="share"
           />
         </template>
-
-        <v-card-title class="d-flex justify-space-between align-center">
-          {{ t('households.invite.title') }}
-          <v-icon-btn
-            icon="mdi-close"
-            @click="emit('close')"
-          />
-        </v-card-title>
-        <v-card-subtitle>
-          {{ t('households.invite.copy_to_clipboard') }}
-        </v-card-subtitle>
-
-        <v-card-text>
-          <v-text-field
-            v-bind="textFieldStyling"
-            :clearable="false"
-            :loading="loadingInviteCode"
-            readonly
-            :model-value="inviteLink"
-          >
-            <template v-slot:append>
-              <v-icon-btn
-                :disabled="loadingInviteCode"
-                icon="mdi-clipboard-outline"
-                @click="copyToClipboard()"
-                size="large"
-              />
-            </template>
-          </v-text-field>
-        </v-card-text>
-        <v-card-subtitle class="d-flex justify-end">
-          {{ t('households.invite.or') }}
-        </v-card-subtitle>
-        <v-card-actions class="justify-end">
-          <template v-if="webShareApiSupported">
+        <template v-else>
+          <s-email :share-options="emailShare">
             <v-icon-btn
-              icon="mdi-share-variant"
+              icon="mdi-email"
+              variant="tonal"
               color="primary"
-              size="x-large"
-              class="me-2"
-              @click="share"
+              size="large"
             />
-          </template>
-          <template v-else>
-            <s-email :share-options="emailShare">
-              <v-icon-btn
-                icon="mdi-email"
-                variant="tonal"
-                color="primary"
-                class="me-1"
-              />
-            </s-email>
-            <s-whats-app :share-options="whatsAppShare">
-              <v-icon-btn
-                variant="tonal"
-                icon="mdi-whatsapp"
-                color="primary"
-                class="me-1"
-              />
-            </s-whats-app>
-          </template>
-        </v-card-actions>
-      </v-card>
-    </v-col>
-  </v-row>
+          </s-email>
+          <s-whats-app :share-options="whatsAppShare">
+            <v-icon-btn
+              variant="tonal"
+              icon="mdi-whatsapp"
+              color="primary"
+              size="large"
+            />
+          </s-whats-app>
+        </template>
+      </v-card-actions>
+    </v-card>
+  </v-dialog>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+.icon-morph-leave-active {
+  transition: all 0.32s cubic-bezier(0.25, 0.8, 0.5, 1);
+}
+
+.icon-morph-enter-active {
+  transition: all 0.25s cubic-bezier(0.25, 0.8, 0.5, 1); /* faster enter */
+}
+
+.icon-morph-enter-from,
+.icon-morph-leave-to {
+  opacity: 0;
+  transform: scale(0.5) rotate(-30deg);
+  color: var(--v-theme-on-background);
+}
+
+.icon-morph-enter-to,
+.icon-morph-leave-from {
+  opacity: 1;
+  transform: scale(1) rotate(0deg);
+  color: var(--v-theme-primary);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon-morph-enter-from,
+  .icon-morph-leave-to {
+    transform: none;
+  }
+}
+</style>

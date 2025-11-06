@@ -6,6 +6,15 @@ import { VForm } from 'vuetify/components'
 import { storeToRefs } from 'pinia'
 import { useNotification } from '@kyvg/vue3-notification'
 
+definePage({
+  meta: {
+    requiresAuth: false,
+    allowAuthorized: false,
+    requiresHousehold: false,
+    layout: 'unauthorized'
+  }
+})
+
 const { t } = useI18n()
 const { textFieldStyling, btnStyle } = useAppStyling()
 const route = useRoute()
@@ -232,14 +241,3 @@ onBeforeRouteLeave(() => {
   }
 }
 </style>
-
-<route>
-{
-  "meta": {
-    "requiresAuth": false,
-    "allowAuthorized": false,
-    "requiresHousehold": false,
-    "layout": "unauthorized",
-  }
-}
-</route>

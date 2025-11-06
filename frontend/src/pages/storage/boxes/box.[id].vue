@@ -2,6 +2,17 @@
 import { ItemSummarySchema } from '@/api/types/items.ts'
 import { BoxResponseSchema } from '@/api/types/storage.ts'
 
+definePage({
+  props: true,
+  meta: {
+    requiresAuth: true,
+    requiresHousehold: true,
+    title: 'titles.boxes',
+    showFab: true,
+    layout: 'default'
+  }
+})
+
 const { storage: storageEndpoint } = useAxios()
 const { t } = useI18n()
 const router = useRouter()
@@ -136,16 +147,3 @@ onBeforeMount(async () => {
 </template>
 
 <style scoped lang="scss"></style>
-
-<route>
-{
-  "props": true,
-  "meta": {
-    "requiresAuth": true,
-    "requiresHousehold": true,
-    "title": 'titles.boxes',
-    "showFab": true,
-    "layout": "default"
-  }
-}
-</route>

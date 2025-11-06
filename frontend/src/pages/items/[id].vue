@@ -5,6 +5,16 @@ import { computed } from 'vue'
 import itemAddedEventBus from '@/services/itemAddedEventBus.ts'
 import useContentRefreshStore from '@/stores/useContentRefreshStore'
 
+definePage({
+  props: true,
+  meta: {
+    requiresAuth: true,
+    requiresHousehold: true,
+    showFab: true,
+    layout: 'default'
+  }
+})
+
 const contentRefreshStore = useContentRefreshStore()
 const { getStorageIcon, getStoragePath } = useStorageHelper()
 const route = useRoute()
@@ -12,7 +22,7 @@ const { items: itemEndpoint } = useAxios()
 const { t } = useI18n()
 const router = useRouter()
 
-const item = ref<ItemDetailReadSchema | undefined>()
+const item = ref<ItemDetailReadSchema>()
 const loading = ref<boolean>(true)
 const loadingStoragePanel = ref<string | undefined>(undefined)
 
@@ -44,22 +54,24 @@ const loadItem = async (
 ) => {
   loading.value = showLoader
   loadingStoragePanel.value = loadRequestingStorage
-  itemEndpoint
-    .getItemDetails(props.id, fromStorageId.value)
-    .then(({ success, data, error }) => {
-      if (!success) {
-        router.push('/items')
-        loading.value = false
-        return
-      }
-      item.value = data!
-      loading.value = false
-      loadingStoragePanel.value = undefined
-    })
+  const { success, data, error } = await itemEndpoint.getItemDetails(
+    props.id,
+    fromStorageId.value
+  )
+
+  if (!success) {
+    await router.push('/items')
+    loading.value = false
+    return
+  }
+  item.value = data!
+
+  loading.value = false
+  loadingStoragePanel.value = undefined
 }
 
-onBeforeMount(() => {
-  loadItem(true)
+onBeforeMount(async () => {
+  await loadItem(true)
 })
 
 itemAddedEventBus.on((item_id) => {
@@ -75,15 +87,11 @@ itemAddedEventBus.on((item_id) => {
 </script>
 
 <template>
-  <div
-    v-if="loading"
-    class="text-center"
-  >
-    <v-skeleton-loader
-      type="heading, subtitle, paragraph, actions, divider, list-item@4"
-    />
-  </div>
-  <template v-else-if="item">
+  <v-skeleton-loader
+    v-if="loading || !item"
+    type="heading, subtitle, paragraph, actions, divider, list-item@4"
+  />
+  <template v-else>
     <v-breadcrumbs
       v-if="breadcrumbs.length > 0"
       density="compact"
@@ -110,6 +118,7 @@ itemAddedEventBus.on((item_id) => {
           icon="mdi-chevron-right"
         />
       </template>
+      <template #item="slotProps"></template>
     </v-breadcrumbs>
     <item-detail-header
       v-model="item"
@@ -139,7 +148,6 @@ itemAddedEventBus.on((item_id) => {
       ></item-detail-storage-panel>
     </v-expansion-panels>
   </template>
-  <div v-else><!--TODO REDIRECT TO ERROR VIEW--></div>
 </template>
 
 <style scoped lang="scss">
@@ -148,15 +156,3 @@ itemAddedEventBus.on((item_id) => {
   margin-bottom: 0;
 }
 </style>
-
-<route>
-{
-  "props": true,
-  "meta": {
-    "requiresAuth": true,
-    "requiresHousehold": true,
-    "showFab": true,
-    "layout": "default"
-  }
-}
-</route>
