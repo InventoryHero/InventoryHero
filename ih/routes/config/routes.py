@@ -41,7 +41,8 @@ class AdminConfigController(BaseAdminController):
             base_url_default=not self.settings.IH_APP_URL_SET,
             database_type=self.settings.DB_PROVIDER.db_type,
             database_connection=self.settings.DB_PROVIDER.db_url_public, # TODO THIS SHOULD BE A PUBLIC STRING
-            deployment=self.localizer.t('deployment.production') if self.settings.PRODUCTION else self.localizer.t('deployment.development')
+            deployment=self.localizer.t('deployment.production') if self.settings.PRODUCTION else self.localizer.t('deployment.development'),
+            oidc_enabled=self.settings.IH_OIDC_ENABLED
         )
 
     @admin_router.post("/email/test", status_code=status.HTTP_204_NO_CONTENT)

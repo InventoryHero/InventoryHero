@@ -11,8 +11,9 @@ export interface AppConfig {
   app_version: string;
   base_url: string;
   base_url_default: boolean;
-  database_type: string | null;
-  database_connection: string | null;
+  database_type: string;
+  database_connection: string;
+  oidc_enabled: boolean;
   deployment: string;
 }
 export interface ConfigPublic {

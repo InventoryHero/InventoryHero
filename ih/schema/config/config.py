@@ -14,7 +14,8 @@ class AppConfig(BaseModel):
     app_version: str
     base_url: str
     base_url_default: bool
-    database_type: Optional[str]
-    database_connection: Optional[str]
+    database_type: str
+    database_connection: str
+    oidc_enabled: bool
     deployment: str
 

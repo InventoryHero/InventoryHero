@@ -85,6 +85,30 @@
           <v-icon icon="mdi-database" />
         </template>
       </v-list-item>
+      <v-divider class="mt-2 mb-2" />
+      <v-list-item
+        :title="t('configuration.deployment')"
+        :subtitle="appConfig?.deployment ?? 'Development'"
+      >
+        <template v-slot:prepend>
+          <v-icon
+            icon="mdi-cloud-circle"
+            size="x-large"
+          />
+        </template>
+      </v-list-item>
+      <v-divider class="mt-2 mb-2" />
+      <v-list-item
+        :title="t('configuration.oidc')"
+        :subtitle="appConfig?.oidc_enabled"
+      >
+        <template v-slot:prepend>
+          <v-icon
+            icon="mdi-cloud-circle"
+            size="x-large"
+          />
+        </template>
+      </v-list-item>
     </v-list>
   </template>
 </template>
