@@ -74,8 +74,16 @@ class PostgresProvider(Provider, BaseSettings):
 
     @property
     def db_url_public(self) -> str:
-        # TODO remove username and password
-        return self.db_url
+        return str(
+            PostgresDsn.build(
+                scheme="postgresql",
+                username="***",
+                password="***",
+                host=f"{self.IH_DB_HOST}:{self.IH_DB_PORT}",
+                path=f"{self.IH_DB_NAME or ''}",
+            )
+        )
+
 
 
 def db_factory(provider: str, data_dir: Path, env_file: Path):

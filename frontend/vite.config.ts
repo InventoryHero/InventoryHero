@@ -30,9 +30,7 @@ export default defineConfig({
   plugins: [
     Unfonts({}),
     mkcert(),
-    VueRouter({
-      /* options */
-    }),
+    VueRouter({}),
     vue(),
     Layouts({
       layoutsDirs: 'src/layouts',
@@ -76,9 +74,13 @@ export default defineConfig({
         ]
       },
       workbox: {
-        clientsClaim: true,
-        skipWaiting: true,
-        maximumFileSizeToCacheInBytes: 8000000
+        navigateFallbackDenylist: [/^\/api\//],
+        runtimeCaching: [
+          {
+            urlPattern: /^\/api\//,
+            handler: 'NetworkOnly'
+          }
+        ]
       },
       devOptions: {
         enabled: true

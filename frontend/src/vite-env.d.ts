@@ -28,15 +28,3 @@ declare module 'pinia' {
     i18n: I18n
   }
 }
-
-declare module 'vue-router' {
-  interface RouteMeta {
-    emptyRoute?: boolean
-    requiresAuth?: boolean
-    requiresHousehold?: boolean
-    allowAuthorized?: boolean
-    title?: string
-    showFab?: boolean
-    requiresAdmin?: boolean
-  }
-}

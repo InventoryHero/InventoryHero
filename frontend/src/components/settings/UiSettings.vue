@@ -7,6 +7,7 @@ const configStore = useConfigStore()
 const { btnStyle } = useAppStyling()
 const { t } = useI18n()
 const vuetifyTheme = useTheme()
+const { mdAndUp } = useDisplay()
 
 const { theme, useTransitions, color } = storeToRefs(configStore)
 
@@ -38,16 +39,18 @@ watch(color, (newColor: string, oldColor: string) => {
   <app-settings-card :title="t('settings.ui.title')">
     <v-divider />
     <app-setting :title="t('settings.ui.theme.title')">
+      <v-spacer />
       <v-radio-group
         v-model="theme"
-        inline
+        :inline="mdAndUp"
         hide-details
       >
-        <v-spacer />
+        <v-spacer v-if="mdAndUp" />
         <v-radio
           :label="t('settings.ui.theme.dark')"
           value="dark"
         ></v-radio>
+
         <v-radio
           :label="t('settings.ui.theme.system')"
           value="system"
@@ -122,4 +125,7 @@ watch(color, (newColor: string, oldColor: string) => {
   </app-settings-card>
 </template>
 
-<style scoped lang="scss"></style>
+<style scoped lang="scss">
+:deep(.v-selection-control-group--inline) {
+}
+</style>

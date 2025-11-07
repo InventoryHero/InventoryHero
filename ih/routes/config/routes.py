@@ -42,7 +42,7 @@ class AdminConfigController(BaseAdminController):
             base_url=self.settings.IH_APP_URL,
             base_url_default=not self.settings.IH_APP_URL_SET,
             database_type=self.settings.DB_PROVIDER.db_type,
-            database_connection=self.settings.DB_PROVIDER.db_url_public, # TODO THIS SHOULD BE A PUBLIC STRING
+            database_connection=self.settings.DB_PROVIDER.db_url_public,
             deployment=self.localizer.t('deployment.production') if self.settings.PRODUCTION else self.localizer.t('deployment.development'),
             oidc_enabled=self.settings.OIDC.enabled
         )

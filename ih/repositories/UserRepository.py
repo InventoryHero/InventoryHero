@@ -26,6 +26,17 @@ from ih.core.security.provider import AuthenticationProvider
 from ih.services.email.email import send_confirmation_email, send_password_reset_email
 
 
+def check_auth_provider(user):
+    if user.auth_provider != AuthenticationProvider.local:
+        raise InventoryHeroAPIException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail=ErrorResponse(
+                message = "user_is_not_managed_locally",
+                toast = False
+            )
+        )
+
+
 class UserRepository:
     session: Session
     user: Optional[User]
@@ -180,6 +191,9 @@ class UserRepository:
         settings = get_app_settings()
         update_data = to_update.model_dump(exclude_unset=True)
         user = self.get_user_by_id(user_id)
+
+        check_auth_provider(user)
+
         if not update_data:
             return user
 
@@ -206,6 +220,8 @@ class UserRepository:
                 )
             )
         user = self.get_user_by_id(user_id)
+
+        check_auth_provider(user)
         if not verify_password(current_password, user.password):
             raise InventoryHeroAPIException(
                 status_code=status.HTTP_403_FORBIDDEN,
@@ -253,7 +269,7 @@ class UserRepository:
 
     def request_password_reset(self, email: str) -> None:
         user = self.session.exec(select(User).where(User.email == email)).first()
-        if user is None:
+        if user is None or user.auth_provider != AuthenticationProvider.local:
             return
         _ =  self.generate_password_reset_code(user, None)
 
@@ -270,8 +286,6 @@ class UserRepository:
 
         send_password_reset_email(to=user.email, username=user.username, reset_url=reset_url, admin_username=admin)
         return reset_url
-        # print(password_reset_code)
-        # TODO SEND EMAIL
 
     def validate_password_token(self, code: str) -> bool:
         password_token = hashlib.sha256(code.encode()).hexdigest()

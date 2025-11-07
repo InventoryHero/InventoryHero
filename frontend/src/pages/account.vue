@@ -57,6 +57,7 @@
                   v-model="updated.username"
                   :label="t('account.username')"
                   :rules="usernameRules"
+                  :disabled="disabled"
                 >
                   <template v-slot:append-inner>
                     <v-icon
@@ -79,6 +80,7 @@
                       v-model="updated.email"
                       :label="t('account.email')"
                       :rules="emailRules"
+                      :disabled="disabled"
                     >
                       <template v-slot:append-inner>
                         <v-icon
@@ -109,6 +111,7 @@
                   v-bind="textFieldStyling"
                   v-model="updated.first_name"
                   :label="t('account.firstname')"
+                  :disabled="disabled"
                 >
                   <template v-slot:append-inner>
                     <v-icon
@@ -124,6 +127,7 @@
                   v-bind="textFieldStyling"
                   v-model="updated.last_name"
                   :label="t('account.lastname')"
+                  :disabled="disabled"
                 >
                   <template v-slot:append-inner>
                     <v-icon
@@ -136,7 +140,10 @@
               </v-col>
             </v-row>
           </v-form>
-          <div class="d-flex justify-end mt-4">
+          <div
+            v-if="!disabled"
+            class="d-flex justify-end mt-4"
+          >
             <v-btn
               v-bind="btnStyle"
               :text="t('account.save')"
@@ -144,67 +151,68 @@
               :disabled="!edited"
             />
           </div>
+          <template v-if="!disabled">
+            <v-divider class="mt-4 mb-4" />
 
-          <v-divider class="mt-4 mb-4" />
-
-          <div class="d-flex justify-space-between align-center mb-4">
-            {{ t('account.password.password') }}
-            <v-btn
-              v-bind="btnStyle"
-              variant="outlined"
-              :text="
-                !passwordFormVisible
-                  ? t('account.password.change_password')
-                  : t('account.password.hide_change_password')
-              "
-              @click="showPasswordForm"
-            />
-          </div>
-          <v-scroll-y-transition @after-enter="scrollToBottom">
-            <v-form
-              ref="passwordResetForm"
-              v-if="passwordFormVisible"
-            >
-              <v-row>
-                <v-col cols="12">
-                  <password-text-field
-                    :label="t('account.password.current_password')"
-                    v-model="currPassword"
-                    :rules="currPasswordRules"
+            <div class="d-flex justify-space-between align-center mb-4">
+              {{ t('account.password.password') }}
+              <v-btn
+                v-bind="btnStyle"
+                variant="outlined"
+                :text="
+                  !passwordFormVisible
+                    ? t('account.password.change_password')
+                    : t('account.password.hide_change_password')
+                "
+                @click="showPasswordForm"
+              />
+            </div>
+            <v-scroll-y-transition @after-enter="scrollToBottom">
+              <v-form
+                ref="passwordResetForm"
+                v-if="passwordFormVisible"
+              >
+                <v-row>
+                  <v-col cols="12">
+                    <password-text-field
+                      :label="t('account.password.current_password')"
+                      v-model="currPassword"
+                      :rules="currPasswordRules"
+                    />
+                  </v-col>
+                  <v-col cols="12">
+                    <password-text-field
+                      :label="t('account.password.new_password')"
+                      v-model="newPassword"
+                      :rules="newPasswordRules"
+                    />
+                  </v-col>
+                  <v-col cols="12">
+                    <password-text-field
+                      :label="t('account.password.new_password_repeat')"
+                      v-model="newPasswordRepeat"
+                      :rules="newPasswordRepeatRules"
+                    />
+                  </v-col>
+                </v-row>
+                <div class="d-flex justify-end mt-4 flex-wrap-reverse">
+                  <v-btn
+                    v-if="smtpEnabled"
+                    v-bind="btnStyle"
+                    variant="plain"
+                    :text="t('account.password.forgot_password')"
+                    @click="forgotPassword"
                   />
-                </v-col>
-                <v-col cols="12">
-                  <password-text-field
-                    :label="t('account.password.new_password')"
-                    v-model="newPassword"
-                    :rules="newPasswordRules"
+                  <v-btn
+                    v-bind="btnStyle"
+                    :text="t('account.password.change_password')"
+                    :disabled="!passwordFormValid"
+                    @click="updatePassword"
                   />
-                </v-col>
-                <v-col cols="12">
-                  <password-text-field
-                    :label="t('account.password.new_password_repeat')"
-                    v-model="newPasswordRepeat"
-                    :rules="newPasswordRepeatRules"
-                  />
-                </v-col>
-              </v-row>
-              <div class="d-flex justify-end mt-4 flex-wrap-reverse">
-                <v-btn
-                  v-if="smtpEnabled"
-                  v-bind="btnStyle"
-                  variant="plain"
-                  :text="t('account.password.forgot_password')"
-                  @click="forgotPassword"
-                />
-                <v-btn
-                  v-bind="btnStyle"
-                  :text="t('account.password.change_password')"
-                  :disabled="!passwordFormValid"
-                  @click="updatePassword"
-                />
-              </div>
-            </v-form>
-          </v-scroll-y-transition>
+                </div>
+              </v-form>
+            </v-scroll-y-transition>
+          </template>
         </v-col>
       </v-row>
     </v-container>
@@ -253,6 +261,8 @@ const newPassword = ref<string | undefined>(undefined)
 const newPasswordRepeat = ref<string | undefined>(undefined)
 const loading = ref<boolean>(false)
 const currPasswordInvalid = ref<boolean>(false)
+
+const disabled = computed(() => user.value?.auth_provider !== 'local')
 
 const {
   passwordRules: newPasswordRules,

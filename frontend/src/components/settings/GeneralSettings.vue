@@ -28,6 +28,7 @@ watch(language, (_) => {
         :clearable="false"
         v-model="language"
         :items="availableLocales"
+        class="mt-2 mb-2"
       >
         <template v-slot:item="{ item, props }">
           <v-list-item

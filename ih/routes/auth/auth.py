@@ -54,7 +54,7 @@ settings = get_app_settings()
 if settings.OIDC.enabled:
     oauth = OAuth()
     oidc = oauth.register(
-        name="oidc", # TODO MAYBE NAME PROVIDER
+        name="oidc",
         client_id = settings.OIDC.IH_OIDC_CLIENT_ID,
         client_secret = settings.OIDC.IH_OIDC_CLIENT_SECRET,
         server_metadata_url=settings.OIDC.IH_OIDC_CONFIGURATION_URL,
@@ -134,17 +134,19 @@ async def get_oidc_token(request: Request):
         )
     client = oauth.create_client("oidc")
     if not settings.PRODUCTION:
-        redirect_url = "https://localhost:3000/login"
+        redirect_url = "https://localhost:3000/api/auth/oidc/callback"
     else:
-        redirect_url = URLPath("/login").make_absolute_url(request.base_url)
+        redirect_url = URLPath("/api/auth/oidc/callback").make_absolute_url(request.base_url)
 
-    redirect_url = "http://localhost:5000/api/auth/oidc/callback"
+    logger.info(redirect_url)
+
     return await client.authorize_redirect(request, redirect_url)
 
 @public_router.get("/oidc/callback")
 async def oidc_callback(request: Request, session: Session = Depends(get_session), localizer:Localizer =  Depends(get_localizer)):
     client = oauth.create_client("oidc")
     token = await client.authorize_access_token(request)
+    print(token.get("refresh_token"))
     user_info = token["userinfo"]
     repositories = RepositoryFactory(session, localizer)
     oidc_sub = user_info["sub"]
@@ -163,11 +165,11 @@ async def oidc_callback(request: Request, session: Session = Depends(get_session
     elif settings.OIDC.user_claim == "email":
         user = repositories.users.get_user_by_email(user_info[settings.OIDC.user_claim])
     else:
-        # TODO IF VALIDATION IS GOOD ENOUGH THIS SHOULD NOT HAPPEN
-        pass
+        return RedirectResponse(url=redirect_url + "?error=invalid_oidc_user_claim")
 
     try:
         if user is None:
+            # TODO RESPECT REGISTRATION_ENABLED FLAGS
             logger.info("OIDC USER DOES NTO EXIST, CREATING WITH OIDC DATA")
             user = repositories.users.create(UserCreateBase(
                 username=user_info["preferred_username"],

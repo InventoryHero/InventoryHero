@@ -11,7 +11,6 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
-    AdminNavItems: typeof import('./src/components/navigation/AdminNavItems.vue')['default']
     AllDisplayed: typeof import('./src/components/common/AllDisplayed.vue')['default']
     AppSetting: typeof import('./src/components/common/AppSetting.vue')['default']
     AppSettingsCard: typeof import('./src/components/settings/AppSettingsCard.vue')['default']
@@ -20,11 +19,9 @@ declare module 'vue' {
     BoxSummaryList: typeof import('./src/components/storage/boxes/BoxSummaryList.vue')['default']
     CategoryChip: typeof import('./src/components/common/CategoryChip.vue')['default']
     ConfirmBoxDeleteModal: typeof import('./src/components/storage/boxes/ConfirmBoxDeleteModal.vue')['default']
-    ConfirmHouseholdActionDialog: typeof import('./src/components/household/dialogs/ConfirmHouseholdActionDialog.vue')['default']
     ConfirmHouseholdDeleteDialog: typeof import('./src/components/household/dialogs/ConfirmHouseholdDeleteDialog.vue')['default']
     ConfirmItemDeleteDialog: typeof import('./src/components/items/modals/ConfirmItemDeleteDialog.vue')['default']
     ConfirmKickFromHouseholdDialog: typeof import('./src/components/household/dialogs/ConfirmKickFromHouseholdDialog.vue')['default']
-    COnfirmKickFromHouseholdDialog: typeof import('./src/components/household/dialogs/COnfirmKickFromHouseholdDialog.vue')['default']
     ConfirmLeaveDialog: typeof import('./src/components/common/modals/ConfirmLeaveDialog.vue')['default']
     ConfirmRoomDeleteModal: typeof import('./src/components/storage/rooms/modals/ConfirmRoomDeleteModal.vue')['default']
     ConfirmTransferHouseholdDialog: typeof import('./src/components/household/dialogs/ConfirmTransferHouseholdDialog.vue')['default']

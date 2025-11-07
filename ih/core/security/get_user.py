@@ -65,7 +65,7 @@ async def get_current_user(
 
     if token_expires_soon(payload["exp"]):
         logger.warning("Token will expire soon")
-        # TODO IMPLEMENT SLIDING SESSIOn
+        # TODO IMPLEMENT SLIDING SESSION
 
     return user
 

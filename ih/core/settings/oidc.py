@@ -3,6 +3,7 @@ from pydantic_settings import BaseSettings
 
 class OidcSettings(BaseSettings):
     # TODO SERVICE ACCOUNT TOKENS FOR PERIODIC USER SYNC
+    # TODO ADD OIDC GROUP FOR ACCESS / USER SYNC
     IH_OIDC_CONFIGURATION_URL: str | None = None
     IH_OIDC_CLIENT_ID: str | None = None
     IH_OIDC_CLIENT_SECRET: str | None = None
@@ -13,6 +14,10 @@ class OidcSettings(BaseSettings):
 
     @property
     def enabled(self) -> bool:
+        if self.IH_OIDC_USER_CLAIM not in ["preferred_username", "email"]:
+            return False
+
+
         return all([
             self.IH_OIDC_CONFIGURATION_URL,
             self.IH_OIDC_CLIENT_ID,

@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { routes } from 'vue-router/auto-routes'
+import { routes, handleHotUpdate } from 'vue-router/auto-routes'
 import useAuthStore from '@/stores/useAuthStore'
 import useConfigStore from '@/stores/useConfigStore'
 import useContentRefreshStore from '@/stores/useContentRefreshStore'
@@ -7,8 +7,10 @@ import { i18n } from '@/plugins/i18n'
 //@ts-expect-error cannot be found, but it is there
 import { setupLayouts } from 'virtual:generated-layouts'
 
+console.log(routes)
+
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(import.meta.env.BASE_URL),
   routes: setupLayouts(routes)
 })
 
@@ -29,8 +31,9 @@ router.beforeEach(async (to, from) => {
   if (authorized.value && !allowAuthorized) {
     return '/'
   }
-
+  console.log(to)
   if (!authorized.value && requiresAuth) {
+    console.log('redirected???')
     return {
       path: '/login',
       query: {
@@ -67,5 +70,9 @@ router.beforeEach(async (to, from) => {
     clean: true,
   });*/
 })
+
+if (import.meta.hot) {
+  handleHotUpdate(router)
+}
 
 export default router
