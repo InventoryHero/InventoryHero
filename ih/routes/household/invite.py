@@ -49,6 +49,7 @@ class AcceptInviteController(UserControllerBase):
 
     @accept_invite_router.get("/validate/{code}", response_model=HouseholdInviteWithMeta, status_code=status.HTTP_202_ACCEPTED)
     def validate_invite(self, code: str):
+        self.logger.warn(code)
         invitation = self._validate_invite(code)
         self.logger.warn(HouseholdInviteWithMeta.model_validate(invitation))
         return HouseholdInviteWithMeta.model_validate(invitation)
@@ -70,9 +71,11 @@ class HouseholdInviteController(HouseholdAdminControllerBase):
 
 
     @router.post("/", response_model=HouseholdInvitePublic, status_code=status.HTTP_200_OK)
-    def create_and_send_invite(self):
+    def create_invite(self):
+        self.logger.info("HALLLLOOOO")
         invite = self.repositories.households.create_invite()
-        return f"{self.settings.IH_APP_URL}//households/join/{invite}"
+        self.logger.info(invite)
+        return invite
 
     @router.delete("/{invite_id}", status_code=status.HTTP_204_NO_CONTENT)
     def delete_invite(self, invite_id: UUID):

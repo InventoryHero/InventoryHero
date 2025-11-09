@@ -51,8 +51,10 @@ function share() {
   navigatorShare()
 }
 
-onMounted(() => {
-  generateInviteCode()
+watch(active, () => {
+  if (active.value) {
+    generateInviteCode()
+  }
 })
 </script>
 

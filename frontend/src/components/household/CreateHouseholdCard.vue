@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { useTemplateRef } from 'vue'
 import { useNotification } from '@kyvg/vue3-notification'
-import { HouseholdPublic } from '@/api/types/households.ts'
+import {
+  HouseholdPublic,
+  HouseholdWithMemberPublic
+} from '@/api/types/households.ts'
 // TODO THIS TRIES TO POST AN INVITE
 
 defineOptions({
@@ -24,7 +27,7 @@ const rules = ref({
 })
 
 const emit = defineEmits<{
-  created: [newHousehold: HouseholdPublic]
+  created: [newHousehold: HouseholdWithMemberPublic]
 }>()
 
 const collapseIcon = computed(() => {

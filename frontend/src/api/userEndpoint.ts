@@ -144,6 +144,25 @@ export default (api: AxiosInstance) => {
     }
   }
 
+  const uploadProfilePicture = async (
+    file: File
+  ): Promise<ApiResponse<void>> => {
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const response = await api.post('/user/profile-picture', formData, {
+      headers: {
+        'Content-Type': 'mulitpart/form-data'
+      }
+    })
+
+    const success = response.status === 204
+
+    return {
+      success
+    }
+  }
+
   return {
     self,
     setDefaultHousehold,
@@ -155,6 +174,7 @@ export default (api: AxiosInstance) => {
     confirmEmail,
     requestEmailConfirmation,
     checkPasswordResetCode,
-    resetPasswordWithToken
+    resetPasswordWithToken,
+    uploadProfilePicture
   }
 }

@@ -73,11 +73,7 @@ function transferHousehold(confirmed: boolean = false) {
     .transferOwnership(household.id, householdMember.user_id)
     .then(({ success, error }) => {
       if (!success) {
-        notify({
-          title: t(`toasts.titles.error.${error}`),
-          text: t(`toasts.text.error.${error}`),
-          type: 'error'
-        })
+        console.error(error)
         transferringOwnership.value = false
         transferHouseholdDialog.value = false
         return
@@ -86,8 +82,7 @@ function transferHousehold(confirmed: boolean = false) {
       transferHouseholdDialog.value = false
       router.push('/households').then(() => {
         notify({
-          title: t('toasts.titles.success.household_transferred'),
-          text: t('toasts.text.success.household_transferred'),
+          title: t('households.household_transfer.success'),
           type: 'success'
         })
       })

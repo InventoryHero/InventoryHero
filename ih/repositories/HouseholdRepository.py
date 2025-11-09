@@ -4,6 +4,7 @@ from typing import Optional, List, Union
 from uuid import UUID
 
 from fastapi import HTTPException
+from fastapi_cloud_cli.config import Settings
 from sqlalchemy import delete
 from sqlalchemy.exc import IntegrityError
 
@@ -11,6 +12,7 @@ from sqlalchemy.orm import selectinload
 from sqlmodel import Session, select
 from starlette import status
 
+from ih.core.config import get_app_settings
 from ih.db.models.User import User
 from ih.db.models.households import Household, HouseholdMember, HouseholdInvite
 from ih.i18n.localizer import Localizer
@@ -23,6 +25,7 @@ class HouseholdRepository:
     session: Session
     user: Optional[User]
     household_id: Optional[UUID]
+    settings: Settings = get_app_settings()
 
     def __init__(self, session: Session, localizer: Localizer, user: Optional[User] = None, household: Optional[UUID] = None):
         self.session = session
@@ -220,7 +223,8 @@ class HouseholdRepository:
                 detail=self.localizer.t("unknown_error")
             )
 
-        public_invite = HouseholdInvitePublic(**invite.model_dump(exclude={"code"}), code=raw_code)
+        public_invite = HouseholdInvitePublic(**invite.model_dump(exclude={"code"}),
+                                              code=f"{self.settings.IH_APP_URL}/households/join/{raw_code}")
         return public_invite
 
     def delete_invite(self, invite_id: UUID):

@@ -5,6 +5,10 @@
   />
 
   <template v-else>
+    <profile-picture-upload-dialog
+      v-model:active="profilePictureUploadDialogVisible"
+      @updated:profile-picture="refreshProfilePicture"
+    />
     <v-hover>
       <template v-slot:default="{ isHovering, props }">
         <v-img
@@ -15,7 +19,6 @@
           height="100"
           width="100"
           cover
-          :lazy-src="lazySrc"
           alt="avatar"
           :src="profilePictureSrc"
           @click="uploadProfilePicture"
@@ -261,6 +264,8 @@ const newPassword = ref<string | undefined>(undefined)
 const newPasswordRepeat = ref<string | undefined>(undefined)
 const loading = ref<boolean>(false)
 const currPasswordInvalid = ref<boolean>(false)
+const profilePictureUploadDialogVisible = ref<boolean>(false)
+const profilePictureSrc = ref(`/api/user/profile-picture`)
 
 const disabled = computed(() => user.value?.auth_provider !== 'local')
 
@@ -304,11 +309,7 @@ const edited = computed(() => {
     emailEdited.value
   )
 })
-const lazySrc = computed(
-  () =>
-    `https://api.dicebear.com/8.x/bottts-neutral/svg?seed=${user.value?.username}`
-)
-const profilePictureSrc = computed(() => lazySrc.value)
+
 const passwordFormValid = computed(() => {
   return (
     !!currPassword.value && !!newPassword.value && !!newPasswordRepeat.value
@@ -316,11 +317,7 @@ const passwordFormValid = computed(() => {
 })
 
 const uploadProfilePicture = () => {
-  // TODO
-  notify({
-    type: 'info',
-    title: 'coming soon'
-  })
+  profilePictureUploadDialogVisible.value = true
 }
 
 const reset = () => {
@@ -378,7 +375,6 @@ const updatePassword = async () => {
         currPasswordInvalid.value = true
         break
       default:
-        // TODO notify?
         break
     }
     passwordForm.value.validate()
@@ -419,6 +415,10 @@ const scrollToBottom = () => {
     top: document.documentElement.scrollHeight,
     behavior: 'smooth'
   })
+}
+
+const refreshProfilePicture = () => {
+  profilePictureSrc.value = `/api/user/profile-picture?v=${Date.now()}`
 }
 
 watch(passwordFormVisible, (newValue: boolean) => {

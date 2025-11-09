@@ -44,7 +44,7 @@ export default (api: AxiosInstance) => {
 
   const createHousehold = async (
     data: HouseholdPublic
-  ): Promise<ApiResponse<HouseholdPublic>> => {
+  ): Promise<ApiResponse<HouseholdWithMemberPublic>> => {
     const response = await api.post('/household/', data)
     if (response.status === 201) {
       return {

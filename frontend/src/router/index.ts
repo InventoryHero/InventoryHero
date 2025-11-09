@@ -53,7 +53,6 @@ router.beforeEach(async (to, from) => {
   }
 
   if (requiresAdmin && !(user.value?.admin ?? false)) {
-    // TODO NOTIFICATION
     return {
       path: '/'
     }

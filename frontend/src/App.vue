@@ -86,7 +86,6 @@ onBeforeMount(() => {
   <template v-else-if="!initialized && !initializeFailed"></template>
 
   <template v-else-if="initializeFailed">
-    <!-- TODO display something here-->
     <v-app>
       <v-main>
         <v-container>

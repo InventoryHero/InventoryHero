@@ -47,41 +47,6 @@
         <v-icon icon="mdi-chevron-right"></v-icon>
       </template>
     </v-breadcrumbs>
-    <v-hover>
-      <template v-slot:default="{ isHovering, props }">
-        <v-img
-          v-bind="props"
-          class="mx-auto mt-4"
-          rounded="circle position-relative"
-          aspect-ratio="1/1"
-          height="100"
-          width="100"
-          cover
-          :lazy-src="lazySrc"
-          alt="avatar"
-          :src="profilePictureSrc"
-          @click="uploadProfilePicture"
-          :style="{
-            cursor: isHovering ? 'pointer' : undefined
-          }"
-        >
-          <template v-slot:default>
-            <v-overlay
-              :model-value="!!isHovering"
-              contained
-              class="align-center justify-center"
-              scrim="#000000"
-            >
-              <v-icon
-                icon="mdi-camera"
-                size="large"
-              />
-            </v-overlay>
-          </template>
-        </v-img>
-      </template>
-    </v-hover>
-
     <v-container class="mt-4 mb-4">
       <v-row justify="center">
         <v-col
@@ -115,7 +80,7 @@
                   v-bind="textFieldStyling"
                   v-model="firstname"
                   :label="t('administration.users.user.firstname')"
-                  :disabled="oidcEnabled"
+                  :disabled="!isLocalUser"
                 >
                   <template v-slot:append-inner>
                     <v-icon
@@ -131,7 +96,7 @@
                   v-bind="textFieldStyling"
                   v-model="lastname"
                   :label="t('administration.users.user.lastname')"
-                  :disabled="oidcEnabled"
+                  :disabled="!isLocalUser"
                 >
                   <template v-slot:append-inner>
                     <v-icon
@@ -157,7 +122,7 @@
               :text="t('administration.users.user.reset_password')"
               @click="resetPassword"
               class="me-2"
-              :disabled="oidcEnabled"
+              :disabled="!isLocalUser"
             />
             <v-btn
               v-bind="btnStyle"
@@ -170,7 +135,7 @@
       </v-row>
     </v-container>
   </template>
-  <!--TODO this should also use the copy logic from useShareMethods-->
+
   <v-snackbar
     :timeout="5000"
     color="success"
@@ -213,7 +178,7 @@ const { id } = defineProps<{
   id: string
 }>()
 
-const { smtpEnabled, oidcEnabled } = storeToRefs(configStore)
+const { smtpEnabled } = storeToRefs(configStore)
 
 const user = ref<UserPublic | null | undefined>(null)
 const loading = ref<boolean>(false)
@@ -226,6 +191,8 @@ const isAdmin = ref<boolean>(false)
 const passwordResetCode = ref<string | undefined>(undefined)
 
 const copied = ref<boolean>(false)
+
+const isLocalUser = computed(() => user.value?.auth_provider === 'local')
 
 const breadcrumbs = computed(() => {
   return [
@@ -251,12 +218,6 @@ const firstnameChanged = computed(
 )
 const lastnameChanged = computed(() => user.value?.last_name !== lastname.value)
 const adminChanged = computed(() => user.value?.admin !== isAdmin.value)
-
-const lazySrc = computed(
-  () =>
-    `https://api.dicebear.com/8.x/bottts-neutral/svg?seed=${user.value?.username}`
-)
-const profilePictureSrc = computed(() => lazySrc.value)
 
 const passwordResetDialog = computed({
   get: () => passwordResetCode.value !== undefined,

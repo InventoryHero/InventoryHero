@@ -232,7 +232,8 @@
       "title": "Current household",
       "select_household": "Select a household",
       "create_new_household": "Create a new household",
-      "loading_households": "@:households.loading_households"
+      "loading_households": "@:households.loading_households",
+      "save_not_possible": "Couldn't save default household, please try again later"
     },
     "all_displayed": "All households have been displayed!",
     "create_new": {
@@ -246,7 +247,8 @@
       "title": "Leave Household {name}",
       "text": "Leaving this household can not be undone. To rejoin the household you'll need to ask the owner for a new invite.",
       "cancel": "Stay",
-      "confirm": "Leave"
+      "confirm": "Leave",
+      "success": "Left household"
     },
     "edit": {
       "delete_household": "Delete Household",
@@ -312,6 +314,9 @@
         "text": "An unexpected error occurred while trying to load the household."
       },
       "back": "Back to Households"
+    },
+    "household_transfer": {
+      "success": "Household transferred successfully"
     }
   },
   "account": {
@@ -348,7 +353,16 @@
     },
     "email_not_confirmed": "Resend Confirmation",
     "resend_confirmation_success": "Please check your e-mail, the verification e-mail was sent successfully",
-    "password_changed_successfully": "Password updated!"
+    "password_changed_successfully": "Password updated!",
+    "profile_picture": {
+      "upload": {
+        "upload": "Upload",
+        "title": "Upload Profile Picture",
+        "accepted_file_types": "Only image/png and image/jpeg are allowed",
+        "invalid_file_type": "Invalid file type",
+        "upload_failed": "Upload failed"
+      }
+    }
   },
   "login": {
     "title": "🚀 Welcome to InventoryHero",
@@ -461,7 +475,9 @@
       },
       "show_print_modal": "Show Print Preview",
       "print": "Print",
-      "close_print_dialog": "Close Preview"
+      "close_print_dialog": "Close Preview",
+      "search_room": "Room...",
+      "search_box": "Box..."
     }
   },
   "description": "Inventory management made easy",
@@ -513,7 +529,8 @@
         "admin": "Is Admin",
         "auth_provider": "Auth Provider",
         "firstname": "First Name",
-        "lastname": "Last Name"
+        "lastname": "Last Name",
+        "copied_reset_link": "Copied to clipboard"
       },
       "create_new": {
         "title": "Create new user",

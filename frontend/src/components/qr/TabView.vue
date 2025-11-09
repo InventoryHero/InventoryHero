@@ -60,7 +60,11 @@ const selectAll = () => {
         <v-text-field
           v-bind="textFieldStyling"
           v-model="search"
-          :label="t(`qr.label.search_${type}`)"
+          :label="
+            type === 'room'
+              ? t(`qr.label.search_room`)
+              : t(`qr.label.search_box`)
+          "
           prepend-inner-icon="mdi-magnify"
         />
       </v-sheet>

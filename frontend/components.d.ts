@@ -56,6 +56,7 @@ declare module 'vue' {
     PageConfiguration: typeof import('./src/components/qr/PageConfiguration.vue')['default']
     PagePreview: typeof import('./src/components/qr/PagePreview.vue')['default']
     PasswordTextField: typeof import('./src/components/common/PasswordTextField.vue')['default']
+    ProfilePictureUploadDialog: typeof import('./src/components/account/ProfilePictureUploadDialog.vue')['default']
     RoomContentHeader: typeof import('./src/components/storage/rooms/RoomContentHeader.vue')['default']
     RoomSummaryCard: typeof import('./src/components/storage/rooms/RoomSummaryCard.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']

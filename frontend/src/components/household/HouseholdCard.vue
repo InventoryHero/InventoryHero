@@ -84,8 +84,7 @@ function leaveHousehold(confirmed: boolean) {
       return
     }
     notify({
-      title: t('toasts.titles.success.household_left'),
-      text: t('toasts.text.success.household_left'),
+      title: t('households.leave.success'),
       type: 'success'
     })
     leaveConfirmed.value = false

@@ -41,6 +41,9 @@ class AppSettings(BaseSettings):
 
     OIDC: OidcSettings | None = None
 
+    PROFILE_PICTURE_DATA_DIR: Path | None = None
+    ALLOWED_IMAGE_TYPES: list[str] | None = None
+
     PRODUCTION: bool = True
     TESTING: bool = False
 
@@ -113,4 +116,14 @@ def build_app_settings(env_file: Path,  data_dir: Path) -> AppSettings:
         env_file=env_file,
     )
     app_settings.OIDC = OidcSettings()
+    app_settings.PROFILE_PICTURE_DATA_DIR = data_dir / "ProfilePictures"
+    app_settings.PROFILE_PICTURE_DATA_DIR.mkdir(parents=True, exist_ok=True)
+    app_settings.ALLOWED_IMAGE_TYPES = [
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "image/bmp",
+        "image/tiff",
+        # Note: SVG is vector, Pillow cannot handle SVG directly
+    ]
     return app_settings
