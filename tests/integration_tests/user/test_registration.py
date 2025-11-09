@@ -15,13 +15,14 @@ def test_registration_disabled(client: TestClient, monkeypatch):
         email="test@test.com",
         username="test",
         password="123456789",
+        password_confirmation="123456789",
         first_name="Test",
         last_name="Test"
     )
 
     response = client.post("/api/user/register/", json=registration.model_dump(by_alias=True))
     assert response.status_code == 403
-    assert response.json()["detail"] == "registration_disabled"
+    assert response.json()["detail"] == "Registration is currently disabled. Contact this instance's administrator for more information"
 
 
 def test_registration(client: TestClient, monkeypatch):
@@ -32,6 +33,7 @@ def test_registration(client: TestClient, monkeypatch):
         email="test@test.com",
         username="test",
         password="123456789",
+        password_confirmation="123456789",
         first_name="Test",
         last_name="Test"
     )
@@ -41,12 +43,12 @@ def test_registration(client: TestClient, monkeypatch):
 
     response = client.post("/api/user/register/", json=registration.model_dump(by_alias=True))
     assert response.status_code == 409
-    assert response.json()["detail"] == "email_already_exists"
+    assert response.json()["detail"] == {'message': 'email_already_exists', 'toast': False, 'toast_type': 'error'}
 
     registration.email = "test2@test.com"
     response = client.post("/api/user/register/", json=registration.model_dump(by_alias=True))
     assert response.status_code == 409
-    assert response.json()["detail"] == "username_already_exists"
+    assert response.json()["detail"] == {'message': 'username_already_exists', 'toast': False, 'toast_type': 'error'}
 
     with Session(engine) as session:
         to_delete = session.exec(select(User).where(User.username == registration.username)).first()

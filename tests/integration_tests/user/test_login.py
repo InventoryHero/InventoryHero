@@ -14,6 +14,7 @@ def test_login_fail(client: TestClient, monkeypatch):
 @pytest.mark.usefixtures("user")
 def test_login(request: pytest.FixtureRequest, client: TestClient, monkeypatch):
     settings = get_app_settings()
+    print(settings.DB_PROVIDER.db_url)
     form_data = {"username": settings._IH_DEFAULT_USERNAME, "password": settings._IH_DEFAULT_PASSWORD}
     response = client.post("/api/auth/token", data=form_data)
     assert response.status_code == 200

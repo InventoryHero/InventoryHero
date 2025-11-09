@@ -37,7 +37,7 @@ def test_create_user_admin(client: TestClient):
     assert response.status_code == 200
     assert "set-cookie" in response.headers
 
-    response = client.post("/api/user/create", json={
+    response = client.post("/api/admin/user/create", json={
         "username": user.username,
         "email": user.email,
         "password": user.password,
@@ -47,7 +47,6 @@ def test_create_user_admin(client: TestClient):
     assert response.json()["username"] == user.username
     assert response.json()["email"] == user.email
     assert response.json()["admin"] == user.admin
-    assert response.json()["id"] > 0
 
     # cleanup
     with Session(engine) as session:
@@ -64,17 +63,17 @@ def test_delete_user_admin(client: TestClient, user):
     assert response.status_code == 200
     assert "set-cookie" in response.headers
 
-    response = client.delete(f"/api/user/{user.id}")
+    response = client.delete(f"/api/admin/user/{user.id}")
     assert response.status_code == 204
 
-    response = client.get("/api/user/")
+    response = client.get(f"/api/admin/user/users")
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
     assert len(data) == 1
     assert data[0]["username"] == settings._IH_DEFAULT_USERNAME
 
-    # delete superuser
-    response = client.delete(f"/api/user/0")
+    response = client.delete(f"/api/admin/user/{data[0]['id']}")
     assert response.status_code == 400
-    assert response.json() == {"detail": "cannot_delete_user_0"}
+    data = response.json()
+    assert data["detail"] == {'message': 'Deleting your own account is not supported from here', 'toast': True, 'toast_type': 'error'}

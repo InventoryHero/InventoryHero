@@ -1,4 +1,6 @@
 import pytest
+from dotenv import load_dotenv
+
 from ih.core.config import get_app_settings
 
 
