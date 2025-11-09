@@ -17,7 +17,7 @@ class AppSettings(BaseSettings):
     PORT: int = 5000
     API_DOCS: bool = True
 
-    _IH_APP_URL: str = f"http://localhost:8080"
+    _IH_APP_URL: str = f"http://{HOST}:{PORT}"
     IH_APP_URL: str = _IH_APP_URL
 
     IH_ACCESS_TOKEN_EXPIRATION: int = 15 * 60

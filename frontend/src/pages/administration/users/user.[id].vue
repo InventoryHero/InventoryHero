@@ -115,6 +115,7 @@
                   v-bind="textFieldStyling"
                   v-model="firstname"
                   :label="t('administration.users.user.firstname')"
+                  :disabled="oidcEnabled"
                 >
                   <template v-slot:append-inner>
                     <v-icon
@@ -130,6 +131,7 @@
                   v-bind="textFieldStyling"
                   v-model="lastname"
                   :label="t('administration.users.user.lastname')"
+                  :disabled="oidcEnabled"
                 >
                   <template v-slot:append-inner>
                     <v-icon
@@ -155,6 +157,7 @@
               :text="t('administration.users.user.reset_password')"
               @click="resetPassword"
               class="me-2"
+              :disabled="oidcEnabled"
             />
             <v-btn
               v-bind="btnStyle"
@@ -167,6 +170,7 @@
       </v-row>
     </v-container>
   </template>
+  <!--TODO this should also use the copy logic from useShareMethods-->
   <v-snackbar
     :timeout="5000"
     color="success"
@@ -187,9 +191,6 @@ import { AdminUserUpdate } from '@/api/types/user'
 import router from '@/router'
 import useConfigStore from '@/stores/useConfigStore'
 import { BreadcrumbItem } from 'vuetify/lib/components/VBreadcrumbs/VBreadcrumbs.mjs'
-
-// TODO DISABLE ACCOUNT SETTINGS (only available for admin to manage conflicts etc.) FOR NON LOCAL AUTH METHODS
-// DO THIS FOR ALL ROUTES AND ALSO VERIFY IN THE BACKEND (i.e. forgot password etc.)
 
 definePage({
   props: true,
@@ -212,7 +213,7 @@ const { id } = defineProps<{
   id: string
 }>()
 
-const { smtpEnabled } = storeToRefs(configStore)
+const { smtpEnabled, oidcEnabled } = storeToRefs(configStore)
 
 const user = ref<UserPublic | null | undefined>(null)
 const loading = ref<boolean>(false)

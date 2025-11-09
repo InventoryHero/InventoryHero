@@ -8,9 +8,11 @@ from . import settings, ALGORITHM
 
 import jwt
 
+from ..logging.logger import get_logger
 from ...db.models.RefreshToken import RefreshToken
 
 password_hash = PasswordHash.recommended()
+logger = get_logger()
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return password_hash.verify(plain_password, hashed_password)
@@ -39,7 +41,7 @@ def token_expires_soon(exp, threshold_seconds: int = 60):
     try:
         exp = datetime.fromtimestamp(exp, UTC)
         return (exp - datetime.now(UTC)).total_seconds() < threshold_seconds
-    except Exception:
-        # TODO LOG
+    except Exception as ex:
+        logger.error(ex)
         pass
     return False

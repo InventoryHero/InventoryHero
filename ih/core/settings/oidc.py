@@ -10,6 +10,7 @@ class OidcSettings(BaseSettings):
     IH_OIDC_REDIRECT_URI: str | None = None
     IH_OIDC_USER_CLAIM: str = "preferred_username"
 
+
     IH_OIDC_NAME: str = 'SSO'
 
     @property
@@ -23,6 +24,7 @@ class OidcSettings(BaseSettings):
             self.IH_OIDC_CLIENT_ID,
             self.IH_OIDC_CLIENT_SECRET
         ])
+
 
     @property
     def user_claim(self) -> str:

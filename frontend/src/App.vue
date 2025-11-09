@@ -73,7 +73,7 @@ onBeforeMount(() => {
 
 <template>
   <router-view
-    v-if="initialized && !initializeFailed"
+    v-if="initialized"
     v-slot="{ Component, route }"
   >
     <transition v-bind="transition">
@@ -83,10 +83,35 @@ onBeforeMount(() => {
       />
     </transition>
   </router-view>
-  <template v-else-if="!initialized"></template>
+  <template v-else-if="!initialized && !initializeFailed"></template>
 
   <template v-else-if="initializeFailed">
     <!-- TODO display something here-->
+    <v-app>
+      <v-main>
+        <v-container>
+          <v-row>
+            <v-col
+              cols="12"
+              lg="10"
+            >
+              <v-card :title="t('initialized.failed.title')">
+                <v-card-text>
+                  {{ t('initialize.failed.text') }}
+                </v-card-text>
+                <v-card-actions>
+                  <v-spacer />
+                  <v-btn
+                    @click="router.go(0)"
+                    :text="t('initialize.failed.refresh')"
+                  />
+                </v-card-actions>
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-container>
+      </v-main>
+    </v-app>
   </template>
 </template>
 

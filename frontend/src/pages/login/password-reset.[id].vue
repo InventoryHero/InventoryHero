@@ -77,8 +77,7 @@ async function resetPassword() {
 
   router.replace('/login').then(() => {
     notify({
-      title: t(`toasts.titles.success.password_reset`),
-      text: t(`toasts.text.success.password_reset`),
+      title: t(`login.reset-password.success`),
       type: 'success'
     })
   })

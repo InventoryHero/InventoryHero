@@ -381,7 +381,8 @@
         "passwords_not_equal": "@:register.rules.passwords_not_equal",
         "password_needed": "You need to have a password"
       },
-      "unknown_token_error": "Unknown error with your password reset token. Please request a new one!"
+      "unknown_token_error": "Unknown error with your password reset token. Please request a new one!",
+      "success": "Your password has been reset"
     },
     "username_or_password_invalid": "Username or password is invalid",
     "error": {
@@ -394,7 +395,10 @@
         "title": "Unknown Error"
       }
     },
-    "sso": "Login with {name}"
+    "sso": "Login with {name}",
+    "notification": {
+      "request_new_confirmation_code": "A new confirmation code has been sent to you!"
+    }
   },
   "register": {
     "title": "🎉 Join InventoryHero now",
@@ -507,7 +511,9 @@
         "confirmed": "Confirmed",
         "actions": "Actions",
         "admin": "Is Admin",
-        "auth_provider": "Auth Provider"
+        "auth_provider": "Auth Provider",
+        "firstname": "First Name",
+        "lastname": "Last Name"
       },
       "create_new": {
         "title": "Create new user",
@@ -526,7 +532,8 @@
         "yes": "Delete",
         "no": "Cancel"
       },
-      "create": "Add new user"
+      "create": "Add new user",
+      "resent_confirmation": "Confirmation E-Mail sent"
     }
   },
   "unknown_error": "An unknown error ocurred",
@@ -571,7 +578,8 @@
   },
   "household": {
     "household_updated": "Household updated",
-    "kicked_from_household": "Removed {user} from household"
+    "kicked_from_household": "Removed {user} from household",
+    "household_created": "Household {name} created"
   },
   "configuration": {
     "title": "Configuration",
@@ -582,9 +590,27 @@
     "send_test_email": "Test",
     "database": "Database",
     "test_email": {
-      "sent": "Test E-Mail sent"
+      "sent": "Test E-Mail sent",
+      "email": "E-Mail",
+      "send": "Send test e-mail"
     },
     "base_url_is_default": "Your App URL is set to the default value. This can lead to problems if you don't run under this URL",
-    "smtp_not_set_or_invalid": "Either you did not configure SMTP or your settings are invalid"
+    "smtp_not_set_or_invalid": "Either you did not configure SMTP or your settings are invalid",
+    "deployment": "Deployment Type",
+    "oidc": "OIDC",
+    "odic": {
+      "not_set_or_invalid": "Either you did not configre OIDC (then you can ignore this) or your settings are invalid"
+    }
+  },
+  "initialize": {
+    "failed": {
+      "refresh": "Refresh",
+      "text": "It seems like we have some problems connection to the InventoryHero server. Please try and refresh the page later. If this issue persists please contact an administrator. "
+    }
+  },
+  "initialized": {
+    "failed": {
+      "title": "InventoryHero connection problem"
+    }
   }
 }

@@ -241,6 +241,7 @@ class UserRepository:
             .where(User.confirmation_code == confirmation_hash)
         ).first()
 
+
         if user is None:
             raise InventoryHeroAPIException(
                 status_code=status.HTTP_404_NOT_FOUND,
@@ -264,6 +265,7 @@ class UserRepository:
                     toast=True
                 )
             )
+        check_auth_provider(user)
         code = self.generate_password_reset_code(user, requestee)
         return code
 

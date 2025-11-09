@@ -104,8 +104,12 @@
       >
         <template v-slot:prepend>
           <v-icon
-            icon="mdi-cloud-circle"
+            :icon="
+              appConfig?.oidc_enabled ? 'mdi-check-circle' : 'mdi-alert-circle'
+            "
+            :color="appConfig?.oidc_enabled ? 'success' : 'warning'"
             size="x-large"
+            v-tooltip:top="appConfigOidcTooltip"
           />
         </template>
       </v-list-item>
@@ -168,6 +172,22 @@ const appConfigSmtpTooltip = computed(() => {
   }
   return {
     text: t('configuration.smtp_not_set_or_invalid'),
+    openOnClick: true,
+    openOnHover: true,
+    persistent: false
+  }
+})
+
+const appConfigOidcTooltip = computed(() => {
+  if (appConfig.value?.oidc_enabled) {
+    return {
+      text: '',
+      openOnClick: false,
+      openOnHover: false
+    }
+  }
+  return {
+    text: t('configuration.odic.not_set_or_invalid'),
     openOnClick: true,
     openOnHover: true,
     persistent: false

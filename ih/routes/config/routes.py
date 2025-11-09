@@ -23,13 +23,13 @@ class ConfigController(ControllerBase):
 
     @router.get("/", response_model=ConfigPublic, status_code=status.HTTP_200_OK)
     def get_config(self):
-
         return ConfigPublic(
             smtp_enabled=self.settings.IH_SMTP_ENABLED,
             registration_allowed=self.settings.IH_REGISTRATION_ALLOWED,
             oidc_enabled=self.settings.OIDC.enabled,
             oidc_name=self.settings.OIDC.IH_OIDC_NAME,
         )
+
 
 @cbv(admin_router)
 class AdminConfigController(BaseAdminController):
