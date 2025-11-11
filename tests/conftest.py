@@ -9,14 +9,15 @@ mp.setenv("PRODUCTION", "False")
 mp.setenv("TESTING", "True")
 mp.setenv("IH_REGISTRATION_ALLOWED", "True")
 mp.setenv("IH_SECRET_KEY", "supersecretteststring")
-
+mp.setenv("IH_ACCESS_TOKEN_EXPIRATION", f"{3600*4}")
 
 from fastapi.testclient import TestClient
 from ih.db.init_db import init_db
 from ih.app import app as real_app
 from ih.core import config
 from ih.core.settings.provider import SQLiteProvider
-from tests.fixtures.users import user
+#from tests.fixtures.users import user
+from tests.fixtures import *
 
 init_db()
 

@@ -22,6 +22,8 @@ def test_get_user_details(client: TestClient, user):
     assert response.json()["admin"] == user.admin
 
 
+
+
 def test_create_user_admin(client: TestClient):
     settings = get_app_settings()
     user = User(
@@ -53,8 +55,8 @@ def test_create_user_admin(client: TestClient):
         user = session.exec(select(User).where(User.username == user.username)).first()
         session.delete(user)
         session.commit()
-
-def test_delete_user_admin(client: TestClient, user):
+        
+def test_admin_get(client: TestClient, user):
     settings = get_app_settings()
     response = client.post("/api/auth/token", data={
         "username": settings._IH_DEFAULT_USERNAME,
@@ -63,17 +65,58 @@ def test_delete_user_admin(client: TestClient, user):
     assert response.status_code == 200
     assert "set-cookie" in response.headers
 
-    response = client.delete(f"/api/admin/user/{user.id}")
+    response = client.get(f"/api/admin/user/{user.id}")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["email"] == user.email
+    assert data["username"] == user.username
+
+
+def test_delete_user_admin(authenticated_client: TestClient, user):
+    settings = get_app_settings()
+    response = authenticated_client.delete(f"/api/admin/user/{user.id}")
     assert response.status_code == 204
 
-    response = client.get(f"/api/admin/user/users")
+    response = authenticated_client.get(f"/api/admin/user/users")
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
     assert len(data) == 1
     assert data[0]["username"] == settings._IH_DEFAULT_USERNAME
 
-    response = client.delete(f"/api/admin/user/{data[0]['id']}")
+    response = authenticated_client.delete(f"/api/admin/user/{data[0]['id']}")
     assert response.status_code == 400
     data = response.json()
     assert data["detail"] == {'message': 'Deleting your own account is not supported from here', 'toast': True, 'toast_type': 'error'}
+
+def test_admin_user_update(authenticated_client: TestClient, user):
+    response = authenticated_client.put(f"/api/admin/user/{user.id}", json={
+        "first_name": "xx",
+        "last_name": "xx",
+        "email": "xx@xx.xx",
+        "username": "yyy",
+        "admin": True
+    })
+    assert response.status_code == 200
+    data = response.json()
+    assert data["first_name"] == "xx"
+    assert data["last_name"] == "xx"
+    assert data["username"] == "yyy"
+    assert data["email"] == "xx@xx.xx"
+    assert data["admin"]
+
+    # test updating nonexisting user
+    response = authenticated_client.put(f"/api/admin/user/0f96397f-d636-4afa-860c-7b0af864ab0f", json={
+        "first_name": "yy"
+    })
+    assert response.status_code == 404
+
+def test_admin_user_reset_password(authenticated_client: TestClient, user):
+    settings = get_app_settings()
+    response = authenticated_client.put(f"/api/admin/user/{user.id}/reset-password")
+    assert response.status_code == 200
+    assert response.json().startswith(f"{settings.IH_APP_URL}/password-reset/")
+    
+    response = authenticated_client.put(f"/api/admin/user/0f96397f-d636-4afa-860c-7b0af864ab0f/password-reset")
+    assert response.status_code == 404
+

@@ -64,6 +64,7 @@ class AdminUserController(BaseAdminController):
 
     @admin_router.put("/{user_id}", status_code=200, response_model=UserPublic)
     async def update_user(self, user_id: UUID, to_update: AdminUserUpdate):
+        # todo enforce username length backendside (same as email)
         return self.repositories.users.update_user(user_id, to_update)
 
     @admin_router.put("/{user_id}/reset-password", status_code=status.HTTP_200_OK)

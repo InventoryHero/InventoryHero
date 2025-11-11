@@ -6,7 +6,7 @@ from ih.db.models.User import User  # adjust to your actual user model import
 from ih.core.security.password import hash_password
 from ih.db.db_setup import engine  # your shared engine
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="function")
 def user() -> Generator[User, Any, None]:
     user = User(
         username="test1",
