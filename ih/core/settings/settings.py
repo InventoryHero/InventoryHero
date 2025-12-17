@@ -1,7 +1,7 @@
 import logging
 from pathlib import Path
 
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 
 from ih.core.settings.provider import Provider, db_factory
 from ih.core.settings.oidc import OidcSettings
@@ -10,6 +10,7 @@ from ih import __version__
 
 
 class AppSettings(BaseSettings):
+    model_config = SettingsConfigDict(arbitrary_types_allowed=True, extra="allow")
     IH_DEMO: bool = False
 
     HOST_IP: str = "*"
@@ -109,7 +110,9 @@ class AppSettings(BaseSettings):
 
 
 def build_app_settings(env_file: Path,  data_dir: Path) -> AppSettings:
-    app_settings = AppSettings()
+    app_settings = AppSettings(
+        _env_file=env_file
+    )
     app_settings.DB_PROVIDER = db_factory(
         app_settings.IH_DB_ENGINE or "sqlite",
         data_dir,

@@ -1,5 +1,8 @@
 from typing import Optional
 
+from fastapi import HTTPException
+from starlette import status
+
 from ih.core.config import get_app_settings
 from ih.core.logging.logger import get_logger
 from pathlib import Path
@@ -40,6 +43,7 @@ def send_confirmation_email(to: str, username: str, reset_code: str) -> bool:
     """
     if not settings.IH_SMTP_ENABLED:
         return False
+
     env = Environment(
         loader=FileSystemLoader(template_dir),
         autoescape=select_autoescape(["html", "xml"])

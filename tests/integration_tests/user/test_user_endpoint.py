@@ -1,10 +1,13 @@
+import hashlib
 
 from fastapi.testclient import TestClient
 from sqlmodel import Session, select
+from bs4 import BeautifulSoup
 
 from ih.core.config import get_app_settings
 from ih.db.db_setup import engine
 from ih.db.models.User import User
+from tests.fixtures.mailpit import wait_for_messages, get_message
 
 
 def test_get_user_details(client: TestClient, user):
@@ -111,12 +114,71 @@ def test_admin_user_update(authenticated_client: TestClient, user):
     })
     assert response.status_code == 404
 
-def test_admin_user_reset_password(authenticated_client: TestClient, user):
+def test_admin_user_reset_password(authenticated_client: TestClient, user, session):
     settings = get_app_settings()
     response = authenticated_client.put(f"/api/admin/user/{user.id}/reset-password")
     assert response.status_code == 200
     assert response.json().startswith(f"{settings.IH_APP_URL}/password-reset/")
-    
+
+    messages = wait_for_messages()
+    assert messages["total"] == 1
+
+    msg = messages["messages"][0]
+    assert msg["To"][0]["Address"] == user.email
+    assert "password" in msg["Subject"].lower()
+
+    body = get_message(msg["ID"])
+    assert f"{settings.IH_APP_URL}/password-reset/" in body["HTML"]
+
+    soup = BeautifulSoup(body["HTML"], "html.parser")
+    reset_links = [
+        link for link in [a["href"] for a in soup.find_all("a", href=True)]
+        if "/password-reset/" in link
+    ]
+    assert len(reset_links) == 2
+    assert reset_links[0] == reset_links[1]
+
+    session.refresh(user)
+    code = reset_links[0].split("/")[-1]
+    code = hashlib.sha256(code.encode()).hexdigest()
+
+    assert user.password_reset_token == code
+
     response = authenticated_client.put(f"/api/admin/user/0f96397f-d636-4afa-860c-7b0af864ab0f/password-reset")
     assert response.status_code == 404
+    
+def test_admin_resend_confirmation(authenticated_client: TestClient, user, monkeypatch):
+
+    get_app_settings.cache_clear()
+    settings = get_app_settings()
+    assert settings.IH_SMTP_ENABLED
+
+    response = authenticated_client.post(f"/api/admin/user/{user.id}/resend-confirmation")
+    assert response.status_code == 204
+
+    # confirm email validity
+    messages = wait_for_messages()
+    assert messages["total"] == 1
+    msg = messages["messages"][0]
+    assert msg["To"][0]["Address"] == user.email
+    assert "confirm your e-mail" == msg["Subject"].lower()
+    body = get_message(msg["ID"])
+    assert f"{settings.IH_APP_URL}/confirm/" in body["HTML"]
+
+    response = authenticated_client.post(f"/api/admin/user/0f96397f-d636-4afa-860c-7b0af864ab0f/resend-confirmation")
+    assert response.status_code == 404
+    assert response.json()["detail"] == "The requested user does not exist"
+
+    # disable email
+    monkeypatch.setenv("IH_SMTP_HOST", "")
+    get_app_settings.cache_clear()
+    settings = get_app_settings()
+    assert not settings.IH_SMTP_ENABLED
+
+    response = authenticated_client.post(f"/api/admin/user/{user.id}/resend-confirmation")
+    assert response.status_code == 400
+    assert response.json()["detail"]["message"] == "SMTP is disabled, cannot send emails"
+
+
+
 
