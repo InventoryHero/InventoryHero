@@ -7,7 +7,7 @@ from ih.app import app as real_app
 from ih.core.settings.provider import SQLiteProvider
 
 @pytest.fixture(scope="session")
-def authenticated_client():
+def admin_client():
     client = TestClient(real_app)
     settings = get_app_settings()
     response = client.post("/api/auth/token", data={

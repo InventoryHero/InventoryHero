@@ -1,3 +1,4 @@
+import datetime
 import hashlib
 
 from fastapi.testclient import TestClient
@@ -5,9 +6,13 @@ from sqlmodel import Session, select
 from bs4 import BeautifulSoup
 
 from ih.core.config import get_app_settings
+from ih.core.security.password import hash_password, verify_password
+from ih.core.security.provider import AuthenticationProvider
 from ih.db.db_setup import engine
+from ih.db.models import Household, HouseholdMember
 from ih.db.models.User import User
-from tests.fixtures.mailpit import wait_for_messages, get_message
+from ih.schema.households import Role, HouseholdWithMemberPublic
+from tests.utils.email import wait_for_messages, get_message
 
 
 def test_get_user_details(client: TestClient, user):
@@ -75,25 +80,25 @@ def test_admin_get(client: TestClient, user):
     assert data["username"] == user.username
 
 
-def test_delete_user_admin(authenticated_client: TestClient, user):
+def test_delete_user_admin(admin_client: TestClient, user):
     settings = get_app_settings()
-    response = authenticated_client.delete(f"/api/admin/user/{user.id}")
+    response = admin_client.delete(f"/api/admin/user/{user.id}")
     assert response.status_code == 204
 
-    response = authenticated_client.get(f"/api/admin/user/users")
+    response = admin_client.get(f"/api/admin/user/users")
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
     assert len(data) == 1
     assert data[0]["username"] == settings._IH_DEFAULT_USERNAME
 
-    response = authenticated_client.delete(f"/api/admin/user/{data[0]['id']}")
+    response = admin_client.delete(f"/api/admin/user/{data[0]['id']}")
     assert response.status_code == 400
     data = response.json()
     assert data["detail"] == {'message': 'Deleting your own account is not supported from here', 'toast': True, 'toast_type': 'error'}
 
-def test_admin_user_update(authenticated_client: TestClient, user):
-    response = authenticated_client.put(f"/api/admin/user/{user.id}", json={
+def test_admin_user_update(admin_client: TestClient, user):
+    response = admin_client.put(f"/api/admin/user/{user.id}", json={
         "first_name": "xx",
         "last_name": "xx",
         "email": "xx@xx.xx",
@@ -109,14 +114,14 @@ def test_admin_user_update(authenticated_client: TestClient, user):
     assert data["admin"]
 
     # test updating nonexisting user
-    response = authenticated_client.put(f"/api/admin/user/0f96397f-d636-4afa-860c-7b0af864ab0f", json={
+    response = admin_client.put(f"/api/admin/user/0f96397f-d636-4afa-860c-7b0af864ab0f", json={
         "first_name": "yy"
     })
     assert response.status_code == 404
 
-def test_admin_user_reset_password(authenticated_client: TestClient, user, session):
+def test_admin_user_reset_password(admin_client: TestClient, user, session):
     settings = get_app_settings()
-    response = authenticated_client.put(f"/api/admin/user/{user.id}/reset-password")
+    response = admin_client.put(f"/api/admin/user/{user.id}/reset-password")
     assert response.status_code == 200
     assert response.json().startswith(f"{settings.IH_APP_URL}/password-reset/")
 
@@ -144,16 +149,16 @@ def test_admin_user_reset_password(authenticated_client: TestClient, user, sessi
 
     assert user.password_reset_token == code
 
-    response = authenticated_client.put(f"/api/admin/user/0f96397f-d636-4afa-860c-7b0af864ab0f/password-reset")
+    response = admin_client.put(f"/api/admin/user/0f96397f-0000-4afa-860c-7b0af864ab0f/password-reset")
     assert response.status_code == 404
     
-def test_admin_resend_confirmation(authenticated_client: TestClient, user, monkeypatch):
+def test_admin_resend_confirmation(admin_client: TestClient, user, monkeypatch):
 
     get_app_settings.cache_clear()
     settings = get_app_settings()
     assert settings.IH_SMTP_ENABLED
 
-    response = authenticated_client.post(f"/api/admin/user/{user.id}/resend-confirmation")
+    response = admin_client.post(f"/api/admin/user/{user.id}/resend-confirmation")
     assert response.status_code == 204
 
     # confirm email validity
@@ -165,7 +170,7 @@ def test_admin_resend_confirmation(authenticated_client: TestClient, user, monke
     body = get_message(msg["ID"])
     assert f"{settings.IH_APP_URL}/confirm/" in body["HTML"]
 
-    response = authenticated_client.post(f"/api/admin/user/0f96397f-d636-4afa-860c-7b0af864ab0f/resend-confirmation")
+    response = admin_client.post(f"/api/admin/user/0f96397f-d636-4afa-860c-7b0af864ab0f/resend-confirmation")
     assert response.status_code == 404
     assert response.json()["detail"] == "The requested user does not exist"
 
@@ -175,9 +180,252 @@ def test_admin_resend_confirmation(authenticated_client: TestClient, user, monke
     settings = get_app_settings()
     assert not settings.IH_SMTP_ENABLED
 
-    response = authenticated_client.post(f"/api/admin/user/{user.id}/resend-confirmation")
+    response = admin_client.post(f"/api/admin/user/{user.id}/resend-confirmation")
     assert response.status_code == 400
     assert response.json()["detail"]["message"] == "SMTP is disabled, cannot send emails"
+
+def test_user_reset_password(client: TestClient, user, session):
+    settings = get_app_settings()
+
+    # request password reset
+    response = client.post(
+        "/api/user/reset-password",
+        json={"email": user.email},
+    )
+    assert response.status_code == 204
+    assert response.content == b""
+
+    # wait for email to arrive in Mailpit
+    messages = wait_for_messages()
+    assert messages["total"] == 1
+
+    msg = messages["messages"][0]
+    assert msg["To"][0]["Address"] == user.email
+    assert "password" in msg["Subject"].lower()
+
+    # fetch email body
+    body = get_message(msg["ID"])
+    assert f"{settings.IH_APP_URL}/password-reset/" in body["HTML"]
+
+    # extract reset links
+    soup = BeautifulSoup(body["HTML"], "html.parser")
+    reset_links = [
+        a["href"]
+        for a in soup.find_all("a", href=True)
+        if "/password-reset/" in a["href"]
+    ]
+
+    assert len(reset_links) == 2
+    assert reset_links[0] == reset_links[1]
+
+    # verify token stored in DB matches email link
+    session.refresh(user)
+    raw_code = reset_links[0].split("/")[-1]
+    hashed_code = hashlib.sha256(raw_code.encode()).hexdigest()
+
+    assert user.password_reset_token == hashed_code
+
+def test_validate_password_reset_token(client: TestClient, user, session):
+    # 1. Request password reset (issue token)
+    response = client.post(
+        "/api/user/reset-password",
+        json={"email": user.email},
+    )
+    assert response.status_code == 204
+
+    # 2. Read reset email
+    messages = wait_for_messages()
+    assert messages["total"] == 1
+
+    msg = messages["messages"][0]
+    body = get_message(msg["ID"])
+
+    soup = BeautifulSoup(body["HTML"], "html.parser")
+    reset_link = next(
+        a["href"]
+        for a in soup.find_all("a", href=True)
+        if "/password-reset/" in a["href"]
+    )
+
+    raw_code = reset_link.split("/")[-1]
+    assert raw_code  # sanity check
+
+    # 3. Validate token
+    response = client.get(f"/api/user/validate-password-token/{raw_code}")
+    assert response.status_code == 200
+
+    data = response.json()
+    assert data["valid"] is True
+    assert data["reason"] is None
+
+    session.refresh(user)
+    user.password_reset_token_expires_at = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(minutes=1)
+    session.commit()
+
+    response = client.get(f"/api/user/validate-password-token/{raw_code}")
+    assert response.status_code == 200
+
+    data = response.json()
+    assert data["valid"] is False
+    assert data["reason"] == "The token is invalid, please request a new one!"
+
+    response = client.get(f"/api/user/validate-password-token/this-code-is-invalid")
+    assert response.status_code == 200
+
+    data = response.json()
+    assert data["valid"] is False
+    assert data["reason"] == "The token is invalid, please request a new one!"
+
+def test_user_reset_password_with_code(client: TestClient, user, session):
+    response = client.post(
+        "/api/user/reset-password",
+        json={"email": user.email},
+    )
+    assert response.status_code == 204
+
+    messages = wait_for_messages()
+    assert messages["total"] == 1
+
+    msg = messages["messages"][0]
+    body = get_message(msg["ID"])
+
+    soup = BeautifulSoup(body["HTML"], "html.parser")
+    reset_link = next(
+        a["href"]
+        for a in soup.find_all("a", href=True)
+        if "/password-reset/" in a["href"]
+    )
+    raw_code = reset_link.split("/")[-1]
+    new_password = "NewStrongPassword123!"
+
+    session.refresh(user)
+    user.password_reset_token_expires_at = datetime.datetime.now(datetime.timezone.utc) - datetime.timedelta(minutes=1)
+    session.commit()
+    response = client.post(
+        f"/api/user/reset-password/{raw_code}",
+        json={"new_password": new_password, "new_password_confirmation": new_password},
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["valid"] is False
+    assert data["reason"] == "The token is invalid, please request a new one!"
+
+    response = client.post(
+        f"/api/user/reset-password/this-code-is-invalid",
+        json={"new_password": new_password, "new_password_confirmation": new_password},
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["valid"] is False
+    assert data["reason"] == "The token is invalid, please request a new one!"
+
+    session.refresh(user)
+    user.password_reset_token_expires_at = datetime.datetime.now(datetime.timezone.utc) + datetime.timedelta(minutes=1)
+    session.commit()
+    response = client.post(
+        f"/api/user/reset-password/{raw_code}",
+        json={"new_password": new_password, "new_password_confirmation": "not-equal"},
+    )
+    assert response.status_code == 400
+    data = response.json()["detail"]
+    assert data["toast"] is True
+    assert data["message"] == "The given passwords do not match"
+    session.refresh(user)
+    assert user.password_reset_token is not None
+    assert user.password_reset_token_expires_at is not None
+
+
+    response = client.post(
+        f"/api/user/reset-password/{raw_code}",
+        json={"new_password": new_password, "new_password_confirmation": new_password},
+    )
+    assert response.status_code == 200
+    data = response.json()
+    assert data["valid"] is True
+    assert data["reason"] is None
+    session.refresh(user)
+    assert user.password_reset_token is None
+    assert user.password_reset_token_expires_at is None
+    assert verify_password(new_password,user.password)
+
+def test_get_current_household(admin_client: TestClient, user, session):
+    response = admin_client.get("/api/user/current-household")
+    assert response.status_code == 200
+    assert response.content == b'null'
+
+def test_set_current_household(admin_client: TestClient, session):
+    response = admin_client.post("/api/user/current-household",json={"id": '00000000-0000-0000-0000-000000000000'},)
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Household not found"
+
+    settings = get_app_settings()
+    user  = session.exec(select(User).where(User.username == settings._IH_DEFAULT_USERNAME)).first()
+    assert user
+
+    household = Household(name="test")
+    session.add(household)
+    session.flush()
+    session.refresh(household)
+
+    household_member = HouseholdMember(user_id = user.id, household_id = household.id, role = Role.OWNER)
+    session.add(household_member)
+    session.commit()
+    session.refresh(household_member)
+
+    response = admin_client.post("/api/user/current-household", json={"id": str(household.id)} )
+    assert response.status_code == 200
+    default_household: HouseholdWithMemberPublic = HouseholdWithMemberPublic(**response.json())
+    assert default_household.id == household.id
+    assert default_household.name == household.name
+    assert default_household.member.user_id == user.id
+    assert default_household.member.role == Role.OWNER
+
+    response = admin_client.get("/api/user/current-household")
+    assert response.status_code == 200
+    default_household: HouseholdWithMemberPublic = HouseholdWithMemberPublic(**response.json())
+    assert default_household.id == household.id
+    assert default_household.name == household.name
+    assert default_household.member.user_id == user.id
+    assert default_household.member.role == Role.OWNER
+
+    session.delete(household)
+    session.commit()
+
+    assert len(session.exec(select(HouseholdMember)).all()) == 0
+
+    response = admin_client.get("/api/user/current-household")
+    assert response.status_code == 200
+    assert response.content == b'null'
+
+def test_change_password(client: TestClient, user, session):
+    response = client.post("/api/auth/token", data={
+        "username": user.username,
+        "password": "test1"
+    })
+    assert response.status_code == 200
+
+    response = client.post("/api/user/change-password", json={"current_password": "test1", "new_password": "test1234", "new_password_confirmation": "test1234"})
+    assert response.status_code == 204
+
+    session.refresh(user)
+    assert verify_password("test1234", user.password)
+
+    response = client.post("/api/user/change-password", json={"current_password": "test1234", "new_password": "test11",
+                                                              "new_password_confirmation": "test1"})
+    assert response.status_code == 422
+    data = response.json()["detail"]
+    assert data["message"] == "The given passwords do not match"
+
+    response = client.post("/api/user/change-password", json={"current_password": "test1", "new_password": "test1",
+                                                              "new_password_confirmation": "test1"})
+    assert response.status_code == 403
+    data = response.json()["detail"]
+    assert data["message"] == "wrong_password"
+    assert data["toast"] is False
+
+    response = client.post("/api/user/change-password", json={"current_password": "test1234", "new_password": "test1",
+                                                              "new_password_confirmation": "test1"})
+    assert response.status_code == 204
 
 
 

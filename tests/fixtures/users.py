@@ -25,3 +25,5 @@ def user(session) -> Generator[User, Any, None]:
     if existing_user:
         session.delete(user)
         session.commit()
+
+

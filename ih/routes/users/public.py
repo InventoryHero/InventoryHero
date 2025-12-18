@@ -11,7 +11,7 @@ router = APIRouter(prefix="/user", tags=["register"])
 
 @cbv(router)
 class UserPublicController(PublicControllerBase):
-    @router.post("/register", status_code=status.HTTP_201_CREATED)
+    @router.post("/register", status_code=status.HTTP_204_NO_CONTENT)
     def register_user(self, user: UserCreate):
         if self.user:
             raise HTTPException(
@@ -28,7 +28,7 @@ class UserPublicController(PublicControllerBase):
 
         assert not getattr(user, "admin", False), "Public registration cannot set admin=True"
         self.repositories.users.register(user)
-        return
+
 
     @router.post("/reset-password", status_code=status.HTTP_204_NO_CONTENT)
     async def reset_password(self, email: ResetPasswordForm):
@@ -41,7 +41,7 @@ class UserPublicController(PublicControllerBase):
     @router.get("/validate-password-token/{code}", response_model=TokenValidationResponse, status_code=status.HTTP_200_OK)
     def validate_password_token(self, code: str) -> TokenValidationResponse:
         valid = self.repositories.users.validate_password_token(code)
-        return TokenValidationResponse(valid=valid, reason=self.localizer.t('password_reset.invalid_token'))
+        return TokenValidationResponse(valid=valid, reason=self.localizer.t('password_reset.invalid_token') if not valid else None)
 
     @router.post("/reset-password/{code}", response_model=ResetPasswordResponse, status_code=status.HTTP_200_OK)
     def reset_password_with_code(self, code: str, payload: ChangePasswordFormBase):

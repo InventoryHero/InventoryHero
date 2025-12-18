@@ -108,7 +108,7 @@ export default (api: AxiosInstance) => {
   const register = async (payload: UserCreate): Promise<ApiResponse<void>> => {
     const response = await api.post('/user/register', payload)
     return {
-      success: response.status === 201,
+      success: response.status === 204,
       error: response.data ?? undefined
     }
   }

@@ -216,7 +216,7 @@ class UserRepository:
             raise InventoryHeroAPIException(
                 status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
                 detail=ErrorResponse(
-                    message=self.localizer.t("password_reset.password_mismatch")
+                    message=self.localizer.t("password_reset.passwords_dont_match")
                 )
             )
         user = self.get_user_by_id(user_id)
@@ -331,7 +331,7 @@ class UserRepository:
 
         user.password = hash_password(new_password.new_password)
         self.session.flush()
-        return True, ''
+        return True, None
 
     def resend_confirmation(self, user_id: UUID) -> None:
 
