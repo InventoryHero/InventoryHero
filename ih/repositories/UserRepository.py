@@ -200,6 +200,11 @@ class UserRepository:
         reconfirm_email = False
 
         for field, value in update_data.items():
+            # TODO CHECK IF EMAIL AND USERNAME ALREADY EXIST
+            current_value = getattr(user, field)
+            if current_value == value:
+                continue
+
             if field == "email" and settings.IH_SMTP_ENABLED:
                 reconfirm_email = True
                 setattr(user, 'confirmed', False)

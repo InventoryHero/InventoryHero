@@ -8,6 +8,7 @@
   "invite_email_household_exists": "A user with this email already received an invite for this household",
   "already_authenticated": "You are already logged in. If you want to create a new account, please logout first",
   "user_is_not_member_of_household": "Household not found",
+  "passwords_dont_match": "The given passwords do not match",
   "password_reset": {
     "invalid_token": "The token is invalid, please request a new one!",
     "passwords_dont_match": "The given passwords do not match"

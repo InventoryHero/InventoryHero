@@ -44,7 +44,7 @@ class AdminUserController(BaseAdminController):
 
     @admin_router.post("/create", response_model=UserPublic, status_code=status.HTTP_201_CREATED)
     async def create(self, user: AdminUserCreate):
-        return self.repositories.users.create(user)
+        return self.repositories.users.create_user_admin(user)
 
     @admin_router.get("/{id}", status_code=200, response_model=UserPublic)
     async def get_user(self, id: UUID):
@@ -65,7 +65,7 @@ class AdminUserController(BaseAdminController):
     @admin_router.put("/{user_id}", status_code=200, response_model=UserPublic)
     async def update_user(self, user_id: UUID, to_update: AdminUserUpdate):
         # todo enforce username length backendside (same as email)
-        return self.repositories.users.update_user(user_id, to_update)
+        return self.repositories.users.update_user_admin(user_id, to_update)
 
     @admin_router.put("/{user_id}/reset-password", status_code=status.HTTP_200_OK)
     async def reset_password(self, user_id: UUID):

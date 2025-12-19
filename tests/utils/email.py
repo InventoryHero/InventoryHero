@@ -6,6 +6,12 @@ from bs4 import BeautifulSoup
 MAILPIT_API = "http://localhost:8025/api/v1"
 
 
+def assert_no_messages():
+    r = requests.get(f"{MAILPIT_API}/messages")
+    r.raise_for_status()
+    data = r.json()
+    assert data["total"] == 0
+
 def wait_for_messages(timeout=5):
     start = time.time()
     while time.time() - start < timeout:

@@ -12,7 +12,7 @@ from ih.db.db_setup import engine
 from ih.db.models import Household, HouseholdMember
 from ih.db.models.User import User
 from ih.schema.households import Role, HouseholdWithMemberPublic
-from tests.utils.email import wait_for_messages, get_message
+from tests.utils.email import wait_for_messages, get_message, parse_email_messages, assert_no_messages, clear_messages
 
 
 def test_get_user_details(client: TestClient, user):
@@ -183,6 +183,10 @@ def test_admin_resend_confirmation(admin_client: TestClient, user, monkeypatch):
     response = admin_client.post(f"/api/admin/user/{user.id}/resend-confirmation")
     assert response.status_code == 400
     assert response.json()["detail"]["message"] == "SMTP is disabled, cannot send emails"
+
+    #reenable SMTP
+    monkeypatch.setenv("IH_SMTP_HOST", "localhost")
+    get_app_settings.cache_clear()
 
 def test_user_reset_password(client: TestClient, user, session):
     settings = get_app_settings()
@@ -427,6 +431,106 @@ def test_change_password(client: TestClient, user, session):
                                                               "new_password_confirmation": "test1"})
     assert response.status_code == 204
 
+def test_update_user(client: TestClient, user, session, monkeypatch):
+
+    settings = get_app_settings()
+    assert settings.IH_SMTP_ENABLED
+    response = client.post("/api/auth/token", data={
+        "username": user.username,
+        "password": "test1"
+    })
+    assert response.status_code == 200
+
+    response = client.put("/api/user/self", json={
+        "username": "test2",
+        "email": "test2@test2.com",
+        "first_name": "new_firstname",
+        "last_name": "new_lastname",
+    })
+
+    assert response.status_code == 200
+    updated = response.json()
+    assert updated["username"] == "test2"
+    assert updated["email"] == "test2@test2.com"
+    assert updated["first_name"] == "new_firstname"
+    assert updated["last_name"] == "new_lastname"
+    assert updated["admin"] is False
+
+    session.refresh(user)
+    assert user.confirmation_code is not None
+    assert user.confirmed is False
+    parse_email_messages("test2@test2.com", f"{settings.IH_APP_URL}/confirm/")
+    clear_messages()
+    user.confirmation_code = None
+    user.confirmed = True
+    session.commit()
+
+
+    response = client.put("/api/user/self", json={
+        "username": settings._IH_DEFAULT_USERNAME,
+        "first_name": "old_firstname"
+    })
+    assert response.status_code == 500
+    session.refresh(user)
+    assert user.username == "test2"
+    assert user.first_name == "new_firstname"
+
+    response = client.put("/api/user/self", json={})
+    assert response.status_code == 200
+    updated = response.json()
+    session.refresh(user)
+    assert updated["username"] == "test2"
+    assert updated["email"] == "test2@test2.com"
+    assert updated["first_name"] == "new_firstname"
+    assert updated["last_name"] == "new_lastname"
+    assert updated["admin"] is False
+
+    response = client.put("/api/user/self", json={
+        "email": settings._IH_DEFAULT_EMAIL,
+        "first_name": "old_firstname"
+    })
+    assert response.status_code == 500
+    session.refresh(user)
+    assert updated["email"] == "test2@test2.com"
+    assert user.first_name == "new_firstname"
+
+    assert user.confirmation_code is None
+    assert user.confirmed is True
+    assert_no_messages()
+
+    response = client.put("/api/user/self", json={
+        "username": "test2",
+        "email": "test2@test2.com",
+        "first_name": "new_firstname",
+        "last_name": "new_lastname",
+    })
+    assert response.status_code == 200
+    updated = response.json()
+    session.refresh(user)
+    assert updated["username"] == "test2"
+    assert updated["email"] == "test2@test2.com"
+    assert updated["first_name"] == "new_firstname"
+    assert updated["last_name"] == "new_lastname"
+    assert updated["admin"] is False
+    assert_no_messages()
+
+    monkeypatch.setenv("IH_SMTP_HOST", "")
+    get_app_settings.cache_clear()
+    response = client.put("/api/user/self", json={
+        "email": "test3@test3.com",
+    })
+    assert response.status_code == 200
+    updated = response.json()
+    session.refresh(user)
+    assert updated["username"] == "test2"
+    assert updated["email"] == "test3@test3.com"
+    assert updated["first_name"] == "new_firstname"
+    assert updated["last_name"] == "new_lastname"
+    assert updated["admin"] is False
+    assert_no_messages()
+
+    monkeypatch.setenv("IH_SMTP_HOST", "localhost")
+    get_app_settings.cache_clear()
 
 
 

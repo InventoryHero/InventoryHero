@@ -112,7 +112,6 @@ def test_registration_with_smtp(client: TestClient, monkeypatch, session):
     session.delete(user)
     session.commit()
 
-
 def test_authenticated_register(admin_client: TestClient):
     registration = UserCreate(
         email="test@test.com",
@@ -127,3 +126,17 @@ def test_authenticated_register(admin_client: TestClient):
     assert response.status_code == 403
     data = response.json()
     assert data["detail"] == "You are already logged in. If you want to create a new account, please logout first"
+
+def test_register_password_check(client: TestClient):
+    registration = UserCreate(
+        email="test@test.com",
+        username="test",
+        password="1234567891",
+        password_confirmation="123456789",
+        first_name="Test",
+        last_name="Test"
+    )
+
+    response = client.post("/api/user/register/", json=registration.model_dump(by_alias=True))
+    assert response.status_code == 422
+    assert response.json()["detail"] == "The given passwords do not match"
