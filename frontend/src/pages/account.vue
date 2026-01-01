@@ -39,6 +39,14 @@
               />
             </v-overlay>
           </template>
+          <template v-slot:error>
+            <v-img>
+              <v-icon
+                icon="mdi-account-circle"
+                size="100"
+              />
+            </v-img>
+          </template>
         </v-img>
       </template>
     </v-hover>

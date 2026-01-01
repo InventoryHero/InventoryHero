@@ -132,10 +132,4 @@ class UserController(UserControllerBase):
             response.headers["Cache-Control"] = f"public, max-age={int(cache_duration)}"
 
             return FileResponse(file_path, media_type="image/webp")
-
-        default_url = f"https://api.dicebear.com/8.x/bottts-neutral/svg?seed={str(self.user.id)}"
-        async with httpx.AsyncClient() as client:
-            resp = await client.get(default_url)
-            if resp.status_code != 200:
-                raise HTTPException(status_code=502, detail="Default image unavailable")
-            return StreamingResponse(io.BytesIO(resp.content), media_type="image/svg+xml")
+        return Response(status_code=status.HTTP_204_NO_CONTENT)

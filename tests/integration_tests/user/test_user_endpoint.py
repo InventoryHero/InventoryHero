@@ -1,11 +1,13 @@
 import datetime
 import hashlib
+import os
+import shutil
 
 from fastapi.testclient import TestClient
 from sqlmodel import Session, select
 from bs4 import BeautifulSoup
 
-from ih.core.config import get_app_settings
+from ih.core.config import get_app_settings, CWD
 from ih.core.security.password import hash_password, verify_password
 from ih.core.security.provider import AuthenticationProvider
 from ih.db.db_setup import engine
@@ -531,6 +533,21 @@ def test_update_user(client: TestClient, user, session, monkeypatch):
 
     monkeypatch.setenv("IH_SMTP_HOST", "localhost")
     get_app_settings.cache_clear()
+
+def test_get_profile_picture(client: TestClient, user):
+    settings = get_app_settings()
+    response = client.post("/api/auth/token", data={
+        "username": user.username,
+        "password": "test1"
+    })
+    assert response.status_code == 200
+
+    response = client.get("/api/user/profile-picture")
+    assert response.status_code == 204
+
+    assert CWD == ""
+
+
 
 
 
