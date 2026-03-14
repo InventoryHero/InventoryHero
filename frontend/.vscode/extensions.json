@@ -1,0 +1,16 @@
+{
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "vue.volar",
+    "formulahendry.auto-close-tag",
+    "formulahendry.auto-rename-tag",
+    "lokalise.i18n-ally",
+    "pkief.material-icon-theme",
+    "sdras.vue-vscode-snippets",
+    "mcright.auto-save",
+    "antfu.iconify",
+    "christian-kohler.path-intellisense",
+    "simonhe.common-intellisense"
+  ]
+}

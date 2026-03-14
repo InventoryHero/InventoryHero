@@ -1,0 +1,139 @@
+<script setup lang="ts">
+import useAuthStore from '@/stores/useAuthStore'
+import { Notifications } from '@kyvg/vue3-notification'
+import useConfigStore from '@/stores/useConfigStore'
+
+const currRoute = useRoute()
+const { t } = useI18n()
+const { mdAndUp } = useDisplay()
+const configStore = useConfigStore()
+const authStore = useAuthStore()
+
+const transition = computed(() => {
+  if (configStore.useTransitions) {
+    return {
+      name: 'scale',
+      mode: 'out-in'
+    }
+  }
+  return {
+    name: '',
+    mode: ''
+  }
+})
+
+const nav = ref(false)
+
+const rail = computed(() => {
+  if (mdAndUp.value) {
+    return nav.value
+  }
+  return false
+})
+
+const isDrawerOpen = computed({
+  get() {
+    if (mdAndUp.value) {
+      return true
+    }
+    return nav.value
+  },
+  set(value: boolean) {
+    nav.value = value
+  }
+})
+</script>
+
+<template>
+  <v-app>
+    <notifications
+      position="top right"
+      classes="vue-notification mt-2 me-8"
+      :max="2"
+    />
+
+    <v-app-bar density="compact">
+      <v-app-bar-nav-icon @click.stop="nav = !nav" />
+      <v-app-bar-title>
+        <v-card
+          width="fit-content"
+          to="/administration"
+          elevation="0"
+        >
+          {{ t('app.title_admin') }}
+        </v-card>
+      </v-app-bar-title>
+    </v-app-bar>
+
+    <v-navigation-drawer
+      v-model="isDrawerOpen"
+      :rail="rail"
+      :permanent="mdAndUp"
+    >
+      <v-list
+        density="compact"
+        nav
+      >
+        <v-list-item
+          to="/administration"
+          prepend-icon="mdi-view-dashboard"
+          :title="$t('nav.admin.overview')"
+          color="primary"
+        />
+        <v-list-item
+          to="/administration/users"
+          prepend-icon="mdi-account-group"
+          :title="$t('nav.admin.users')"
+          color="primary"
+        />
+      </v-list>
+      <template v-slot:append>
+        <v-divider
+          color="primary"
+          class="border-opacity-50"
+        />
+        <v-list-item
+          to="/"
+          :title="t('nav.leave_admin')"
+          prepend-icon="mdi-undo"
+        />
+      </template>
+    </v-navigation-drawer>
+    <router-view v-slot="{ Component, route }">
+      <v-main>
+        <transition
+          :name="transition.name"
+          :mode="transition.mode"
+        >
+          <v-container
+            :key="route"
+            :class="{
+              'fill-width': true,
+              'fill-height': route.meta?.fillHeight ?? false
+            }"
+            fluid
+          >
+            <v-row justify="center">
+              <v-col
+                cols="12"
+                lg="10"
+              >
+                <info-banner />
+
+                <component :is="Component" />
+              </v-col>
+            </v-row>
+          </v-container>
+        </transition>
+      </v-main>
+    </router-view>
+  </v-app>
+</template>
+
+<style scoped lang="scss">
+.content-changed-banner {
+  position: sticky;
+  top: calc(var(--v-layout-top) + 16px);
+  z-index: 2;
+}
+</style>

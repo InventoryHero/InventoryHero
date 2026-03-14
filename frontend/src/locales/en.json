@@ -1,0 +1,633 @@
+{
+  "app": {
+    "title": "InventoryHero",
+    "loading_content": "Almost ready! 🚀 We’re fine-tuning everything for you. 🛠️",
+    "title_admin": "InventoryHero Admin"
+  },
+  "nav": {
+    "items": "Items overview",
+    "boxes": "Box overview",
+    "rooms": "Room overview",
+    "create": "Create",
+    "account": "Account",
+    "households": "Households",
+    "settings": "Settings",
+    "logout": "Logout",
+    "qrcode-edit": "Label Designer",
+    "administration": "Administration",
+    "admin": {
+      "overview": "Overview",
+      "users": "Users"
+    },
+    "leave_admin": "Leave Administration"
+  },
+  "settings": {
+    "back": "Back",
+    "ui": {
+      "title": "UI Settings",
+      "preset": "Theme preset",
+      "select_color": "Select Color",
+      "save_color": "Save",
+      "color": "Color",
+      "reset": "Reset",
+      "theme": {
+        "title": "Theme",
+        "dark": "Dark",
+        "system": "System",
+        "light": "Light"
+      },
+      "transitions": "Transitions",
+      "close": "Close"
+    },
+    "general": {
+      "title": "General Settings",
+      "language": "Language",
+      "languages": {
+        "default": "Browser default",
+        "default_short": "Default",
+        "en": "English",
+        "de": "Deutsch",
+        "it": "Italiano"
+      }
+    }
+  },
+  "items": {
+    "categories": {
+      "filter": "Categories",
+      "select_categories": "Select categories"
+    },
+    "all_displayed": "All items have been displayed",
+    "content_changed_title": "Your items have changed",
+    "content_changed_subtitle": "Click here to reload",
+    "quantity": "Qty: {quantity}",
+    "no_items": "No items here",
+    "filtered_all": "No items match the given filter",
+    "item": {
+      "delete": "Delete",
+      "delete_confirmation": {
+        "title": "Are you sure?",
+        "text": "This will delete all instances of this item and cannot be undone",
+        "confirm": "Yes, delete",
+        "cancel": "No, cancel"
+      },
+      "edit": {
+        "button": "Edit",
+        "title": "Edit {name}",
+        "name": "Name",
+        "description": "Description",
+        "cancel": "Cancel",
+        "save": "Save",
+        "name_required": "An item needs to have a name",
+        "description_too_long": "The description provided is too long",
+        "categories": "Categories",
+        "categories_overflow": "+{n}"
+      },
+      "content_changed_title": "Your item has changed",
+      "content_changed_subtitle": "Click here to reload"
+    },
+    "attributes": {
+      "quantity": "Quantity",
+      "expiry_date": "Expiration date",
+      "serial_number": "Serialnumber",
+      "batch": "Batch",
+      "notes": "Notes",
+      "delete": "Delete",
+      "edit": {
+        "button": "Edit",
+        "title": "Edit {item} at {storage}",
+        "quantity": "@:items.attributes.quantity",
+        "expiry_date": "@:items.attributes.expiry_date",
+        "serial_number": "@:items.attributes.serial_number",
+        "batch": "@:items.attributes.batch",
+        "notes": "@:items.attributes.notes",
+        "save": "Save",
+        "cancel": "Cancel"
+      },
+      "invalid_expiration_set": "Invalid date supplied"
+    }
+  },
+  "boxes": {
+    "all_displayed": "All boxes have been displayed",
+    "content_changed_title": "Your boxes have changed",
+    "content_changed_subtitle": "Click here to reload",
+    "no_boxes": "No boxes here",
+    "filtered_all": "No boxes match the given filter",
+    "box": {
+      "delete": "Delete",
+      "edit": {
+        "btn": "Edit",
+        "rules": {
+          "name_required": "A box needs to have a name",
+          "parent_required": "A box needs to be placed within another storage"
+        },
+        "title": "Edit {name}",
+        "name": "Name",
+        "cancel": "Cancel",
+        "save": "Save"
+      },
+      "stored_at": "Stored at: {parent}",
+      "items_quantity": "No items | One item | {n} items",
+      "delete_confirmation": {
+        "title": "Delete Box {name}",
+        "text": "This will delete all items inside of this box. This action cannot be undone.",
+        "cancel": "Cancel",
+        "confirm": "Delete"
+      }
+    }
+  },
+  "rooms": {
+    "all_displayed": "All rooms have been displayed",
+    "content_changed_title": "Your rooms have changed",
+    "content_changed_subtitle": "Click here to reload",
+    "filtered_all": "No rooms match the given filter",
+    "room": {
+      "tabs": {
+        "items": "Items",
+        "boxes": "Boxes"
+      },
+      "delete": "Delete",
+      "edit": {
+        "btn": "Edit",
+        "rules": {
+          "name_required": "A room needs to have a name"
+        },
+        "title": "Edit {name}",
+        "name": "Name",
+        "cancel": "Cancel",
+        "save": "Save"
+      },
+      "items_quantity": "No items | One item | {n} items",
+      "boxes_quantity": "No boxes | One box | {n} boxes",
+      "delete_confirmation": {
+        "text": "This will delete all children of this room. This means that all boxes and items stored inside (and all items stored inside those boxes) will be deleted. This action cannot be undone.",
+        "title": "Delete Room {name}",
+        "cancel": "Cancel",
+        "confirm": "Delete"
+      }
+    },
+    "no_rooms": "You currently have no rooms"
+  },
+  "create": {
+    "room": {
+      "title": "Create room",
+      "short_title": "Room",
+      "form": {
+        "name": "Name",
+        "name_required": "A name needs to be entered",
+        "save_and_close": "Save & Close",
+        "save": "Save"
+      }
+    },
+    "box": {
+      "title": "Create box",
+      "short_title": "Box",
+      "form": {
+        "name": "Name",
+        "name_required": "A name needs to be entered",
+        "parent": "Parent storage",
+        "save_and_close": "Save & Close",
+        "save": "Save"
+      }
+    },
+    "item": {
+      "title": "Add or create item",
+      "short_title": "Item",
+      "form": {
+        "name": "Name",
+        "name_required": "A name (or existing item) needs to be selected",
+        "description": "Description",
+        "description_too_long": "Your description is too long",
+        "categories": "Categories",
+        "parent": "Storage",
+        "parent_needed": "A storage for the item needs to be selected",
+        "quantity": "Quantity",
+        "expiry_date": "Expiration date",
+        "batch": "Batch number",
+        "serial_number": "Serial number",
+        "notes": "Notes",
+        "notes_too_long": "Your notes are too long",
+        "save_and_close": "Save & Close",
+        "save": "Save",
+        "new_item": "Create a new item {n}",
+        "quantity_required": "An item needs to have an amount",
+        "categories_overflow": "+{n}",
+        "start_typing": "Start typing to add a new item"
+      }
+    },
+    "category": {
+      "short_title": "Category",
+      "title": "Create category",
+      "form": {
+        "name": "Category name",
+        "save": "Save",
+        "save_and_close": "Save & Close",
+        "rules": {
+          "name_required": "A name needs to be supplied"
+        }
+      }
+    }
+  },
+  "households": {
+    "household_card": {
+      "title": "Current household",
+      "select_household": "Select a household",
+      "create_new_household": "Create a new household",
+      "loading_households": "@:households.loading_households",
+      "save_not_possible": "Couldn't save default household, please try again later"
+    },
+    "all_displayed": "All households have been displayed!",
+    "create_new": {
+      "title": "Create new household",
+      "labels": {
+        "name": "Household name"
+      },
+      "save": "Save household"
+    },
+    "leave": {
+      "title": "Leave Household {name}",
+      "text": "Leaving this household can not be undone. To rejoin the household you'll need to ask the owner for a new invite.",
+      "cancel": "Stay",
+      "confirm": "Leave",
+      "success": "Left household"
+    },
+    "edit": {
+      "delete_household": "Delete Household",
+      "to_households": "Back to households",
+      "invite_link": "Unused invitation link",
+      "not_found": {
+        "title": "Household Not Found 😔",
+        "text": "We couldn't locate the household you’re looking for. It might have been removed or not available at the moment. Try refreshing the page to see if that helps.",
+        "back": "Back to all households"
+      },
+      "no_rights": {
+        "title": "Permission Required 🔒",
+        "text": "You don’t have permission to edit this household. Only the creator or owner of the household can make changes. Please suggest your changes to the owner of this household"
+      },
+      "no_member_of_household": {
+        "title": "Who are you?",
+        "text": "You are not a member of this household. Request an invite from the owner to inventory in this household."
+      }
+    },
+    "delete": {
+      "text": "Are you sure you want to delete this household? This action is permanent and cannot be undone. All data related to the household will be permanently removed, and members will no longer have access to it. Please confirm if you wish to proceed.",
+      "title": "⚠️ Confirm Household Deletion 🗑️",
+      "abort": "Cancel",
+      "confirm": "@:households.edit.delete_household"
+    },
+    "transfer": {
+      "title": "Transfer household to {user}?",
+      "cancel": "No",
+      "confirm": "Yes",
+      "text": "You cannot undo this and will only have member rights until {user} grants you more rights again"
+    },
+    "kick": {
+      "title": "Kick {user} from household?",
+      "cancel": "No",
+      "confirm": "Yes",
+      "text": "You cannot undo this and you will need to generate a new invite if {user} should join again"
+    },
+    "rules": {
+      "name_required": "A name needs to be set!",
+      "name_shorter_than": "The name must be shorter than 26 characters"
+    },
+    "invite": {
+      "generating_code": "Generating your invite link...",
+      "title": "Invite your friend",
+      "copy_to_clipboard": "Copy the invite link into your clipboard...",
+      "or": "...or share it directly"
+    },
+    "join": {
+      "title": "{owner} wants you to join their household!",
+      "text": "If you want to join the their household {name} and start inventorying with {owner} accept below.",
+      "accept": "Accept invite",
+      "deny": "Inventory' alone!",
+      "invite_invalid": "Looks like this invite is not valid",
+      "user_already_member_of_household": "You are already a member of this household, just select it form your household selection and you can start inventorying!"
+    },
+    "error": {
+      "no_access": {
+        "text": "It looks like you don't have the correct permission to view this household.",
+        "title": "No Access "
+      },
+      "unknown_error": {
+        "title": "Something went wrong",
+        "text": "An unexpected error occurred while trying to load the household."
+      },
+      "back": "Back to Households"
+    },
+    "household_transfer": {
+      "success": "Household transferred successfully"
+    }
+  },
+  "account": {
+    "username": "Username",
+    "email": "Email",
+    "change_pw": "Change password",
+    "save": "Save",
+    "lastname": "Surname",
+    "firstname": "First name",
+    "rules": {
+      "username_required": "The username field cannot be empty",
+      "email_required": "The email field cannot be empty"
+    },
+    "password": {
+      "password": "Password",
+      "change_password": "Change password",
+      "hide_change_password": "Hide",
+      "current_password": "Current password",
+      "new_password": "New password",
+      "new_password_repeat": "Repeat new password",
+      "forgot_password": "Forgot password?",
+      "rules": {
+        "old_not_empty": "Please enter your current password",
+        "new_not_empty": "Please enter a new password",
+        "repeat_not_empty": "Please repeat your new password",
+        "mismatch": "The new passwords do not match"
+      }
+    },
+    "toasts": {
+      "forgot-password": {
+        "title": "E-Mail sent",
+        "text": "You'll receive an E-Mail with instructions on how to reset your password"
+      }
+    },
+    "email_not_confirmed": "Resend Confirmation",
+    "resend_confirmation_success": "Please check your e-mail, the verification e-mail was sent successfully",
+    "password_changed_successfully": "Password updated!",
+    "profile_picture": {
+      "upload": {
+        "upload": "Upload",
+        "title": "Upload Profile Picture",
+        "accepted_file_types": "Only image/png and image/jpeg are allowed",
+        "invalid_file_type": "Invalid file type",
+        "upload_failed": "Upload failed"
+      }
+    }
+  },
+  "login": {
+    "title": "🚀 Welcome to InventoryHero",
+    "subtitle": "Power up your Inventory Management",
+    "forgot_password_btn": "Forgot password?",
+    "btn": "Login",
+    "username": "Username",
+    "password": "Password",
+    "register": "Sign up now",
+    "rules": {
+      "username_needed": "An username needs to be supplied",
+      "password_needed": "A password needs to be supplied"
+    },
+    "confirmation_missing": {
+      "title": "E-Mail not yet confirmed",
+      "text": "Your E-Mail address has net been confirmed yet, to login you need to do this first. Click here to request a new confirmation code"
+    },
+    "reset-password": {
+      "smtp_disabled": "Your administrator did not enable E-Mails, therefore you cannot use this feature. To reset your password, contact your administrator",
+      "title": "Reset password",
+      "description": "If we can find an account with the specified email, you will receive an email with instructions to reset your password",
+      "btn": "Reset",
+      "password": "@:login.password",
+      "repeat_password": "@:register.repeat_password",
+      "email": "E-Mail",
+      "back_to_login": "To Login",
+      "rules": {
+        "email_needed": "Please enter a valid email",
+        "username_needed": "@:login.rules.username_needed",
+        "passwords_not_equal": "@:register.rules.passwords_not_equal",
+        "password_needed": "You need to have a password"
+      },
+      "unknown_token_error": "Unknown error with your password reset token. Please request a new one!",
+      "success": "Your password has been reset"
+    },
+    "username_or_password_invalid": "Username or password is invalid",
+    "error": {
+      "oidc_conflict": {
+        "title": "OIDC Conflict",
+        "text": "Couldn't update / create your user due to an internal conflict. Please contact an administrator"
+      },
+      "unknown_error": {
+        "text": "Please contact an administrator",
+        "title": "Unknown Error"
+      }
+    },
+    "sso": "Login with {name}",
+    "notification": {
+      "request_new_confirmation_code": "A new confirmation code has been sent to you!"
+    }
+  },
+  "register": {
+    "title": "🎉 Join InventoryHero now",
+    "subtitle": "🚀 Start managing your inventory effortlessly",
+    "username": "@:login.username",
+    "password": "@:login.password",
+    "email": "E-Mail",
+    "repeat_password": "Repeat password",
+    "btn": "Sign up!",
+    "back_to_login": "Log in here",
+    "existing_account": "Already have an account?",
+    "rules": {
+      "username_needed": "@:login.rules.username_needed",
+      "username_fmt_rule": "Username must be 3-25 characters long and can only include letters, numbers, dots, hyphens, and underscores.",
+      "password_needed": "@:login.rules.password_needed",
+      "email_needed": "E-Mail must be valid",
+      "passwords_not_equal": "Passwords do not match"
+    }
+  },
+  "qr": {
+    "scan": {
+      "camera": "Select camera",
+      "title": "Scan Label",
+      "loading_camera": "Loading camera"
+    },
+    "label": {
+      "title_1": "Create Labels",
+      "title_2": "@:qr.label.title_1",
+      "description_1": "Select for which objects you want to create labels",
+      "description_2": "Design and print your labels",
+      "select_all": "Select all",
+      "deselect_all": "Deselect all",
+      "customization_stage": "Next",
+      "tabs": {
+        "room": "Rooms ({selected}/{amount})",
+        "box": "Boxes ({selected}/{amount})"
+      },
+      "back": "Back to selection",
+      "style": {
+        "paper": "Paper",
+        "rows": "Rows per page",
+        "cols": "Labels per row",
+        "margins": {
+          "title": "Margins",
+          "left": "Left",
+          "top": "Top",
+          "right": "Right",
+          "bottom": "Bottom",
+          "unit": "mm"
+        },
+        "label_settings": "Label settings",
+        "name_visible": "Show Name",
+        "icon_visible": "Show Type-Icon",
+        "qr_visible": "Show QR-Code",
+        "qr_icon_visible": "Show QR-Code-Icon",
+        "label_icon_size": "Type-Icon Size",
+        "qr_code_icon_size": "QR-Code-Icon Size",
+        "font_size": "Font Size",
+        "border_thickness": "Label Border"
+      },
+      "show_print_modal": "Show Print Preview",
+      "print": "Print",
+      "close_print_dialog": "Close Preview",
+      "search_room": "Room...",
+      "search_box": "Box..."
+    }
+  },
+  "description": "Inventory management made easy",
+  "invite": {
+    "email": {
+      "subject": "Join my household {household}"
+    },
+    "text": "Hey! 🎉\n\nLet’s get organized together! 📦 \n\nI’ve been using InventoryHero to manage my stuff, and I think you’ll love it too! Check it out and join me here: \n\n{inviteLink}"
+  },
+  "rules": {
+    "strong_password": "A strong password needs to be supplied"
+  },
+  "not_found": "The route you were looking for could not be found",
+  "back_to_home": "Back to home",
+  "confirmation": {
+    "email_confirmed": "E-Mail successfully confirmed",
+    "failure": "E-Mail could not be confirmed",
+    "activated": "Happy Inventoring! 🤩",
+    "redirect_in": "You'll be redirect to the homepage in {seconds} seconds",
+    "go_to_login": "Go to login",
+    "verifying": "We are verifying your email right now, hang tight.",
+    "unknown_error": "Unknown error while confirming your email. Please request a new confirmation code"
+  },
+  "home": "Go to home",
+  "logging_out": "Logging out...",
+  "administration": {
+    "auth_provider": {
+      "local": "Local",
+      "oidc": "OIDC"
+    },
+    "users": {
+      "title": "Users",
+      "user": {
+        "reset_password": "Reset Password",
+        "breadcrumbs": {
+          "users": "Users"
+        },
+        "is_admin": "Administrator",
+        "save": "Save",
+        "send_link_per_email": "E-Mail",
+        "copy_link_to_clipboard": "Copy",
+        "password_reset_title": "Password reset link",
+        "username": "Username",
+        "email": "E-Mail",
+        "first_name": "FIrst Name",
+        "last_name": "Last Name",
+        "confirmed": "Confirmed",
+        "actions": "Actions",
+        "admin": "Is Admin",
+        "auth_provider": "Auth Provider",
+        "firstname": "First Name",
+        "lastname": "Last Name",
+        "copied_reset_link": "Copied to clipboard"
+      },
+      "create_new": {
+        "title": "Create new user",
+        "username": "Username",
+        "email": "E-Mail",
+        "password": "Password",
+        "repeat_password": "Repeat password",
+        "first_name": "First name",
+        "last_name": "Last name",
+        "is_admin": "Administrator",
+        "save": "Save user"
+      },
+      "delete": {
+        "title": "Delete {user}",
+        "text": "This action is irreversible. Every household the user is a single member of will be deleted. Therefore also all items inside the households will be deleted.",
+        "yes": "Delete",
+        "no": "Cancel"
+      },
+      "create": "Add new user",
+      "resent_confirmation": "Confirmation E-Mail sent"
+    }
+  },
+  "unknown_error": "An unknown error ocurred",
+  "leave_confirmation": {
+    "stay": "Stay",
+    "discard": "Discard changes",
+    "text": "You have unsaved changes, are you sure you want to leave?"
+  },
+  "validation": {
+    "username": {
+      "required": "A username is required",
+      "too_short": "Your username needs to be at least three characters long",
+      "too_long": "Your username can be at most 256 characters long",
+      "invalid_characters": "Your username can only contain letters (A-Z, a-z) and numbers (0-9)",
+      "already_in_use": "This username is already in use"
+    },
+    "email": {
+      "required": "An email is required",
+      "invalid_email": "The email needs to be valid",
+      "already_in_use": "This email is already in use"
+    },
+    "password": {
+      "required": "A password is required",
+      "weak": {
+        "title": "Your password is weak.",
+        "subtitle": "It should include:",
+        "num_characters": "At least 8 characters",
+        "lower_case": "At least one lower case letter",
+        "upper_case": "At least one upper case letter",
+        "number": "At least one number",
+        "symbol": "At least one symbol"
+      },
+      "curr_password_invalid": "Your current password is not correct"
+    },
+    "repeat_password": {
+      "required": "Please repeat the password",
+      "password_mismatch": "The passwords do not match"
+    },
+    "passord": {
+      "weak": "Password is too weak. It should be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one symbol."
+    }
+  },
+  "household": {
+    "household_updated": "Household updated",
+    "kicked_from_household": "Removed {user} from household",
+    "household_created": "Household {name} created"
+  },
+  "configuration": {
+    "title": "Configuration",
+    "app_version": "App Version",
+    "base_url": "App URL",
+    "registration_allowed": "Registration Allowed",
+    "smtp_enabled": "SMTP Enabled",
+    "send_test_email": "Test",
+    "database": "Database",
+    "test_email": {
+      "sent": "Test E-Mail sent",
+      "email": "E-Mail",
+      "send": "Send test e-mail"
+    },
+    "base_url_is_default": "Your App URL is set to the default value. This can lead to problems if you don't run under this URL",
+    "smtp_not_set_or_invalid": "Either you did not configure SMTP or your settings are invalid",
+    "deployment": "Deployment Type",
+    "oidc": "OIDC",
+    "odic": {
+      "not_set_or_invalid": "Either you did not configre OIDC (then you can ignore this) or your settings are invalid"
+    }
+  },
+  "initialize": {
+    "failed": {
+      "refresh": "Refresh",
+      "text": "It seems like we have some problems connection to the InventoryHero server. Please try and refresh the page later. If this issue persists please contact an administrator. "
+    }
+  },
+  "initialized": {
+    "failed": {
+      "title": "InventoryHero connection problem"
+    }
+  }
+}

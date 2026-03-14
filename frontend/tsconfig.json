@@ -5,9 +5,8 @@
     "module": "ESNext",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
-
     /* Bundler mode */
-    "moduleResolution": "bundler",
+    "moduleResolution": "Bundler",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -24,16 +23,21 @@
       "@/*": ["./src/*"]
     },
     "types": [
-      "node"
+      "node",
+      "vite-plugin-vue-layouts/client",
+      "unplugin-vue-router/client",
+      "vuetify"
     ]
   },
   "include": [
+    "./typed-router.d.ts",
     "src/**/*.ts",
     "src/**/*.d.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
     "components.d.ts",
-    "auto-imports.d.ts"
+    "auto-imports.d.ts",
+    "node_modules/unplugin-auto-import/auto-imports.d.ts"
   ],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

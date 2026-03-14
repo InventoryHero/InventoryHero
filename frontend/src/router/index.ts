@@ -1,261 +1,77 @@
+import { createRouter, createWebHistory } from 'vue-router'
+import { routes, handleHotUpdate } from 'vue-router/auto-routes'
+import useAuthStore from '@/stores/useAuthStore'
+import useConfigStore from '@/stores/useConfigStore'
+import useContentRefreshStore from '@/stores/useContentRefreshStore'
+import { i18n } from '@/plugins/i18n'
+//@ts-expect-error cannot be found, but it is there
+import { setupLayouts } from 'virtual:generated-layouts'
 
-import {createRouter, createWebHistory} from "vue-router";
-import Dashboard from "../views/Dashboard.vue";
-import Login from "@/views/Login.vue"
-import {useAuthStore, useNotificationStore} from "@/store";
-import Settings from "@/views/Settings.vue";
-import Account from "@/views/Account.vue";
-import Create from "@/views/Create.vue";
-import Logout from "@/views/Logout.vue";
-import {i18n} from "@/lang";
-import Confirmation from "@/views/Confirmation.vue";
-import Join from "@/views/Join.vue";
-import {notify} from "@kyvg/vue3-notification";
-import Users from "@/components/widgets/Administration/Users.vue";
-import Overview from "@/components/widgets/Administration/Overview.vue";
-import RouteNotFound from "@/views/RouteNotFound.vue";
+console.log(routes)
 
-import passwordReset from "./routes/passwordReset";
-import households from "@/router/routes/household";
-import products from "@/router/routes/products"
-import boxes from "@/router/routes/boxes.ts"
-import locations from "@/router/routes/locations.ts";
-import QrScanner from "@/views/QrScanner.vue";
-import Register from "@/views/Register.vue";
-import ForgotPassword from "@/views/ForgotPassword.vue";
-import MissingConfirmation from "@/views/MissingConfirmation.vue";
-
-
-
-const vueRouter =  createRouter({
-  history: createWebHistory(),
-  routes: [
-    {
-      path: "/login",
-      name: "login",
-      component: Login,
-      meta: {
-        requiresAuth: false,
-        onlyUnauthorized: true,
-        fillHeight: false
-      }
-    },
-    {
-      path: "/register",
-      name: "register",
-      component: Register,
-      meta: {
-        requiresAuth: false,
-        onlyUnauthorized: true,
-        fillHeight: false
-      }
-    },
-    {
-      path: "/forgot-password",
-      name: "forgot password",
-      component: ForgotPassword,
-      meta: {
-        requiresAuth: false,
-        onlyUnauthorized: true,
-        fillHeight: false
-      }
-    },
-    {
-      path: "/confirmation/:code",
-      name: "confirmation",
-      component: Confirmation,
-      props: true,
-      meta: {
-        requiresAuth: false,
-        fillHeight: true,
-        requiresHousehold: false,
-        tokenized: true
-      }
-    },
-    {
-      path: "/confirmation-missing",
-      name: "missing confirmation",
-      component: MissingConfirmation,
-      meta: {
-        requiresAuth: false,
-        fillHeight: true,
-        onlyUnauthorized: true,
-        requiresHousehold: false
-      }
-    },
-    {
-      path: "/join/:code",
-      name: "join",
-      component: Join,
-      props: true,
-      meta: {
-        requiresAuth: true,
-        fillHeight: false,
-        requiresHousehold: false
-      }
-    },
-    {
-      path: "/",
-      name: "home",
-      component: Dashboard,
-      meta: {
-        requiresAuth: true,
-        requiresHousehold: true,
-        fillHeight: false
-      }
-    },
-    products,
-    boxes,
-    locations,
-    {
-      path: "/settings",
-      name: "settings",
-      component: Settings,
-      meta: {
-        requiresAuth: false,
-        requiresHousehold: false,
-        fillHeight: false,
-        title: i18n.global.t('titles.settings')
-      }
-    },
-    {
-      path: "/account",
-      name: "account",
-      component: Account,
-      meta: {
-        requiresAuth: true,
-        fillHeight: false,
-        title: i18n.global.t('titles.account')
-      }
-    },
-    households,
-    {
-      path: "/create",
-      component: Create,
-      meta:{
-        requiresAuth: true,
-        requiresHousehold: true,
-        fillHeight: true,
-        title: i18n.global.t('titles.create')
-      }
-    },
-    {
-      path: '/logout',
-      name: "logout",
-      component: Logout,
-      meta: {
-        requiresHousehold: false,
-        requiresAuth: true,
-        fillHeight: true
-      }
-    },
-    {
-      path: "/administration",
-      children: [
-        {
-          path: "",
-          name: "AdministrationLanding",
-          component: Overview
-        },
-        {
-          path: "users",
-          name: "AdministrationUsers",
-          component: Users
-        }
-      ],
-      meta:{
-        requiresAuth: true,
-        requiresAdmin: true,
-        fillHeight: false,
-        title: i18n.global.t('titles.administration')
-      }
-    },
-    passwordReset,
-    {
-      path: "/scan-qr",
-      name: "QrCodeScanner",
-      component: QrScanner,
-      meta: {
-        fillHeight: true,
-        title: i18n.global.t('titles.qr_code_scanner')
-      }
-    },
-    {
-      path: '/not-found',
-      component: RouteNotFound,
-      name: "route-not-found",
-      meta: {
-        fillHeight: true,
-        requiresAuth: false,
-        requiresAdmin: false,
-        requiresHousehold: false,
-      }
-    },
-    {
-      path: '/:pathMatch(.*)*',
-      name: '404',
-      redirect: '/not-found'
-    }
-
-  ],
-  scrollBehavior(to, from, savedPosition) {
-    if (savedPosition) {
-      return savedPosition
-    } else {
-      return { top: 0 }
-    }
-  },
+const router = createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: setupLayouts(routes)
 })
 
-vueRouter.beforeEach(async (to, from) => {
-  const authStore = useAuthStore();
-  const notificationStore = useNotificationStore()
-  const loggedIn = await authStore.isAuthorized()
-  if(!loggedIn){
-    if(to.path === "/login") {
-      return
+router.beforeEach(async (to, from) => {
+  const allowAuthorized = to.meta.allowAuthorized ?? true
+  const requiresAuth = to.meta.requiresAuth ?? true
+  const requiresHousehold = to.meta.requiresHousehold ?? true
+  const requiresAdmin = to.meta.layout === 'admin'
+
+  const authStore = useAuthStore()
+  const configStore = useConfigStore()
+
+  const { household, authorized, user } = storeToRefs(authStore)
+  const { registrationAllowed } = storeToRefs(configStore)
+
+  await authStore.getDefaultHousehold()
+
+  if (authorized.value && !allowAuthorized) {
+    return '/'
+  }
+  console.log(to)
+  if (!authorized.value && requiresAuth) {
+    console.log('redirected???')
+    return {
+      path: '/login',
+      query: {
+        redirect: to.fullPath === '/logout' ? '/' : to.fullPath
+      }
     }
-    if(!(to.meta.requiresAuth ?? true)){
-      return
+  }
+
+  await authStore.whoami()
+
+  if (!household.value && requiresHousehold) {
+    return { path: '/households', query: { redirect: to.fullPath } }
+  }
+
+  if (to.name === '/login/register' && !registrationAllowed.value) {
+    return { path: '/login' }
+  }
+
+  if (requiresAdmin && !(user.value?.admin ?? false)) {
+    return {
+      path: '/'
     }
-
-    if(to.path !== "/logout"){
-      authStore.setReturnUrl(to.fullPath)
-    }
-    return "/login"
-  }
-
-  if(to.meta.onlyUnauthorized ?? false) {
-    return "/"
-  }
-
-  if(to.meta.requiresHousehold && !authStore.household){
-    authStore.setReturnUrl(to.fullPath)
-    return "/households"
-  }
-  if(!(to.meta.requiresAdmin ?? false)){
-    return
-  }
-
-  await authStore.fetchPermissions()
-  if((to.meta.requiresAdmin ?? false) && !authStore.isAdmin) {
-    notificationStore.addNotification({
-      title: i18n.global.t('toasts.titles.warning.insufficient_permissions'),
-      text: i18n.global.t('toasts.text.warning.insufficient_permissions'),
-      type: 'warning'
-    })
-    return "/"
   }
 })
 
-vueRouter.beforeEach(async (to) => {
+router.beforeEach(async (to, from) => {
+  const contentRefreshStore = useContentRefreshStore()
+  contentRefreshStore.clearBanner()
+
   document.title = (to.meta?.title ?? i18n.global.t('app.title')) as string
-  notify({
+  /*notify({
     group: 'newContent',
     clean: true,
-  });
+  });*/
 })
 
-export default vueRouter
+if (import.meta.hot) {
+  handleHotUpdate(router)
+}
 
-
+export default router

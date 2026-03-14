@@ -1,0 +1,21 @@
+{
+  "self_delete_not_possible": "Deleting your own account is not supported from here",
+  "registration_disabled": "Registration is currently disabled. Contact this instance's administrator for more information",
+  "user_not_found": "The requested user cannot be found",
+  "username_already_exists": "This username is already in use",
+  "email_already_exists": "This email is already in use",
+  "category_already_exists": "This category already exists",
+  "invite_email_household_exists": "A user with this email already received an invite for this household",
+  "already_authenticated": "You are already logged in. If you want to create a new account, please logout first",
+  "user_is_not_member_of_household": "Household not found",
+  "passwords_dont_match": "The given passwords do not match",
+  "password_reset": {
+    "invalid_token": "The token is invalid, please request a new one!",
+    "passwords_dont_match": "The given passwords do not match"
+  },
+  "email_confirmation": {
+    "user_not_found": "The requested user does not exist",
+    "smtp_disabled": "SMTP is disabled, cannot send emails",
+    "code_not_found": "The requested confirmation code could not be found. Either it expired, or it doesn't exist"
+  }
+}

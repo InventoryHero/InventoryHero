@@ -1,0 +1,70 @@
+
+storage: 
++------------------------------------------------------+
+|  Inventory Hero                                      |
++------------------------------------------------------+
+|  [ + Add Room ]                                      |
+|                                                      |
+|  ▼ 🛋️ Living Room                                     |  <-- This is a "Room" component
+|    [ + Add Box ] [ Edit ]                            |
+|  +------------------------------------------------+  |
+|  | 📦 Winter Clothes                              |  |  <-- This is a "Box" sub-component
+|  |                                                 |  |
+|  +------------------------------------------------+  |
+|  | 📦 Old Photos                                  |  |
+|  |                                                 |  |
+|  +------------------------------------------------+  |
+|                                                      |
+|  ▶ 🧑‍🍳 Kitchen                                       |  <-- This is a collapsed "Room" component
+|                                                      |
+|  ▶ 🛌 Bedroom                                       |
+|                                                      |
+|                                                      |
++------------------------------------------------------+
+
+Storage-content: (maybe split this with tabbed to display boxes as well - can leave out tree view)
++------------------------------------------------------+
+|  < Back | 📦 Winter Clothes                           |
++------------------------------------------------------+
+|  [ Scan QR Code ] [ Edit Name ] [ Delete Box ]        |
+|                                                      |
+|  -------------------- CONTENTS --------------------  |
+|                                                      |
+|  +------------------------------------------------+  |
+|  | 🧥 Wool Coat                                   |  |  <-- This is an "Item In Storage" component
+|  |    Expires: N/A                                |  |
+|  |                                       [Qty: 1]  |  |
+|  |                 [Consume] [Move] [View Details]  |  |
+|  +------------------------------------------------+  |
+|                                                      |
+|  +------------------------------------------------+  |
+|  | 🧤 Gloves (2 pairs)                            |  |
+|  |    Expires: N/A                                |  |
+|  |                                       [Qty: 2]  |  |
+|  |                 [Consume] [Move] [View Details]  |  |
+|  +------------------------------------------------+  |
+|                                                      |
++------------------------------------------------------+
+
+product view from storage: 
++------------------------------------------------------+
+|  < Back | 🧥 Wool Coat                                |  <-- The header now shows "Wool Coat"
++------------------------------------------------------+
+|  Description: Heavy, for winter use.                 |
+|  [ Consume Smartly ] [ Add New Instance ] [ Edit Product ] |
+|                                                      |
+|  -------------------- MY ITEMS --------------------  |
+|                                                      |
+|  ▼ Stored since: Nov 2023 (Total: 1)                 |  <-- This is the attribute group
+|    Notes: Dry-cleaned before storing                 |
+|    [ Edit Attribute ]                                |
+|  +------------------------------------------------+  |
+|  |  📍 Winter Clothes      [Qty: 1]                 |  <-- And this highlights the location
+|  |     (in Living Room)    [Consume] [Move]        |     they just came from.
+|  +------------------------------------------------+  |
+|                                                      |
+|  (This product might only have one instance, so     ) |
+|  (there are no other groups to display.             ) |
+|                                                      |
++------------------------------------------------------+
+
