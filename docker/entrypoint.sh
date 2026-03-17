@@ -4,4 +4,4 @@
 
 cd /app
 
-exec poetry run ih
+exec uv run ih

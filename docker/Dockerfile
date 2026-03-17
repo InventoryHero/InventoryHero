@@ -20,15 +20,9 @@ ENV PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=off \
     PIP_DISABLE_PIP_VERSION_CHECK=on \
     PIP_DEFAULT_TIMEOUT=100
-ENV POETRY_HOME="/opt/poetry" \
-    POETRY_NO_INTERACTION=1
-ENV PATH="$POETRY_HOME/bin:$PATH"
 
 
-RUN curl -sSL https://install.python-poetry.org | python3 -
-ENV POETRY_VIRTUALENVS_CREATE=true \
-    POETRY_VIRTUALENVS_IN_PROJECT=true \
-    POETRY_NO_INTERACTION=1
+RUN pip install uv
 
 # TODO use another layer here
 ENV PRODUCTION=true
@@ -39,8 +33,8 @@ ENV PORT=8000
 
 COPY ih ./ih
 COPY --from=frontend-build /frontend/dist ./ih/frontend
-COPY poetry.lock pyproject.toml ./
-RUN poetry install
+COPY uv.lock pyproject.toml ./
+RUN uv sync
 
 
 EXPOSE 8000
